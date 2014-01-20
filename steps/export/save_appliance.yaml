@@ -5,7 +5,7 @@
     - /etc/fstab
     - ./fstab.bak
   - on_clean:
-    - exec_out: rm ./fstab.bak
+    - exec_out: rm -f ./fstab.bak
   - write_in:
     - /etc/fstab
     - |
