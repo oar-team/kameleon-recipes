@@ -48,7 +48,7 @@ global:
     - $$distrib/$$release
     - $$distrib
 
-  # Apt options
+  # Apt recipe options
   apt_repository: http://ftp.debian.org/debian/
   apt_enable_contrib: true
   apt_enable_nonfree: true

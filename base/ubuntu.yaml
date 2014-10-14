@@ -20,7 +20,7 @@ global:
   kernel_arch: $$arch
   hostname: kameleon-$$distrib
 
-  # Apt options
+  # Apt recipe options
   apt_repository: http://archive.ubuntu.com/ubuntu/
   apt_enable_restricted: true
 
