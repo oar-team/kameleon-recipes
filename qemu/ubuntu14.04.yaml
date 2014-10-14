@@ -1,0 +1,23 @@
+#==============================================================================
+# vim: softtabstop=2 shiftwidth=2 expandtab fenc=utf-8 cc=81 tw=80
+#==============================================================================
+#
+# DESCRIPTION: Ubuntu 14.04 LTS base system built with qemu-kvm.
+#
+#==============================================================================
+
+---
+extend: ubuntu12.04.yaml
+
+global:
+  # Distribution
+  release: trusty
+
+bootstrap:
+  - "@base"
+
+setup:
+  - "@base"
+
+export:
+  - "@base"

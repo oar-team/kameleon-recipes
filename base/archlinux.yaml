@@ -1,0 +1,67 @@
+#==============================================================================
+# vim: softtabstop=2 shiftwidth=2 expandtab fenc=utf-8 cc=81 tw=80
+#==============================================================================
+#
+# DESCRIPTION: Base template for Archlinux appliance.
+#
+#==============================================================================
+
+---
+# Loads some helpful aliases
+aliases: defaults.yaml
+#== Global variables use by Kameleon engine and the steps
+global:
+  ## User varibales : used by the recipe
+  user_name: kameleon
+  user_password: $$user_name
+
+  # Distribution
+  distrib: archlinux
+  arch: x86_64
+  hostname: kameleon-$$distrib
+
+  ## System variables. Required by kameleon engine
+  # Include specific steps
+  include_steps:
+    - $$distrib
+
+  ssh_config_file: $$kameleon_cwd/ssh_config
+  out_context:
+    cmd: ssh -F $$ssh_config_file $${kameleon_recipe_name} -t /bin/bash
+    workdir: /root/kameleon_workdir
+    proxy_cache: 10.0.2.2
+
+  in_context:
+    cmd: ssh -F $$ssh_config_file $${kameleon_recipe_name} -t chroot $$rootfs /bin/bash
+    workdir: /root/kameleon_workdir
+    proxy_cache: 10.0.2.2
+
+#== Bootstrap the new system and create the 'in_context'
+bootstrap:
+  - arch_bootstrap:
+    - mirror: http://mir.archlinux.fr/
+    # You can choose any group from https://www.archlinux.org/groups/
+    # It's recommended to use 'base' (default) or 'base-devel' (with dev tools)
+    - pkg_group: base
+
+#== Install and configuration steps
+# WARNING: this part should be independante from the out context (whenever
+# possible...)
+setup:
+  # Install
+  - install_software:
+    - packages: ntp zip unzip rsync sudo vim bash-completion syslinux
+  - install_bootloader
+  # Configuration
+  - configure_system:
+    - locales: POSIX C en_US fr_FR de_DE
+    - lang: en_US.UTF-8
+    - timezone: UTC
+  - configure_keyboard:
+    # set to english keyboard use 'localectl list-keymaps' to see available list
+    - layout: en
+  - configure_network
+  - create_user:
+    - name: $$user_name
+    - groups: wheel
+    - password: $$user_name
