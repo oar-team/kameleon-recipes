@@ -5,7 +5,6 @@
 # DESCRIPTION: Ubuntu 14.04 LTS base system built with virtualbox.
 #
 #==============================================================================
-
 ---
 extend: ubuntu12.04.yaml
 

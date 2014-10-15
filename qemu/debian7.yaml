@@ -5,7 +5,6 @@
 # DESCRIPTION: Debian 7 (Wheezy) base system built with qemu-kvm.
 #
 #==============================================================================
-
 ---
 extend: ../base/debian.yaml
 # Enables qemu checkpoint

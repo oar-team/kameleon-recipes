@@ -5,11 +5,8 @@
 # DESCRIPTION: Debian base image for docker built with docker.
 #
 #==============================================================================
-
 ---
 extend: ../base/debian.yaml
-# Loads some helpful aliases
-aliases: defaults.yaml
 # Enables qcow2 checkpoint
 # checkpoint: docker.yaml
 #== Global variables use by Kameleon engine and the steps

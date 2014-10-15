@@ -5,7 +5,6 @@
 # DESCRIPTION: A standard Debian 8 vagrant base box.
 #
 #==============================================================================
-
 ---
 extend: ../virtualbox/debian8.yaml
 

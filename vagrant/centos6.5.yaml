@@ -5,7 +5,6 @@
 # DESCRIPTION: A standard Centos 6.5 vagrant base box.
 #
 #==============================================================================
-
 ---
 extend: ../virtualbox/centos6.5.yaml
 

@@ -5,7 +5,6 @@
 # DESCRIPTION: Fedora 20 base system built with virtualbox.
 #
 #==============================================================================
-
 ---
 extend: ../base/fedora.yaml
 # virtualbox checkpoint

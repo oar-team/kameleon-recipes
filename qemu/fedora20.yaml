@@ -5,7 +5,6 @@
 # DESCRIPTION: Fedora 20 base system built with qemu-kvm.
 #
 #==============================================================================
-
 ---
 extend: ../base/fedora.yaml
 # Enables qemu checkpoint

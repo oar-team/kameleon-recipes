@@ -5,7 +5,6 @@
 # DESCRIPTION: Debian 7 (Wheezy) base system built with virtualbox.
 #
 #==============================================================================
-
 ---
 extend: ../base/debian.yaml
 # Loads some helpful aliases

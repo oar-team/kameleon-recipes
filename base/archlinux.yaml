@@ -5,7 +5,6 @@
 # DESCRIPTION: Base template for Archlinux appliance.
 #
 #==============================================================================
-
 ---
 # Loads some helpful aliases
 aliases: defaults.yaml

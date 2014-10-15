@@ -11,7 +11,6 @@
 # for this recipe to work, please change the g5k username by yours.
 ---
 extend: ../base/debian.yaml
-# By default checkpoint is disable
 #== Global variables use by Kameleon engine and the steps
 global:
   # Frontend options

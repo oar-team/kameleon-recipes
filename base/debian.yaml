@@ -5,7 +5,6 @@
 # DESCRIPTION: Base template for Debian appliance.
 #
 #==============================================================================
-
 ---
 # Loads some helpful aliases
 aliases: defaults.yaml

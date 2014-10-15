@@ -5,7 +5,6 @@
 # DESCRIPTION: A standard Debian 7 vagrant base box.
 #
 #==============================================================================
-
 ---
 extend: ../virtualbox/debian7.yaml
 
