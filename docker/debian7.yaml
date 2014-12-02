@@ -11,6 +11,9 @@ extend: ../base/debian.yaml
 # checkpoint: docker.yaml
 #== Global variables use by Kameleon engine and the steps
 global:
+  # Distribution
+  release: wheezy
+
   ## Docker options
   docker_dns: 208.67.222.222
   docker_image: $$kameleon_recipe_name
