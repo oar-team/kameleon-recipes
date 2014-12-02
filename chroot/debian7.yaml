@@ -40,6 +40,15 @@ global:
 
   bootstrap_packages: apt-utils ca-certificates locales less
 
+  bootstrap_packages: >
+    bsdutils ca-certificates locales man-db less libui-dialog-perl dialog
+    isc-dhcp-client ifupdown iptables iputils-ping iproute netbase net-tools
+    psmisc openssh-server acpid acpi-support-base sysvinit
+    linux-image-$$kernel_arch pciutils
+
+  setup_packages: >
+    sudo vim bash-completion curl resolvconf extlinux bzip2 dialog
+
 #== Bootstrap the new system and create the 'in_context'
 bootstrap:
   - initialize_disk_chroot

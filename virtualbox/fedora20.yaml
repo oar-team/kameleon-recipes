@@ -42,6 +42,14 @@ global:
     workdir: /root/kameleon_workdir
     proxy_cache: 10.0.2.2
 
+  bootstrap_packages: >
+    findutils util-linux dhclient vim-minimal net-tools NetworkManager
+    openssh-server
+
+  setup_packages: >
+    bash-completion kbd sudo openssh-clients syslinux-extlinux acpid
+    ntp ntpdate
+
 #== Bootstrap the new system and create the 'in_context'
 bootstrap:
   - enable_checkpoint

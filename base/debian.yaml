@@ -31,14 +31,10 @@ global:
   apt_enable_contrib: true
   apt_enable_nonfree: true
 
-  setup_packages: >
-        debian-keyring sudo less vim bash-completion curl resolvconf
-        extlinux bzip2 dialog
-
 #== Bootstrap the new system and create the 'in_context'
 bootstrap:
   - debootstrap:
-    - include_pkg: $$bootstrap_packages
+    - include_pkg: apt-utils $$bootstrap_packages
     - release: $$release
     - arch: $$arch
     - repository: http://ftp.debian.org/debian/
@@ -56,7 +52,8 @@ setup:
   - upgrade_system:
     - dist_upgrade: true
   - install_software:
-    - packages: $$setup_packages
+    - packages: >
+        debian-keyring $$setup_packages
   - configure_kernel
   - install_bootloader
   # Configuration

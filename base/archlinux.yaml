@@ -41,7 +41,7 @@ bootstrap:
     - bootstrap_image: https://mirrors.kernel.org/archlinux/iso/2014.11.01/archlinux-bootstrap-2014.11.01-x86_64.tar.gz
     # - mirror: http://mirrors.kernel.org/archlinux/\$repo/os/\$arch
     - mirror: http://mir.archlinux.fr/\$repo/os/\$arch
-    - include_pkgs: base openssh dhcpcd
+    - include_pkgs: base $$bootstrap_packages
 
 #== Install and configuration steps
 # WARNING: this part should be independante from the out context (whenever
@@ -49,8 +49,7 @@ bootstrap:
 setup:
   # Install
   - install_software:
-    - packages: >
-        base-devel ntp zip unzip rsync sudo vim bash-completion syslinux
+    - packages: syslinux $$setup_packages
   - install_bootloader
   # Configuration
   - configure_system:

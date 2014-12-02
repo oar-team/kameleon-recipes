@@ -31,11 +31,6 @@ global:
     - $$distrib
     - debian
 
-  bootstrap_packages: >
-    apt-transport-https ca-certificates less acpid acpi-support kbd bzip2 udev
-    locales psmisc linux-image-generic ifupdown iptables iputils-ping
-    iproute pciutils isc-dhcp-client openssh-server
-
 #== Bootstrap the new system and create the 'in_context'
 bootstrap:
   - debootstrap:
@@ -54,8 +49,7 @@ setup:
   - upgrade_system:
     - dist_upgrade: true
   - install_software:
-    - packages: >
-        bash-completion curl nano vim language-pack-en extlinux sudo
+    - packages: $$setup_packages
   - configure_kernel:
     - arch: $$arch
   - install_bootloader

@@ -45,6 +45,18 @@ global:
     workdir: /root/kameleon_workdir
     proxy_cache: 10.0.2.2
 
+  bootstrap_packages: >
+    findutils util-linux dhclient vim-minimal net-tools openssh-server
+    kernel kernel-devel acpid
+
+  setup_packages: >
+    kbd sudo openssh-clients ntp ntpdate rsync bridge-utils bzip2 cronie
+    cronie-anacron crontabs dash dhclient dhcp-common dracut dracut-kernel
+    file fuse gnupg2 iptables-ipv6 libuser logrotate m4 openssh-server passwd
+    pciutils-libs rsyslog dbus system-config-firewall-base which
+    findutils yum util-linux vim-minimal net-tools openssh-server
+    kernel kernel-devel acpid
+
 bootstrap:
   - enable_checkpoint
   - prepare_qemu
