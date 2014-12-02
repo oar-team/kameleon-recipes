@@ -7,7 +7,7 @@
 #==============================================================================
 ---
 extend: ../base/archlinux.yaml
-checkpoint: qemu.yaml
+checkpoint: virtualbox.yaml
 
 #== Global variables use by Kameleon engine and the steps
 global:
