@@ -31,6 +31,10 @@ global:
   apt_enable_contrib: true
   apt_enable_nonfree: true
 
+  setup_packages: >
+        debian-keyring sudo less vim bash-completion curl resolvconf
+        extlinux bzip2 dialog
+
 #== Bootstrap the new system and create the 'in_context'
 bootstrap:
   - debootstrap:
@@ -52,9 +56,7 @@ setup:
   - upgrade_system:
     - dist_upgrade: true
   - install_software:
-    - packages: >
-        debian-keyring sudo less vim bash-completion curl resolvconf
-        extlinux bzip2 dialog
+    - packages: $$setup_packages
   - configure_kernel
   - install_bootloader
   # Configuration
