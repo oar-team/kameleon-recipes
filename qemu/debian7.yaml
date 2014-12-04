@@ -58,7 +58,6 @@ global:
 bootstrap:
   - prepare_qemu
   - start_qemu
-  - enable_checkpoint
   - install_requirements:
     - packages: parted e2fsprogs debootstrap extlinux
   - initialize_disk
@@ -67,7 +66,8 @@ bootstrap:
 
 #== Install and configuration steps
 setup:
-- "@base"
+  - enable_checkpoint
+  - "@base"
 
 #== Export the generated appliance in the format of your choice
 export:

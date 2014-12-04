@@ -58,7 +58,6 @@ global:
     kernel kernel-devel acpid
 
 bootstrap:
-  - enable_checkpoint
   - prepare_qemu
   - start_qemu
   - install_requirements:
@@ -69,6 +68,7 @@ bootstrap:
 
 #== Install and configuration steps
 setup:
+  - enable_checkpoint
   - "@base"
 
 #== Export the generated appliance in the format of your choice

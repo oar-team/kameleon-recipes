@@ -52,7 +52,6 @@ bootstrap:
   - start_qemu
   - install_requirements:
     - packages: parted e2fsprogs wget
-  - enable_checkpoint
   - initialize_disk:
     - disk_device: /dev/vda
   - "@base"
@@ -62,6 +61,7 @@ bootstrap:
 # WARNING: this part should be independante from the out context (whenever
 # possible...)
 setup:
+  - enable_checkpoint
   - "@base"
 
 #== Export the generated appliance in the format of your choice
