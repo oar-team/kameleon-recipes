@@ -64,6 +64,7 @@ setup:
   - configure_keyboard:
     - layout: "us,fr,de"
   - configure_network
+  - kameleon_customization
   - create_group:
     - name: admin
   - create_user:

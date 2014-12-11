@@ -60,6 +60,7 @@ setup:
     # set to english keyboard use 'localectl list-keymaps' to see available list
     - layout: en
   - configure_network
+  - kameleon_customization
   - create_user:
     - name: $$user_name
     - groups: wheel

@@ -54,6 +54,7 @@ setup:
     - layout: "us"
   - configure_network:
     - hostname: kameleon-$$distrib
+  - kameleon_customization
   - create_user:
     - name: $$user_name
     - groups: wheel

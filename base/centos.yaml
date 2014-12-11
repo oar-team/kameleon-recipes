@@ -50,6 +50,7 @@ setup:
   - configure_keyboard:
     - layout: "us"
   - configure_network
+  - kameleon_customization
   - create_user:
     - name: $$user_name
     - groups: wheel
