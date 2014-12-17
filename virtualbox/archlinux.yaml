@@ -7,7 +7,7 @@
 #==============================================================================
 ---
 extend: ../base/archlinux.yaml
-checkpoint: qemu.yaml
+checkpoint: virtualbox.yaml
 
 #== Global variables use by Kameleon engine and the steps
 global:
@@ -29,14 +29,19 @@ global:
 
   ssh_config_file: $$kameleon_cwd/ssh_config
   out_context:
-    cmd: ssh -F $$ssh_config_file $$kameleon_recipe_name -t /bin/bash
+    cmd: ssh -F $$ssh_config_file $${kameleon_recipe_name} -t /bin/bash
     workdir: /root/kameleon_workdir
     proxy_cache: 10.0.2.2
 
   in_context:
-    cmd: ssh -F $$ssh_config_file $$kameleon_recipe_name -t chroot $$rootfs /bin/bash
+    cmd: ssh -F $$ssh_config_file $${kameleon_recipe_name} -t chroot $$rootfs /bin/bash
     workdir: /root/kameleon_workdir
     proxy_cache: 10.0.2.2
+
+  bootstrap_packages: openssh dhcpcd
+
+  setup_packages: base-devel ntp zip unzip rsync sudo vim bash-completion
+
 
 #== Bootstrap the new system and create the 'in_context'
 bootstrap:

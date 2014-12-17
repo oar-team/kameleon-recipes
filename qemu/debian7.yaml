@@ -46,16 +46,18 @@ global:
     proxy_cache: 10.0.2.2
 
   bootstrap_packages: >
-    apt-utils ca-certificates locales less linux-image-$$kernel_arch
-    isc-dhcp-client ifupdown iptables iputils-ping iproute pciutils
-    psmisc acpid acpi-support-base openssh-server sysvinit man-db
-    net-tools
+    bsdutils ca-certificates locales man-db less libui-dialog-perl dialog
+    isc-dhcp-client ifupdown iptables iputils-ping iproute netbase net-tools
+    psmisc openssh-server acpid acpi-support-base sysvinit
+    linux-image-$$kernel_arch pciutils
+
+  setup_packages: >
+    sudo vim bash-completion curl resolvconf extlinux bzip2 dialog
 
 #== Bootstrap the new system and create the 'in_context'
 bootstrap:
   - prepare_qemu
   - start_qemu
-  - enable_checkpoint
   - install_requirements:
     - packages: parted e2fsprogs debootstrap extlinux
   - initialize_disk
@@ -64,7 +66,8 @@ bootstrap:
 
 #== Install and configuration steps
 setup:
-- "@base"
+  - enable_checkpoint
+  - "@base"
 
 #== Export the generated appliance in the format of your choice
 export:

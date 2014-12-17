@@ -41,13 +41,17 @@ global:
     workdir: /root/kameleon_workdir
     proxy_cache: 10.0.2.2
 
+  bootstrap_packages: openssh dhcpcd
+
+  setup_packages: base-devel ntp zip unzip rsync sudo vim bash-completion
+
+
 #== Bootstrap the new system and create the 'in_context'
 bootstrap:
   - prepare_qemu
   - start_qemu
   - install_requirements:
     - packages: parted e2fsprogs wget
-  - enable_checkpoint
   - initialize_disk:
     - disk_device: /dev/vda
   - "@base"
@@ -57,6 +61,7 @@ bootstrap:
 # WARNING: this part should be independante from the out context (whenever
 # possible...)
 setup:
+  - enable_checkpoint
   - "@base"
 
 #== Export the generated appliance in the format of your choice

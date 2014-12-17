@@ -11,6 +11,9 @@ extend: ../base/debian.yaml
 # checkpoint: docker.yaml
 #== Global variables use by Kameleon engine and the steps
 global:
+  # Distribution
+  release: wheezy
+
   ## Docker options
   docker_dns: 208.67.222.222
   docker_image: $$kameleon_recipe_name
@@ -36,9 +39,13 @@ global:
     proxy_cache: 172.17.42.1
 
   bootstrap_packages: >
-    ifupdown locales libui-dialog-perl dialog isc-dhcp-client netbase
-    net-tools iproute acpid openssh-server pciutils extlinux
-    linux-image-$$arch
+    bsdutils ca-certificates locales man-db less libui-dialog-perl dialog
+    isc-dhcp-client ifupdown iptables iputils-ping iproute netbase net-tools
+    psmisc openssh-server
+
+  setup_packages: >
+    sudo vim bash-completion curl bzip2 dialog
+
 
 #== Bootstrap the new system and create the 'in_context'
 bootstrap:

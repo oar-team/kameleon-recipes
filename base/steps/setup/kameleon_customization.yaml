@@ -1,0 +1,9 @@
+# Kameleon customization
+
+- configure_bashrc:
+  - local2in:
+    - $$kameleon_data_dir/skel/.bashrc
+    - /etc/skel/.bashrc
+  - local2in:
+    - $$kameleon_data_dir/skel/.bashrc
+    - /root/.bashrc

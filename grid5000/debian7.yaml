@@ -14,11 +14,12 @@ extend: ../base/debian.yaml
 #== Global variables use by Kameleon engine and the steps
 global:
   # Frontend options
-  g5k_user: $$my_g5k_username  # CHANGE ME
-  g5k_site: $$my_g5k_site  # CHANGE ME
+  g5k_user: MY_G5K_CHANGE  # CHANGE ME
+  g5k_site: MY_G5K_SITE  # CHANGE ME
 
   # Kenv
-  kenv: "wheezy-x64-base"
+  release: wheezy
+  kenv: "$${release}-x64-base"
 
   ssh_config_file: $$kameleon_cwd/ssh_config
   # Shell session from where we launch exec_out commands. There is often a
@@ -35,6 +36,9 @@ global:
   in_context:
     cmd: ssh -A -t -F $$ssh_config_file $$kameleon_recipe_name /bin/bash
     workdir: $$in_cwd
+
+  setup_packages: >
+    sudo vim bash-completion curl resolvconf extlinux bzip2 dialog
 
 #== Bootstrap the new system and create the 'in_context'
 #== This will consist in a G5k Deployment

@@ -13,10 +13,13 @@ global:
   release: jessie
 
   bootstrap_packages: >
-    apt-utils ca-certificates locales less linux-image-$$kernel_arch
-    isc-dhcp-client isc-dhcp-common ifupdown iptables iproute2 iputils-ping
-    pciutils psmisc acpid acpi-support-base openssh-server sysvinit man-db
-    systemd systemd-sysv net-tools
+    bsdutils ca-certificates locales man-db less libui-dialog-perl dialog
+    isc-dhcp-client ifupdown iptables iputils-ping iproute2 netbase net-tools
+    psmisc openssh-server acpid acpi-support-base sysvinit systemd systemd-sysv
+    linux-image-$$kernel_arch pciutils
+
+  setup_packages: >
+    sudo vim bash-completion curl resolvconf extlinux bzip2 dialog
 
 bootstrap:
   - "@base"

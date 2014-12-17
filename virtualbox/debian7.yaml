@@ -64,10 +64,13 @@ global:
     proxy_cache: 10.0.2.2
 
   bootstrap_packages: >
-    apt-utils ca-certificates locales less linux-image-$$kernel_arch
-    isc-dhcp-client ifupdown iptables iputils-ping iproute pciutils
-    psmisc acpid acpi-support-base openssh-server sysvinit man-db
-    net-tools
+    bsdutils ca-certificates locales man-db less libui-dialog-perl dialog
+    isc-dhcp-client ifupdown iptables iputils-ping iproute2 netbase net-tools
+    psmisc openssh-server acpid acpi-support-base sysvinit systemd systemd-sysv
+    linux-image-$$kernel_arch pciutils
+
+  setup_packages: >
+    sudo vim bash-completion curl resolvconf extlinux bzip2 dialog
 
 #== Bootstrap the new system and create the 'in_context'
 bootstrap:
@@ -77,42 +80,12 @@ bootstrap:
   - install_requirements:
     - packages: parted e2fsprogs debootstrap extlinux
   - initialize_disk
-  - debootstrap:
-    - include_pkg: $$bootstrap_packages
-    - release: $$release
-    - arch: $$arch
-    - repository: $$apt_repository
-    - variant: default  # default|minbase|buildd|fakechroot|scratchbox
+  - "@base"
   - reboot_virtualbox
 
 #== Install and configuration steps
 setup:
-  # Install
-  - configure_apt:
-    - repository: $$apt_repository
-    - enable_contrib_repo: $$apt_enable_contrib
-    - enable_nonfree_repo: $$apt_enable_nonfree
-  - upgrade_system:
-    - dist_upgrade: true
-  - install_software:
-    - packages: >
-        debian-keyring sudo less vim bash-completion curl less bzip2 wget
-        dialog tree extlinux
-  - install_bootloader
-  # Configuration
-  - configure_system:
-    - locales: POSIX C en_US fr_FR de_DE
-    - lang: en_US.UTF-8
-    - timezone: UTC
-  - configure_keyboard:
-    - layout: "us,fr,de"
-  - configure_network
-  - create_group:
-    - name: admin
-  - create_user:
-    - name: $$user_name
-    - groups: sudo admin
-    - password: $$user_password
+- "@base"
 
 #== Export the generated appliance in the format of your choice
 export:

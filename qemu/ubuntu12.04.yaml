@@ -48,19 +48,27 @@ global:
     workdir: /root/kameleon_workdir
     proxy_cache: 10.0.2.2
 
+  bootstrap_packages: >
+    apt-transport-https ca-certificates less acpid acpi-support kbd bzip2 udev
+    locales psmisc linux-image-generic ifupdown iptables iputils-ping
+    iproute pciutils isc-dhcp-client openssh-server
+
+  setup_packages: >
+    bash-completion curl nano vim language-pack-en extlinux sudo
+
 #== Bootstrap the new system and create the 'in_context'
 bootstrap:
   - prepare_qemu
   - start_qemu
   - install_requirements:
     - packages: parted e2fsprogs debootstrap extlinux
-  - enable_checkpoint
   - initialize_disk
   - "@base"
   - reboot_qemu
 
 #== Install and configuration steps
 setup:
+  - enable_checkpoint
   - "@base"
 
 #== Export the generated appliance in the format of your choice
