@@ -1,4 +1,4 @@
-- reboot_timeout: 30
+- reboot_timeout: 100
 
 - prepare_sshd:
   - exec_out: mkdir -p $$rootfs/root/.ssh/
