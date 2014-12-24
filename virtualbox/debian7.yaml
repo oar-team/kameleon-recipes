@@ -65,8 +65,8 @@ global:
 
   bootstrap_packages: >
     bsdutils ca-certificates locales man-db less libui-dialog-perl dialog
-    isc-dhcp-client ifupdown iptables iputils-ping iproute2 netbase net-tools
-    psmisc openssh-server acpid acpi-support-base sysvinit systemd systemd-sysv
+    isc-dhcp-client ifupdown iptables iputils-ping iproute netbase net-tools
+    psmisc openssh-server acpid acpi-support-base sysvinit
     linux-image-$$kernel_arch pciutils
 
   setup_packages: >
