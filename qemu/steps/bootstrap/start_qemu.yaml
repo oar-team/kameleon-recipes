@@ -31,11 +31,12 @@
           -pidfile $$qemu_pidfile \
           -daemonize -vnc :1 $LOADVM
   - exec_local: |
-        NEXT_WAIT_TIME=0
         SSH_AVAILABLE=0
-        until ssh -q -F $$ssh_config_file -o ConnectTimeout=1 -o ConnectionAttempts=1 $${kameleon_recipe_name} -t true && SSH_AVAILABLE=1 || [ $NEXT_WAIT_TIME -eq $$boot_timeout ];
+        TIMEOUT=$(( $(date +%s) + $$boot_timeout ))
+        until timeout 2 ssh -q -F $$ssh_config_file -o ConnectTimeout=1 -o ConnectionAttempts=1  $${kameleon_recipe_name} -t true && SSH_AVAILABLE=1 || [ $(date +%s) -gt $TIMEOUT ];
         do
-          echo -en "\rWaiting for SSH to become available for out_context...($(( $$boot_timeout - 1 - NEXT_WAIT_TIME++ ))s)"
+          echo -en "\rWaiting for SSH to become available for out_context...($(( TIMEOUT - $(date +%s) ))s)"
+          sleep 1
         done
         echo ""
   - rescue:
