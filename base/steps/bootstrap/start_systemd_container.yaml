@@ -1,0 +1,52 @@
+- boot_timeout: 20
+- container_name: $(basename $$rootfs)
+
+- start_container:
+  - write_out:
+    - /lib/systemd/system/systemd-nspawn@.service
+    - |
+      [Unit]
+      Description=Container %i
+      Documentation=man:systemd-nspawn(1)
+      
+      [Service]
+      ExecStart=/usr/bin/systemd-nspawn --bind-ro /:/tmp/systemd/hostfs --capability=all --quiet --keep-unit --directory=$(dirname $$rootfs)/%i
+      KillMode=mixed
+      Type=notify
+      RestartForceExitStatus=133
+      SuccessExitStatus=133
+      
+      [Install]
+      WantedBy=multi-user.target
+
+  - exec_out: systemctl daemon-reload
+  - exec_out: systemctl start systemd-nspawn@$$container_name.service
+  - exec_out: |
+        NEXT_WAIT_TIME=0
+        CONTAINER_AVAILABLE=0
+        until machinectl show $$container_name | grep State | grep -q running && CONTAINER_AVAILABLE=1 || [ $NEXT_WAIT_TIME -eq $$boot_timeout ];
+        do
+          echo -en "\rWaiting for systemd container to become available...($(( $$boot_timeout - 1 - NEXT_WAIT_TIME++ ))s)"
+          sleep 1
+        done
+        test $NEXT_WAIT_TIME -eq 0 || echo ""
+        test $CONTAINER_AVAILABLE -eq 1 || machinectl status $$container_name
+  - rescue:
+    - exec_out: test $CONTAINER_AVAILABLE -eq 1 || echo ""
+    - breakpoint: Failed to start the container with systemd.
+
+  - write_out:
+    - /usr/local/bin/in-nsenter
+    - |
+      CONTAINER_NAME=$$container_name
+      CONTAINER_PID=\$(machinectl show \$CONTAINER_NAME | grep Leader | sed 's/[^0-9]//g')
+      ARGV="\${@:1}"
+      PROCESS=\${ARGV:-"/bin/bash"}
+      SCRIPT=\$(mktemp)
+      echo "exec \${PROCESS}" >> \$SCRIPT
+      chmod +x \$SCRIPT
+      exec nsenter -t \${CONTAINER_PID} -m -u -i -n -p /bin/bash "/tmp/systemd/hostfs/\$SCRIPT"
+
+  - exec_out: chmod +x /usr/local/bin/in-nsenter
+  - on_setup_clean:
+    - exec_out: machinectl terminate $$container_name
