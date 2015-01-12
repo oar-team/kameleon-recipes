@@ -72,7 +72,7 @@
   - exec_local: |
         NEXT_WAIT_TIME=0
         SSH_AVAILABLE=0
-        until ssh-keyscan -T 1 -4 -p $$qemu_ssh_port localhost  2>&1 | grep -e ssh-rsa -e ssh-dsa &> /dev/null && SSH_AVAILABLE=1 || [ $NEXT_WAIT_TIME -eq $$reboot_timeout ];
+        until ssh-keyscan -T 1 -4 -p $SSH_FWD_PORT localhost  2>&1 | grep -e ssh-rsa -e ssh-dsa &> /dev/null && SSH_AVAILABLE=1 || [ $NEXT_WAIT_TIME -eq $$reboot_timeout ];
         do
           echo -en "\rWaiting for SSH to become available for out_context...($(( $$reboot_timeout - 1 - NEXT_WAIT_TIME++ ))s)"
         done
