@@ -1,7 +1,8 @@
 # Arch-bootstrap
 
 - download_base_image:
-  - exec_out: wget -qO- $$bootstrap_image | tar xvz --strip-components 1 -C $$rootfs
+  - exec_out: echo "Download and untar image..."
+  - exec_out: wget -qO- $$bootstrap_image | tar xz --strip-components 1 -C $$rootfs
   - exec_out: echo "" >> $$rootfs/etc/pacman.d/mirrorlist
   - exec_out: echo "Server = $$mirror" >> $$rootfs/etc/pacman.d/mirrorlist
 
