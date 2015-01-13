@@ -1,4 +1,4 @@
-- reboot_timeout: 30
+- reboot_timeout: 60
 
 - prepare_sshd:
   - exec_out: mkdir -p $$rootfs/root/.ssh/
@@ -59,6 +59,7 @@
       append initrd=../`basename $$rootfs/boot/init*` root=UUID=`blkid -s UUID -o value $${disk_device}1` ro
 
 - umount_all:
+  - exec_out: echo "sync..."; sync
   - umount_out: $$rootfs/sys
   - umount_out: $$rootfs/proc
   - umount_out: $$rootfs/dev/pts
