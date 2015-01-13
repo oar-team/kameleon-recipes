@@ -15,11 +15,15 @@
 
 - configure_pacman:
   # init pacman keyring
-  - echo_out: echo "Initializing the pacman keyring"
+  - exec_out: echo "Initializing the pacman keyring"
   - exec_out: chroot $$rootfs cp /etc/pacman.conf /etc/pacman.conf.orig
-  - exec_out: chroot $$rootfs sed -i s'/SigLevel.*/SigLevel = Never/'g /etc/pacman.conf
+  # Replace sed by a file because Sed is not present on the ISO anymore
+  #- exec_out: chroot $$rootfs sed -i s'/SigLevel.*/SigLevel = Never/'g /etc/pacman.conf
+  - local2out:
+    - $$kameleon_data_dir/pacman.conf
+    - $$rootfs/etc/pacman.conf
   - exec_out: chroot $$rootfs pacman -Sy
-  - exec_out: chroot $$rootfs pacman --noconfirm --arch $$arch -S haveged procps-ng
+  - exec_out: chroot $$rootfs pacman --noconfirm --arch $$arch -S haveged procps-ng sed
   - exec_out: chroot $$rootfs mv /etc/pacman.conf.orig /etc/pacman.conf
   - exec_out: chroot $$rootfs haveged -w 1024
   - exec_out: chroot $$rootfs pacman-key --init
@@ -30,8 +34,13 @@
 - install_extra_packages:
   - exec_out: chroot $$rootfs pacman --noconfirm --arch $$arch -Suy --force $$include_pkgs
 
+- enable_network:
+  - exec_out: chroot $$rootfs ln -s /usr/lib/systemd/system/dhcpcd.service /etc/systemd/system/multi-user.target.wants/dhcpcd.service
+  - exec_out: chroot $$rootfs ln -s /usr/lib/systemd/system/sshd.service /etc/systemd/system/multi-user.target.wants/sshd.service
+
 - umount_chroot:
   - on_clean:
+    - exec_out: echo "sync..."; sync
     - umount_out: $$rootfs/sys
     - umount_out: $$rootfs/proc
     - umount_out: $$rootfs/dev/pts

@@ -16,7 +16,6 @@ global:
   qemu_cpu: 2
   qemu_memory_size: 768
   qemu_monitor_socket: $$kameleon_cwd/qemu_monitor.socket
-  qemu_ssh_port: 55423
   qemu_arch: $$arch
   qemu_image_size: 10G
   qemu_image_disk: $$kameleon_cwd/base_$$kameleon_recipe_name.qcow2
@@ -27,6 +26,7 @@ global:
   insecure_ssh_key_url: http://kameleon.imag.fr/iso/boot2debian/keys/insecure_id_rsa
 
   # rootfs options
+  disk_device: /dev/vda
   rootfs: /rootfs
   filesystem_type: ext4
 
@@ -37,7 +37,7 @@ global:
     proxy_cache: 10.0.2.2
 
   in_context:
-    cmd: ssh -F $$ssh_config_file $${kameleon_recipe_name} -t chroot $$rootfs /bin/bash
+    cmd: ssh -F $$ssh_config_file $${kameleon_recipe_name} -t /bin/bash
     workdir: /root/kameleon_workdir
     proxy_cache: 10.0.2.2
 
@@ -52,10 +52,9 @@ bootstrap:
   - start_qemu
   - install_requirements:
     - packages: parted e2fsprogs wget
-  - initialize_disk:
-    - disk_device: /dev/vda
+  - initialize_disk
   - "@base"
-  - start_chroot
+  - reboot_qemu
 
 #== Install and configuration steps
 # WARNING: this part should be independante from the out context (whenever
