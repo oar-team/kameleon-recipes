@@ -42,7 +42,7 @@ append_out:
 
 local2out:
   - exec_out: |
-      mkdir -p $(dirname @2)"
+      mkdir -p $(dirname @2)
   - pipe:
       - exec_local: cat @1
       - exec_out: cat > @2
