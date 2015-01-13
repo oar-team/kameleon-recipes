@@ -48,7 +48,7 @@ global:
     proxy_cache: 10.0.2.2
 
   in_context:
-    cmd: ssh -o ConnectTimeout=1 -F $$ssh_config_file $$kameleon_recipe_name -t chroot $$rootfs /bin/bash
+    cmd: ssh -o ConnectTimeout=1 -F $$ssh_config_file $$kameleon_recipe_name -t /bin/bash
     workdir: /root/kameleon_workdir
     proxy_cache: 10.0.2.2
 
