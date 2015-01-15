@@ -37,7 +37,7 @@
   - exec_local: |
         SSH_AVAILABLE=0
         TIMEOUT=$(( $(date +%s) + $$boot_timeout ))
-        until timeout 2 ssh -q -F $$ssh_config_file -o ConnectTimeout=1 -o ConnectionAttempts=1  $${kameleon_recipe_name} -t true && SSH_AVAILABLE=1 || [ $(date +%s) -gt $TIMEOUT ];
+        until timeout 5 ssh -q -F $$ssh_config_file -o ConnectionAttempts=1  $${kameleon_recipe_name} -t true && SSH_AVAILABLE=1 || [ $(date +%s) -gt $TIMEOUT ];
         do
           echo -en "\rWaiting for SSH to become available for out_context...($(( TIMEOUT - $(date +%s) ))s)"
           sleep 1
