@@ -6,9 +6,15 @@
 #
 #==============================================================================
 ---
-# Loads some helpful aliases
+# Loads some helpful aliases (this files are located in steps/aliases/ directory)
 aliases: defaults.yaml
-#== Global variables use by Kameleon engine and the steps
+
+# Custom shell environement (this files are located in steps/env/ directory)
+env:
+  - bashrc
+  - functions.sh
+
+# Global variables use by Kameleon engine and the steps
 global:
   ## User varibales : used by the recipe
   user_name: kameleon
@@ -25,7 +31,7 @@ global:
     - $$distrib
 
 
-#== Bootstrap the new system and create the 'in_context'
+# Bootstrap the new system and create the 'in_context'
 bootstrap:
   - arch_bootstrap:
     - bootstrap_image: https://mirrors.kernel.org/archlinux/iso/2015.01.01/archlinux-bootstrap-2015.01.01-x86_64.tar.gz
@@ -33,7 +39,7 @@ bootstrap:
     - mirror: http://mir.archlinux.fr/\$repo/os/\$arch
     - include_pkgs: base $$bootstrap_packages
 
-#== Install and configuration steps
+# Install and configuration steps
 # WARNING: this part should be independante from the out context (whenever
 # possible...)
 setup:

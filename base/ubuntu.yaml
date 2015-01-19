@@ -6,9 +6,15 @@
 #
 #==============================================================================
 ---
-# Loads some helpful aliases
+# Loads some helpful aliases (this files are located in steps/aliases/ directory)
 aliases: defaults.yaml
-#== Global variables use by Kameleon engine and the steps
+
+# Custom shell environement (this files are located in steps/env/ directory)
+env:
+  - bashrc
+  - functions.sh
+
+# Global variables use by Kameleon engine and the steps
 global:
   ## User varibales : used by the recipe
   user_name: kameleon
@@ -31,7 +37,7 @@ global:
     - $$distrib
     - debian
 
-#== Bootstrap the new system and create the 'in_context'
+# Bootstrap the new system and create the 'in_context'
 bootstrap:
   - debootstrap:
     - include_pkg: $$bootstrap_packages
@@ -40,7 +46,7 @@ bootstrap:
     - repository: $$apt_repository
     - variant: default  # default|minbase|buildd|fakechroot|scratchbox
 
-#== Install and configuration steps
+# Install and configuration steps
 setup:
   # Install
   - configure_apt:

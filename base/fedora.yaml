@@ -6,9 +6,15 @@
 #
 #==============================================================================
 ---
-# Loads some helpful aliases
+# Loads some helpful aliases (this files are located in steps/aliases/ directory)
 aliases: defaults.yaml
-#== Global variables use by Kameleon engine and the steps
+
+# Custom shell environement (this files are located in steps/env/ directory)
+env:
+  - bashrc
+  - functions.sh
+
+# Global variables use by Kameleon engine and the steps
 global:
   ## User varibales : used by the recipe
   user_name: kameleon
@@ -29,7 +35,7 @@ global:
   selinux: permissive  ## Can take one of these three values: enforcing, permissive or disabled
   selinuxtype: targeted  # Possible values are: strict, targeted
 
-#== Bootstrap the new system and create the 'in_context'
+# Bootstrap the new system and create the 'in_context'
 bootstrap:
   - yum_bootstrap:
     - mirror_packages_url: http://mirrors.kernel.org/fedora/releases/$$release/Fedora/$$arch/os/Packages/f/
@@ -38,7 +44,7 @@ bootstrap:
     - pxe_initrd_url: http://mirrors.kernel.org/fedora/releases/$$release/Fedora/$$arch/os/images/pxeboot/initrd.img
     - pxe_vmlinuz_url: http://mirrors.kernel.org/fedora/releases/$$release/Fedora/$$arch/os/images/pxeboot/vmlinuz
 
-#== Install and configuration steps
+# Install and configuration steps
 setup:
   - configure_kernel
   - update_system
