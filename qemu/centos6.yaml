@@ -2,34 +2,37 @@
 # vim: softtabstop=2 shiftwidth=2 expandtab fenc=utf-8 cc=81 tw=80
 #==============================================================================
 #
-# DESCRIPTION: Centos 6.5 base system built with virtualbox.
+# DESCRIPTION: Centos 6 base system built with qemu-kvm.
 #
 #==============================================================================
 ---
 extend: ../base/centos.yaml
-checkpoint: virtualbox.yaml
+checkpoint: qemu.yaml
 
 #== Global variables use by Kameleon engine and the steps
 global:
   # Distribution
-  release: 6.5
+  release: 6
 
-  ## VirtualBox options
-  virtualbox_memory_size: 768
-  virtualbox_ssh_port: 55423
-  virtualbox_os_type: RedHat_64
-  virtualbox_vmid: $${kameleon_recipe_name}_$${kameleon_short_uuid}
-  virtualbox_image_size: 10000  ## megabytes
-  virtualbox_image_disk: $$kameleon_cwd/base_$$kameleon_recipe_name.vdi
+  ## QEMU options
+  qemu_enable_kvm: "$(egrep '(vmx|svm)' /proc/cpuinfo > /dev/null && echo true)"
+  qemu_cpu: 2
+  qemu_memory_size: 768
+  qemu_monitor_socket: $$kameleon_cwd/qemu_monitor.socket
+  qemu_ssh_port: 55423
+  qemu_arch: x86_64
+  qemu_image_size: 10G
+  qemu_image_disk: $$kameleon_cwd/base_$$kameleon_recipe_name.qcow2
+  qemu_pidfile: $$kameleon_cwd/qemu.pid
 
   ## Kameleon iso bootstrap
-  boot2kameleon_url: http://kameleon.imag.fr/iso/boot2debian/debian-jessie-$${arch}-insecure.iso
+  boot2kameleon_url: http://kameleon.imag.fr/iso/boot2debian/debian-jessie-$${qemu_arch}-insecure.iso
   insecure_ssh_key_url: http://kameleon.imag.fr/iso/boot2debian/keys/insecure_id_rsa
 
-  ## Rootfs options
+  # rootfs options
+  disk_device: /dev/vda
   rootfs: /rootfs
   filesystem_type: ext4
-  disk_device: /dev/sda
 
   ssh_config_file: $$kameleon_cwd/ssh_config
   out_context:
@@ -47,40 +50,38 @@ global:
     kernel kernel-devel acpid
 
   setup_packages: >
-    kbd sudo openssh-clients ntp ntpdate
-    rsync bridge-utils bzip2 cronie cronie-anacron crontabs
-    dash dhclient dhcp-common dracut dracut-kernel file fuse gnupg2
-    iptables-ipv6 libuser logrotate m4 openssh-server passwd
+    kbd sudo openssh-clients ntp ntpdate rsync bridge-utils bzip2 cronie
+    cronie-anacron crontabs dash dhclient dhcp-common dracut dracut-kernel
+    file fuse gnupg2 iptables-ipv6 libuser logrotate m4 openssh-server passwd
     pciutils-libs rsyslog dbus system-config-firewall-base which
     findutils yum util-linux vim-minimal net-tools openssh-server
     kernel kernel-devel acpid
 
-#== Bootstrap the new system and create the 'in_context'
 bootstrap:
-  - enable_checkpoint
-  - prepare_virtualbox
-  - start_virtualbox
+  - prepare_qemu
+  - start_qemu
   - install_requirements:
     - packages: parted e2fsprogs yum rpm lynx extlinux
   - initialize_disk
   - "@base"
-  - reboot_virtualbox
+  - reboot_qemu
 
 #== Install and configuration steps
 setup:
+  - enable_checkpoint
   - "@base"
 
 #== Export the generated appliance in the format of your choice
 export:
   - disable_checkpoint
-  - virtualbox_save_appliance:
-    - output: "$$kameleon_cwd/$${kameleon_recipe_name}"
-    - save_as_ova
-    # - save_as_vdi
-    # - save_as_vmdk
+  - qemu_save_appliance:
+    - input: $$qemu_image_disk
+    - output: $$kameleon_cwd/$$kameleon_recipe_name
+    - save_as_qcow2
+    # - save_as_qed
     # - save_as_tar_gz
     # - save_as_tar_xz
     # - save_as_tar_bz2
     # - save_as_raw
-    # - save_as_qcow2
-    # - save_as_qed
+    # - save_as_vmdk
+    # - save_as_vdi

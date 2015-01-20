@@ -2,11 +2,11 @@
 # vim: softtabstop=2 shiftwidth=2 expandtab fenc=utf-8 cc=81 tw=80
 #==============================================================================
 #
-# DESCRIPTION: A standard Centos 6.5 vagrant base box.
+# DESCRIPTION: A standard Centos 6 vagrant base box.
 #
 #==============================================================================
 ---
-extend: ../virtualbox/centos6.5.yaml
+extend: ../virtualbox/centos6.yaml
 
 global:
   ## User varibales : used by the recipe
