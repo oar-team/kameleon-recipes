@@ -6,8 +6,11 @@
   - check_cmd_local: qemu-system-$$qemu_arch
   - exec_local: echo "Starting qemu..."
   - exec_local: |
-      if [ $$qemu_enable_kvm = true ]; then
-        ENABLE_KVM="-enable-kvm"
+      if [ "$$qemu_enable_kvm" = "true" ]; then
+        ENABLE_KVM="-enable-kvm -cpu host"
+        $BOOT_TIMEOUT=$$boot_timeout
+      else
+        $BOOT_TIMEOUT=$(($$boot_timeout*2))
       fi
   - exec_local: |
         if [ -f "vm_state_to_load.txt" ]
@@ -26,7 +29,6 @@
           -cdrom $$kameleon_cwd/boot2kameleon.iso \
           -drive file="$$qemu_image_disk",cache=unsafe,media=disk,if=virtio,id=drive0 \
           -smp $${qemu_cpu} \
-          -cpu host \
           -m $$qemu_memory_size \
           -rtc base=localtime \
           -net nic,model=virtio -net user \
@@ -36,7 +38,7 @@
           -daemonize -vnc :$VNC_PORT $LOADVM
   - exec_local: |
         SSH_AVAILABLE=0
-        TIMEOUT=$(( $(date +%s) + $$boot_timeout ))
+        TIMEOUT=$(( $(date +%s) + $BOOT_TIMEOUT ))
         until timeout 5 ssh -q -F $$ssh_config_file -o ConnectionAttempts=1  $${kameleon_recipe_name} -t true && SSH_AVAILABLE=1 || [ $(date +%s) -gt $TIMEOUT ];
         do
           echo -en "\rWaiting for SSH to become available for out_context...($(( TIMEOUT - $(date +%s) ))s)"
