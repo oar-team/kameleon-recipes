@@ -8,9 +8,9 @@
   - exec_local: |
       if [ "$$qemu_enable_kvm" = "true" ]; then
         ENABLE_KVM="-enable-kvm -cpu host"
-        $BOOT_TIMEOUT=$$boot_timeout
+        BOOT_TIMEOUT=$$boot_timeout
       else
-        $BOOT_TIMEOUT=$(($$boot_timeout*2))
+        BOOT_TIMEOUT=$(($$boot_timeout*2))
       fi
   - exec_local: |
         if [ -f "vm_state_to_load.txt" ]
