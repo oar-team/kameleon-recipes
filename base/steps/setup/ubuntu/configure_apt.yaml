@@ -52,7 +52,7 @@
   - exec_in: perl -pi -e "s/multiverse$/multiverse $REPO_RESTRICTED/" /etc/apt/sources.list
 
 - update_repositories:
-  - exec_in: apt-get -y --force-yes update
+  - exec_in: apt-get -o Acquire::Check-Valid-Until=false -y --force-yes update
   - exec_in: apt-get -y --force-yes install localepurge
   - on_setup_clean:
     - exec_in: apt-get -y --force-yes autoclean
