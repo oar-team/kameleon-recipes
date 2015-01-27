@@ -17,7 +17,7 @@ shopt -s checkwinsize
 [ -x /usr/bin/lesspipe ] && eval "$(SHELL=/bin/sh lesspipe)"
 
 # Python 
-[[ -f "$HOME/.pythonrc.py" ]] export PYTHONSTARTUP="$HOME/.pythonrc.py"
+[[ -f "$HOME/.pythonrc.py" ]] && export PYTHONSTARTUP="$HOME/.pythonrc.py"
 
 # If this is an xterm set the title to user@host:dir
 case "$TERM" in
