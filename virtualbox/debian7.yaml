@@ -78,7 +78,7 @@ bootstrap:
   - prepare_virtualbox
   - start_virtualbox
   - install_requirements:
-    - packages: parted e2fsprogs debootstrap extlinux
+    - packages: parted e2fsprogs debootstrap extlinux btrfs-tools
   - initialize_disk
   - "@base"
   - reboot_virtualbox

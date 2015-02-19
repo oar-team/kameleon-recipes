@@ -22,9 +22,9 @@
       # /etc/fstab: static file system information.
       #
       # <file system>         <mount point>   <type>    <options>       <dump>  <pass>
-      UUID=`blkid -s UUID -o value $${disk_device}2` /      /               btrfs     subvol=root,noatime,autodefrag,compress-force=lzo,space_cache  0 1
-      UUID=`blkid -s UUID -o value $${disk_device}2` /      /home           btrfs     subvol=home,noatime,autodefrag,compress-force=lzo,space_cache  0 0
-      UUID=`blkid -s UUID -o value $${disk_device}1` /      /boot           ext4      relatime,data=ordered                                          0 2
+      UUID=`blkid -s UUID -o value $${disk_device}2`    /               btrfs     subvol=root,noatime,autodefrag,compress-force=lzo,space_cache  0 1
+      UUID=`blkid -s UUID -o value $${disk_device}2`    /home           btrfs     subvol=home,noatime,autodefrag,compress-force=lzo,space_cache  0 0
+      UUID=`blkid -s UUID -o value $${disk_device}1`    /boot           ext4      relatime,data=ordered                                          0 2
 
 - install_initial_bootloader:
   - exec_out: mkdir -p $$rootfs/boot/extlinux
@@ -57,7 +57,7 @@
       timeout 1
       label linux
       kernel ../`basename $$rootfs/boot/vmlinuz*`
-      append initrd=../`basename $$rootfs/boot/init*` root=UUID=`blkid -s UUID -o value $${disk_device}1` ro
+      append initrd=../`basename $$rootfs/boot/init*` root=UUID=`blkid -s UUID -o value $${disk_device}2` ro
 
 - umount_all:
   - umount_out: $$rootfs/sys
