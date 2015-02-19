@@ -4,13 +4,31 @@
   - check_cmd_out: parted
   - exec_out: |
       echo "Partitioning disk..."
-      parted -s $${disk_device} mklabel msdos
-      parted -s -a none $${disk_device} mkpart primary 64s 100%
-      parted -s $${disk_device} set 1 boot on
-  - exec_out: |
-      echo Creating root partition...
-      mkfs.$$filesystem_type -q $${disk_device}1 || fail cannot create / ext4
+      parted -s $${nbd_device} mklabel msdos
+      parted -s -a none $${nbd_device} mkpart primary 0GB 512MB
+      parted -s -a none $${nbd_device} mkpart primary 512MB 100%
+      parted -s $${nbd_device} set 1 boot on
+
+- format_paritions:
+  - check_cmd_out: mkfs.btrfs
+  - check_cmd_out: mkfs.ext4
+  - exec_out: echo "Formating / in btrfs filesystem..."
+  - exec_out: mkfs.btrfs -f -L rootfs $${nbd_device}p2 || fail cannot format / parition in btrfs
+  - exec_out: echo "Formating /boot in ext4 filesystem..."
+  - exec_out: mkfs.ext4 -q $${nbd_device}p1 || fail cannot format /boot parition in ext4
+
+- create_btrfs_subvolumes:
+  - exec_out: mkdir -p $$rootfs
+  - exec_out: echo Mounting root partition... ;  mount $${nbd_device}p2 $$rootfs || fail cannot mount /
+  - exec_out: btrfs subvolume create $$rootfs/root
+  - exec_out: btrfs subvolume create $$rootfs/home
+  - exec_out: umount $$rootfs
 
 - mount_mountdir:
   - exec_out: mkdir -p $$rootfs
-  - exec_out:  "echo Mounting root partition... ;  mount $${disk_device}1 $$rootfs || fail cannot mount /"
+  - exec_out: echo Mounting partitions...
+  - exec_out: mount -o subvol=root $${nbd_device}p2 $$rootfs
+  - exec_out: mkdir -p $$rootfs/boot
+  - exec_out: mount $${nbd_device}p1 $$rootfs/boot
+  - exec_out: mkdir -p $$rootfs/home
+  - exec_out: mount -o subvol=home $${nbd_device}p2 $$rootfs/home
