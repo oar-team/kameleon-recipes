@@ -55,14 +55,14 @@ global:
 
   setup_packages: >
     bash-completion kbd sudo openssh-clients syslinux-extlinux acpid
-    ntp ntpdate
+    ntp ntpdate btrfs-progs
 
 #== Bootstrap the new system and create the 'in_context'
 bootstrap:
   - prepare_qemu
   - start_qemu
   - install_requirements:
-    - packages: parted e2fsprogs yum rpm lynx extlinux
+    - packages: sdisk e2fsprogs yum rpm lynx extlinux btrfs-tools
   - initialize_disk
   - "@base"
   - reboot_qemu
