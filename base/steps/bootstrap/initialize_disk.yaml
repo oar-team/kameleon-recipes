@@ -1,25 +1,23 @@
 # Initialize disk
 
 - partition_disk:
-  - check_cmd_out: sfdisk
+  - check_cmd_out: parted
   - exec_out: |
       echo "Partitioning disk..."
-      echo -e ",200,83,*\n;\n" | sfdisk $${disk_device} -q -D -uM 2>&1 || fail "cannot partition $FILE"
+      parted -s $${disk_device} mklabel msdos
+      parted -s -a none $${disk_device} mkpart primary 64s 100%
+      parted -s $${disk_device} set 1 boot on
 
-- format_partitions:
-  - check_cmd_out: mkfs.btrfs
-  - check_cmd_out: mkfs.ext4
-  - exec_out: echo "Formating / in btrfs filesystem..."
-  - exec_out: mkfs.btrfs -L rootfs $${disk_device}2 || fail cannot format / parition in btrfs
-  - exec_out: echo "Formating /boot in ext4 filesystem..."
-  - exec_out: mkfs.ext4 -q $${disk_device}1 || fail cannot format /boot parition in ext4
+- format_partition:
+  - check_cmd_out: mkfs.$$filesystem_type
+  - exec_out: |
+      echo Creating root partition...
+      mkfs.$$filesystem_type -L rootfs $$root_partition || fail cannot create / $$filesystem_type
 
 - mount_paritions:
   - exec_out: mkdir -p $$rootfs
   - exec_out: echo Mounting partitions...
-  - exec_out: mount $${disk_device}2 $$rootfs
-  - exec_out: mkdir -p $$rootfs/boot
-  - exec_out: mount $${disk_device}1 $$rootfs/boot
+  - exec_out: mount $$root_partition $$rootfs
 
 - generate_fstab:
   - write_out:
@@ -28,5 +26,4 @@
       # /etc/fstab: static file system information.
       #
       # <file system>         <mount point>   <type>    <options>       <dump>  <pass>
-      UUID=`blkid -s UUID -o value $${disk_device}2`    /               btrfs     defaults  0 1
-      UUID=`blkid -s UUID -o value $${disk_device}1`    /boot           ext4      defaults  0 2
+      UUID=`blkid -s UUID -o value $$root_partition`    /               $$filesystem_type     defaults  0 1
