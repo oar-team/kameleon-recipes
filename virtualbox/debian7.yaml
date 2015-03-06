@@ -33,11 +33,12 @@ global:
   virtualbox_image_disk: $$kameleon_cwd/base_$$kameleon_recipe_name.vdi
 
   ## Kameleon iso bootstrap
-  boot2kameleon_url: http://kameleon.imag.fr/iso/boot2debian/debian-jessie-x86_64-insecure.iso
+  boot2kameleon_url: http://kameleon.imag.fr/iso/boot2debian/debian-wheezy-x86_64-insecure.iso
   insecure_ssh_key_url: http://kameleon.imag.fr/iso/boot2debian/keys/insecure_id_rsa
 
   ## Rootfs options
   disk_device: /dev/sda
+  root_partition: $${disk_device}1
   rootfs: /rootfs
   filesystem_type: ext4
 
@@ -81,6 +82,7 @@ bootstrap:
     - packages: parted e2fsprogs debootstrap extlinux btrfs-tools
   - initialize_disk
   - "@base"
+  - update_initramfs_btrfs
   - reboot_virtualbox
 
 #== Install and configuration steps

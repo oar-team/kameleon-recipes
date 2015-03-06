@@ -26,13 +26,14 @@ global:
   qemu_pidfile: $$kameleon_cwd/qemu.pid
 
   ## Kameleon iso bootstrap
-  boot2kameleon_url: http://kameleon.imag.fr/iso/boot2debian/debian-jessie-$${qemu_arch}-insecure.iso
+  boot2kameleon_url: http://kameleon.imag.fr/iso/boot2debian/debian-wheezy-$${qemu_arch}-insecure.iso
   insecure_ssh_key_url: http://kameleon.imag.fr/iso/boot2debian/keys/insecure_id_rsa
 
   # rootfs options
   disk_device: /dev/vda
+  root_partition: $${disk_device}1
   rootfs: /rootfs
-  filesystem_type: ext4
+  filesystem_type: btrfs
 
   ssh_config_file: $$kameleon_cwd/ssh_config
   out_context:
@@ -49,7 +50,7 @@ global:
     bsdutils ca-certificates locales man-db less libui-dialog-perl dialog
     isc-dhcp-client ifupdown iptables iputils-ping iproute netbase net-tools
     psmisc openssh-server acpid acpi-support-base sysvinit
-    linux-image-$$kernel_arch pciutils
+    linux-image-$$kernel_arch pciutils btrfs-tools
 
   setup_packages: >
     sudo vim bash-completion curl resolvconf extlinux bzip2 dialog
@@ -59,9 +60,10 @@ bootstrap:
   - prepare_qemu
   - start_qemu
   - install_requirements:
-    - packages: parted e2fsprogs debootstrap extlinux
+    - packages: parted e2fsprogs debootstrap extlinux btrfs-tools
   - initialize_disk
   - "@base"
+  - update_initramfs_btrfs
   - reboot_qemu
 
 #== Install and configuration steps

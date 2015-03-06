@@ -18,6 +18,8 @@ global:
     psmisc openssh-server acpid acpi-support-base sysvinit systemd systemd-sysv
     linux-image-$$kernel_arch pciutils btrfs-tools dbus
 
+  boot2kameleon_url: http://kameleon.imag.fr/iso/boot2debian/debian-jessie-x86_64-insecure.iso
+
   setup_packages: >
     sudo vim bash-completion curl resolvconf extlinux bzip2 dialog
 

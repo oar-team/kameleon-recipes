@@ -1,0 +1,25 @@
+
+- add_btrfs_hook:
+  - local2out:
+    - $$kameleon_data_dir/debian/btrfs-hook.sh
+    - $$rootfs/usr/share/initramfs-tools/hooks/btrfs
+  - exec_out: chmod +x $$rootfs/usr/share/initramfs-tools/hooks/btrfs
+
+- add_btrfs_premount_script:
+  - local2out:
+    - $$kameleon_data_dir/debian/btrfs-premount-script.sh
+    - $$rootfs/usr/share/initramfs-tools/scripts/local-premount/btrfs
+  - exec_out: chmod +x $$rootfs/usr/share/initramfs-tools/scripts/local-premount/btrfs
+
+- add_btrfs_modules:
+  - append_out:
+    - $$rootfs/usr/share/initramfs-tools/modules.d/btrfs
+    - |
+      # initramfs modules for btrfs
+      libcrc32c
+      crc32c
+      zlib_deflate
+      btrfs
+
+- update_initramfs:
+  - exec_out: chroot $$rootfs update-initramfs -u -t -kall

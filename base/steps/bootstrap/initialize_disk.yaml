@@ -4,31 +4,14 @@
   - check_cmd_out: parted
   - exec_out: |
       echo "Partitioning disk..."
-      echo -e ",200,83,*\n;\n" | sfdisk $${disk_device} -q -D -uM 2>&1 || fail "cannot partition $FILE"
-
-- format_paritions:
-  - check_cmd_out: mkfs.btrfs
-  - check_cmd_out: mkfs.ext4
-  - exec_out: echo "Formating / in btrfs filesystem..."
-  - exec_out: mkfs.btrfs -f -L rootfs $${disk_device}2 || fail cannot format / parition in btrfs
-  - exec_out: echo "Formating /boot in ext4 filesystem..."
-  - exec_out: mkfs.ext4 -q $${disk_device}1 || fail cannot format /boot parition in ext4
-
-- create_btrfs_subvolumes:
-  - exec_out: mkdir -p $$rootfs
-  - exec_out: echo Mounting root partition... ;  mount $${disk_device}2 $$rootfs || fail cannot mount /
-  - exec_out: btrfs subvolume create $$rootfs/root
-  - exec_out: btrfs subvolume create $$rootfs/home
+      parted -s $${disk_device} mklabel msdos
+      parted -s -a none $${disk_device} mkpart primary 64s 100%
+      parted -s $${disk_device} set 1 boot on
+  - check_cmd_out: mkfs.$$filesystem_type
   - exec_out: |
-      DEFAULT_SUBVOLUME_ID=$(btrfs subvolume show $$rootfs/root | grep ID | awk '{print $3}')
-      btrfs subvolume set-default $DEFAULT_SUBVOLUME_ID $$rootfs
-  - exec_out: umount $$rootfs
+      echo Creating root partition...
+      mkfs.$$filesystem_type -L rootfs $${root_partition} || fail cannot create / $$filesystem_type
 
 - mount_mountdir:
   - exec_out: mkdir -p $$rootfs
-  - exec_out: echo Mounting partitions...
-  - exec_out: mount -o subvol=root $${disk_device}2 $$rootfs
-  - exec_out: mkdir -p $$rootfs/boot
-  - exec_out: mount $${disk_device}1 $$rootfs/boot
-  - exec_out: mkdir -p $$rootfs/home
-  - exec_out: mount -o subvol=home $${disk_device}2 $$rootfs/home
+  - exec_out:  "echo Mounting root partition... ;  mount $${root_partition} $$rootfs || fail cannot mount /"
