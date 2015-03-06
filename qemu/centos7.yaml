@@ -12,9 +12,13 @@ extend: centos6.yaml
 global:
   # Distribution
   release: 7
+
+  ## Kameleon iso bootstrap
+  boot2kameleon_url: http://kameleon.imag.fr/iso/boot2debian/debian-jessie-$${qemu_arch}-insecure.iso
+
   bootstrap_packages: >
     findutils yum util-linux dhclient vim-minimal net-tools openssh-server
-    kernel kernel-devel acpid NetworkManager
+    kernel kernel-devel acpid NetworkManager btrfs-progs
 
 #== Bootstrap the new system and create the 'in_context'
 bootstrap:

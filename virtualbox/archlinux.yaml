@@ -24,8 +24,10 @@ global:
   insecure_ssh_key_url: http://kameleon.imag.fr/iso/boot2debian/keys/insecure_id_rsa
 
   # rootfs options
+  disk_device: /dev/sda
+  root_partition: $${disk_device}1
   rootfs: /rootfs
-  filesystem_type: ext4
+  filesystem_type: btrfs
 
   ssh_config_file: $$kameleon_cwd/ssh_config
   out_context:
@@ -38,7 +40,7 @@ global:
     workdir: /root/kameleon_workdir
     proxy_cache: 10.0.2.2
 
-  bootstrap_packages: openssh dhcpcd
+  bootstrap_packages: openssh dhcpcd btrfs-progs
 
   setup_packages: base-devel ntp zip unzip rsync sudo vim bash-completion
 

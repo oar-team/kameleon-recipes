@@ -1,0 +1,6 @@
+
+- mount_chroot:
+  - exec_out: mount -o bind /dev  $$rootfs/dev
+  - exec_out: mount -o bind /dev/pts $$rootfs/dev/pts
+  - exec_out: mount -t proc /proc  $$rootfs/proc
+  - exec_out: mount -t sysfs /sys  $$rootfs/sys

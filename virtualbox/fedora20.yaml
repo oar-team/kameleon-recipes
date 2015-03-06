@@ -26,10 +26,11 @@ global:
   boot2kameleon_url: http://kameleon.imag.fr/iso/boot2debian/debian-jessie-$${arch}-insecure.iso
   insecure_ssh_key_url: http://kameleon.imag.fr/iso/boot2debian/keys/insecure_id_rsa
 
-  ## Rootfs options
-  rootfs: /rootfs
-  filesystem_type: ext4
+  # rootfs options
   disk_device: /dev/sda
+  root_partition: $${disk_device}1
+  rootfs: /rootfs
+  filesystem_type: btrfs
 
   ssh_config_file: $$kameleon_cwd/ssh_config
   out_context:
@@ -44,7 +45,7 @@ global:
 
   bootstrap_packages: >
     findutils util-linux dhclient vim-minimal net-tools NetworkManager
-    openssh-server
+    openssh-server btrfs-progs
 
   setup_packages: >
     bash-completion kbd sudo openssh-clients syslinux-extlinux acpid
@@ -56,9 +57,12 @@ bootstrap:
   - prepare_virtualbox
   - start_virtualbox
   - install_requirements:
-    - packages: parted e2fsprogs yum rpm lynx extlinux
+    - packages: parted e2fsprogs yum rpm lynx extlinux btrfs-tools
   - initialize_disk
   - "@base"
+  - mount_chroot
+  - inject_ssh_keys
+  - install_initial_bootloader
   - reboot_virtualbox
 
 #== Install and configuration steps

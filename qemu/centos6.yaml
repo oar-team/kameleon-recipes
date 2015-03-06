@@ -26,13 +26,14 @@ global:
   qemu_pidfile: $$kameleon_cwd/qemu.pid
 
   ## Kameleon iso bootstrap
-  boot2kameleon_url: http://kameleon.imag.fr/iso/boot2debian/debian-jessie-$${qemu_arch}-insecure.iso
+  boot2kameleon_url: http://kameleon.imag.fr/iso/boot2debian/debian-wheezy-$${qemu_arch}-insecure.iso
   insecure_ssh_key_url: http://kameleon.imag.fr/iso/boot2debian/keys/insecure_id_rsa
 
   # rootfs options
   disk_device: /dev/vda
+  root_partition: $${disk_device}1
   rootfs: /rootfs
-  filesystem_type: ext4
+  filesystem_type: btrfs
 
   ssh_config_file: $$kameleon_cwd/ssh_config
   out_context:
@@ -47,7 +48,7 @@ global:
 
   bootstrap_packages: >
     findutils util-linux dhclient vim-minimal net-tools openssh-server
-    kernel kernel-devel acpid
+    kernel kernel-devel acpid btrfs-progs
 
   setup_packages: >
     kbd sudo openssh-clients ntp ntpdate rsync bridge-utils bzip2 cronie
@@ -61,9 +62,12 @@ bootstrap:
   - prepare_qemu
   - start_qemu
   - install_requirements:
-    - packages: parted e2fsprogs yum rpm lynx extlinux
+    - packages: parted e2fsprogs yum rpm lynx extlinux btrfs-tools
   - initialize_disk
   - "@base"
+  - mount_chroot
+  - inject_ssh_keys
+  - install_initial_bootloader
   - reboot_qemu
 
 #== Install and configuration steps

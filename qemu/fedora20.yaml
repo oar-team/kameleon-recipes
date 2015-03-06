@@ -35,8 +35,9 @@ global:
 
   # rootfs options
   disk_device: /dev/vda
+  root_partition: $${disk_device}1
   rootfs: /rootfs
-  filesystem_type: ext4
+  filesystem_type: btrfs
 
   ssh_config_file: $$kameleon_cwd/ssh_config
   out_context:
@@ -51,20 +52,22 @@ global:
 
   bootstrap_packages: >
     findutils util-linux dhclient vim-minimal net-tools NetworkManager
-    openssh-server
+    openssh-server btrfs-progs
 
   setup_packages: >
     bash-completion kbd sudo openssh-clients syslinux-extlinux acpid
-    ntp ntpdate btrfs-progs
+    ntp ntpdate
 
 #== Bootstrap the new system and create the 'in_context'
 bootstrap:
   - prepare_qemu
   - start_qemu
   - install_requirements:
-    - packages: sdisk e2fsprogs yum rpm lynx extlinux btrfs-tools
+    - packages: parted e2fsprogs yum rpm lynx extlinux btrfs-tools
   - initialize_disk
   - "@base"
+  - mount_chroot
+  - inject_ssh_keys
   - reboot_qemu
 
 #== Install and configuration steps
