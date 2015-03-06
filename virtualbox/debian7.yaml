@@ -7,6 +7,8 @@
 #==============================================================================
 ---
 extend: ../base/debian.yaml
+# Loads some helpful aliases
+aliases: defaults.yaml
 # Enables virtualbox checkpoint
 checkpoint: virtualbox.yaml
 #== Global variables use by Kameleon engine and the steps
@@ -31,14 +33,24 @@ global:
   virtualbox_image_disk: $$kameleon_cwd/base_$$kameleon_recipe_name.vdi
 
   ## Kameleon iso bootstrap
-  boot2kameleon_url: http://kameleon.imag.fr/iso/boot2debian/debian-wheezy-x86_64-insecure.iso
+  boot2kameleon_url: http://kameleon.imag.fr/iso/boot2debian/debian-jessie-x86_64-insecure.iso
   insecure_ssh_key_url: http://kameleon.imag.fr/iso/boot2debian/keys/insecure_id_rsa
 
-  # rootfs options
+  ## Rootfs options
   disk_device: /dev/sda
-  root_partition: $${disk_device}1
   rootfs: /rootfs
-  filesystem_type: btrfs
+  filesystem_type: ext4
+
+  ## System variables. Required by kameleon engine
+  # Include specific steps
+  include_steps:
+    - $$distrib/$$release
+    - $$distrib
+
+  # Apt recipe options
+  apt_repository: http://ftp.debian.org/debian/
+  apt_enable_contrib: true
+  apt_enable_nonfree: true
 
   ssh_config_file: $$kameleon_cwd/ssh_config
   out_context:
@@ -54,8 +66,8 @@ global:
   bootstrap_packages: >
     bsdutils ca-certificates locales man-db less libui-dialog-perl dialog
     isc-dhcp-client ifupdown iptables iputils-ping iproute netbase net-tools
-    linux-image-$$kernel_arch psmisc openssh-server acpid acpi-support-base
-    sysvinit pciutils btrfs-tools
+    psmisc openssh-server acpid acpi-support-base sysvinit
+    linux-image-$$kernel_arch pciutils
 
   setup_packages: >
     sudo vim bash-completion curl resolvconf extlinux bzip2 dialog
@@ -66,18 +78,14 @@ bootstrap:
   - prepare_virtualbox
   - start_virtualbox
   - install_requirements:
-    - packages: parted e2fsprogs debootstrap extlinux btrfs-tools
+    - packages: parted e2fsprogs debootstrap extlinux
   - initialize_disk
   - "@base"
-  - mount_chroot
-  - inject_ssh_keys
-  - update_initramfs_btrfs
-  - install_initial_bootloader
   - reboot_virtualbox
 
 #== Install and configuration steps
 setup:
-  - "@base"
+- "@base"
 
 #== Export the generated appliance in the format of your choice
 export:

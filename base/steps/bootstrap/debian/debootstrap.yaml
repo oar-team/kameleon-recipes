@@ -1,14 +1,7 @@
 # # Bootstrap
-
-- save_fstab:
-  - exec_out: mkdir -p $$rootfs
-  - exec_out: touch $$rootfs/etc/fstab
-  - out2local:
-    - $$rootfs/etc/fstab
-    - $$kameleon_cwd/fstab.bak
-
 - debootstrap:
   - check_cmd_out: debootstrap
+  - exec_out: mkdir -p $$rootfs
   - exec_out: |
       if [ ! $$variant = "default" ]; then
         VARIANT="--variant=$$variant"
@@ -29,8 +22,3 @@
       iface lo inet loopback
       auto eth0
       iface eth0 inet dhcp
-
-- restore_fstab:
-  - local2out:
-    - $$kameleon_cwd/fstab.bak
-    - $$rootfs/etc/fstab

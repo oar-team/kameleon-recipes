@@ -39,3 +39,42 @@
     - exec_out: echo "sync" ; sync
     - exec_out: qemu-nbd -d $$nbd_device
     - exec_out: "pgrep qemu-nbd | xargs -I {} kill -9 {} || true"
+
+- partition_disk:
+  - check_cmd_out: parted
+  - exec_out: |
+      echo "Partitioning disk..."
+      parted $${nbd_device} mklabel msdos
+      parted $${nbd_device} mkpart primary 0% 100%
+      parted $${nbd_device} set 1 boot on
+  - exec_out: |
+      echo Creating root partition...
+      mkfs.$$filesystem_type -q $${nbd_device}p1 || fail cannot create / ext4
+
+- mount_mountdir:
+  - on_checkpoint: redo
+  - exec_out: mkdir -p $$rootfs
+  - exec_out:  "echo Mounting root partition... ;  mount $${nbd_device}p1 $$rootfs || fail cannot mount /"
+  - on_setup_clean:
+    - exec_out: "echo try umount $$rootfs... ; mountpoint -q $$rootfs && umount -f -l $$rootfs || true"
+
+- copy_rootfs:
+  - check_cmd_out: rsync
+  - exec_out: echo "Copying rootfs to $$rootfs..."
+  - exec_out: |
+      rsync -aAX --delete --one-file-system\
+        --exclude '/.kameleon_timestamp' \
+        --exclude '/dev/*' \
+        --exclude '/proc/*' \
+        --exclude '/sys/*' \
+        $$rootfs/* $$rootfs
+  - exec_out: echo "sync..." ; sync
+
+- create_fstab:
+  - on_setup_init:
+    - write_out:
+      - $$rootfs/etc/fstab
+      - |
+        # /etc/fstab: static file system information.
+        # <file system> <mount point>   <type>  <options>       <dump>  <pass>
+        UUID=`blkid -s UUID -o value $${nbd_device}p1` /               $$filesystem_type    errors=remount-ro  0       1

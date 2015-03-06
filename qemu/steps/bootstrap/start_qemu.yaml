@@ -1,5 +1,5 @@
 - boot_timeout: 100
-- shutdown_timeout: 20
+- shutdown_timeout: 100
 
 - start_qemu_vm:
   - on_checkpoint: redo
@@ -19,7 +19,6 @@
             LOADVM="-loadvm $SAVED_STATE"
             rm -f vm_state_to_load.txt
         fi
-  - check_cmd_local: netcat
   - exec_local: |
         # Find empty VNC port
         VNC_PORT=$(( $(__find_free_port 5900 5910) - 5900 ))

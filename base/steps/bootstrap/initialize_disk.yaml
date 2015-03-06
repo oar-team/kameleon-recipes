@@ -7,23 +7,10 @@
       parted -s $${disk_device} mklabel msdos
       parted -s -a none $${disk_device} mkpart primary 64s 100%
       parted -s $${disk_device} set 1 boot on
-
-- format_partition:
-  - check_cmd_out: mkfs.$$filesystem_type
   - exec_out: |
       echo Creating root partition...
-      mkfs.$$filesystem_type -L rootfs $$root_partition || fail cannot create / $$filesystem_type
+      mkfs.$$filesystem_type -q $${disk_device}1 || fail cannot create / ext4
 
-- mount_paritions:
+- mount_mountdir:
   - exec_out: mkdir -p $$rootfs
-  - exec_out: echo Mounting partitions...
-  - exec_out: mount $$root_partition $$rootfs
-
-- generate_fstab:
-  - write_out:
-    - $$rootfs/etc/fstab
-    - |
-      # /etc/fstab: static file system information.
-      #
-      # <file system>         <mount point>   <type>    <options>       <dump>  <pass>
-      UUID=`blkid -s UUID -o value $$root_partition`    /               $$filesystem_type     defaults  0 1
+  - exec_out:  "echo Mounting root partition... ;  mount $${disk_device}1 $$rootfs || fail cannot mount /"

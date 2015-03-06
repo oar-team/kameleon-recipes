@@ -34,9 +34,8 @@ global:
 
   # rootfs options
   disk_device: /dev/vda
-  root_partition: $${disk_device}1
   rootfs: /rootfs
-  filesystem_type: btrfs
+  filesystem_type: ext4
 
   ssh_config_file: $$kameleon_cwd/ssh_config
   out_context:
@@ -52,7 +51,7 @@ global:
   bootstrap_packages: >
     apt-transport-https ca-certificates less acpid acpi-support kbd bzip2 udev
     locales psmisc linux-image-generic ifupdown iptables iputils-ping
-    iproute pciutils isc-dhcp-client openssh-server btrfs-tools
+    iproute pciutils isc-dhcp-client openssh-server
 
   setup_packages: >
     bash-completion curl nano vim language-pack-en extlinux sudo
@@ -62,13 +61,9 @@ bootstrap:
   - prepare_qemu
   - start_qemu
   - install_requirements:
-    - packages: parted e2fsprogs debootstrap extlinux btrfs-tools
+    - packages: parted e2fsprogs debootstrap extlinux
   - initialize_disk
   - "@base"
-  - mount_chroot
-  - inject_ssh_keys
-  - update_initramfs_btrfs
-  - install_initial_bootloader
   - reboot_qemu
 
 #== Install and configuration steps

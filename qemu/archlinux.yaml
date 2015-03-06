@@ -27,9 +27,8 @@ global:
 
   # rootfs options
   disk_device: /dev/vda
-  root_partition: $${disk_device}1
   rootfs: /rootfs
-  filesystem_type: btrfs
+  filesystem_type: ext4
 
   ssh_config_file: $$kameleon_cwd/ssh_config
   out_context:
@@ -42,7 +41,7 @@ global:
     workdir: /root/kameleon_workdir
     proxy_cache: 10.0.2.2
 
-  bootstrap_packages: openssh dhcpcd btrfs-progs
+  bootstrap_packages: openssh dhcpcd
 
   setup_packages: base-devel ntp zip unzip rsync sudo vim bash-completion
 
@@ -52,18 +51,10 @@ bootstrap:
   - prepare_qemu
   - start_qemu
   - install_requirements:
-    - packages: parted e2fsprogs wget btrfs-tools
+    - packages: parted e2fsprogs wget
   - initialize_disk
   - "@base"
-  - mount_chroot
-  - inject_ssh_keys
-  - install_bootloader:
-    - boot_device: $$disk_device
-    - root_partition: $${disk_device}1
-    - extlinux_directory: $$rootfs/boot/extlinux
-    - kernel_arguments: quiet
   - reboot_qemu
-
 
 #== Install and configuration steps
 # WARNING: this part should be independante from the out context (whenever

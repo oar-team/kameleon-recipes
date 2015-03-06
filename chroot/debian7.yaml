@@ -15,13 +15,10 @@ global:
   release: wheezy
 
   ## Disk options
-  nbd_device: /dev/nbd2
-  disk_device: $${nbd_device}
-  root_partition: $${disk_device}p1
-
-  filesystem_type: btrfs
+  nbd_device: /dev/nbd1
   image_disk: $$kameleon_cwd/base_$$kameleon_recipe_name.qcow2
   image_size: 10G
+  filesystem_type: ext4
 
   # rootfs options
   rootfs: $$kameleon_cwd/rootfs
@@ -47,18 +44,16 @@ global:
     bsdutils ca-certificates locales man-db less libui-dialog-perl dialog
     isc-dhcp-client ifupdown iptables iputils-ping iproute netbase net-tools
     psmisc openssh-server acpid acpi-support-base sysvinit
-    linux-image-$$kernel_arch pciutils btrfs-tools
+    linux-image-$$kernel_arch pciutils
 
   setup_packages: >
     sudo vim bash-completion curl resolvconf extlinux bzip2 dialog
 
 #== Bootstrap the new system and create the 'in_context'
 bootstrap:
-  - prepare_chroot
-  - initialize_disk
+  - initialize_disk_chroot
   - enable_checkpoint
   - "@base"
-  - update_initramfs_btrfs
   - start_chroot
 
 #== Install and configuration steps

@@ -9,9 +9,6 @@
 extend: ubuntu12.04.yaml
 
 global:
-
-  boot2kameleon_url: http://kameleon.imag.fr/iso/boot2debian/debian-jessie-x86_64-insecure.iso
-
   # Distribution
   release: trusty
 

@@ -1,12 +1,5 @@
 # Arch-bootstrap
 
-- save_fstab:
-  - exec_out: mkdir -p $$rootfs
-  - exec_out: touch $$rootfs/etc/fstab
-  - out2local:
-    - $$rootfs/etc/fstab
-    - $$kameleon_cwd/fstab.bak
-
 - download_base_image:
   - exec_out: echo "Download and untar image..."
   - exec_out: wget -qO- $$bootstrap_image | tar xz --strip-components 1 -C $$rootfs
@@ -24,7 +17,11 @@
   # init pacman keyring
   - exec_out: echo "Initializing the pacman keyring"
   - exec_out: chroot $$rootfs cp /etc/pacman.conf /etc/pacman.conf.orig
-  - exec_out: sed -i s'/SigLevel.*/SigLevel = Never/'g $$rootfs/etc/pacman.conf
+  # Replace sed by a file because Sed is not present on the ISO anymore
+  #- exec_out: chroot $$rootfs sed -i s'/SigLevel.*/SigLevel = Never/'g /etc/pacman.conf
+  - local2out:
+    - $$kameleon_data_dir/pacman.conf
+    - $$rootfs/etc/pacman.conf
   - exec_out: chroot $$rootfs pacman -Sy
   - exec_out: chroot $$rootfs pacman --noconfirm --arch $$arch -S haveged procps-ng sed
   - exec_out: chroot $$rootfs mv /etc/pacman.conf.orig /etc/pacman.conf
@@ -49,8 +46,3 @@
     - umount_out: $$rootfs/dev/pts
     - umount_out: $$rootfs/dev
     - exec_out: rm -f $$rootfs/etc/resolv.conf
-
-- restore_fstab:
-  - local2out:
-    - $$kameleon_cwd/fstab.bak
-    - $$rootfs/etc/fstab
