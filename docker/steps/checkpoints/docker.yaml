@@ -5,7 +5,7 @@ create:
   - exec_local: docker commit $(cat $KAMELEON_WORKDIR/MAIN_CONTAINER_ID) $$docker_image:@microstep_id
 
 apply:
-  - exec_local: docker tag $$docker_image:@microstep_id $$docker_image:latest
+  - exec_local: docker tag -f $$docker_image:@microstep_id $$docker_image:latest
 
 list:
   - exec_local: |

@@ -7,8 +7,8 @@
 #==============================================================================
 ---
 extend: ../base/debian.yaml
-# Enables qcow2 checkpoint
-# checkpoint: docker.yaml
+# Enables docker checkpoint
+checkpoint: docker.yaml
 #== Global variables use by Kameleon engine and the steps
 global:
   # Distribution
