@@ -12,12 +12,12 @@
     - |
       [puppetlabs-dependencies]
       name=puppetlabdsdependencies
-      baseurl=http://yum.puppetlabs.com/el/6/dependencies/\$basearch
+      baseurl=http://yum.puppetlabs.com/el/$${release}/dependencies/\$basearch
       enabled=1
       gpgcheck=0
       [puppetlabs]
       name=puppetlabs
-      baseurl=http://yum.puppetlabs.com/el/6/products/\$basearch
+      baseurl=http://yum.puppetlabs.com/el/$${release}/products/\$basearch
       enabled=1
       gpgcheck=0
   - exec_in: echo "Installing puppet..."
