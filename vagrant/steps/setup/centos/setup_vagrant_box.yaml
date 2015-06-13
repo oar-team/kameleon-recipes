@@ -1,3 +1,5 @@
+- reboot_timeout: 100
+
 - enable_passwordless_sudo:
   - exec_in: |
       sed -i "s/^.*requiretty/#Defaults requiretty/" /etc/sudoers
@@ -57,6 +59,28 @@
   - exec_in: echo "Remove traces of mac address from network configuration"
   - exec_in: sed -i /HWADDR/d /etc/sysconfig/network-scripts/ifcfg-eth0
   - exec_in: rm -f /etc/udev/rules.d/70-persistent-net.rules
+
+- reboot_vm:
+  - exec_local: echo "Rebooting virtualbox vm ($$virtualbox_vmid)"
+  - exec_local: VBoxManage controlvm $$virtualbox_vmid poweroff 2>&1
+  - exec_local: VBoxManage modifyvm $$virtualbox_vmid --boot1 disk
+  - exec_local: VBoxManage modifyvm $$virtualbox_vmid --boot2 dvd
+  - exec_local: VBoxManage startvm  $$virtualbox_vmid --type headless 2>&1
+  - exec_local: |
+        SSH_AVAILABLE=0
+        TIMEOUT=$(( $(date +%s) + $$reboot_timeout ))
+        until timeout 2 ssh -q -F $$ssh_config_file -o ConnectTimeout=1 -o ConnectionAttempts=1  $${kameleon_recipe_name} -t true && SSH_AVAILABLE=1 || [ $(date +%s) -gt $TIMEOUT ];
+        do
+          echo -en "\rWaiting for SSH to become available for out_context...($(( TIMEOUT - $(date +%s) ))s)"
+          sleep 1
+        done
+        echo ""
+  - rescue:
+    - exec_local: test $SSH_AVAILABLE -eq 1
+    - breakpoint: Failed to connect to VM via SSH. Please verify the VM successfully booted by looking at the VirtualBox GUI.
+
+  - reload_context: out
+  - reload_context: in
 
 - nullify_freespace:
   - exec_in: |
