@@ -1,3 +1,5 @@
+- reboot_timeout: 100
+
 - prepare_sshd:
   - exec_out: mkdir -p $$rootfs/root/.ssh/
   - exec_out: cat /root/.ssh/authorized_keys >> $$rootfs/root/.ssh/authorized_keys
@@ -68,7 +70,7 @@
   - exec_local: echo system_reset | socat - UNIX-CONNECT:$$qemu_monitor_socket
   - exec_local: |
         SSH_AVAILABLE=0
-        TIMEOUT=$(( $(date +%s) + $BOOT_TIMEOUT ))
+        TIMEOUT=$(( $(date +%s) + $$reboot_timeout ))
         until timeout 5 ssh -q -F $$ssh_config_file -o ConnectionAttempts=1  $${kameleon_recipe_name} -t true && SSH_AVAILABLE=1 || [ $(date +%s) -gt $TIMEOUT ];
         do
           echo -en "\rWaiting for SSH to become available for in_context...($(( TIMEOUT - $(date +%s) ))s)"
