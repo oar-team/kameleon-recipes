@@ -1,5 +1,7 @@
 - boot_timeout: 100
 - shutdown_timeout: 100
+- boot2kameleon: true
+
 
 - start_qemu_vm:
   - on_checkpoint: redo
@@ -11,6 +13,12 @@
         BOOT_TIMEOUT=$$boot_timeout
       else
         BOOT_TIMEOUT=$(($$boot_timeout*2))
+      fi
+  - exec_local: |
+      if [ "$$boot2kameleon" = "true" ]; then
+        CDROM="-cdrom $$kameleon_cwd/boot2kameleon.iso"
+      else
+        CDROM=""
       fi
   - exec_local: |
         if [ -f "vm_state_to_load.txt" ]
@@ -26,7 +34,7 @@
   - exec_local: |
         qemu-system-$$qemu_arch  \
           $ENABLE_KVM \
-          -cdrom $$kameleon_cwd/boot2kameleon.iso \
+          $CDROM \
           -drive file="$$qemu_image_disk",cache=unsafe,media=disk,if=virtio,id=drive0 \
           -smp $${qemu_cpu} \
           -m $$qemu_memory_size \
