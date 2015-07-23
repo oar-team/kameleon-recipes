@@ -30,19 +30,19 @@
   - check_cmd_local: guestfish
   - check_cmd_local: gzip
   - exec_local: echo "Exporting appliance to $$output.tar.gz..."
-  - exec_local: guestfish --ro -i tar-out -a $$virtualbox_image_disk / - $$tar_out_opts | gzip --best > $$output.tar.gz
+  - exec_local: LIBGUESTFS_CACHEDIR=$$kameleon_cwd guestfish --ro -i tar-out -a $$virtualbox_image_disk / - $$tar_out_opts | gzip --best > $$output.tar.gz
 
 - save_as_tar_xz:
   - check_cmd_local: guestfish
   - check_cmd_local: xz
   - exec_local: echo "Exporting appliance to $$output.tar.xz..."
-  - exec_local: guestfish --ro -i tar-out -a $$virtualbox_image_disk / - $$tar_out_opts | xz -9 -c - > $$output.tar.xz
+  - exec_local: LIBGUESTFS_CACHEDIR=$$kameleon_cwd guestfish --ro -i tar-out -a $$virtualbox_image_disk / - $$tar_out_opts | xz -9 -c - > $$output.tar.xz
 
 - save_as_tar_bz2:
   - check_cmd_local: guestfish
   - check_cmd_local: bzip2
   - exec_local: echo "Exporting appliance to $$output.tar.bz2..."
-  - exec_local: guestfish --ro -i tar-out -a $$virtualbox_image_disk / - $$tar_out_opts | bzip2 --best > $$output.tar.bz2
+  - exec_local: LIBGUESTFS_CACHEDIR=$$kameleon_cwd guestfish --ro -i tar-out -a $$virtualbox_image_disk / - $$tar_out_opts | bzip2 --best > $$output.tar.bz2
 
 - save_as_raw:
   - check_cmd_local: qemu-img
