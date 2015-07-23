@@ -7,8 +7,8 @@
 #==============================================================================
 ---
 extend: ../base/debian.yaml
-# Enables qcow2 checkpoint
-# checkpoint: docker.yaml
+# Enables docker checkpoint
+checkpoint: docker.yaml
 #== Global variables use by Kameleon engine and the steps
 global:
   # Distribution
@@ -63,5 +63,5 @@ setup:
 #== Export the generated appliance in the format of your choice
 export:
   - save_docker_appliance:
-    - commit:
-      - exec_out: docker commit $(cat MAIN_CONTAINER_ID) $$kameleon_recipe_name:latest
+    - export:
+      - exec_out: docker export $(cat MAIN_CONTAINER_ID) | docker import - $$docker_image:latest

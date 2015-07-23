@@ -34,7 +34,7 @@ global:
 # Bootstrap the new system and create the 'in_context'
 bootstrap:
   - arch_bootstrap:
-    - bootstrap_image: http://mir.archlinux.fr/iso/2015.02.01/archlinux-bootstrap-2015.02.01-$${arch}.tar.gz
+    - bootstrap_image: http://mir.archlinux.fr/iso/2015.07.01/archlinux-bootstrap-2015.07.01-$${arch}.tar.gz
     - mirror: http://mir.archlinux.fr/\$repo/os/\$arch
     - include_pkgs: base $$bootstrap_packages
 

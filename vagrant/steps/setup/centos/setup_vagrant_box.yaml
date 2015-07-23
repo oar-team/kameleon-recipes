@@ -1,3 +1,5 @@
+- reboot_timeout: 100
+
 - enable_passwordless_sudo:
   - exec_in: |
       sed -i "s/^.*requiretty/#Defaults requiretty/" /etc/sudoers
@@ -12,12 +14,12 @@
     - |
       [puppetlabs-dependencies]
       name=puppetlabdsdependencies
-      baseurl=http://yum.puppetlabs.com/el/6/dependencies/\$basearch
+      baseurl=http://yum.puppetlabs.com/el/$${release}/dependencies/\$basearch
       enabled=1
       gpgcheck=0
       [puppetlabs]
       name=puppetlabs
-      baseurl=http://yum.puppetlabs.com/el/6/products/\$basearch
+      baseurl=http://yum.puppetlabs.com/el/$${release}/products/\$basearch
       enabled=1
       gpgcheck=0
   - exec_in: echo "Installing puppet..."
@@ -56,7 +58,7 @@
   - exec_in: rm -rf /var/tmp/* || true
   - exec_in: echo "Remove traces of mac address from network configuration"
   - exec_in: sed -i /HWADDR/d /etc/sysconfig/network-scripts/ifcfg-eth0
-  - exec_in: rm -f /etc/udev/rules.d/70-persistent-net.rules
+  - exec_in: rm -f /etc/udev/rules.d/70-persistent*
 
 - nullify_freespace:
   - exec_in: |

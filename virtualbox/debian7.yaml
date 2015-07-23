@@ -67,7 +67,7 @@ global:
     bsdutils ca-certificates locales man-db less libui-dialog-perl dialog
     isc-dhcp-client ifupdown iptables iputils-ping iproute netbase net-tools
     psmisc openssh-server acpid acpi-support-base sysvinit
-    linux-image-$$kernel_arch pciutils btrfs-tools
+    linux-image-$$kernel_arch pciutils
 
   setup_packages: >
     sudo vim bash-completion curl resolvconf extlinux bzip2 dialog
@@ -78,7 +78,7 @@ bootstrap:
   - prepare_virtualbox
   - start_virtualbox
   - install_requirements:
-    - packages: parted e2fsprogs debootstrap extlinux btrfs-tools
+    - packages: parted e2fsprogs debootstrap extlinux
   - initialize_disk
   - "@base"
   - reboot_virtualbox

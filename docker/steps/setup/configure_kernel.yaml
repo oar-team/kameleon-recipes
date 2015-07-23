@@ -1,0 +1,2 @@
+- configure_kernel::
+  - exec_in: echo "Cannot configure kernel inside docker container"

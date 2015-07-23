@@ -48,6 +48,6 @@
           fi
           echo "  INITRD /boot/initramfs-$RELEASE.img" >> /boot/extlinux/extlinux.conf
           echo "  KERNEL $KERNEL" >> /boot/extlinux/extlinux.conf
-          echo "  APPEND root=UUID=`lsblk  -f | grep rootfs | awk '{print $4}'` rw net.ifnames=0 biosdevname=0" >> /boot/extlinux/extlinux.conf
+          echo "  APPEND root=UUID=`blkid -s UUID -o value $(__find_linux_boot_device)` rw net.ifnames=0 biosdevname=0" >> /boot/extlinux/extlinux.conf
           echo >> /boot/extlinux/extlinux.conf
       done
