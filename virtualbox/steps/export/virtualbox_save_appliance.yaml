@@ -1,6 +1,6 @@
 # Save Appliance from virtualbox
 
-- tar_out_opts: numericowner:true excludes:etc/fstab
+- tar_out_opts: numericowner:true excludes:./etc/fstab
 
 - save_as_ova:
   - exec_local: rm -f $$output.ova

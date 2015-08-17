@@ -55,7 +55,7 @@
       timeout 1
       label linux
       kernel ../`basename $$rootfs/boot/vmlinuz*`
-      append initrd=../`basename $$rootfs/boot/init*` root=UUID=`blkid -s UUID -o value $${disk_device}1` ro
+      append initrd=../`basename $$rootfs/boot/init*` root=UUID=`blkid -s UUID -o value $${disk_device}1` ro console=tty0 console=ttyS0,115200n8
 
 - umount_all:
   - umount_out: $$rootfs/sys

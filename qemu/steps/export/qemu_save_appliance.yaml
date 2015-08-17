@@ -1,6 +1,6 @@
 # Save Appliance
 
-- tar_out_opts: numericowner:true excludes:etc/fstab
+- tar_out_opts: numericowner:true excludes:./etc/fstab
 
 - save_as_tar_gz:
   - check_cmd_local: guestfish
