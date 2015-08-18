@@ -8,15 +8,13 @@
 ---
 extend: ../base/debian.yaml
 # Enables qcow2 checkpoint
-checkpoint: qcow2.yaml
+checkpoint: simple.yaml
 #== Global variables use by Kameleon engine and the steps
 global:
   # Distribution
   release: wheezy
 
   ## Disk options
-  nbd_device: /dev/nbd1
-  image_disk: $$kameleon_cwd/base_$$kameleon_recipe_name.qcow2
   image_size: 10G
   filesystem_type: ext4
 
@@ -38,20 +36,17 @@ global:
     workdir: /root/kameleon_workdir
     proxy_cache: 127.0.0.1
 
-  bootstrap_packages: apt-utils ca-certificates locales less
-
-  bootstrap_packages: >
-    bsdutils ca-certificates locales man-db less libui-dialog-perl dialog
-    isc-dhcp-client ifupdown iptables iputils-ping iproute netbase net-tools
-    psmisc openssh-server acpid acpi-support-base sysvinit
-    linux-image-$$kernel_arch pciutils
+  bootstrap_packages: linux-image-$$kernel_arch
 
   setup_packages: >
-    sudo vim bash-completion curl resolvconf extlinux bzip2 dialog
+    bsdutils ca-certificates locales man-db less libui-dialog-perl dialog
+    isc-dhcp-client ifupdown iptables iputils-ping iproute netbase net-tools
+    psmisc openssh-server acpid acpi-support-base sysvinit bzip2
+    apt-utils pciutils curl sudo vim bash-completion curl resolvconf
+
 
 #== Bootstrap the new system and create the 'in_context'
 bootstrap:
-  - initialize_disk_chroot
   - enable_checkpoint
   - "@base"
   - start_chroot
@@ -65,14 +60,8 @@ setup:
 #== Export the generated appliance in the format of your choice
 export:
   - disable_checkpoint
-  - qemu_save_appliance:
-    - input: $$image_disk
-    - output: $$kameleon_cwd/$$kameleon_recipe_name
-    # - save_as_qcow2
-    # - save_as_qed
-    - save_as_tar_gz
-    # - save_as_tar_xz
-    # - save_as_tar_bz2
-    # - save_as_raw
-    # - save_as_vmdk
-    # - save_as_vdi
+  - chroot_save_appliance:
+    - output_filename: "$$kameleon_cwd/$${kameleon_recipe_name}"
+    - output_formats: tar.gz vdi qcow2
+    - tar_compression_level: best
+    - tar_excludes: etc/fstab dev/* proc/* sys/* tmp/* run/* mnt/* media/* lost+found
