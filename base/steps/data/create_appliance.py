@@ -11,6 +11,8 @@ import argparse
 import logging
 
 
+logger = logging.getLogger(__name__)
+
 disk_formats = ('qcow', 'qcow2', 'qed', 'vdi', 'raw', 'vmdk')
 
 
@@ -84,7 +86,7 @@ def get_boot_information(disk):
 blkid /dev/sda1 | grep ^UUID: | awk '{print $2}'
 ls /boot/ | grep ^vmlinuz | head -n 1
 ls /boot/ | grep ^init | head -n 1"""
-    print(get_boot_information.__doc__)
+    logger.info(get_boot_information.__doc__)
     output_1 = run_guestfish_script(disk, script_1, piped_output=True)
     try:
         uuid, vmlinuz, initrd = output_1.strip().split('\n')
@@ -98,9 +100,9 @@ def install_bootloader(disk, mbr):
     mbr_path = mbr or find_mbr()
     mbr_path = op.abspath(mbr_path)
     uuid, vmlinuz, initrd = get_boot_information(disk)
-    print("Root partition UUID: %s" % uuid)
-    print("Kernel image: /boot/%s" % vmlinuz)
-    print("Initrd image: /boot/%s" % initrd)
+    logger.info("Root partition UUID: %s" % uuid)
+    logger.info("Kernel image: /boot/%s" % vmlinuz)
+    logger.info("Initrd image: /boot/%s" % initrd)
     script = """
 echo "[guestfish] Upload the master boot record"
 upload %s /boot/mbr.bin
@@ -122,7 +124,7 @@ extlinux /boot
 echo "[guestfish] Set the first partition as bootable"
 part-set-bootable /dev/sda 1 true
 """ % (mbr_path, vmlinuz, initrd, uuid)
-    print("Starting extlinux bootloader installation...")
+    logger.info("Installing bootloader to %s" % disk)
     run_guestfish_script(disk, script)
 
 
@@ -153,9 +155,9 @@ def create_appliance(args):
         os.environ['LIBGUESTFS_DEBUG'] = '1'
 
     output_filename = "%s.%s" % (output, args.format)
-    print("Creating %s..." % op.basename(output_filename))
+    logger.info("Creating %s" % output_filename)
     if output_filename == input_:
-        print("Please give a different output filename.")
+        logger.info("Please give a different output filename.")
         return
 
     create_disk(input_,
@@ -180,7 +182,7 @@ if __name__ == '__main__':
         formatter_class=argparse.ArgumentDefaultsHelpFormatter
     )
     parser.add_argument('input', action="store",
-                        help='Disk image filename')
+                        help='input')
     parser.add_argument('-F', '--format', action="store", type=str,
                         help=('Choose the output disk image format. %s' %
                               allowed_formats_help), default='qcow2')
@@ -201,6 +203,15 @@ if __name__ == '__main__':
     level = logging.INFO
     try:
         args = parser.parse_args()
+        if args.verbose:
+            level = logging.DEBUG
+
+        handler = logging.StreamHandler(sys.stdout)
+        handler.setLevel(level)
+        handler.setFormatter(logging.Formatter(log_format))
+
+        logger.setLevel(level)
+        logger.addHandler(handler)
         create_appliance(args)
     except Exception as exc:
         sys.stderr.write(u"\nError: %s\n" % exc)
