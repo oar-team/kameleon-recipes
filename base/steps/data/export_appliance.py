@@ -122,20 +122,18 @@ def convert_disk_image(args):
     for fmt in args.formats:
         if fmt in (tar_formats + disk_formats):
             output_filename = "%s.%s" % (output, fmt)
-            logger.info("Converting %s to %s" % (op.basename(filename),
-                                                 op.basename(output_filename)))
             if output_filename == filename:
-                logger.error("Please give a different output filename.")
-            else:
-                try:
-                    if fmt in tar_formats:
-                        tar_convert(filename, output_filename,
-                                    args.tar_excludes,
-                                    args.tar_compression_level)
-                    else:
-                        qemu_convert(filename, fmt, output_filename)
-                except ValueError as exp:
-                    logger.error("Error: %s" % exp)
+                continue
+            logger.info("Creating %s" % output_filename)
+            try:
+                if fmt in tar_formats:
+                    tar_convert(filename, output_filename,
+                                args.tar_excludes,
+                                args.tar_compression_level)
+                else:
+                    qemu_convert(filename, fmt, output_filename)
+            except ValueError as exp:
+                logger.error("Error: %s" % exp)
 
 
 if __name__ == '__main__':
@@ -174,7 +172,14 @@ if __name__ == '__main__':
         args = parser.parse_args()
         if args.verbose:
             level = logging.DEBUG
-        logging.basicConfig(level=level, format=log_format)
+
+        handler = logging.StreamHandler(sys.stdout)
+        handler.setLevel(level)
+        handler.setFormatter(logging.Formatter(log_format))
+
+        logger.setLevel(level)
+        logger.addHandler(handler)
+
         convert_disk_image(args)
     except Exception as exc:
         sys.stderr.write(u"\nError: %s\n" % exc)
