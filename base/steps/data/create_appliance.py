@@ -95,7 +95,7 @@ ls /boot/ | grep ^init | head -n 1"""
         raise Exception("Invalid boot information (missing kernel ?)")
 
 
-def install_bootloader(disk, mbr):
+def install_bootloader(disk, mbr, append):
     """Install a bootloader"""
     mbr_path = mbr or find_mbr()
     mbr_path = op.abspath(mbr_path)
@@ -113,7 +113,7 @@ write-append /boot/syslinux.cfg "LABEL linux\\n"
 write-append /boot/syslinux.cfg "SAY Booting the kernel\\n"
 write-append /boot/syslinux.cfg "KERNEL /boot/%s\\n"
 write-append /boot/syslinux.cfg "INITRD /boot/%s\\n"
-write-append /boot/syslinux.cfg "APPEND ro root=UUID=%s rw net.ifnames=0 \\n"
+write-append /boot/syslinux.cfg "APPEND ro root=UUID=%s rw %s\\n"
 
 echo "[guestfish] Put the MBR into the boot sector"
 copy-file-to-device /boot/mbr.bin /dev/sda size:440
@@ -123,7 +123,7 @@ extlinux /boot
 
 echo "[guestfish] Set the first partition as bootable"
 part-set-bootable /dev/sda 1 true
-""" % (mbr_path, vmlinuz, initrd, uuid)
+""" % (mbr_path, vmlinuz, initrd, uuid, append)
     logger.info("Installing bootloader to %s" % disk)
     run_guestfish_script(disk, script)
 
@@ -167,7 +167,7 @@ def create_appliance(args):
                 args.filesystem,
                 args.verbose)
 
-    install_bootloader(output_filename, args.extlinux_mbr)
+    install_bootloader(output_filename, args.extlinux_mbr, args.append)
 
 
 if __name__ == '__main__':
@@ -197,6 +197,8 @@ if __name__ == '__main__':
                         required=True, metavar='filename')
     parser.add_argument('--extlinux-mbr', action="store", type=str,
                         help='Extlinux MBR', metavar='')
+    parser.add_argument('--append', action="store", type=str, default="",
+                        help='Additional kernel args', metavar='')
     parser.add_argument('--verbose', action="store_true", default=False,
                         help='Enable very verbose messages')
     log_format = '%(levelname)s: %(message)s'

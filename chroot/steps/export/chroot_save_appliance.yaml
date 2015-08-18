@@ -12,7 +12,11 @@
     - exec_local: |
         if [ "$NEED_BOOTLOADER" = "yes" ]; then
             # Create an appliance from rootfs directory
-            python $$create_appliance_script --size $$image_size $$rootfs -o $$output_filename --format=qcow2
+            python $$create_appliance_script $$rootfs \
+              --size $$image_size \
+              -o $$output_filename \
+              --format=qcow2 \
+              --append "net.ifnames=0 console=tty0 console=ttyS0,115200n8"
             # Export the appliance to the desired formats
             python $$export_appliance_script $${output_filename}.qcow2 \
               -o $$output_filename \
