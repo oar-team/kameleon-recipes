@@ -26,10 +26,11 @@ if __name__ == '__main__':
                         choices=allowed_formats, metavar='fmt', required=True)
     try:
         args = parser.parse_args()
+        rv = "no"
         for fmt in args.formats:
             if fmt in disk_formats:
-                print("yes")
-        print("no")
+                rv = "yes"
+        print(rv)
     except Exception as exc:
         sys.stderr.write(u"\nError: %s\n" % exc)
         sys.exit(1)
