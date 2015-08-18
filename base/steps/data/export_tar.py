@@ -55,11 +55,12 @@ def tar_convert(directory, output, excludes, compression_level):
     elif output.endswith(('tar.lzo', 'tzo')):
         compr = "| %s %s -c -" % (which("lzop"), compression_level_opt)
 
-    tar_options_list = ["--numeric-owner",
-                        ' '.join(("--exclude=%s" % s for s in excludes))]
+    tar_options_list = ["--numeric-owner", "--one-file-system"
+                        ' '.join(('--exclude="%s"' % s for s in excludes))]
     tar_options = ' '.join(tar_options_list)
     cmd = which("tar") + " -cf - %s -C %s $(cd %s; ls -A) %s > %s"
     cmd = cmd % (tar_options, directory, directory, compr, output)
+    logger.debug(cmd)
     proc = subprocess.Popen(cmd, env=os.environ.copy(), shell=True)
     proc.communicate()
     if proc.returncode:
@@ -74,8 +75,7 @@ def export(args):
     for fmt in args.formats:
         if fmt in tar_formats:
             output_filename = "%s.%s" % (output, fmt)
-            logger.info("Converting %s to %s" % (op.basename(filename),
-                                                 op.basename(output_filename)))
+            logger.info("Creating %s" % output_filename)
             if output_filename == filename:
                 logger.error("Please give a different output filename.")
             else:
@@ -120,7 +120,13 @@ if __name__ == '__main__':
         args = parser.parse_args()
         if args.verbose:
             level = logging.DEBUG
-        logging.basicConfig(level=level, format=log_format)
+
+        handler = logging.StreamHandler(sys.stdout)
+        handler.setLevel(level)
+        handler.setFormatter(logging.Formatter(log_format))
+
+        logger.setLevel(level)
+        logger.addHandler(handler)
         export(args)
     except Exception as exc:
         sys.stderr.write(u"\nError: %s\n" % exc)
