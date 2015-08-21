@@ -1,0 +1,24 @@
+
+- download_rootfs_archive:
+  - download_file_local:
+    - $$rootfs_archive_url
+    - $$rootfs_archive_download_path
+
+- archive_checksum:
+  - check_cmd_local: sha1sum
+  - exec_local: echo "$$rootfs_archive_sha1  $$rootfs_archive_download_path" | sha1sum --check -
+
+- unpack_rootfs_archive:
+  - check_cmd_local: xz
+  - exec_local: echo "Unpacking $$rootfs_archive_download_path"
+  - exec_local: mkdir -p $$rootfs
+  - exec_local: xz -dc < $$rootfs_archive_download_path | tar --touch -xf - -C $$rootfs
+
+- delete_rootfs_directory_at_the_end:
+  - on_checkpoint: skip
+  - on_export_clean:
+    - exec_local: |
+        mountpoint -q $$rootfs/dev/pts && \
+        mountpoint -q $$rootfs/dev && \
+        mountpoint -q $$rootfs/proc && \
+        mountpoint -q $$rootfs/sys && rm -rf $$rootfs || fail "It's unsafe to remove $$rootfs. Please check unmounted directories!"
