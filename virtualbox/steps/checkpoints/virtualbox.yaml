@@ -17,5 +17,5 @@ clear:
 list:
   - exec_local: |
       if VBoxManage list vms | grep -q $$virtualbox_vmid; then
-          VBoxManage snapshot $$virtualbox_vmid list | grep 'Name:' | awk '{print $2}'
+          VBoxManage snapshot $$virtualbox_vmid list | grep -q 'Name:' | awk '{print $2}' || true
       fi

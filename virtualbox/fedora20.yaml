@@ -6,30 +6,20 @@
 #
 #==============================================================================
 ---
-extend: ../base/fedora.yaml
-# virtualbox checkpoint
+extend: ../qemu/fedora20.yaml
 checkpoint: virtualbox.yaml
-#== Global variables use by Kameleon engine and the steps
+
+# Global variables use by Kameleon engine and the steps
 global:
-  # Distribution
-  release: 20
+  # appliance options
+  image_format: vdi
+  # Allowed formats are: tar.gz, tar.bz2, tar.xz, tar.lzo, qcow, qcow2, qed, vdi, raw, vmdk
+  appliance_formats: vdi tar.gz
 
   ## VirtualBox options
   virtualbox_memory_size: 768
-  virtualbox_ssh_port: 55423
-  virtualbox_os_type: Fedora_64
+  virtualbox_os_type: Debian_64
   virtualbox_vmid: $${kameleon_recipe_name}_$${kameleon_short_uuid}
-  virtualbox_image_size: 10000  ## megabytes
-  virtualbox_image_disk: $$kameleon_cwd/base_$$kameleon_recipe_name.vdi
-
-  ## Kameleon iso bootstrap
-  boot2kameleon_url: http://kameleon.imag.fr/iso/boot2debian/debian-jessie-$${arch}-insecure.iso
-  insecure_ssh_key_url: http://kameleon.imag.fr/iso/boot2debian/keys/insecure_id_rsa
-
-  ## Rootfs options
-  rootfs: /rootfs
-  filesystem_type: ext4
-  disk_device: /dev/sda
 
   ssh_config_file: $$kameleon_cwd/ssh_config
   out_context:
@@ -42,41 +32,18 @@ global:
     workdir: /root/kameleon_workdir
     proxy_cache: 10.0.2.2
 
-  bootstrap_packages: >
-    findutils util-linux dhclient vim-minimal net-tools NetworkManager
-    openssh-server
-
-  setup_packages: >
-    bash-completion kbd sudo openssh-clients syslinux-extlinux acpid
-    ntp ntpdate
-
-#== Bootstrap the new system and create the 'in_context'
+# Bootstrap the new system and create the 'in_context'
 bootstrap:
-  - enable_checkpoint
-  - prepare_virtualbox
+  - download_kameleon_helpers
+  - prepare_appliance
   - start_virtualbox
-  - install_requirements:
-    - packages: parted e2fsprogs yum rpm lynx extlinux
-  - initialize_disk
-  - "@base"
-  - reboot_virtualbox
 
-#== Install and configuration steps
+# Install and configuration steps
 setup:
+  - enable_checkpoint
   - "@base"
 
-#== Export the generated appliance in the format of your choice
+# Export the generated appliance in the format of your choice
 export:
   - disable_checkpoint
-  - virtualbox_save_appliance:
-    # Output filename (without file extension)
-    - output_filename: "$$kameleon_cwd/$${kameleon_recipe_name}"
-    # Allowed formats are: tar.gz, tar.bz2, tar.xz, tar.lzo, qcow, qcow2, qed, vdi, raw, vmdk
-    - output_formats: vdi tar.gz
-    # Allowed values are: 1, 2, 3, 4, 5, 6, 7, 8, 9, best, fast
-    - tar_compression_level: best
-    # List of files to exclude from tar archive
-    - tar_excludes: ./etc/fstab
-    # Zero free unallocated blocks from ext2/3 file-systems before export to
-    # reduce image size
-    - zerofree: true
+  - "@base"

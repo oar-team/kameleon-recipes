@@ -1,0 +1,47 @@
+#==============================================================================
+# vim: softtabstop=2 shiftwidth=2 expandtab fenc=utf-8 cc=81 tw=80
+#==============================================================================
+#
+# DESCRIPTION: Centos 6 base system built with chroot.
+#
+#==============================================================================
+---
+extend: base.yaml
+
+# Global variables use by Kameleon engine and the steps
+global:
+  # Distribution
+  distrib: centos
+  release: 6
+  kernel_arch: amd64
+
+  rootfs_archive_sha1: 7a5053ea2696f7b94fc4b4b41118e40fd54afeee
+
+  appliance_tar_excludes: >
+    ./etc/fstab ./root/.bash_history ./root/kameleon_workdir ./root/.ssh
+    ./var/tmp/* ./tmp/* ./var/log/* ./dev/* ./proc/* ./run/*
+    ./sys/* ./root/.rpmdb
+
+  setup_packages: >
+    kbd sudo openssh-clients ntp ntpdate rsync bridge-utils bzip2 cronie
+    cronie-anacron crontabs dash dhclient dhcp-common dracut dracut-kernel
+    file fuse gnupg2 iptables-ipv6 libuser logrotate m4 openssh-server passwd
+    pciutils-libs rsyslog dbus system-config-firewall-base which
+    findutils yum util-linux vim-minimal net-tools openssh-server
+    kernel kernel-devel acpid
+
+  # SELinux configuration
+  selinux: permissive  ## Can take one of these three values: enforcing, permissive or disabled
+  selinuxtype: targeted  # Possible values are: strict, targeted
+
+# Bootstrap the new system and create the 'in_context'
+bootstrap:
+  - "@base"
+
+# Install and configuration steps
+setup:
+  - "@base"
+
+# Export the generated appliance in the format of your choice
+export:
+  - "@base"

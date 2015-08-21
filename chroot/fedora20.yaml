@@ -1,0 +1,39 @@
+#==============================================================================
+# vim: softtabstop=2 shiftwidth=2 expandtab fenc=utf-8 cc=81 tw=80
+#==============================================================================
+#
+# DESCRIPTION: Centos 6 base system built with chroot.
+#
+#==============================================================================
+---
+extend: centos6.yaml
+
+# Global variables use by Kameleon engine and the steps
+global:
+  # Distribution
+  distrib: fedora
+  release: 20
+
+  # Include specific steps
+  include_steps:
+    - $$distrib/$$release
+    - $$distrib
+    - "centos"
+
+  rootfs_archive_sha1: bb3e6b917e0d20a031d59a9e3957999e37f168bb
+
+  setup_packages: >
+    bash-completion kbd sudo openssh-clients syslinux-extlinux acpid
+    ntp ntpdate
+
+# Bootstrap the new system and create the 'in_context'
+bootstrap:
+  - "@base"
+
+# Install and configuration steps
+setup:
+  - "@base"
+
+# Export the generated appliance in the format of your choice
+export:
+  - "@base"

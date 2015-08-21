@@ -1,0 +1,35 @@
+#==============================================================================
+# vim: softtabstop=2 shiftwidth=2 expandtab fenc=utf-8 cc=81 tw=80
+#==============================================================================
+#
+# DESCRIPTION: Base template for Ubuntu appliance.
+#
+#==============================================================================
+---
+extend: ubuntu12.04.yaml
+
+# Global variables use by Kameleon engine and the steps
+global:
+  # Distribution
+  release: trusty
+
+  rootfs_archive_sha1: bdb2e1de1cbc4aa1510edbf32cbda34a00a285ac
+
+  # Apt recipe options
+  apt_repository: http://archive.ubuntu.com/ubuntu/
+  apt_enable_restricted: true
+
+  setup_packages: >
+    bash-completion curl nano vim language-pack-en sudo
+
+# Bootstrap the new system and create the 'in_context'
+bootstrap:
+  - "@base"
+
+# Install and configuration steps
+setup:
+  - "@base"
+
+# Export the generated appliance in the format of your choice
+export:
+  - "@base"

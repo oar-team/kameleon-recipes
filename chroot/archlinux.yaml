@@ -6,13 +6,7 @@
 #
 #==============================================================================
 ---
-# Loads some helpful aliases (this files are located in steps/aliases/ directory)
-aliases: defaults.yaml
-
-# Custom shell environement (this files are located in steps/env/ directory)
-env:
-  - bashrc
-  - functions.sh
+extend: base.yaml
 
 # Global variables use by Kameleon engine and the steps
 global:

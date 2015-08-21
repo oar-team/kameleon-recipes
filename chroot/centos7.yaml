@@ -2,17 +2,17 @@
 # vim: softtabstop=2 shiftwidth=2 expandtab fenc=utf-8 cc=81 tw=80
 #==============================================================================
 #
-# DESCRIPTION: Debian 8 (Jessie) base system built with chroot.
+# DESCRIPTION: Centos 6 base system built with chroot.
 #
 #==============================================================================
 ---
-extend: debian7.yaml
+extend: centos6.yaml
 
 global:
   # Distribution
-  release: jessie
+  release: 7
 
-  rootfs_archive_sha1: f3fc8596123a60d64c4449ae84f33b0126804dfe
+  rootfs_archive_sha1: a16d8dff5fe33a68c215b3bc4bca9ca7ad9d3f12
 
   setup_packages: >
     sudo vim bash-completion curl resolvconf bzip2 bsdutils ca-certificates

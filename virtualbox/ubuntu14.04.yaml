@@ -6,17 +6,44 @@
 #
 #==============================================================================
 ---
-extend: ubuntu12.04.yaml
+extend: ../qemu/ubuntu14.04.yaml
+checkpoint: virtualbox.yaml
 
+# Global variables use by Kameleon engine and the steps
 global:
-  # Distribution
-  release: trusty
+  # appliance options
+  image_format: vdi
+  # Allowed formats are: tar.gz, tar.bz2, tar.xz, tar.lzo, qcow, qcow2, qed, vdi, raw, vmdk
+  appliance_formats: vdi tar.gz
 
+  ## VirtualBox options
+  virtualbox_memory_size: 768
+  virtualbox_os_type: Debian_64
+  virtualbox_vmid: $${kameleon_recipe_name}_$${kameleon_short_uuid}
+
+  ssh_config_file: $$kameleon_cwd/ssh_config
+  out_context:
+    cmd: ssh -F $$ssh_config_file $${kameleon_recipe_name} -t /bin/bash
+    workdir: /root/kameleon_workdir
+    proxy_cache: 10.0.2.2
+
+  in_context:
+    cmd: ssh -F $$ssh_config_file $${kameleon_recipe_name} -t /bin/bash
+    workdir: /root/kameleon_workdir
+    proxy_cache: 10.0.2.2
+
+# Bootstrap the new system and create the 'in_context'
 bootstrap:
-  - "@base"
+  - download_kameleon_helpers
+  - prepare_appliance
+  - start_virtualbox
 
+# Install and configuration steps
 setup:
+  - enable_checkpoint
   - "@base"
 
+# Export the generated appliance in the format of your choice
 export:
+  - disable_checkpoint
   - "@base"

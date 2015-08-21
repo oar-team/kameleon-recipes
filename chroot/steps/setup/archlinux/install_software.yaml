@@ -6,4 +6,3 @@
   - exec_in: pacman --noconfirm --arch $$arch -Suy --force $$packages
   - on_clean:
     - exec_in: echo "y" | pacman -Scc
-
