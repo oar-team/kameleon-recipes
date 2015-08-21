@@ -2,24 +2,27 @@
 # vim: softtabstop=2 shiftwidth=2 expandtab fenc=utf-8 cc=81 tw=80
 #==============================================================================
 #
-# DESCRIPTION: Debian 7 (Wheezy) appliance built with chroot and qemu-nbd.
+# DESCRIPTION: Debian 7 (Wheezy) appliance built with chroot.
 #
 #==============================================================================
 ---
-extend: ../base/debian.yaml
-# Enables qcow2 checkpoint
 checkpoint: simple.yaml
-#== Global variables use by Kameleon engine and the steps
+
+# Loads some helpful aliases (this files are located in steps/aliases/ directory)
+aliases: defaults.yaml
+
+# Custom shell environement (this files are located in steps/env/ directory)
+env:
+  - bashrc
+  - functions.sh
+
+# Global variables use by Kameleon engine and the steps
 global:
-  # Distribution
-  release: wheezy
-
-  ## Disk options
-  image_size: 10G
-  filesystem_type: ext4
-
-  # rootfs options
-  rootfs: $$kameleon_cwd/rootfs
+  ## System variables. Required by kameleon engine
+  # Include specific steps
+  include_steps:
+    - $$distrib/$$release
+    - $$distrib
 
   # Shell session from where we launch exec_out commands. There is often a
   # local bash session, but it can be a remote shell on other machines or on
@@ -36,7 +39,30 @@ global:
     workdir: /root/kameleon_workdir
     proxy_cache: 127.0.0.1
 
-  bootstrap_packages: linux-image-$$kernel_arch
+  ## User varibales : used by the recipe
+  user_name: kameleon
+  user_password: $$user_name
+
+  # Distribution
+  distrib: debian
+  release: wheezy
+  arch: x86_64
+  kernel_arch: amd64
+  hostname: kameleon-$$distrib
+
+  ## Initial rootfs archive built with kameleon
+  ## See https://github.com/oar-team/kameleon-bootstrap-recipes.git
+  rootfs_archive_url: http://kameleon.imag.fr/rootfs/$$arch/debian7.tar.xz
+  rootfs_archive_sha1: bb3e6b917e0d20a031d59a9e3957999e37f168bb
+  rootfs_archive_download_path: $$kameleon_cwd/rootfs.tar.xz
+
+  # rootfs options
+  rootfs: $$kameleon_cwd/rootfs
+
+  # Apt recipe options
+  apt_repository: http://ftp.debian.org/debian/
+  apt_enable_contrib: true
+  apt_enable_nonfree: true
 
   setup_packages: >
     bsdutils ca-certificates locales man-db less libui-dialog-perl dialog
@@ -44,24 +70,51 @@ global:
     psmisc openssh-server acpid acpi-support-base sysvinit bzip2
     apt-utils pciutils curl sudo vim bash-completion curl resolvconf
 
-
-#== Bootstrap the new system and create the 'in_context'
+# Bootstrap the new system and create the 'in_context'
 bootstrap:
   - enable_checkpoint
-  - "@base"
+  - prepare_chroot
   - start_chroot
 
-#== Install and configuration steps
-# WARNING: this part should be independante from the out context (whenever
-# possible...)
+# Install and configuration steps
 setup:
-  - "@base"
+  # Install
+  - configure_apt:
+    - repository: $$apt_repository
+    - enable_contrib_repo: $$apt_enable_contrib
+    - enable_nonfree_repo: $$apt_enable_nonfree
+  - upgrade_system:
+    - dist_upgrade: true
+  - install_software:
+    - packages: >
+        debian-keyring $$setup_packages
+  - configure_kernel
+  # Configuration
+  - configure_system:
+    - locales: POSIX C en_US fr_FR de_DE
+    - lang: en_US.UTF-8
+    - timezone: UTC
+  - configure_keyboard:
+    - layout: "us,fr,de"
+  - configure_network
+  - kameleon_customization
+  - create_group:
+    - name: admin
+  - create_user:
+    - name: $$user_name
+    - groups: sudo admin
+    - password: $$user_password
 
-#== Export the generated appliance in the format of your choice
+# Export the generated appliance in the format of your choice
 export:
   - disable_checkpoint
   - chroot_save_appliance:
     - output_filename: "$$kameleon_cwd/$${kameleon_recipe_name}"
-    - output_formats: tar.gz vdi qcow2
-    - tar_compression_level: best
-    - tar_excludes: etc/fstab dev/* proc/* sys/* tmp/* run/* mnt/* media/* lost+found
+    - output_formats: qcow2 tar.gz
+    - image_size: 10G
+    - filesystem_type: ext4
+    - tar_compression_level: "9"
+    - tar_excludes: >
+        ./etc/fstab ./root/.bash_history ./root/kameleon_workdir ./root/.ssh
+        ./var/tmp/* ./tmp/* ./var/log/* ./dev/* ./proc/* ./run/*
+        ./sys/*

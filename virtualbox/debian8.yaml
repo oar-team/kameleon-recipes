@@ -12,14 +12,16 @@ global:
   # Distribution
   release: jessie
 
-  bootstrap_packages: >
-    bsdutils ca-certificates locales man-db less libui-dialog-perl dialog
-    isc-dhcp-client ifupdown iptables iputils-ping iproute2 netbase net-tools
-    psmisc openssh-server acpid acpi-support-base sysvinit systemd systemd-sysv
-    linux-image-$$kernel_arch pciutils
+  ## Initial rootfs archive built with kameleon
+  ## See https://github.com/oar-team/kameleon-bootstrap-recipes.git
+  rootfs_archive_url: http://kameleon.imag.fr/rootfs/$$arch/debian8.tar.xz
+  rootfs_archive_sha1: b96592b9307856935092a07c3d9d8999c7c2a4a5
 
   setup_packages: >
-    sudo vim bash-completion curl resolvconf extlinux bzip2 dialog
+    sudo vim bash-completion curl resolvconf bzip2 bsdutils ca-certificates
+    locales man-db less libui-dialog-perl dialog isc-dhcp-client ifupdown
+    iptables iputils-ping iproute2 netbase net-tools psmisc openssh-server
+    acpid acpi-support-base sysvinit systemd systemd-sysv pciutils
 
 bootstrap:
   - "@base"

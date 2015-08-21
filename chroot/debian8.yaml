@@ -12,7 +12,10 @@ global:
   # Distribution
   release: jessie
 
-  bootstrap_packages: linux-image-$$kernel_arch
+  ## Initial rootfs archive built with kameleon
+  ## See https://github.com/oar-team/kameleon-bootstrap-recipes.git
+  rootfs_archive_url: http://kameleon.imag.fr/rootfs/$$arch/debian8.tar.xz
+  rootfs_archive_sha1: b96592b9307856935092a07c3d9d8999c7c2a4a5
 
   setup_packages: >
     sudo vim bash-completion curl resolvconf bzip2 bsdutils ca-certificates

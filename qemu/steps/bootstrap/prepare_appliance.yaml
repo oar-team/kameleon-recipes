@@ -1,0 +1,78 @@
+- insecure_ssh_key: $$kameleon_cwd/insecure_ssh_key
+- create_appliance_script: $$kameleon_cwd/create_appliance.py
+
+- download_rootfs_archive:
+  - download_file_local:
+    - $$rootfs_archive_url
+    - $$rootfs_archive_download_path
+
+- archive_checksum:
+  - check_cmd_local: sha1sum
+  - exec_local: echo "$$rootfs_archive_sha1  $$rootfs_archive_download_path" | sha1sum --check -
+
+- unpack_rootfs_archive:
+  - check_cmd_local: xz
+  - exec_local: echo "Unpacking $$rootfs_archive_download_path"
+  - exec_local: xz -dc < $$rootfs_archive_download_path > $$kameleon_cwd/rootfs.tar
+
+- create_appliance:
+  - check_cmd_local: virt-make-fs
+  - exec_local: |
+      # Create an appliance from rootfs directory
+      python $$create_appliance_script $$kameleon_cwd/rootfs.tar \
+        --size $$image_size \
+        -o $$image_disk \
+        --filesystem $$filesystem_type \
+        --format $$image_format \
+        --append "net.ifnames=0 console=tty0 console=ttyS0,115200n8"
+  - exec_local: rm -f $$rootfs_archive_download_path $$kameleon_cwd/rootfs.tar
+
+- delete_initial_image_at_the_end:
+  - on_checkpoint: skip
+  - on_export_clean:
+    - exec_local: rm -f $${image_disk}.$${image_format}
+
+- generate_ssh_keys:
+  - check_cmd_local: ssh-keygen
+  - exec_local: echo -e  'y\n' | ssh-keygen -q -t dsa -f $$insecure_ssh_key -N ''
+  - exec_local: cat $$insecure_ssh_key
+
+- inject_ssh_private_key:
+  - check_cmd_local: virt-customize
+  - exec_local: >
+      virt-customize \
+        -a $${image_disk}.$${image_format} \
+        --run-command 'mkdir -p /root/.ssh/' \
+        --upload $${insecure_ssh_key}.pub:/root/.ssh/authorized_keys \
+        --run-command 'chmod 700 /root/.ssh/' \
+        --run-command 'chmod 600 /root/.ssh/authorized_keys' \
+        --run-command 'chown -R root:root /root/.ssh'
+  - on_setup_clean:
+    - exec_local: >
+        virt-customize \
+          -a $${image_disk}.$${image_format} \
+          --delete /root/.ssh/authorized_keys
+
+- create_ssh_config:
+  - on_checkpoint: redo
+  - exec_local: |
+      # Find empty SSH forwarding port
+      SSH_FWD_PORT=$(__find_free_port 50000 60000)
+      echo "SSH forwarding port: $SSH_FWD_PORT"
+
+  - write_local:
+    - $$ssh_config_file
+    - |
+      Host $${kameleon_recipe_name}
+      HostName 127.0.0.1
+      Port $SSH_FWD_PORT
+      User root
+      IdentityFile $$insecure_ssh_key
+      UserKnownHostsFile /dev/null
+      StrictHostKeyChecking no
+      PasswordAuthentication no
+      IdentitiesOnly yes
+      LogLevel FATAL
+      ForwardAgent yes
+      Compression yes
+      Protocol 2

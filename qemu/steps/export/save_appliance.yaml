@@ -1,10 +1,8 @@
-# Save Appliance
-
-- export_appliance_script: $$kameleon_data_dir/export_appliance.py
+# Save Appliance from virtualbox
+- export_appliance_script: $$kameleon_cwd/export_appliance.py
 
 - save_appliance:
-  - check_cmd_local: qemu-img
-  - check_cmd_local: guestfish
+  - check_cmd_local: python
   - exec_local: |
       if [ "$$zerofree" = "true" ]; then
         EXPORT_OPTS="--zerofree"
@@ -12,7 +10,7 @@
         EXPORT_OPTS=""
       fi
   - exec_local: |
-      python $$export_appliance_script $$qemu_image_disk \
+      python $$export_appliance_script $${image_disk}.$${image_format} \
         -o $$output_filename \
         --formats $$output_formats \
         --tar-compression-level $$tar_compression_level \
