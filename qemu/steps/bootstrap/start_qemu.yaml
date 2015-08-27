@@ -25,8 +25,7 @@
         VNC_PORT=$(( $(__find_free_port 5900 5910) - 5900 ))
         echo "VNC port: $VNC_PORT"
   - exec_local: |
-        qemu-system-$$qemu_arch  \
-          $ENABLE_KVM \
+        qemu-system-$$qemu_arch $ENABLE_KVM \
           -drive file="$${image_disk}.$${image_format}",cache=$$disk_cache,media=disk,if=virtio,id=drive0 \
           -smp $${qemu_cpu} \
           -m $$qemu_memory_size \
@@ -53,30 +52,33 @@
   - on_checkpoint: redo
   - check_cmd_local: socat
   - on_setup_clean:
-    - exec_in: echo sync...; sync
+    - exec_in: echo "Shutting down virtual machine"
+    - exec_in: shutdown -h now
     - exec_local: |
         if [ -f $$qemu_pidfile ]; then
           _QEMU_PID=$(cat $$qemu_pidfile)
-          if [ -S $$qemu_monitor_socket ]; then
-            NEXT_WAIT_TIME=0
-            echo system_powerdown | socat - UNIX-CONNECT:$$qemu_monitor_socket
-            while ps -p $_QEMU_PID > /dev/null && [ $NEXT_WAIT_TIME -lt $$shutdown_timeout ];
-            do
-              sleep 1
-              echo -en "\rWaiting for qemu virtual machine to shutdown...($(( $$shutdown_timeout - 1 - NEXT_WAIT_TIME++ ))s)"
-            done
-          fi
           if ps -p $_QEMU_PID > /dev/null; then
             if [ -S $$qemu_monitor_socket ]; then
-              echo "  ~> Failed"
+              NEXT_WAIT_TIME=0
+              echo system_powerdown | socat - UNIX-CONNECT:$$qemu_monitor_socket || true
+              while ps -p $_QEMU_PID > /dev/null && [ $NEXT_WAIT_TIME -lt $$shutdown_timeout ];
+              do
+                sleep 1
+                echo -en "\rWaiting for qemu virtual machine to shutdown...($(( $$shutdown_timeout - 1 - NEXT_WAIT_TIME++ ))s)"
+              done
             fi
-            echo "Killing QEMU (pid: $_QEMU_PID)..."
-            kill -9 "$_QEMU_PID"
-          else
-            if [ -S $$qemu_monitor_socket ]; then
-              echo "  ~> Done"
+            if ps -p $_QEMU_PID > /dev/null; then
+              if [ -S $$qemu_monitor_socket ]; then
+                echo "  ~> Failed"
+              fi
+              echo "Killing QEMU (pid: $_QEMU_PID)..."
+              kill -9 "$_QEMU_PID"
+            else
+              if [ -S $$qemu_monitor_socket ]; then
+                echo "  ~> Done"
+              fi
             fi
+            rm -f $$qemu_pidfile
           fi
-          rm -f $$qemu_pidfile
         fi
         rm -f $$qemu_monitor_socket
