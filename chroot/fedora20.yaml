@@ -21,8 +21,7 @@ global:
     - "centos"
 
   setup_packages: >
-    bash-completion kbd sudo openssh-clients syslinux-extlinux acpid
-    ntp ntpdate
+    bash-completion kbd sudo openssh-clients acpid ntp ntpdate
 
 # Bootstrap the new system and create the 'in_context'
 bootstrap:
