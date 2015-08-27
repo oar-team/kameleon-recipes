@@ -18,7 +18,7 @@ global:
 
   ## VirtualBox options
   virtualbox_memory_size: 768
-  virtualbox_os_type: Debian_64
+  virtualbox_os_type: Fedora_64
   virtualbox_vmid: $${kameleon_recipe_name}_$${kameleon_short_uuid}
 
   ssh_config_file: $$kameleon_cwd/ssh_config
