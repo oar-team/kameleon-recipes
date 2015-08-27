@@ -4,15 +4,10 @@
     - $$rootfs_archive_url
     - $$rootfs_archive_download_path
 
-- archive_checksum:
-  - check_cmd_local: sha1sum
-  - exec_local: echo "$$rootfs_archive_sha1  $$rootfs_archive_download_path" | sha1sum --check -
-
 - unpack_rootfs_archive:
-  - check_cmd_local: xz
   - exec_local: echo "Unpacking $$rootfs_archive_download_path"
   - exec_local: mkdir -p $$rootfs
-  - exec_local: xz -dc < $$rootfs_archive_download_path | tar --touch -xf - -C $$rootfs
+  - exec_local: tar --touch -xf $$rootfs_archive_download_path -C $$rootfs
 
 - delete_rootfs_directory_at_the_end:
   - on_checkpoint: skip

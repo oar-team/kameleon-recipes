@@ -12,8 +12,6 @@ global:
   # Distribution
   release: jessie
 
-  rootfs_archive_sha1: f3fc8596123a60d64c4449ae84f33b0126804dfe
-
   setup_packages: >
     sudo vim bash-completion curl resolvconf bzip2 bsdutils ca-certificates
     locales man-db less libui-dialog-perl dialog isc-dhcp-client ifupdown

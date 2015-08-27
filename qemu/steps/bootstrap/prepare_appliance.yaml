@@ -6,26 +6,17 @@
     - $$rootfs_archive_url
     - $$rootfs_archive_download_path
 
-- archive_checksum:
-  - check_cmd_local: sha1sum
-  - exec_local: echo "$$rootfs_archive_sha1  $$rootfs_archive_download_path" | sha1sum --check -
-
-- unpack_rootfs_archive:
-  - check_cmd_local: xz
-  - exec_local: echo "Unpacking $$rootfs_archive_download_path"
-  - exec_local: xz -dc < $$rootfs_archive_download_path > $$kameleon_cwd/rootfs.tar
-
 - create_appliance:
   - check_cmd_local: virt-make-fs
   - exec_local: |
       # Create an appliance from rootfs directory
-      python $$create_appliance_script $$kameleon_cwd/rootfs.tar \
+      python $$create_appliance_script $$rootfs_archive_download_path \
         --size $$image_size \
         -o $$image_disk \
         --filesystem $$filesystem_type \
         --format $$image_format \
-        --append "net.ifnames=0 console=tty0 console=ttyS0,115200n8"
-  - exec_local: rm -f $$rootfs_archive_download_path $$kameleon_cwd/rootfs.tar
+        --append "net.ifnames=0 console=tty0 console=ttyS0,115200n8 selinux=0"
+  - exec_local: rm -f $$rootfs_archive_download_path
 
 - delete_initial_image_at_the_end:
   - on_checkpoint: skip

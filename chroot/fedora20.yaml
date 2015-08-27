@@ -20,8 +20,6 @@ global:
     - $$distrib
     - "centos"
 
-  rootfs_archive_sha1: bb3e6b917e0d20a031d59a9e3957999e37f168bb
-
   setup_packages: >
     bash-completion kbd sudo openssh-clients syslinux-extlinux acpid
     ntp ntpdate

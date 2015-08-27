@@ -21,8 +21,6 @@ global:
     - $$distrib
     - debian
 
-  rootfs_archive_sha1: 1d7fbb53f6dea9645075e23779894cf88cec7523
-
   # Apt recipe options
   apt_repository: http://archive.ubuntu.com/ubuntu/
   apt_enable_restricted: true

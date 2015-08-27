@@ -13,8 +13,6 @@ global:
   # Distribution
   release: trusty
 
-  rootfs_archive_sha1: bdb2e1de1cbc4aa1510edbf32cbda34a00a285ac
-
   # Apt recipe options
   apt_repository: http://archive.ubuntu.com/ubuntu/
   apt_enable_restricted: true

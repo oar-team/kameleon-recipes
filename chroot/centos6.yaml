@@ -15,8 +15,6 @@ global:
   release: 6
   kernel_arch: amd64
 
-  rootfs_archive_sha1: 7a5053ea2696f7b94fc4b4b41118e40fd54afeee
-
   appliance_tar_excludes: >
     ./etc/fstab ./root/.bash_history ./root/kameleon_workdir ./root/.ssh
     ./var/tmp/* ./tmp/* ./var/log/* ./dev/* ./proc/* ./run/*

@@ -15,8 +15,6 @@ global:
   release: wheezy
   kernel_arch: amd64
 
-  rootfs_archive_sha1: bb3e6b917e0d20a031d59a9e3957999e37f168bb
-
   # Apt recipe options
   apt_repository: http://ftp.debian.org/debian/
   apt_enable_contrib: true
