@@ -1,0 +1,41 @@
+# Pacman configuration for Archlinux
+#
+
+- ipc_failed_call_fix:
+  - exec_in: dirmngr </dev/null > /dev/null 2>&1
+
+- colored_output:
+  - exec_in: sed -i "s/#Color/Color/" /etc/pacman.conf
+
+- add_archlinux_cn_repo:
+  - exec_in: echo Add Archlinux CN repo
+  - append_in:
+    - /etc/pacman.conf
+    - |
+      [archlinuxcn]
+      SigLevel = Optional TrustAll
+      Server = http://repo.archlinuxcn.org/\$arch
+
+- add_multilib_repo:
+  - exec_in: echo Add multilib repo
+  - exec_in: sed -i '/#\[multilib\]/,/#Include = \/etc\/pacman.d\/mirrorlist/ s/#//' /etc/pacman.conf
+  - exec_in: sed -i '/#\[multilib\]/,/#Include = \/etc\/pacman.d\/mirrorlist/ s/#//' /etc/pacman.conf
+  - exec_in: sed -i 's/#\[multilib\]/\[multilib\]/g' /etc/pacman.conf
+
+- update_and_force_refresh_repostories:
+  - exec_in: echo Update and force a refresh of all package lists
+  - exec_in: pacman -Syyu --noconfirm
+
+- install_repostorie_keyring:
+  - exec_in: echo Install all the repo keyrings and mirrorlists
+  - exec_in: pacman --noconfirm -S archlinuxcn-keyring
+
+- install_yaourt:
+  - exec_in: echo Install yaourt
+  - exec_in: pacman -S --noconfirm yaourt package-query cower
+
+- setup_fastest_pacman_mirrors:
+  - exec_in: echo Setup fastest pacman mirrors
+  - exec_in: pacman -S reflector --noconfirm
+  - exec_in: reflector --verbose -l 5 --protocol https --sort rate --save /etc/pacman.d/mirrorlist
+  - exec_in: pacman -Rs reflector --noconfirm
