@@ -10,10 +10,6 @@ extend: base.yaml
 
 # Global variables use by Kameleon engine and the steps
 global:
-  ## User varibales : used by the recipe
-  user_name: kameleon
-  user_password: $$user_name
-
   # Distribution
   distrib: archlinux
   arch: x86_64

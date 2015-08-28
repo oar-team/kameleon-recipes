@@ -95,7 +95,7 @@ setup:
   - kameleon_customization
   - create_user:
     - name: $$user_name
-    - groups: $$admin_groups
+    - groups: $$user_groups
     - password: $$user_name
 
 # Export the generated appliance in the format of your choice

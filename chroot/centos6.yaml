@@ -14,6 +14,8 @@ global:
   distrib: centos
   release: 6
   kernel_arch: amd64
+  ## User varibales : used by the recipe
+  user_groups: wheel
 
   appliance_tar_excludes: >
     ./etc/fstab ./root/.bash_history ./root/kameleon_workdir ./root/.ssh
