@@ -75,6 +75,8 @@
 - shutdown_vm:
   - on_checkpoint: redo
   - on_setup_clean:
+    - exec_in: echo "Shutting down virtual machine"
+    - exec_in: shutdown -h now
     - exec_local: |
         if VBoxManage list runningvms | grep -q $$virtualbox_vmid; then
           VBoxManage controlvm $$virtualbox_vmid acpipowerbutton
