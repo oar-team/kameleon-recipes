@@ -27,9 +27,6 @@
   - exec_in: echo "Removing random-seed so it's not the same in every image."
   - exec_in: rm -f /var/lib/random-seed
 
-- enable_ntpdate_service:
-  - exec_in: systemctl enable ntpdate.service
-
 - selinux: permissive
 - selinuxtype: targeted
 
