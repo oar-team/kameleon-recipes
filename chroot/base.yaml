@@ -97,6 +97,7 @@ setup:
     - name: $$user_name
     - groups: $$user_groups
     - password: $$user_name
+  - clean_system
 
 # Export the generated appliance in the format of your choice
 export:
