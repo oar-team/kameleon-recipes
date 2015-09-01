@@ -30,7 +30,7 @@ global:
     isc-dhcp-client ifupdown iptables iputils-ping iproute netbase net-tools
     psmisc openssh-server acpid acpi-support bzip2 language-pack-en
     apt-utils pciutils curl sudo vim bash-completion curl resolvconf
-    inetutils-tools inetutils-ping
+    inetutils-tools inetutils-ping wget
 
 # Bootstrap the new system and create the 'in_context'
 bootstrap:
