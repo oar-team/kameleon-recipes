@@ -8,12 +8,14 @@
   - exec_in: echo -n 'root:$$user_name' | chpasswd
 
 - install_puppet:
+  - download_file_in:
+    - "http://apt.puppetlabs.com/puppetlabs-release-stable.deb"
+    - $KAMELEON_WORKDIR/puppetlabs-release-stable.deb
   - exec_in: |
-      wget --progress=bar:force http://apt.puppetlabs.com/puppetlabs-release-stable.deb 2>&1
-      dpkg -i puppetlabs-release-stable.deb
+      dpkg -i $KAMELEON_WORKDIR/puppetlabs-release-stable.deb
       apt-get update
       apt-get install puppet -y --force-yes
-      rm -f puppetlabs-release-stable.deb
+      rm -f $KAMELEON_WORKDIR/puppetlabs-release-stable.deb
 
 - install_chef:
   - exec_in: curl -L https://www.opscode.com/chef/install.sh -k | bash
