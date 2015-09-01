@@ -12,9 +12,9 @@ checkpoint: virtualbox.yaml
 # Global variables use by Kameleon engine and the steps
 global:
   # appliance options
-  image_format: vdi
+  image_format: vmdk
   # Allowed formats are: tar.gz, tar.bz2, tar.xz, tar.lzo, qcow, qcow2, qed, vdi, raw, vmdk
-  appliance_formats: vdi tar.gz
+  appliance_formats: vmdk tar.gz
 
   ## VirtualBox options
   virtualbox_memory_size: 768
