@@ -52,6 +52,8 @@
   - on_checkpoint: redo
   - check_cmd_local: socat
   - on_setup_clean:
+    - exec_in: echo "Sync"
+    - exec_in: sync
     - exec_in: echo "Shutting down virtual machine"
     - exec_in: shutdown -h now
     - exec_local: |
