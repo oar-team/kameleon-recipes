@@ -26,7 +26,11 @@ global:
   apt_enable_restricted: true
 
   setup_packages: >
-    bash-completion curl nano vim language-pack-en sudo
+    bsdutils ca-certificates locales man-db less libui-dialog-perl dialog
+    isc-dhcp-client ifupdown iptables iputils-ping iproute netbase net-tools
+    psmisc openssh-server acpid acpi-support bzip2 language-pack-en
+    apt-utils pciutils curl sudo vim bash-completion curl resolvconf
+    inetutils-tools inetutils-ping
 
 # Bootstrap the new system and create the 'in_context'
 bootstrap:
