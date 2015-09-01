@@ -1,6 +1,9 @@
 - insecure_ssh_key: $$kameleon_cwd/insecure_ssh_key
 - create_appliance_script: $$kameleon_cwd/create_appliance.py
 
+# E.g: net.ifnames=0 console=tty0 console=ttyS0,115200n8
+- kernel_args: "net.ifnames=0 console=tty0 console=ttyS0,115200n8 selinux=0"
+
 - download_rootfs_archive:
   - download_file_local:
     - $$rootfs_archive_url
@@ -15,7 +18,7 @@
         -o $$image_disk \
         --filesystem $$filesystem_type \
         --format $$image_format \
-        --append "net.ifnames=0 console=tty0 console=ttyS0,115200n8 selinux=0"
+        --append "$$kernel_args"
   - exec_local: rm -f $$rootfs_archive_download_path
 
 - delete_initial_image_at_the_end:
