@@ -22,7 +22,7 @@ setup:
   - install_software:
     - packages: >
         gcc make gcc-c++ kernel-devel-`uname -r` zlib-devel
-        openssl-devel readline-devel sqlite-devel perl wget dkms nfs-utils
+        openssl-devel readline-devel sqlite-devel perl wget dkms nfs-utils rsync
   - install_virtualbox_guestaddons
   - setup_vagrant_box
 

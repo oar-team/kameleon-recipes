@@ -20,7 +20,7 @@ bootstrap:
 setup:
   - "@base"
   - install_software:
-    - packages: dkms linux-headers nfs-utils rsync puppet
+    - packages: dkms linux-headers nfs-utils rsync puppet wget
   - install_virtualbox_guestaddons
   - setup_vagrant_box
 
