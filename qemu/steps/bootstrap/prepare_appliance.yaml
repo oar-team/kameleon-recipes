@@ -1,8 +1,9 @@
 - insecure_ssh_key: $$kameleon_cwd/insecure_ssh_key
 - create_appliance_script: $$kameleon_cwd/create_appliance.py
 
-# E.g: net.ifnames=0 console=tty0 console=ttyS0,115200n8
-- kernel_args: "net.ifnames=0 console=tty0 console=ttyS0,115200n8 selinux=0"
+- kameleon_authorized_keys: /root/.ssh/.kameleon_authorized_keys
+- authorized_keys: /root/.ssh/authorized_keys
+- safe_authorized_keys: /root/.ssh/safe_authorized_keys
 
 - download_rootfs_archive:
   - download_file_local:
@@ -12,6 +13,7 @@
 - create_appliance:
   - check_cmd_local: virt-make-fs
   - exec_local: |
+      rm -f $${image_disk}.$${image_format}
       # Create an appliance from rootfs directory
       python $$create_appliance_script $$rootfs_archive_download_path \
         --size $$image_size \
@@ -37,15 +39,19 @@
       virt-customize \
         -a $${image_disk}.$${image_format} \
         --run-command 'mkdir -p /root/.ssh/' \
-        --upload $${insecure_ssh_key}.pub:/root/.ssh/authorized_keys \
+        --upload $${insecure_ssh_key}.pub:/root/.ssh/.kameleon_authorized_keys \
+        --run-command 'cat /root/.ssh/.kameleon_authorized_keys >> /root/.ssh/authorized_keys' \
         --run-command 'chmod 700 /root/.ssh/' \
         --run-command 'chmod 600 /root/.ssh/authorized_keys' \
         --run-command 'chown -R root:root /root/.ssh'
-  - on_setup_clean:
+  - on_export_init:
     - exec_local: >
         virt-customize \
           -a $${image_disk}.$${image_format} \
-          --delete /root/.ssh/authorized_keys
+          --run-command 'diff -U $(wc -l < $$authorized_keys) $$authorized_keys $$kameleon_authorized_keys | grep '^-' | sed 's/^-//g' > $$safe_authorized_keys' \
+          --run-command 'mv $$safe_authorized_keys $$authorized_keys' \
+          --run-command 'chmod 600 $$authorized_keys' \
+          --delete /root/.ssh/.kameleon_authorized_keys
 
 - create_ssh_config:
   - on_checkpoint: redo

@@ -42,7 +42,8 @@
       PasswordAuthentication no
       AddressFamily inet
   - exec_in: chmod 0600 /home/$$user_name/.ssh/config
-  - exec_in: rsync -ah /home/$$user_name/.ssh/ /root/.ssh/
+  - exec_in: rsync -ah /home/$$user_name/.ssh/ /root/.ssh
+  - exec_in: cat /root/.ssh/.kameleon_authorized_keys >> /root/.ssh/authorized_keys
   - exec_in: chown "$$user_name:$$user_name" -R /home/$$user_name
 
 - customize_motd:
