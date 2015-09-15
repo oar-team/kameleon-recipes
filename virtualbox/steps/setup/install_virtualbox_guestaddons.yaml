@@ -1,7 +1,11 @@
+
+- fetch_current_virtualbox_version:
+  - pipe:
+    - exec_local: |
+        VBoxManage --version | sed 's|^\([0-9\.]*\).*|\1|'
+    - exec_in: cat > /tmp/vboxga_version
+
 - download_iso:
-  - download_file_in:
-    - "http://download.virtualbox.org/virtualbox/LATEST.TXT"
-    - /tmp/vboxga_version
   - exec_in: VBOXGA_VERSION="$(cat /tmp/vboxga_version)"
   - exec_in: echo "Downloading virtualBox Guest Additions version $VBOXGA_VERSION..."
   - download_file_in:
@@ -10,7 +14,7 @@
 
 - mount_iso:
   - exec_in: mkdir /media/VBoxGuestAdditions
-  - exec_in: modprobe loop
+  - exec_in: modprobe loop || true
   - exec_in: mount -o loop,ro /tmp/vboxga.iso /media/VBoxGuestAdditions
 
 - install_vboxga:
