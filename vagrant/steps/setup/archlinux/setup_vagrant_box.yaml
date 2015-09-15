@@ -5,9 +5,6 @@
       sed -i "s/^.*requiretty/#Defaults requiretty/" /etc/sudoers
       echo "$$user_name ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
 
-- set_root_password:
-  - exec_in: echo -n 'root:$$user_name' | chpasswd
-
 - enable_nfs_server:
   - exec_in: systemctl enable rpcbind.service
 

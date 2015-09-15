@@ -19,6 +19,7 @@ global:
   ## User varibales : used by the recipe
   user_name: kameleon
   user_password: $$user_name
+  root_password: $$user_name
   user_groups: sudo
   default_keyboard_layout: "us,fr,de"
   default_locales: POSIX C en_US fr_FR de_DE

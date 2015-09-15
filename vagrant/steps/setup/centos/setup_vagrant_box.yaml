@@ -5,9 +5,6 @@
       sed -i "s/^.*requiretty/#Defaults requiretty/" /etc/sudoers
       echo "$$user_name ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
 
-- set_root_password:
-  - exec_in: echo -n 'root:$$user_name' | chpasswd
-
 - install_puppet:
   - write_in:
     - /etc/yum.repos.d/puppetlabs.repo

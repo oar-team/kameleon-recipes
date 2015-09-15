@@ -4,9 +4,6 @@
       's/%sudo\s\+ALL=(ALL\(:ALL\)\?)\s\+ALL/%sudo ALL=NOPASSWD:ALL/g' \
       /etc/sudoers
 
-- set_root_password:
-  - exec_in: echo -n 'root:$$user_name' | chpasswd
-
 - install_puppet:
   - download_file_in:
     - "http://apt.puppetlabs.com/puppetlabs-release-stable.deb"
