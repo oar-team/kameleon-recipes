@@ -10,12 +10,12 @@
 # Grid'5000 as explain in: https://www.grid5000.fr/mediawiki/index.php/SSH_quick_configuration In order
 # for this recipe to work, please change the g5k username by yours.
 ---
-extend: ../base/debian.yaml
+extend: ../chroot/debian7.yaml
 #== Global variables use by Kameleon engine and the steps
 global:
   # Frontend options
-  g5k_user: MY_G5K_CHANGE  # CHANGE ME
-  g5k_site: MY_G5K_SITE  # CHANGE ME
+  g5k_user: $$my_g5k_change  # CHANGE ME
+  g5k_site: $$my_g5k_site  # CHANGE ME
 
   # Kenv
   release: wheezy
@@ -46,7 +46,7 @@ bootstrap:
   - g5k_reserv:
     - g5k_user: $$g5k_user
     - kenv: $$kenv
-    - walltime: "0:30:00"
+    - walltime: "1:00:00"
 
 #== Install and configuration steps
 # WARNING: this part should be independante from the out context (whenever
