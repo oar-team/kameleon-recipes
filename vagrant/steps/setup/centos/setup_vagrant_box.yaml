@@ -27,11 +27,17 @@
 
 - copy_insecure_sshkey:
   - exec_in: mkdir -pm 700 /home/$$user_name/.ssh/
-  - exec_in: |
-      wget --progress=bar:force https://raw.github.com/mitchellh/vagrant/master/keys/vagrant -O /home/$$user_name/.ssh/id_rsa 2>&1
-      wget --progress=bar:force https://raw.github.com/mitchellh/vagrant/master/keys/vagrant.pub -O /home/$$user_name/.ssh/id_rsa.pub 2>&1
+  - download_file_in:
+    - "https://raw.github.com/mitchellh/vagrant/master/keys/vagrant"
+    - /home/$$user_name/.ssh/id_rsa
+  - download_file_in:
+    - "https://raw.github.com/mitchellh/vagrant/master/keys/vagrant.pub"
+    - /home/$$user_name/.ssh/id_rsa.pub
   - exec_in: cp /home/$$user_name/.ssh/id_rsa.pub /home/$$user_name/.ssh/authorized_keys
   - exec_in: chmod 0600 /home/$$user_name/.ssh/*
+
+- enable_network_manager:
+  - exec_in: chkconfig NetworkManager on
 
 - config_ssh:
   - exec_in: echo "UseDNS no" >> /etc/ssh/sshd_config
