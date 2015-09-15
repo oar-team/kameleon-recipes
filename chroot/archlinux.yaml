@@ -17,6 +17,8 @@ global:
   ## User varibales : used by the recipe
   user_groups: wheel
 
+  rootfs_archive_url: http://kameleon.imag.fr/rootfs/$$arch/$${distrib}.tar.xz
+
   ## System variables. Required by kameleon engine
   # Include specific steps
   include_steps:
