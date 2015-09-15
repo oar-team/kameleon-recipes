@@ -13,24 +13,3 @@
     - |
       127.0.0.1   localhost localhost.localdomain localhost4 localhost4.localdomain4 $$hostname
       ::1         localhost localhost.localdomain localhost6 localhost6.localdomain6 $$hostname
-
-- set_interface:
-  - write_in:
-    - /etc/sysconfig/network-scripts/ifcfg-eth0
-    - |
-      DEVICE=eth0
-      BOOTPROTO=dhcp
-      ONBOOT=yes
-      HOSTNAME=$$hostname
-      NM_CONTROLLED=no
-      TYPE=Ethernet
-      MTU=$$mtu
-  - write_in:
-    - /etc/sysconfig/network
-    - |
-      NETWORKING=yes
-      HOSTNAME=$$hostname
-
-- enable_dhcp_service:
-  - exec_in: systemctl disable NetworkManager.service  2>&1
-  - exec_in: systemctl enable network.service  2>&1
