@@ -51,9 +51,3 @@
   - exec_in: |
       echo "Adding a 2 sec delay to the interface up, to make the dhclient happy"
       echo "pre-up sleep 2" >> /etc/network/interfaces
-
-- nullify_freespace:
-  - exec_in: |
-      echo "Nullify freespace..."
-      dd if=/dev/zero of=/bigemptyfile bs=1M 2>&1 >/dev/null || true
-      rm -f /bigemptyfile

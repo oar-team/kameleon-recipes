@@ -39,9 +39,3 @@
 
 - customize_motd:
   - exec_in: echo 'Welcome to your Vagrant-built virtual machine.' > /etc/motd
-
-- nullify_freespace:
-  - exec_in: |
-      echo "Nullify freespace..."
-      dd if=/dev/zero of=/bigemptyfile bs=1M 2>&1 >/dev/null || true
-      rm -f /bigemptyfile
