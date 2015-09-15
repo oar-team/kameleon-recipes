@@ -12,6 +12,7 @@ extend: ubuntu12.04.yaml
 global:
   # Distribution
   release: trusty
+  release_number: 14.04
 
   # Apt recipe options
   apt_repository: http://archive.ubuntu.com/ubuntu/

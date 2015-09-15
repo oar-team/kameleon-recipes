@@ -13,6 +13,7 @@ global:
   # Distribution
   distrib: debian
   release: wheezy
+  release_number: 7
   kernel_arch: amd64
 
   # Apt recipe options
