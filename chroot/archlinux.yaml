@@ -26,6 +26,9 @@ global:
     sudo base-devel ntp zip unzip rsync vim acpid bash-completion procps
     iputils
 
+  # E.g: net.ifnames=0 console=tty0 console=ttyS0,115200n8
+  kernel_args: "quiet net.ifnames=0 biosdevname=0"
+
 # Bootstrap the new system and create the 'in_context'
 bootstrap:
   - "@base"

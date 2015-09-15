@@ -18,6 +18,10 @@ global:
     iptables iputils-ping iproute2 netbase net-tools psmisc openssh-server
     acpid acpi-support-base sysvinit systemd systemd-sysv pciutils
 
+  # E.g: net.ifnames=0 console=tty0 console=ttyS0,115200n8
+  kernel_args: "quiet net.ifnames=0 biosdevname=0"
+
+
 bootstrap:
   - "@base"
 

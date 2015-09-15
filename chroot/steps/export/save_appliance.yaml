@@ -3,9 +3,6 @@
 - create_appliance_script: $$kameleon_cwd/create_appliance.py
 - need_bootloader_script: $$kameleon_cwd/need_bootloader.py
 
-# E.g: net.ifnames=0 console=tty0 console=ttyS0,115200n8
-- kernel_args: "net.ifnames=0 console=tty0 console=ttyS0,115200n8 selinux=0"
-
 - check_bootloader: 
     - check_cmd_local: python
     - exec_local: NEED_BOOTLOADER=$(python $$need_bootloader_script -F $$output_formats)
