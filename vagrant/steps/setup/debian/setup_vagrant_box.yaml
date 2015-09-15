@@ -17,9 +17,6 @@
       apt-get install puppet -y --force-yes
       rm -f $KAMELEON_WORKDIR/puppetlabs-release-stable.deb
 
-- install_chef:
-  - exec_in: curl -L https://www.opscode.com/chef/install.sh -k | bash
-
 - copy_insecure_sshkey:
   - exec_in: mkdir -pm 700 /home/$$user_name/.ssh/
   - download_file_in:
