@@ -1,7 +1,9 @@
 # System configuration
 #
-# This will set the locals and the timezone
+- set_root_password:
+  - exec_in: echo -n 'root:$$root_password' | chpasswd
 
+# This will set the locals and the timezone
 - set_locales:
   # uncomment the locales
   - exec_in: |
@@ -13,12 +15,6 @@
 - set_wheel_sudo:
   - exec_in: echo "%wheel      ALL=(ALL) ALL" >> /etc/sudoers
 
-- setup_systemd:
-  - exec_in: echo "Setting default runlevel to multiuser text mode"
-  - exec_in: rm -f /etc/systemd/system/default.target
-  - exec_in: ln -s /lib/systemd/system/multi-user.target /etc/systemd/system/default.target
-  - exec_in: systemctl daemon-reload
-
 - disable_tmpfs_for_tmp:
   - exec_in: echo "Disabling tmpfs for /tmp."
   - exec_in: systemctl mask tmp.mount
@@ -27,7 +23,7 @@
   - exec_in: echo "Removing random-seed so it's not the same in every image."
   - exec_in: rm -f /var/lib/random-seed
 
-- selinux: permissive
+- selinux: disabled
 - selinuxtype: targeted
 
 - configure_selinux:

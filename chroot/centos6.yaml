@@ -31,7 +31,7 @@ global:
     kernel kernel-devel acpid
 
   # SELinux configuration
-  selinux: permissive  ## Can take one of these three values: enforcing, permissive or disabled
+  selinux: disabled  ## Can take one of these three values: enforcing, permissive or disabled
   selinuxtype: targeted  # Possible values are: strict, targeted
 
 # Bootstrap the new system and create the 'in_context'
