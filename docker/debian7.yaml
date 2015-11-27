@@ -6,7 +6,7 @@
 #
 #==============================================================================
 ---
-extend: ../base/debian.yaml
+extend: ../chroot/debian7.yaml
 # Enables docker checkpoint
 checkpoint: docker.yaml
 #== Global variables use by Kameleon engine and the steps
