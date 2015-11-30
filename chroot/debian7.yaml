@@ -42,9 +42,3 @@ setup:
 # Export the generated appliance in the format of your choice
 export:
   - "@base"
-  - disable_checkpoint
-  - save_appliance:
-    - output_filename: $$appliance_filename
-    - output_formats: $$appliance_formats
-    - tar_compression_level: "9"
-    - tar_excludes: $$appliance_tar_excludes
