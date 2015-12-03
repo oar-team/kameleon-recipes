@@ -32,9 +32,8 @@ global:
 
   # Shell session that allows us to connect to the building machine in order to
   # configure it and setup additional programs
-  ssh_config_file: $$kameleon_cwd/ssh_config
   in_context:
-    cmd: LC_ALL=POSIX ssh -F $$ssh_config_file $$kameleon_recipe_name -t /bin/bash
+    cmd: LC_ALL=POSIX docker exec -i $(cat MAIN_CONTAINER_ID) /bin/bash
     workdir: /root/kameleon_workdir
     proxy_cache: 172.17.42.1
 
@@ -47,9 +46,9 @@ global:
     sudo vim bash-completion curl bzip2 dialog
 
 
-#== Bootstrap the new system and create the 'in_context'
+# Bootstrap the new system and create the 'in_context'
 bootstrap:
-  - "@base"
+  - download_kameleon_helpers
   - prepare_docker
   - start_docker
 
@@ -62,6 +61,4 @@ setup:
 
 #== Export the generated appliance in the format of your choice
 export:
-  - save_docker_appliance:
-    - export:
-      - exec_out: docker export $(cat MAIN_CONTAINER_ID) | docker import - $$docker_image:latest
+  - "@base"
