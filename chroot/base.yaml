@@ -78,7 +78,6 @@ global:
 # Bootstrap the new system and create the 'in_context'
 bootstrap:
   - enable_checkpoint
-  - download_kameleon_helpers
   - prepare_chroot
   - start_chroot
 

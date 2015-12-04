@@ -34,7 +34,6 @@ global:
 
 # Bootstrap the new system and create the 'in_context'
 bootstrap:
-  - download_kameleon_helpers
   - prepare_appliance
   - start_virtualbox
 
