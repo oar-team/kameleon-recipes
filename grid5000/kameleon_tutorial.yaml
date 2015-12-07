@@ -1,0 +1,43 @@
+#==============================================================================
+# vim: softtabstop=2 shiftwidth=2 expandtab fenc=utf-8 cc=81 tw=80
+#==============================================================================
+#
+# DESCRIPTION: Debian 8 + Kameleon tools for Grid5000 tutorial.
+#
+#==============================================================================
+
+# This recipe assumes that you have already set up a ssh proxy connection for
+# Grid'5000 as explain in: https://www.grid5000.fr/mediawiki/index.php/SSH_quick_configuration In order
+# for this recipe to work, please change the g5k username by yours.
+---
+extend: debian8.yaml
+
+global:
+    #
+
+bootstrap:
+  - "@base"
+
+setup:
+  - g5k_tweaks:
+      - enable_g5k_proxy:
+          - exec_in: export http_proxy="http://proxy:3128"
+          - exec_in: export https_proxy="http://proxy:3128"
+          - exec_in: echo export http_proxy="http://proxy:3128" >> /etc/profile
+          - exec_in: echo export https_proxy="http://proxy:3128" >> /etc/profile
+  - "@base"
+  - install_software:
+    - packages: git make ruby ruby-dev qemu virtualbox polipo debootstrap emacs docker.io socat ruby-childprocess libguestfs-tools
+  - customize_image:
+      - install_kameleon:
+          - exec_in: gem install kameleon-builder
+      - hack_polipo:
+          - write_in:
+              - /usr/local/bin/polipo
+              - |
+                #!/bin/bash
+                exec /usr/bin/polipo \$@ parentProxy=$(host proxy | awk '{print $4}'):3128
+          - exec_in: chmod +x /usr/local/bin/polipo
+
+export:
+  - "@base"
