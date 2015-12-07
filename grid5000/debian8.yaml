@@ -2,7 +2,7 @@
 # vim: softtabstop=2 shiftwidth=2 expandtab fenc=utf-8 cc=81 tw=80
 #==============================================================================
 #
-# DESCRIPTION: Debian 7 (Wheezy) image built with Grid5000 platform.
+# DESCRIPTION: Debian 8 (Jessie) image built with Grid5000 platform.
 #
 #==============================================================================
 
@@ -10,7 +10,7 @@
 # Grid'5000 as explain in: https://www.grid5000.fr/mediawiki/index.php/SSH_quick_configuration In order
 # for this recipe to work, please change the g5k username by yours.
 ---
-extend: ../chroot/debian7.yaml
+extend: ../chroot/debian8.yaml
 
 global:
   # Frontend options
@@ -18,7 +18,7 @@ global:
   g5k_site: $$my_g5k_site  # CHANGE ME
 
   # Kenv
-  release: wheezy
+  release: jessie
   kenv: "$${release}-x64-base"
 
   ssh_config_file: $$kameleon_cwd/ssh_config
@@ -50,3 +50,4 @@ export:
     - filename: "$${kameleon_recipe_name}"
     - filesystem: "ext4"
     # - save_as_g5k
+
