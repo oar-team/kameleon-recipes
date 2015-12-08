@@ -39,7 +39,7 @@
       sleep 1
       echo " ~> OK"
   - exec_out: echo "Getting the machine name"
-  - exec_out: export machine=`oarstat -fu $$g5k_user | grep assigned_hostnames | cut -d ' ' -f 7`
+  - exec_out: export machine=`oarstat -fu $$g5k_user | grep assigned_hostnames | tail -n 1 | cut -d ' ' -f 7`
   - exec_out: echo "Deploying environment $$kenv on $machine"
   - exec_out: kadeploy3 -e $$kenv -m $machine -k
   - pipe:
