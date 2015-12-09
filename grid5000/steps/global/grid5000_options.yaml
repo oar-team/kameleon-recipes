@@ -2,8 +2,6 @@
 g5k_user: $$my_g5k_user  # CHANGE ME
 g5k_site: $$my_g5k_site  # CHANGE ME
 
-# Kenv
-release: wheezy
 kenv: "$${release}-x64-base"
 
 ssh_config_file: $$kameleon_cwd/ssh_config
