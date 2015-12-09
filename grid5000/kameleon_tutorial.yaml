@@ -29,7 +29,8 @@ setup:
           - exec_in: false
   - "@base"
   - install_software:
-    - packages: git make ruby ruby-dev qemu virtualbox polipo debootstrap emacs docker.io socat ruby-childprocess libguestfs-tools
+    - recommends: false
+    - packages: git make ruby ruby-dev qemu virtualbox polipo debootstrap docker.io socat ruby-childprocess libguestfs-tools
   - customize_image:
       - install_kameleon:
           - exec_in: gem install kameleon-builder
