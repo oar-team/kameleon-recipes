@@ -12,8 +12,9 @@
 ---
 extend: debian8.yaml
 
+# Global variables use by Kameleon engine and the steps
 global:
-    #
+  include: grid5000_options.yaml
 
 bootstrap:
   - "@base"
@@ -25,6 +26,9 @@ setup:
           - exec_in: export https_proxy="http://proxy:3128"
           - exec_in: echo export http_proxy="http://proxy:3128" >> /etc/profile
           - exec_in: echo export https_proxy="http://proxy:3128" >> /etc/profile
+  - breakpoint:
+      - breakpoint:
+          - exec_in: false
   - "@base"
   - install_software:
     - packages: git make ruby ruby-dev qemu virtualbox polipo debootstrap emacs docker.io socat ruby-childprocess libguestfs-tools

@@ -1,0 +1,18 @@
+# Frontend options
+g5k_user: $$my_g5k_user  # CHANGE ME
+g5k_site: $$my_g5k_site  # CHANGE ME
+
+# Kenv
+release: wheezy
+kenv: "$${release}-x64-base"
+
+ssh_config_file: $$kameleon_cwd/ssh_config
+out_cwd: /home/$$g5k_user/kameleon_workdir/$$kameleon_recipe_name
+out_context:
+  cmd: ssh -A -t -F $$ssh_config_file $$g5k_site /bin/bash
+  workdir: $$out_cwd
+
+in_cwd: /root/kameleon_workdir/$$kameleon_recipe_name
+in_context:
+  cmd: ssh -A -t -F $$ssh_config_file $$kameleon_recipe_name /bin/bash
+  workdir: $$in_cwd
