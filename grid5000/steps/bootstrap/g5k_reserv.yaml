@@ -27,8 +27,7 @@
     # We wait long to keep the job
     # We submit a job only if there is no job already
   - exec_out : |
-      oarstat | grep -q "$$kameleon_recipe_name" \
-          || oarsub -n "$$kameleon_recipe_name" -l walltime=$$walltime -t deploy "sleep 100000"
+      oarstat -u | grep -q "$$kameleon_short_uuid" || oarsub -n "$$kameleon_short_uuid" -l walltime=$$walltime -t deploy "sleep 1000000"
   - exec_out : |
       echo -n "Waiting for the reservation to be ready"
       until $(oarstat -fu $$g5k_user | grep -q "state = Running")
