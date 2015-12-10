@@ -2,11 +2,11 @@
 # vim: softtabstop=2 shiftwidth=2 expandtab fenc=utf-8 cc=81 tw=80
 #==============================================================================
 #
-# DESCRIPTION: Debian 7 docker image built with docker.
+# DESCRIPTION: Archlinux docker image built with docker
 #
 #==============================================================================
 ---
-extend: ../chroot/debian7.yaml
+extend: ../chroot/archlinux.yaml
 checkpoint: docker.yaml
 
 # Global variables use by Kameleon engine and the steps

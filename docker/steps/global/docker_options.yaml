@@ -1,0 +1,21 @@
+## Docker options
+docker_image: $$kameleon_recipe_name
+docker_hostname: $$kameleon_recipe_name
+
+# rootfs options
+rootfs: $$kameleon_cwd/rootfs
+
+# Shell session from where we launch exec_out commands. There is often a
+# local bash session, but it can be a remote shell on other machines or on
+# any shell. (eg. bash, chroot, fakechroot, ssh, tmux, lxc...)
+out_context:
+  cmd: bash
+  workdir: $$kameleon_cwd
+  proxy_cache: localhost
+
+# Shell session that allows us to connect to the building machine in order to
+# configure it and setup additional programs
+in_context:
+  cmd: LC_ALL=POSIX docker exec -i $(cat MAIN_CONTAINER_ID) /bin/bash
+  workdir: /root/kameleon_workdir
+  proxy_cache: 172.17.42.1

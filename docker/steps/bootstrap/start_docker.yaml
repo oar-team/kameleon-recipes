@@ -2,7 +2,6 @@
   - on_checkpoint: redo
   - exec_out: |
       CID=$(docker run -d -i \
-              --dns $$docker_dns \
               -h $$docker_hostname \
               --privileged "$$docker_image:base" \
               cat)
