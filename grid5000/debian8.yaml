@@ -23,6 +23,10 @@ bootstrap:
     - walltime: "1:00:00"
 
 setup:
+  - g5k_tweaks:
+    - enable_g5k_proxy:
+      - exec_in: export http_proxy="http://proxy:3128"
+      - exec_in: export https_proxy="http://proxy:3128"
   - "@base"
 
 export:
