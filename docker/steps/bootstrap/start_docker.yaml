@@ -1,3 +1,16 @@
+
+- fix_docker_resolvconf: 
+  - on_setup_init:
+    - exec_in: cat /etc/resolv.conf > /tmp/resolv.conf-docker
+    - exec_in: umount /etc/resolv.conf
+    - exec_in: cat /tmp/resolv.conf-docker > /etc/resolv.conf
+
+- fix_docker_etc_hosts: 
+  - on_setup_init:
+    - exec_in: cat /etc/hosts > /tmp/hosts-docker
+    - exec_in: umount /etc/hosts
+    - exec_in: cat /tmp/hosts-docker > /etc/hosts
+
 - start_docker_container:
   - on_checkpoint: redo
   - exec_out: |
