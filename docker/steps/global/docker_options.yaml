@@ -17,5 +17,6 @@ out_context:
 # configure it and setup additional programs
 in_context:
   cmd: LC_ALL=POSIX docker exec -i $(cat MAIN_CONTAINER_ID) /bin/bash
+  interactive_cmd: LC_ALL=POSIX docker exec -it $(cat MAIN_CONTAINER_ID) /bin/bash
   workdir: /root/kameleon_workdir
   proxy_cache: 172.17.42.1
