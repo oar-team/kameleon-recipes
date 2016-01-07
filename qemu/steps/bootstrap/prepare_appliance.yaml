@@ -1,5 +1,5 @@
 - insecure_ssh_key: $$kameleon_cwd/insecure_ssh_key
-- create_appliance_script: $$kameleon_cwd/create_appliance.py
+- create_appliance_script: $$kameleon_data_dir/helpers/create_appliance.py
 
 - kameleon_authorized_keys: /root/.ssh/.kameleon_authorized_keys
 - authorized_keys: /root/.ssh/authorized_keys
