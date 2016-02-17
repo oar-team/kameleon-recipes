@@ -2,15 +2,15 @@
 
 - dashes: "---" # kameleon eats my dash if I don't use this dirty hack :-(
 
-- save_as_tgz:
-  - check_cmd_local: guestfish
-  - check_cmd_local: gzip
-  - exec_local: echo "Exporting appliance to $$output.tgz"
-  - exec_local: mkdir -p $$kameleon_cwd/.mnt
-  - exec_local: LIBGUESTFS_CACHEDIR=$$kameleon_cwd guestmount --ro -i -a $$input $$kameleon_cwd/.mnt
-  - exec_local: LIBGUESTFS_CACHEDIR=$$kameleon_cwd tar -cf $$output.tgz --gzip --numeric-owner --selinux --acls --xattrs -C $$kameleon_cwd/.mnt .
-  - exec_local: LIBGUESTFS_CACHEDIR=$$kameleon_cwd guestunmount $$kameleon_cwd/.mnt
-  - exec_local: rmdir $$kameleon_cwd/.mnt
+# - save_as_tgz:
+#   - check_cmd_local: guestfish
+#   - check_cmd_local: gzip
+#   - exec_local: echo "Exporting appliance to $$output.tgz"
+#   - exec_local: mkdir -p $$kameleon_cwd/.mnt
+#   - exec_local: LIBGUESTFS_CACHEDIR=$$kameleon_cwd guestmount --ro -i -a $$input $$kameleon_cwd/.mnt
+#   - exec_local: LIBGUESTFS_CACHEDIR=$$kameleon_cwd tar -cf $$output.tgz --gzip --numeric-owner --selinux --acls --xattrs -C $$kameleon_cwd/.mnt .
+#   - exec_local: LIBGUESTFS_CACHEDIR=$$kameleon_cwd guestunmount $$kameleon_cwd/.mnt
+#   - exec_local: rmdir $$kameleon_cwd/.mnt
 
 - generate_dsc:
   - exec_local: echo "Creating description file for kaenv in $$output.dsc"
