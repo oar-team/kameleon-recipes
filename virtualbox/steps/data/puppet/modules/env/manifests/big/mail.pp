@@ -5,7 +5,7 @@ class env::big::mail () {
  package {
    $mail_packages:
      ensure    => installed,
-     require   => Exec['fix_resolv_conf'];
+     require   => Exec['fix_resolv_conf', 'fix_hostname'];
  }
 #   exec {
 #     'install_postfix_manual':
@@ -17,7 +17,10 @@ class env::big::mail () {
   exec {
     'fix_resolv_conf':
       #command   => "/bin/sed 's/\\(\\s*domain\\s*.*\\)\\./\\1/' -i /etc/resolv.conf"
-      command   => "/bin/sed 's/\\([^\\s]*\\)\\.\\(\\s\\|$\\)/\\1\\2/g' -i /etc/resolv.conf"
+      command   => "/bin/sed 's/\\([^\\s]*\\)\\.\\(\\s\\|$\\)/\\1\\2/g' -i /etc/resolv.conf";
+    'fix_hostname':
+    command => "/bin/sed 's/localhost//' -i /etc/hostname";
+      
   }
   file {
     '/etc/postfix/':
