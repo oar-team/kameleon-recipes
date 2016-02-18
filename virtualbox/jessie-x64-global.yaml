@@ -11,7 +11,7 @@ extend: ./debian8.yaml
 checkpoint: virtualbox.yaml
 #== Global variables use by Kameleon engine and the steps
 global:
-  virtualbox_image_size: 15000  ## megabytes
+  image_size: 15G
   include: virtualbox_options.yaml
   appliance_formats: qcow2 tar.gz
 #  input: $$virtualbox_image_disk
