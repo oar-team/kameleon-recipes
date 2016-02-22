@@ -87,13 +87,6 @@ class env::xen::xen () {
         group    => root,
         mode     => '0644',
         require  => File['/etc/xen-tools/skel/etc/apt'];
-      '/etc/xen-tools/skel/etc/apt/apt.conf.d/proxy':
-        ensure   => file,
-        owner    => root,
-        group    => root,
-        mode     => '0644',
-        source   => 'puppet:///modules/env/min/apt/g5k-proxy',
-        require  => File['/etc/xen-tools/skel/etc/apt/apt.conf.d'];
       '/etc/xen-tools/skel/etc/dhcp':
         ensure   => directory,
         owner    => root,
@@ -123,25 +116,16 @@ class env::xen::xen () {
       require  => File['/etc/xen-tools/skel/root/.ssh/authorized_keys'];
   }
 
-  $proxy_environment = $env::from_g5k ? {
-    true     => ['http_proxy="http://proxy:3128"',  'https_proxy="http://proxy:3128"'],
-    false    => [],
-  }
-  $required_resource_to_create_vm = $env::target_g5k ? {
-    true     => File['/etc/xen-tools/skel/etc/apt/apt.conf.d/proxy'],
-    false    => nil,
-  }
+  
   exec {
     'create_example_domU':
       command  => '/usr/bin/xen-create-image --hostname=domU --role=udev --genpass=0 --password=grid5000 --dhcp --mac=$(random_mac) --bridge=br0 --size=1G',
-      environment => $proxy_environment,
       creates  => '/etc/xen/domU.cfg',
       timeout  => 600,
       require => [
         Package['xen-tools', 'xen-utils'],
         File_line['/etc/xen-tools/skel/root/.ssh/authorized_keys dom0_key'],
-        File['/etc/xen-tools/xen-tools.conf', '/usr/local/bin/random_mac'],
-        $required_resource_to_create_vm,
+        File['/etc/xen-tools/xen-tools.conf', '/usr/local/bin/random_mac']
       ];
   }
 }
