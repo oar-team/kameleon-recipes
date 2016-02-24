@@ -46,6 +46,7 @@ setup:
   - install_software:
     - packages: $$setup_packages
   - install_bootloader
+  - clean_udev_dir
   - setup_orchestrator
   - run_orchestrator
 
