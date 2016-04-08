@@ -20,7 +20,7 @@ global:
     - $$distrib
     - "centos"
 
-  setup_packages: >
+  setup_packages: >-
     bash-completion kbd sudo openssh-clients acpid ntp ntpdate
 
   # E.g: net.ifnames=0 console=tty0 console=ttyS0,115200n8

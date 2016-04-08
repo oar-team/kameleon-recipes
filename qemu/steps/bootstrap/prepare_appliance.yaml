@@ -35,7 +35,7 @@
 
 - inject_ssh_private_key:
   - check_cmd_local: virt-customize
-  - exec_local: >
+  - exec_local: >-
       virt-customize \
         -a $${image_disk}.$${image_format} \
         --run-command 'mkdir -p /root/.ssh/' \
@@ -45,7 +45,7 @@
         --run-command 'chmod 600 /root/.ssh/authorized_keys' \
         --run-command 'chown -R root:root /root/.ssh'
   - on_export_init:
-    - exec_local: >
+    - exec_local: >-
         virt-customize \
           -a $${image_disk}.$${image_format} \
           --run-command 'diff -U $(wc -l < $$authorized_keys) $$authorized_keys $$kameleon_authorized_keys | grep '^-' | sed 's/^-//g' > $$safe_authorized_keys' \

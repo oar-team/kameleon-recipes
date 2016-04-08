@@ -20,7 +20,7 @@ bootstrap:
 setup:
   - "@base"
   - install_software:
-    - packages: >
+    - packages: >-
         linux-headers-$(uname -r) nfs-common dkms rsync wget
   - install_virtualbox_guestaddons
   - setup_vagrant_box

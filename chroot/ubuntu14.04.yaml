@@ -18,7 +18,7 @@ global:
   apt_repository: http://archive.ubuntu.com/ubuntu/
   apt_enable_restricted: true
 
-  setup_packages: >
+  setup_packages: >-
     bash-completion curl nano vim language-pack-en sudo
 
 # Bootstrap the new system and create the 'in_context'
