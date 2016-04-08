@@ -24,7 +24,7 @@ global:
   include_steps:
     - $$distrib
 
-  setup_packages: >
+  setup_packages: >-
     sudo base-devel ntp zip unzip rsync vim acpid bash-completion procps
     iputils
 

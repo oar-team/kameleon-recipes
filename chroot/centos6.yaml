@@ -18,12 +18,12 @@ global:
   ## User varibales : used by the recipe
   user_groups: wheel
 
-  appliance_tar_excludes: >
+  appliance_tar_excludes: >-
     ./etc/fstab ./root/.bash_history ./root/kameleon_workdir ./root/.ssh
     ./var/tmp/* ./tmp/* ./var/log/* ./dev/* ./proc/* ./run/*
     ./sys/* ./root/.rpmdb
 
-  setup_packages: >
+  setup_packages: >-
     kbd sudo openssh-clients ntp ntpdate rsync bridge-utils bzip2 cronie
     cronie-anacron crontabs dash dhclient dhcp-common dracut dracut-kernel
     file fuse gnupg2 iptables-ipv6 libuser logrotate m4 openssh-server passwd

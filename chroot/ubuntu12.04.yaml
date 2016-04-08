@@ -26,7 +26,7 @@ global:
   apt_repository: http://archive.ubuntu.com/ubuntu/
   apt_enable_restricted: true
 
-  setup_packages: >
+  setup_packages: >-
     bsdutils ca-certificates locales man-db less libui-dialog-perl dialog
     isc-dhcp-client ifupdown iptables iputils-ping iproute netbase net-tools
     psmisc openssh-server acpid acpi-support bzip2 language-pack-en

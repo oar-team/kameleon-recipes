@@ -21,7 +21,7 @@ global:
   apt_enable_contrib: true
   apt_enable_nonfree: true
 
-  setup_packages: >
+  setup_packages: >-
     bsdutils ca-certificates locales man-db less libui-dialog-perl dialog
     isc-dhcp-client ifupdown iptables iputils-ping iproute netbase net-tools
     psmisc openssh-server acpid acpi-support-base sysvinit bzip2 wget
