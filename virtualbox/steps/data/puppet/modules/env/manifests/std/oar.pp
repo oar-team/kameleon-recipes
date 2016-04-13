@@ -34,8 +34,8 @@ class env::std::oar {
       require  => Package[$oar_packages];
     '/var/lib/oar/.ssh':
       ensure   => directory,
-      owner    => root,
-      group    => root,
+      owner    => oar,
+      group    => oar,
       mode     => '0755',
       require  => Package[$oar_packages];
     '/var/lib/oar/.ssh/config':
