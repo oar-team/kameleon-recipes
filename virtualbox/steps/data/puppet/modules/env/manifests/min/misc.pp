@@ -14,13 +14,6 @@ class env::min::misc ($root_pwd = '$1$qzZwnZXQ$Ak1xs7Oma6HUHw/xDJ8q91', $keep_tm
       source   => '/usr/share/zoneinfo/Europe/Paris';
   }
 
-  # Use bash as default shell
-  file {
-    '/bin/sh':
-      ensure => 'link',
-      target => '/bin/bash',
-  }
-
   if $keep_tmp {
     # Don't delete /tmp on reboot
     file {
