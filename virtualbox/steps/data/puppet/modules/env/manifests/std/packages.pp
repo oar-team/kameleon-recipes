@@ -1,7 +1,7 @@
 class env::std::packages () {
 
   # bootlogd: debug purpose
-  $utils = [ 'bootlogd' ]
+  $utils = [ 'bootlogd', 'xauth' ]
 
   $installed = [ $utils ]
 
