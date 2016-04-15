@@ -1,8 +1,10 @@
 class env::std::g5kchecks {
 
-  $g5kchecks_deps = [ 'ruby-rspec', 'ruby-rest-client', 'ohai', 'ruby-popen4', 'fio', 'rake', 'ruby-json' ]
+  $g5kchecks_deps = [ 'ruby-rest-client', 'ohai', 'ruby-popen4', 'fio', 'ruby-json' ]
   case $operatingsystem {
     'Debian','Ubuntu': {
+      include env::commonpackages::rake
+      include env::commonpackages::rubyrspec
       exec {
         "retrieve_g5kchecks":
           command  => "/usr/bin/wget --no-check-certificate -q https://www.grid5000.fr/packages/debian/g5kchecks_all.deb -O /tmp/g5kchecks_all.deb",

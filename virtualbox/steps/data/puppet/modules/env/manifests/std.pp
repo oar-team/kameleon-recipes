@@ -36,5 +36,6 @@ class env::std ( $parent_parameters = {} ){
   class { 'env::std::net_access': }
   # Packages
   class { 'env::std::packages': }
-
+  # sudo-g5k
+  class { 'env::std::sudog5k': }
 }
