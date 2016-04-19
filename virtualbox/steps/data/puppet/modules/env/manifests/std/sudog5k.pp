@@ -16,14 +16,6 @@ class env::std::sudog5k {
           source   => "/tmp/sudo-g5k_all.deb",
           require  => [Exec["retrieve_sudog5k"]];
       }
-      file {
-        '/etc/sudoers.d/sudo-g5k':
-          ensure   => present,
-          owner    => root,
-          group    => root,
-          mode     => '0440',
-          source   => 'puppet:///modules/env/std/sudog5k/sudo-g5k.conf',
-      }
     }
     default: {
       err "${operatingsystem} not suported."

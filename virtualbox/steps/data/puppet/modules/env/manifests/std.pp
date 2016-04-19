@@ -37,5 +37,5 @@ class env::std ( $parent_parameters = {} ){
   # Packages
   class { 'env::std::packages': }
   # sudo-g5k
-  class { 'env::std::sudog5k': }
+#  class { 'env::std::sudog5k': } #Removed for the next release
 }
