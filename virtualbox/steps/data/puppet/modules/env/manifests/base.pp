@@ -40,7 +40,4 @@ class env::base ( $parent_parameters = {} ){
   class { 'env::base::openmpi': }
   # disable cstates
   class { 'env::base::cstate': }
-  # Some misc (set bash as default shell)
-  class { 'env::base::misc': }
-
 }

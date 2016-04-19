@@ -1,4 +1,4 @@
-class env::base::misc {
+class env::big::misc {
 
   # Use bash as default shell
   file {
