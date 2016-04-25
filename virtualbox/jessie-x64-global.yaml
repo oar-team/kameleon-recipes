@@ -29,7 +29,7 @@ global:
   os_release: jessie
   image_version: 2016042516
   output: "$$kameleon_cwd/$${kameleon_recipe_name}" # output files basename
-  g5k_tgz_path: g5k_tgz_path: /path/to/your/image
+  g5k_tgz_path: server:///grid5000/images/$${os_release}-x64-$${variant}.tar.gz
   g5k_postinst_path: server:///grid5000/postinstalls/debian-x64-min-1.2-post.tgz
 
 bootstrap:
