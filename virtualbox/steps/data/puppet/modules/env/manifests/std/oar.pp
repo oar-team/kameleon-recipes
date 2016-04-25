@@ -5,23 +5,30 @@ class env::std::oar {
   # Installed oar packages from g5k 'mirror'.
   exec {
     "retrieve_oar-common":
-      command  => "/usr/bin/wget --no-check-certificate -q http://oar-ftp.imag.fr/oar/2.5/debian/pool/main/o/oar/oar-common_2.5.7-2~bpo70+1_amd64.deb -O /tmp/oar-common_amd64.deb",
+      command  => "/usr/bin/wget --no-check-certificate -q http://oar-ftp.imag.fr/oar/2.5/debian/pool/main/o/oar/oar-common_2.5.7-2~bpo8+1_amd64.deb -O /tmp/oar-common_amd64.deb",
       creates  => "/tmp/oar-common_amd64.deb";
     "retrieve_oar-node":
       command  => "/usr/bin/wget --no-check-certificate -q http://oar-ftp.imag.fr/oar/2.5/debian/pool/main/o/oar/oar-node_2.5.7-2~bpo8+1_amd64.deb -O /tmp/oar-node_amd64.deb",
       creates  => "/tmp/oar-node_amd64.deb";
+    "retrieve_liboar":
+      command  => "/usr/bin/wget --no-check-certificate -q http://oar-ftp.imag.fr/oar/2.5/debian/pool/main/o/oar/liboar-perl_2.5.7-2~bpo8+1_amd64.deb -O /tmp/liboar_amd64.deb"
   }
   package {
     "oar-common":
       ensure   => installed,
       provider => dpkg,
       source   => "/tmp/oar-common_amd64.deb",
-      require  => Exec["retrieve_oar-common"];
+      require  => [Exec["retrieve_oar-common"], Package["liboar"]];
     "oar-node":
       ensure   => installed,
       provider => dpkg,
       source   => "/tmp/oar-node_amd64.deb",
-      require  => Exec["retrieve_oar-node"];
+      require  => [Exec["retrieve_oar-node"], Package["liboar"]];
+    "liboar":
+      ensure   => installed,
+      provider => dpkg,
+      source   => "/tmp/liboar_amd64.deb",
+      require  => Exec["retrieve_liboar"];
   }
 
 
