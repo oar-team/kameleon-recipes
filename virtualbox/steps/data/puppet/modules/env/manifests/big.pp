@@ -31,6 +31,4 @@ class env::big ( $parent_parameters = {} ){
     'env::big::mic':
       enable  => $parameters['mic_enable']
   }
-  #Miscellaneous
-  class { 'env::big::misc': }
 }
