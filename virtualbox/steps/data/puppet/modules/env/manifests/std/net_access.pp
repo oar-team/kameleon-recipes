@@ -1,10 +1,7 @@
 class env::std::net_access {
 
-  package {
-    "rsyslog":
-      ensure    => installed;
-  }
-
+  require std::commonpackages::rsyslog
+  
   file {
     "/etc/rsyslog.conf":
       mode    => '0600',

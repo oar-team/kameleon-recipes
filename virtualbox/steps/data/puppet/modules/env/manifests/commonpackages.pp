@@ -13,3 +13,9 @@ class env::commonpackages::rake{
     ensure => installed;
   }
 }
+
+class env::commonpackages::rsyslog{
+  package{ 'rsyslog':
+    ensure => installed;
+  }
+}
