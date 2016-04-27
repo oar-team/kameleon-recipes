@@ -1,6 +1,6 @@
 class env::std::net_access {
 
-  require std::commonpackages::rsyslog
+  require env::commonpackages::rsyslog
   
   file {
     "/etc/rsyslog.conf":
