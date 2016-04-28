@@ -15,7 +15,14 @@ class env::min::configure_network_and_install_drivers {
   }
 
   # Network driver for many dell server
-  $drivers = ['firmware-bnx2x', 'firmware-bnx2']
+  case $operatingsystem {
+    'Debian': {
+      $drivers = ['firmware-bnx2x', 'firmware-bnx2']
+    }
+    'Ubuntu': {
+      $drivers = ['linux-firmware']
+    }
+  }
 
   package {
     $drivers:

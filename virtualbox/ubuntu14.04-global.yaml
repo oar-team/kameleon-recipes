@@ -1,0 +1,59 @@
+#==============================================================================
+# vim: softtabstop=2 shiftwidth=2 expandtab fenc=utf-8 cc=81 tw=80
+#==============================================================================
+#
+# DESCRIPTION: Ubuntu 14.04 LTS base system built with virtualbox.
+#
+#==============================================================================
+---
+extend: ./ubuntu14.04.yaml
+checkpoint: virtualbox.yaml
+
+# Global variables use by Kameleon engine and the steps
+global:
+  image_size: 15G
+  include: virtualbox_options.yaml
+  appliance_formats: tar.gz
+  bootstrap_packages: >
+    linux-image-$$kernel_arch
+    isc-dhcp-client isc-dhcp-common ifupdown iptables iproute2 iputils-ping
+    openssh-server
+    - prepare_appliance
+    - start_virtualbox
+  setup_packages: >
+    extlinux
+  # G5k variables
+  variant: min # default value for variant. Can be overwritten by --global=variant:<my_variant> when calling kameleon
+  os_family: ubuntu
+  os_release: 1404
+  image_version: 2016042012
+  output: "$$kameleon_cwd/$${kameleon_recipe_name}" # output files basename
+  g5k_tgz_path: server:///grid5000/images/jessie-x64-min.tar.gz
+  g5k_postinst_path: server:///grid5000/postinstalls/debian-x64-min-1.2-post.tgz
+# Install and configuration steps
+
+bootstrap:
+  - "@base"
+
+setup:
+  - configure_apt:
+    - repository: $$apt_repository
+    - enable_contrib_repo: $$apt_enable_contrib
+    - enable_nonfree_repo: $$apt_enable_nonfree
+  - configure_apt_updates:
+    - repository: $$apt_repository
+  - upgrade_system:
+    - dist_upgrade: true
+  - install_software:
+    - packages: $$setup_packages
+  - install_bootloader
+  - clean_udev_dir
+  - setup_orchestrator
+  - run_orchestrator
+
+
+# Export the generated appliance in the format of your choice
+export:
+  - disable_checkpoint
+  - "@base"
+  - export_g5k
