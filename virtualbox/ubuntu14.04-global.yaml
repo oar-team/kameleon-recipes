@@ -48,6 +48,7 @@ setup:
     - packages: $$setup_packages
   - install_bootloader
   - clean_udev_dir
+  - configure_locales
   - setup_orchestrator
   - run_orchestrator
 
