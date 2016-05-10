@@ -14,7 +14,6 @@ class env::min::network {
         source => "puppet:///modules/env/min/network/g5k-update-host-name";
   }
 
-  # TODO : is this still necessary in jessie?
   # Network driver for many dell server
   $drivers = ['firmware-bnx2x', 'firmware-bnx2']
 
