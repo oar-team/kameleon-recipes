@@ -23,8 +23,6 @@ class env::min ( $parent_parameters = {} ) {
 
   # User package
   class { 'env::min::packages': }
-  # system
-  class { 'env::min::udev': }
   # ssh
   class { 'env::min::ssh': }
   # setup
