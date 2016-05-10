@@ -1,4 +1,4 @@
-class env::min::apt::grid5000 () {
+class env::min::apt {
 
   augeas {
     'apt_g5k_repository':
@@ -16,5 +16,6 @@ class env::min::apt::grid5000 () {
                     "set #comment[last()+9] 'deb http://apt.grid5000.fr/debian sid main'",
                     "set #comment[last()+10] 'deb-src http://apt.grid5000.fr/debian sid main'"
                    ];
+
   }
 }
