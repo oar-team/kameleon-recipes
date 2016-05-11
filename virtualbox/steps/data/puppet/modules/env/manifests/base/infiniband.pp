@@ -36,8 +36,7 @@ class env::base::infiniband (){
       owner   => root,
       group   => root,
       mode    => '0644',
-      source  => 'puppet:///modules/env/base/infiniband/90-ib.rules',
-      require => Package['udev'];
+      source  => 'puppet:///modules/env/base/infiniband/90-ib.rules';
   }
 
   service {
