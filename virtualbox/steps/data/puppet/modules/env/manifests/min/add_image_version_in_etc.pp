@@ -1,6 +1,6 @@
 # Marking images for debug purpose and to help kadeploy and pre/post-install to recognize images
 
-class env::min::image_versioning () {
+class env::min::add_image_version_in_etc () {
 
   file {
     '/etc/grid5000':

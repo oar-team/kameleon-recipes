@@ -1,4 +1,4 @@
-class env::min::locales {
+class env::min::install_and_configure_locales {
 
   file {
     "/etc/locale.gen":

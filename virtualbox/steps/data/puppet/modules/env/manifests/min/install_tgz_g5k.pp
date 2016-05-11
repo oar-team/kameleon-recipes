@@ -1,4 +1,4 @@
-class env::min::tgz_g5k {
+class env::min::install_tgz_g5k {
   case $operatingsystem {
     'Debian','Ubuntu': {
       # This package is retrieve from www.grid5000.fr. I guess this is because it needs to be retrievable from outside of g5k.

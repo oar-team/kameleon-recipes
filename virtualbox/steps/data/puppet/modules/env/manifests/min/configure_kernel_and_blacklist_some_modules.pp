@@ -1,4 +1,4 @@
-class env::min::kernel {
+class env::min::configure_kernel_and_blacklist_some_modules {
 
   # Install kernel : not required here. Kameleon set-up the kernel because it is required to have SSH access on the build VM (only access way for virtualbox backend)
 

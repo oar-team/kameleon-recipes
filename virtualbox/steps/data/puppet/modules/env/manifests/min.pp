@@ -11,7 +11,7 @@ class env::min ( $parent_parameters = {} ) {
   # Package manager
   case $operatingsystem {
     'Debian','Ubuntu': {
-      class { 'env::min::apt': }
+      class { 'env::min::add_grid5000_apt_repo': }
     }
     'Centos': {
       class { 'env::min::yum': }
@@ -22,15 +22,15 @@ class env::min ( $parent_parameters = {} ) {
   }
 
   # ssh
-  class { 'env::min::ssh': }
+  class { 'env::min::install_and_configure_ssh': }
   # setup
-  class { 'env::min::locales': }
+  class { 'env::min::install_and_configure_locales': }
   # motd
-  class { 'env::min::motd': }
+  class { 'env::min::generate_etc_motd': }
   # tgs-g5k
-  class { 'env::min::tgz_g5k': }
+  class { 'env::min::install_tgz_g5k': }
   # network configuration
-  class { 'env::min::network': }
+  class { 'env::min::configure_network_and_install_drivers': }
   # misc (root password, localtime, default shell...)
   class {
     'env::min::misc':
@@ -38,8 +38,8 @@ class env::min ( $parent_parameters = {} ) {
       keep_tmp => $parameters['misc_keep_tmp'];
   }
   # kernel installation
-  class { 'env::min::kernel': }
+  class { 'env::min::configure_kernel_and_blacklist_some_modules': }
   # Tagging to recognize images
-  class { 'env::min::image_versioning': }
+  class { 'env::min::add_image_version_in_etc': }
 
 }

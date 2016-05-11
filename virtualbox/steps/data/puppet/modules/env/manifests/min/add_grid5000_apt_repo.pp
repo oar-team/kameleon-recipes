@@ -1,4 +1,4 @@
-class env::min::apt {
+class env::min::add_grid5000_apt_repo {
 
   augeas {
     'apt_g5k_repository':

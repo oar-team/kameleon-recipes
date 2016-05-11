@@ -1,4 +1,4 @@
-class env::min::motd {
+class env::min::generate_etc_motd {
   file {
     '/etc/motd':
       ensure  => file,

@@ -1,4 +1,4 @@
-class env::min::ssh {
+class env::min::install_and_configure_ssh {
 
   package {
     'ssh server':

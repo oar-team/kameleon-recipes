@@ -1,4 +1,4 @@
-class env::min::network {
+class env::min::configure_network_and_install_drivers {
 
   # Network configuration
   file {
