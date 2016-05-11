@@ -31,12 +31,19 @@ class env::min ( $parent_parameters = {} ) {
   class { 'env::min::install_tgz_g5k': }
   # network configuration
   class { 'env::min::configure_network_and_install_drivers': }
-  # misc (root password, localtime, default shell...)
-  class {
-    'env::min::misc':
-      root_pwd => $parameters['misc_root_pwd'],
-      keep_tmp => $parameters['misc_keep_tmp'];
+  # root password
+  class { 'env::min::set_root_password':
+     root_pwd => $parameters['misc_root_pwd'];
   }
+  # timezone
+  class { 'env::min::set_timezone_to_europe_paris': }
+  # keep tmp
+
+  # FIXME move to base for clarity, since it's called with 'false' in min anyway
+  class { 'env::min::do_not_clean_tmp':
+     keep_tmp => $parameters['misc_keep_tmp'];
+  }
+
   # kernel installation
   class { 'env::min::configure_kernel_and_blacklist_some_modules': }
   # Tagging to recognize images
