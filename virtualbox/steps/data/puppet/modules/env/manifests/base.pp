@@ -23,7 +23,7 @@ class env::base ( $parent_parameters = {} ){
   # SSH modification
   class { 'env::base::increase_ssh_maxstartups': }
   # Specific tuning
-  class { 'env::base::tuning': }
+  class { 'env::base::tcp_tuning_for_10gbe': }
   # Cpufreq
   class { 'env::base::enable_cpufreq_with_performance_governor': }
   # Ganglia

@@ -1,4 +1,4 @@
-class env::base::tuning (){
+class env::base::tcp_tuning_for_10gbe (){
 
 
 # *** Setting up TCP buffers
