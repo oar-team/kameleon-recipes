@@ -34,11 +34,16 @@ class env::base ( $parent_parameters = {} ){
   # disable cstates
   class { 'env::base::disable_cstate': }
   # User packages
-  class { 'env::base::additional_packages': }
+  class { 'env::base::packages': }
 
-  # TODO Should be dropped from base
-  #class { 'env::base::sshfs': }
-  #class { 'env::base::infiniband': }
-  #class { 'env::base::mx': }
-  #class { 'env::base::openmpi': }
+  # TODO those packages shouldn't be installed anymore in base (move to big)
+  class { 'env::base::additional_packages': }
+  # TODO drop from base (move to big or drop completely)
+  class { 'env::base::sshfs': }
+  # TODO the goal is to get IPoIB to work, nothing more. Strip down the rest.
+  class { 'env::base::infiniband': }
+  # TODO remove completely
+  class { 'env::base::mx': }
+  # TODO drop from base (move to big)
+  class { 'env::base::openmpi': }
 }

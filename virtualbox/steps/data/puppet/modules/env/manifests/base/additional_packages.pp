@@ -1,10 +1,9 @@
 class env::base::additional_packages () {
 
   # Removed : findutils, grep, gzip, man-db, sed, tar, wget, diffutils, multiarch-support
-  $utils = [ 'bzip2', 'curl', 'dnsutils', 'dtach', 'host', 'ldap-utils', 'lshw', 'lsof', 'bsd-mailx', 'm4', 'netcat-openbsd', 'rsync', 'screen', 'strace', 'taktuk', 'telnet', 'time', 'xstow', 'sudo', 'less', 'vim', 'nano', 'debian-keyring' ]
-  $languages = [ 'perl', 'python', 'ipython', 'ruby' ]
+  $utils = [ 'dnsutils', 'dtach', 'host', 'ldap-utils', 'lshw', 'lsof', 'bsd-mailx', 'm4', 'netcat-openbsd', 'screen', 'strace', 'telnet', 'time', 'xstow', 'sudo', 'debian-archive-keyring' ]
 
-  $installed = [ $utils, $languages ]
+  $installed = [ $utils ]
 
   package {
     $installed:
