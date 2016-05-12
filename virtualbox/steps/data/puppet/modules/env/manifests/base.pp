@@ -34,7 +34,7 @@ class env::base ( $parent_parameters = {} ){
   # disable cstates
   class { 'env::base::disable_cstate': }
   # User packages
-  class { 'env::base::packages': }
+  class { 'env::base::additional_packages': }
 
   # TODO Should be dropped from base
   #class { 'env::base::sshfs': }
