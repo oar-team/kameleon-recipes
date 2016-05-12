@@ -4,7 +4,6 @@ class env::min ( $parent_parameters = {} ) {
 
   $min_parameters = {
     misc_root_pwd => '$1$qzZwnZXQ$Ak1xs7Oma6HUHw/xDJ8q91',
-    misc_keep_tmp => false,
   }
   $parameters = merge( $min_parameters, $parent_parameters )
 
@@ -38,11 +37,6 @@ class env::min ( $parent_parameters = {} ) {
   # timezone
   class { 'env::min::set_timezone_to_europe_paris': }
   # keep tmp
-
-  # FIXME move to base for clarity, since it's called with 'false' in min anyway
-  class { 'env::min::do_not_clean_tmp':
-     keep_tmp => $parameters['misc_keep_tmp'];
-  }
 
   # kernel installation
   class { 'env::min::configure_kernel_and_blacklist_some_modules': }

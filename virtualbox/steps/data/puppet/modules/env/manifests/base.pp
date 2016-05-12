@@ -14,6 +14,10 @@ class env::base ( $parent_parameters = {} ){
       parent_parameters => $parameters;
   }
 
+  class { 'env::base::do_not_clean_tmp':
+     keep_tmp => $parameters['misc_keep_tmp'];
+  }
+
   # User packages
   class { 'env::base::packages': }
   # Include kexec-tools
