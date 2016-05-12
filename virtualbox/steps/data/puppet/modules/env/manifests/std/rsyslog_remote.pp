@@ -1,4 +1,4 @@
-class env::std::net_access {
+class env::std::rsyslog_remote {
 
   require env::commonpackages::rsyslog
   

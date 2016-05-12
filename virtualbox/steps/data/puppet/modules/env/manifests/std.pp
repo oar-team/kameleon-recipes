@@ -33,7 +33,7 @@ class env::std ( $parent_parameters = {} ){
   # g5k-subnets
   class { 'env::std::g5ksubnets': }
   # Log net access
-  class { 'env::std::net_access': }
+  class { 'env::std::rsyslog_remote': }
   # Packages
   class { 'env::std::packages': }
   # sudo-g5k
