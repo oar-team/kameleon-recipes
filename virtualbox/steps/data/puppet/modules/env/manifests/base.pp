@@ -18,30 +18,27 @@ class env::base ( $parent_parameters = {} ){
      keep_tmp => $parameters['misc_keep_tmp'];
   }
 
-  # User packages
-  class { 'env::base::packages': }
   # Include kexec-tools
-  class { 'env::base::kexec': }
-  # SSh modification
-  class { 'env::base::ssh': }
-  # Sshfs
-  class { 'env::base::sshfs': }
+  class { 'env::base::configure_kexec': }
+  # SSH modification
+  class { 'env::base::increase_ssh_maxstartups': }
   # Specific tuning
   class { 'env::base::tuning': }
   # Cpufreq
-  class { 'env::base::cpufreq': }
+  class { 'env::base::enable_cpufreq_with_performance_governor': }
   # Ganglia
   class {
-    'env::base::ganglia':
+    'env::base::install_and_disable_ganglia':
       enable => $parameters['ganglia_enable']
   }
-  #TODO: merge ib and mx as 'high perf network' (or equivalent)?
-  # Infiniband
-  class { 'env::base::infiniband': }
-  # MX ?
-  class { 'env::base::mx': }
-  # Openmpi
-  class { 'env::base::openmpi': }
   # disable cstates
-  class { 'env::base::cstate': }
+  class { 'env::base::disable_cstate': }
+  # User packages
+  class { 'env::base::packages': }
+
+  # TODO Should be dropped from base
+  #class { 'env::base::sshfs': }
+  #class { 'env::base::infiniband': }
+  #class { 'env::base::mx': }
+  #class { 'env::base::openmpi': }
 }
