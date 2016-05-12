@@ -1,4 +1,4 @@
-class env::base::kexec {
+class env::base::configure_kexec {
 
   file {
     "/etc/default/kexec":

@@ -1,5 +1,5 @@
 # This class add configurations to sshd. It consider ssh server / service are already declared (in 'min' variant).
-class env::base::ssh (){
+class env::base::increase_ssh_maxstartups (){
 
   augeas {
     'sshd_config_base':

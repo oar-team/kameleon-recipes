@@ -1,4 +1,4 @@
-class env::base::ganglia ($enable = false){
+class env::base::install_and_disable_ganglia ($enable = false){
 
   package {
     'ganglia-monitor':

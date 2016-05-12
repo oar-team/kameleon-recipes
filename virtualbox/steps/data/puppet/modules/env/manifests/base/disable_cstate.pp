@@ -1,5 +1,5 @@
 # Force cstate to be disabled (cstate=0)
-class env::base::cstate {
+class env::base::disable_cstate {
 
   file {
     "/usr/local/sbin/force_cstate_0.rb":

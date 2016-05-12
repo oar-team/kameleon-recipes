@@ -1,4 +1,4 @@
-class env::base::cpufreq (){
+class env::base::enable_cpufreq_with_performance_governor (){
 
   package {
     'cpufrequtils':
