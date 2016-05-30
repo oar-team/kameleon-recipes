@@ -10,7 +10,7 @@ class env::big::kvm () {
   }
 
   file {
-    '/etc/sudoers':
+    '/etc/sudoers.d/kvm':
       ensure    => present,
       owner     => root,
       group     => root,
