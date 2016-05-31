@@ -1,0 +1,20 @@
+#==============================================================================
+# vim: softtabstop=2 shiftwidth=2 expandtab fenc=utf-8 cc=81 tw=80
+#==============================================================================
+#
+# DESCRIPTION: Debian 8 (Jessie) min built with qemu.
+#
+#==============================================================================
+---
+extend: ubuntu14.04-global.yaml # Cf 'jessie-x64-global' for a real content. This recipe only overwrite variant.
+global:
+  variant: min
+
+bootstrap:
+  - "@base"
+
+setup:
+  - "@base"
+
+export:
+  - "@base"
