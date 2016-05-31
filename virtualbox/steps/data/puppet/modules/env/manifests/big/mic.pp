@@ -31,6 +31,10 @@ class env::big::mic ($enable = false) {
       my_package { $installed_packages:
         require  => File['/usr/lib64'];
       }
+      file{ '/usr/lib64':
+        ensure => link,
+        target => '/usr/lib';
+      }
     }
     default: {
       err "${operatingsystem} not suported."
@@ -128,6 +132,8 @@ class env::big::mic ($enable = false) {
       group   => root,
       source  => "puppet:///modules/env/big/mic/85-mic.rules";
   }
+
+  
 
   service {
     'mpss':

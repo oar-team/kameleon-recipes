@@ -1,4 +1,4 @@
-class env::base::sshfs {
+class env::big::sshfs {
 
   file {
     # for sshfs

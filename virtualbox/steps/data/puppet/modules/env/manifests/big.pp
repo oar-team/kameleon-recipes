@@ -31,6 +31,10 @@ class env::big ( $parent_parameters = {} ){
     'env::big::mic':
       enable  => $parameters['mic_enable']
   }
+  #Allow sshfs
+  class { 'env::big::sshfs': }
+  # Config OpenMPI
+  class { 'env::big::openmpi': }
   #Miscellaneous
   class { 'env::big::misc': }
 }

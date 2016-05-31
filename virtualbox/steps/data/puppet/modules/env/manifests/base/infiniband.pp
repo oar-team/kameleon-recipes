@@ -1,7 +1,7 @@
 class env::base::infiniband (){
 
-  # Removed compare to older recipe : rds-tools and sdpnetstat (not present in debian repo anymore)
-  $infiniband_packages = [ 'ibverbs-utils', 'libibverbs-dev', 'libcxgb3-dev', 'libipathverbs-dev', 'libmlx4-dev', 'libmthca-dev', 'librdmacm-dev', 'rdmacm-utils', 'ibutils', 'infiniband-diags', 'perftest', 'qlvnictools', 'srptools' ]
+  #  old packages [ 'ibverbs-utils', 'libibverbs-dev', 'libcxgb3-dev', 'libipathverbs-dev', 'libmlx4-dev', 'libmthca-dev', 'librdmacm-dev', 'rdmacm-utils', 'ibutils', 'infiniband-diags', 'perftest', 'qlvnictools', 'srptools' ]
+  $infiniband_packages = ['qlvnictools']
   $installed = [ $infiniband_packages, 'syslinux' ]
 
   package {

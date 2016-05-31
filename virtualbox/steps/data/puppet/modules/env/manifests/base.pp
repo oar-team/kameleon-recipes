@@ -36,14 +36,6 @@ class env::base ( $parent_parameters = {} ){
   # User packages
   class { 'env::base::packages': }
 
-  # TODO those packages shouldn't be installed anymore in base (move to big)
-  class { 'env::base::additional_packages': }
-  # TODO drop from base (move to big or drop completely)
-  class { 'env::base::sshfs': }
   # TODO the goal is to get IPoIB to work, nothing more. Strip down the rest.
   class { 'env::base::infiniband': }
-  # TODO remove completely
-  class { 'env::base::mx': }
-  # TODO drop from base (move to big)
-  class { 'env::base::openmpi': }
 }
