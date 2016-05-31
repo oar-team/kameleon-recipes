@@ -26,9 +26,9 @@ global:
   variant: min # default value for variant. Can be overwritten by --global=variant:<my_variant> when calling kameleon
   os_family: ubuntu
   os_release: 1404
-  image_version: 2016042012
+  image_version: 2016053012
   output: "$$kameleon_cwd/$${kameleon_recipe_name}" # output files basename
-  g5k_tgz_path: server:///grid5000/images/jessie-x64-min.tar.gz
+  g5k_tgz_path: server:///path/to/your/image
   g5k_postinst_path: server:///grid5000/postinstalls/debian-x64-min-1.2-post.tgz
 # Install and configuration steps
 
@@ -49,6 +49,7 @@ setup:
   - install_bootloader
   - clean_udev_dir
   - configure_locales
+  - configure_failsafe
   - setup_orchestrator
   - run_orchestrator
 
