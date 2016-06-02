@@ -772,9 +772,7 @@ bring_up()
                 ;;
                 Debian)
                     . ${NETWORK_CONF_DIR}/ifcfg-${i}
-                    [ ! -z ${PKEY_ID} ] && echo ${PKEY_ID} > /sys/class/net/ib0/create_child
-                    [ -z ${DEVICE} ] && DEVICE=${i}
-                    /sbin/ifconfig ${DEVICE} ${IPADDR} netmask ${NETMASK} > /dev/null 2>&1 
+                    /sbin/ifconfig ${i} ${IPADDR} netmask ${NETMASK} > /dev/null 2>&1
                 ;;
                 *)
                     /sbin/ifup ${i}
