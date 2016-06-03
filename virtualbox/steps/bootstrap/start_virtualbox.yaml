@@ -1,5 +1,6 @@
 - boot_timeout: 100
 - shutdown_timeout: 30
+- arg_create:
 
 - attached_image_disk: $$kameleon_cwd/attached_base_$$kameleon_recipe_name.$$image_format
 - initial_image_disk: $$image_disk.$$image_format
@@ -10,7 +11,7 @@
 
 - register_vm:
   - exec_local: echo "Creating virtual machine"
-  - exec_local: VBoxManage createvm --name $$virtualbox_vmid --register
+  - exec_local: VBoxManage createvm --name $$virtualbox_vmid --register $$arg_create
   - exec_local: VBoxManage modifyvm $$virtualbox_vmid --ostype $$virtualbox_os_type
   - exec_local: VBoxManage modifyvm $$virtualbox_vmid --boot1 disk
   - exec_local: VBoxManage modifyvm $$virtualbox_vmid --memory $$virtualbox_memory_size
