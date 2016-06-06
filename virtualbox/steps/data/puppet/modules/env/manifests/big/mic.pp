@@ -34,6 +34,9 @@ class env::big::mic ($enable = false) {
       file{ '/usr/lib64':
         ensure => link,
         target => '/usr/lib';
+      '/etc/systemd/system/mpss.service':
+        mode => "644",
+        require => My_package[$installed_packages];
       }
     }
     default: {

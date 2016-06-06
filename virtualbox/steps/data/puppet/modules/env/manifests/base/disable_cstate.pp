@@ -8,7 +8,7 @@ class env::base::disable_cstate {
       group   => root,
       source  => "puppet:///modules/env/base/cstate/force_cstate_0.rb";
     "/etc/systemd/system/force_cstate_0.service":
-      mode    => '0744',
+      mode    => '0644',
       owner   => root,
       group   => root,
       source  => "puppet:///modules/env/base/cstate/force_cstate_0.service";
