@@ -35,6 +35,4 @@ class env::big ( $parent_parameters = {} ){
   class { 'env::big::sshfs': }
   # Config OpenMPI
   class { 'env::big::openmpi': }
-  #Miscellaneous
-  class { 'env::big::misc': }
 }
