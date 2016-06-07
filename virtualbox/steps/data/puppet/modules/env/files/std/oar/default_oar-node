@@ -33,7 +33,13 @@ start_oar_node() {
           echo "oar-node: FAILED"
           return 1
         fi
-        ((sleep = $RANDOM % $MODSLEEP + $MINSLEEP))
+	local random=$RANDOM
+        # Workaround for the case where dash is the default shell: dash does
+        # not provide $RANDOM
+        if [ "x$random" = "x" ]; then
+            random=$(bash -c 'echo $RANDOM')
+        fi 
+        sleep=$(($random % $MODSLEEP + $MINSLEEP))
         echo "oar-node: retrying in $sleep seconds..."
         sleep $sleep
       }
