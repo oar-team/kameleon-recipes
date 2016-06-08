@@ -14,6 +14,10 @@ global:
   image_size: 15G
   include: virtualbox_options.yaml
   appliance_formats: qcow2 tar.gz
+  appliance_tar_excludes: >-
+    ./etc/fstab ./root/.bash_history ./root/kameleon_workdir
+    ./var/tmp/* ./tmp/* ./var/log/* ./dev/* ./proc/* ./run/*
+    ./sys/*
 #  input: $$virtualbox_image_disk
   bootstrap_packages: >
     linux-image-$$kernel_arch
