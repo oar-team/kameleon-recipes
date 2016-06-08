@@ -31,8 +31,8 @@ class env::base ( $parent_parameters = {} ){
     'env::base::install_and_disable_ganglia':
       enable => $parameters['ganglia_enable']
   }
-  # disable cstates
-  class { 'env::base::disable_cstate': }
+  # Force cstates configuration
+  class { 'env::base::configure_cstates': }
   # User packages
   class { 'env::base::packages': }
 
