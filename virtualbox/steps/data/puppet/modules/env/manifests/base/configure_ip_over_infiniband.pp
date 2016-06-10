@@ -1,4 +1,4 @@
-class env::base::infiniband (){
+class env::base::configure_ip_over_infiniband (){
 
   #  old packages [ 'ibverbs-utils', 'libibverbs-dev', 'libcxgb3-dev', 'libipathverbs-dev', 'libmlx4-dev', 'libmthca-dev', 'librdmacm-dev', 'rdmacm-utils', 'ibutils', 'infiniband-diags', 'perftest', 'qlvnictools', 'srptools' ]
   $infiniband_packages = ['qlvnictools']

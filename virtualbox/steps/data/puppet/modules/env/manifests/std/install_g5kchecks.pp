@@ -1,4 +1,4 @@
-class env::std::g5kchecks {
+class env::std::install_g5kchecks {
 
   $g5kchecks_deps = [ 'ruby-rest-client', 'ohai', 'ruby-popen4', 'fio', 'ruby-json' ]
   case $operatingsystem {

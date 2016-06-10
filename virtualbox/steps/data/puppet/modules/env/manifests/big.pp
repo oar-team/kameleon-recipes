@@ -16,23 +16,23 @@ class env::big ( $parent_parameters = {} ){
   class { 'env::big::packages': }
   # gem
   if $env::target_g5k {
-    class { 'env::big::gem':
+    class { 'env::big::configure_gemrc':
       stage  => 'g5k_adjustment';
     }
   }
   # mail
-  class { 'env::big::mail': }
+  class { 'env::big::configure_postfix': }
   # kvm
-  class { 'env::big::kvm': }
+  class { 'env::big::configure_kvm': }
   # nvidia
-  class { 'env::big::nvidia': }
+  class { 'env::big::configure_nvidia_gpu': }
   # xeon phi
   class {
-    'env::big::mic':
+    'env::big::install_xeon_phi_requirements':
       enable  => $parameters['mic_enable']
   }
   #Allow sshfs
-  class { 'env::big::sshfs': }
+  class { 'env::big::configure_sshfs': }
   # Config OpenMPI
-  class { 'env::big::openmpi': }
+  class { 'env::big::install_openmpi': }
 }

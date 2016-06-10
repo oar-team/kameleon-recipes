@@ -1,4 +1,4 @@
-class env::std::rsyslog_remote {
+class env::std::configure_rsyslog_remote {
 
   require env::commonpackages::rsyslog
   

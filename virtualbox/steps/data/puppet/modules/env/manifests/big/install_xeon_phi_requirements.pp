@@ -18,7 +18,7 @@ define my_package {
 
 
 
-class env::big::mic ($enable = false) {
+class env::big::install_xeon_phi_requirements ($enable = false) {
 
   # TODO: add non debian version
   # TODO: add condition over kernel version to get mpss packages at good version

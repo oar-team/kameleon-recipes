@@ -1,4 +1,4 @@
-class env::big::nvidia::drivers () {
+class env::big::configure_nvidia_gpu::drivers () {
 
   ### This class exists for gpuclus cluster, that require a recent version of nvidia driver (346.22)
 

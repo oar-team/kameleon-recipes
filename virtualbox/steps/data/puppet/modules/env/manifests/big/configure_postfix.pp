@@ -1,4 +1,4 @@
-class env::big::mail () {
+class env::big::configure_postfix () {
 
   $mail_packages = [ postfix ]
 

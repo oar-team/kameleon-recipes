@@ -35,7 +35,6 @@ class env::base ( $parent_parameters = {} ){
   class { 'env::base::configure_cstates': }
   # User packages
   class { 'env::base::packages': }
-
-  # TODO the goal is to get IPoIB to work, nothing more. Strip down the rest.
-  class { 'env::base::infiniband': }
+  #IbOverIP
+  class { 'env::base::configure_ip_over_infiniband': }
 }

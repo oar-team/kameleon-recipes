@@ -1,4 +1,4 @@
-class env::nfs::storage5k {
+class env::nfs::install_storage5k_requirements {
 
   #Package required by storage5k
   package {

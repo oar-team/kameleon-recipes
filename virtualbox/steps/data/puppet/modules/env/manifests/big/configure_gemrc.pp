@@ -1,4 +1,4 @@
-class env::big::gem () {
+class env::big::configure_gemrc () {
 
   file {
     '/etc/gemrc':

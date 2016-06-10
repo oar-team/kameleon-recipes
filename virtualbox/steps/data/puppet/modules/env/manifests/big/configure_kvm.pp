@@ -1,4 +1,4 @@
-class env::big::kvm () {
+class env::big::configure_kvm () {
 
   # If sudo is used somewhere else, he shoud be placed in 'packages' instead of 'kvm' class.
   $packages = [ 'kvm', 'uml-utilities', 'virtinst',  'genisoimage', 'libvirt-bin', 'python-libvirt', 'libguestfs-tools' ]

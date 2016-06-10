@@ -1,4 +1,4 @@
-class env::big::nvidia::modules () {
+class env::big::configure_nvidia_gpu::modules () {
 
   augeas {
     'blacklist_vga16fb':

@@ -1,4 +1,4 @@
-class env::nfs::ldap () {
+class env::nfs::configure_ldap () {
 
   # Contains configuration to have ldap authentication working (ldap, nss, pam, nscd...)
 

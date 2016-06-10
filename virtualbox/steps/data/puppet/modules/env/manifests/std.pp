@@ -25,15 +25,15 @@ class env::std ( $parent_parameters = {} ){
       parent_parameters => $parameters
   }
   # OAR
-  class { 'env::std::oar': }
+  class { 'env::std::configure_oar_client': }
   # g5kchecks
-  class { 'env::std::g5kchecks': }
+  class { 'env::std::install_g5kchecks': }
   # g5kcode
-  class { 'env::std::g5kcode': }
+  class { 'env::std::add_g5kcode_to_path': }
   # g5k-subnets
-  class { 'env::std::g5ksubnets': }
+  class { 'env::std::install_g5ksubnets': }
   # Log net access
-  class { 'env::std::rsyslog_remote': }
+  class { 'env::std::configure_rsyslog_remote': }
   # sudo-g5k
-  class { 'env::std::sudog5k': }
+  class { 'env::std::install_sudog5k': }
 }

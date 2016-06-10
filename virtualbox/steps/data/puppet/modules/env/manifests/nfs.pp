@@ -11,20 +11,20 @@ class env::nfs ( $parent_parameters = {} ){
       parent_parameters => $parameters
   }
   # Openiscsi (storage5k)
-  class { 'env::nfs::openiscsi': }
+  class { 'env::nfs::configure_iscsi': }
   # Ceph
-  class { 'env::nfs::ceph': }
+  class { 'env::nfs::install_ceph': }
   # ntp (required by nfs)
   class {
-    'env::nfs::ntp':
+    'env::nfs::configure_ntp':
       drift_file => $parameters['ntp_drift_file']
   }
   # package (shells)
   class { 'env::nfs::packages': }
   # ldap
-  class { 'env::nfs::ldap': }
+  class { 'env::nfs::configure_ldap': }
   # nfs
-  class { 'env::nfs::nfs': }
+  class { 'env::nfs::install_nfs_requirements': }
   # storage5k required
-  class { 'env::nfs::storage5k': }
+  class { 'env::nfs::install_storage5k_requirements': }
 }

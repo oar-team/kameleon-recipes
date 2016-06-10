@@ -1,4 +1,4 @@
-class env::std::oar {
+class env::std::configure_oar_client {
 
 
   $oar_packages = ['oar-common', 'oar-node']

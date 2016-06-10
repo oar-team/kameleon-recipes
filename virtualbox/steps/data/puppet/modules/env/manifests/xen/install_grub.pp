@@ -1,4 +1,4 @@
-class env::xen::grub () {
+class env::xen::install_grub () {
 
   package {
     'grub2':
