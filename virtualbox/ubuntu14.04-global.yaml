@@ -58,4 +58,6 @@ setup:
 export:
   - disable_checkpoint
   - "@base"
-  - export_g5k
+  - export_g5k:
+      - os_release: ubuntu
+      - variant: 1404
