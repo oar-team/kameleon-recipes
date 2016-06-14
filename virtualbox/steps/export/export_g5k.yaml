@@ -69,3 +69,7 @@
       multipart: false
       EOF
       fi
+- generate_md5:
+  - exec_local: |
+      md5sum $${os_release}-x64-$$variant.* > $${os_release}-x64-$$variant.md5
+      
