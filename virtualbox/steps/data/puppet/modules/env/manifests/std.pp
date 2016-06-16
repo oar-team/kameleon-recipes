@@ -26,7 +26,7 @@ class env::std ( $parent_parameters = {} ){
   }
   # OAR
   class { 'env::std::oar': }
-  # g5kchecks
+  # g5kchecks (+ ipmitool)
   class { 'env::std::g5kchecks': }
   # g5kcode
   class { 'env::std::g5kcode': }

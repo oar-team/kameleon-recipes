@@ -1,5 +1,7 @@
 class env::std::g5kchecks {
 
+  include 'env::std::ipmitool' # ipmitool is required by g5k-checks
+  
   $g5kchecks_deps = [ 'ruby-rest-client', 'ohai', 'ruby-popen4', 'fio', 'ruby-json' ]
   case $operatingsystem {
     'Debian','Ubuntu': {
@@ -30,7 +32,7 @@ class env::std::g5kchecks {
       }
     }
     default: {
-      err "${operatingsystem} not suported."
+      err "${operatingsystem} not supported."
     }
   }
 }
