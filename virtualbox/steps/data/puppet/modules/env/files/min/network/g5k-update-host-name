@@ -1,15 +1,17 @@
-#!/bin/sh
+#!/bin/bash
 
 if [ -n "$new_host_name" ]; then
-	if [ -n "$new_domain_name" ]; then
-		hostname="${new_host_name}.${new_domain_name}"
-	else
-		hostname="${new_host_name}"
-	fi
+  if ! [[ "$new_host_name" =~ ^.*-eth.*$ ]]; then
+    if [ -n "$new_domain_name" ]; then
+      hostname="${new_host_name}.${new_domain_name}"
+    else
+      hostname="${new_host_name}"
+    fi
 
-	echo "$hostname" > /etc/hostname 2> /dev/null
-	hostname "$hostname"
-	echo "$hostname" > /etc/mailname 2> /dev/null
+    echo "$hostname" > /etc/hostname 2> /dev/null
+    hostname "$hostname"
+    echo "$hostname" > /etc/mailname 2> /dev/null
+  fi
 fi
 
 globaldnsip="131.254.203.235"
