@@ -7,7 +7,7 @@
 #==============================================================================
 
 # This recipe assumes that you have already set up a ssh proxy connection for
-# Grid'5000 as explain in: https://www.grid5000.fr/mediawiki/index.php/SSH_quick_configuration In order
+# Grid'5000 as explain in https://www.grid5000.fr/mediawiki/index.php/SSH_quick_configuration In order
 # for this recipe to work, please change the g5k username by yours.
 ---
 extend: ../chroot/debian7.yaml
