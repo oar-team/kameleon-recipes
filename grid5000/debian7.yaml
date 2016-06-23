@@ -18,11 +18,14 @@ global:
 
 bootstrap:
   - g5k_reserv:
-    - g5k_user: $$g5k_user
-    - kenv: $$kenv
-    - walltime: "1:00:00"
+    - g5k_user: $${g5k_user}
+    - kenv: $${kenv}
+    - walltime: $${walltime}
+# TOFIX why walltime is hardly coded?
+#    - walltime: "1:00:00"
 
 setup:
+  # TOCHECK
   - g5k_tweaks:
     - enable_g5k_proxy:
       - exec_in: export http_proxy="http://proxy:3128"
