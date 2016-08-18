@@ -1,23 +1,21 @@
 # Install and configure (if required) puppet
-# This is not made by the standard packet installation mechanisme
+# This is not made by the standard packet installation mechanism
 # because we want to add a specific version
 
 
-- script_url: https://raw.githubusercontent.com/pmorillon/puppet-puppet/master/extras/bootstrap/puppet_install.sh
 - script_name: puppet_install.sh
 - script_path: /tmp
-- puppet_version: 3.7.3
+- puppet-agent_version: 1.5.1-1wheezy
 - puppet_path: /opt/puppetlabs/bin
 
 - get_standalone_puppet_script:
   - exec_local: mkdir -p $$kameleon_cwd/script_dir
-#  - exec_local: wget $$script_url --no-check-certificate -P $$kameleon_cwd/script_dir
-  - exec_local: echo "apt-get install -y wget lsb-release ; wget -q http://apt.puppetlabs.com/puppetlabs-release-pc1-wheezy.deb -O /tmp/puppetlabs-release-pc1-wheezy.deb && dpkg -i /tmp/puppetlabs-release-pc1-wheezy.deb ; apt-get update && rc=$? || rc=$? ; apt-get install -y --no-install-recommends puppet-agent" > $$kameleon_cwd/script_dir/$$script_name
+  - exec_local: echo "apt-get install -y wget lsb-release ; wget -q http://apt.puppetlabs.com/puppetlabs-release-pc1-wheezy.deb -O /tmp/puppetlabs-release-pc1-wheezy.deb && dpkg -i /tmp/puppetlabs-release-pc1-wheezy.deb ; apt-get update && rc=$? || rc=$? ; apt-get install -y --no-install-recommends puppet-agent="$$puppet-agent_version > $$kameleon_cwd/script_dir/$$script_name
   - pipe:
     - exec_local: tar -cf - -C $$kameleon_cwd/script_dir .
     - exec_in: tar xfp - -C $$script_path
   - exec_in: chmod +x $$script_path/$$script_name
-  - exec_in: PUPPET_VERSION=$$puppet_version $$script_path/$$script_name
+  - exec_in: $$script_path/$$script_name
   # We tagged packet as "automatically installed" to auto-remove them at the end of the orchestration step
   - exec_in: apt-mark auto puppet-agent lsb-release puppetlabs-release-pc1
   # We also install stdlib module that contains some usefull functions
