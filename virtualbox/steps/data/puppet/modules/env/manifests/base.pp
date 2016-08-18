@@ -37,4 +37,6 @@ class env::base ( $parent_parameters = {} ){
   class { 'env::base::packages': }
   #IbOverIP
   class { 'env::base::configure_ip_over_infiniband': }
+  # memlock tuning for infiniband
+  class { 'env::base::unlimited_memlock_for_infiniband': }
 }
