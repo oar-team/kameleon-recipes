@@ -24,6 +24,13 @@ class env::base::configure_ip_over_infiniband (){
       mode     => '0755',
       source   => 'puppet:///modules/env/base/infiniband/openibd',
       require  => Package[$infiniband_packages];
+    '/etc/systemd/system/openibd.service':
+      ensure   => file,
+      owner    => root,
+      group    => root,
+      mode     => '0644',
+      source   => 'puppet:///modules/env/base/infiniband/openibd.service',
+      require  => Package[$infiniband_packages];
     '/etc/infiniband/ifcfg-ib0':
       ensure   => file,
       owner    => root,

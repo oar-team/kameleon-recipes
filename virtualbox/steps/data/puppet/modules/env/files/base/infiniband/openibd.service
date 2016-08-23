@@ -1,0 +1,22 @@
+[Unit]
+SourcePath=/etc/init.d/openibd
+Description=LSB: Activates/Deactivates InfiniBand Driver to start at boot time.
+Before=runlevel2.target runlevel3.target runlevel5.target shutdown.target
+After=local-fs.target network.target network-online.target
+Conflicts=shutdown.target
+
+[Service]
+Type=forking
+Restart=no
+TimeoutSec=5min
+IgnoreSIGPIPE=no
+KillMode=process
+GuessMainPID=no
+RemainAfterExit=yes
+SysVStartPriority=1
+ExecStart=/etc/init.d/openibd start
+ExecStop=/etc/init.d/openibd stop
+
+[Install]
+WantedBy=multi-user.target
+WantedBy=network-online.target
