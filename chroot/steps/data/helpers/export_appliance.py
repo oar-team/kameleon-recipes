@@ -49,7 +49,10 @@ def tar_convert(disk, output, excludes, compression_level):
 
     compr = ""
     if output.endswith(('tar.gz', 'tgz')):
-        compr = "| %s %s" % (which("gzip"), compression_level_opt)
+        try:
+            compr = "| %s %s" % (which("pigz"), compression_level_opt)
+        except:
+            compr = "| %s %s" % (which("gzip"), compression_level_opt)
     elif output.endswith(('tar.bz2', 'tbz')):
         compr = "| %s %s" % (which("bzip2"), compression_level_opt)
     elif output.endswith(('tar.xz', 'txz')):
