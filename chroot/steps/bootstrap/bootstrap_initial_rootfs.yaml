@@ -1,26 +1,26 @@
-- insecure_ssh_key: $$kameleon_cwd/insecure_ssh_key
+- insecure_ssh_key: $${kameleon_cwd}/insecure_ssh_key
 
 - download_boot2kameleon_iso:
   - download_file_local:
-    - $$boot2kameleon_url
-    - $$kameleon_cwd/boot2kameleon.iso
+    - $${boot2kameleon_url}
+    - $${kameleon_cwd}/boot2kameleon.iso
 
 - create_initial_image:
   - check_cmd_local: qemu-img
   - exec_local: |
-      rm -f $$qemu_image_disk
-      qemu-img create -f qcow2 $$qemu_image_disk $$qemu_image_size
+      rm -f $${qemu_image_disk}
+      qemu-img create -f qcow2 $${qemu_image_disk} $${qemu_image_size}
 
 - delete_initial_image:
   - on_checkpoint: skip
   - on_export_clean:
-    - exec_local: rm -f $$qemu_image_disk
+    - exec_local: rm -f $${qemu_image_disk}
 
 - configure_ssh_access:
   - download_file_local:
-    - $$insecure_ssh_key_url
-    - $$insecure_ssh_key
-  - exec_local: chmod 600 $$insecure_ssh_key
+    - $${insecure_ssh_key_url}
+    - $${insecure_ssh_key}
+  - exec_local: chmod 600 $${insecure_ssh_key}
 
 - create_ssh_config:
   - on_checkpoint: redo
@@ -30,13 +30,13 @@
       echo "SSH forwarding port: $SSH_FWD_PORT"
 
   - write_local:
-    - $$ssh_config_file
+    - $${ssh_config_file}
     - |
       Host $${kameleon_recipe_name}
       HostName 127.0.0.1
       Port $SSH_FWD_PORT
       User root
-      IdentityFile $$insecure_ssh_key
+      IdentityFile $${insecure_ssh_key}
       UserKnownHostsFile /dev/null
       StrictHostKeyChecking no
       PasswordAuthentication no

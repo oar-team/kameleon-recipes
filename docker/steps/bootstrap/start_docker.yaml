@@ -15,8 +15,8 @@
   - on_checkpoint: redo
   - exec_out: |
       CID=$(docker run -d -i \
-              -h $$docker_hostname \
-              --privileged "$$docker_image:base" \
+              -h $${docker_hostname} \
+              --privileged "$${docker_image}:base" \
               cat)
       sleep 2
   - exec_out: echo "$CID" >> CONTAINERS_TO_CLEAN

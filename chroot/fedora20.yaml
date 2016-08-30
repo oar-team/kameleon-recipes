@@ -16,8 +16,8 @@ global:
 
   # Include specific steps
   include_steps:
-    - $$distrib/$$release
-    - $$distrib
+    - $${distrib}/$${release}
+    - $${distrib}
     - "centos"
 
   setup_packages: >-

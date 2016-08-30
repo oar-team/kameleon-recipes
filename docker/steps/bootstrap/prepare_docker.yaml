@@ -1,4 +1,4 @@
-- insecure_ssh_key: $$kameleon_cwd/insecure_ssh_key
+- insecure_ssh_key: $${kameleon_cwd}/insecure_ssh_key
 
 - clean_containers:
   - on_checkpoint: redo
@@ -12,11 +12,11 @@
 
 - download_rootfs_archive:
   - download_file_local:
-    - $$rootfs_archive_url
-    - $$rootfs_archive_download_path
+    - $${rootfs_archive_url}
+    - $${rootfs_archive_download_path}
 
 - import_to_docker:
   - check_cmd_out: docker
-  - exec_out: echo "Importing $$docker_image to docker..."
-  - exec_out: xzcat $$rootfs_archive_download_path | docker import - $$docker_image:base
-  - exec_out: rm -f $$rootfs_archive_download_path
+  - exec_out: echo "Importing $${docker_image} to docker..."
+  - exec_out: xzcat $${rootfs_archive_download_path} | docker import - $${docker_image}:base
+  - exec_out: rm -f $${rootfs_archive_download_path}

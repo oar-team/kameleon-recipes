@@ -11,7 +11,7 @@
 extend: base.yaml
 
 global:
-  rootfs_archive_url: http://kameleon.imag.fr/rootfs/$$arch/$${distrib}$${release}.tar.xz
+  rootfs_archive_url: http://kameleon.imag.fr/rootfs/$${arch}/$${distrib}$${release}.tar.xz
 
 bootstrap:
   - "@base"

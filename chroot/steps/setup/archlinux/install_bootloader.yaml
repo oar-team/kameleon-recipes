@@ -3,7 +3,7 @@
 - install_syslinux:
   - check_cmd_in: extlinux
   - check_cmd_in: syslinux-install_update
-  - exec_in: DISTRIB_TITLE="$$kameleon_recipe_name"
+  - exec_in: DISTRIB_TITLE="$${kameleon_recipe_name}"
   - exec_in: syslinux-install_update -a -m
   - exec_in: cp -r /usr/lib/syslinux/bios/*.c32 /boot/syslinux/
   - exec_in: extlinux --install /boot/syslinux 2>&1

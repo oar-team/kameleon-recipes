@@ -53,7 +53,8 @@ def tar_convert(disk, output, excludes, compression_level):
     elif output.endswith(('tar.bz2', 'tbz')):
         compr = "| %s %s" % (which("bzip2"), compression_level_opt)
     elif output.endswith(('tar.xz', 'txz')):
-        compr = "| %s %s -c -" % (which("xz"), compression_level_opt)
+        compr = "| {} {} -c --threads=0 -".format(
+            (which("xz"), compression_level_opt))
     elif output.endswith(('tar.lzo', 'tzo')):
         compr = "| %s %s -c -" % (which("lzop"), compression_level_opt)
 

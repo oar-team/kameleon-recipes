@@ -1,21 +1,21 @@
 enabled?:
-  - exec_local: test -f $$kameleon_cwd/checkpoint_enabled
+  - exec_local: test -f $${kameleon_cwd}/checkpoint_enabled
 
 create:
   - exec_local: |
-      echo @microstep_id >> $$kameleon_cwd/checkpoints.list
+      echo @microstep_id >> $${kameleon_cwd}/checkpoints.list
 
 apply:
   - exec_local: |
-      touch $$kameleon_cwd/checkpoints.list
-      grep -R @microstep_id $$kameleon_cwd/checkpoints.list
+      touch $${kameleon_cwd}/checkpoints.list
+      grep -R @microstep_id $${kameleon_cwd}/checkpoints.list
 
 
 clear:
   - exec_local: |
-      echo > $$kameleon_cwd/checkpoints.list
+      echo > $${kameleon_cwd}/checkpoints.list
 
 list:
   - exec_local: |
-      touch $$kameleon_cwd/checkpoints.list
-      cat $$kameleon_cwd/checkpoints.list | uniq
+      touch $${kameleon_cwd}/checkpoints.list
+      cat $${kameleon_cwd}/checkpoints.list | uniq

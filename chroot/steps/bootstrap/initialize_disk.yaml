@@ -9,8 +9,8 @@
       parted -s $${disk_device} set 1 boot on
   - exec_out: |
       echo Creating root partition...
-      mkfs.$$filesystem_type -q $${disk_device}1 || fail cannot create / ext4
+      mkfs.$${filesystem_type} -q $${disk_device}1 || fail cannot create / ext4
 
 - mount_mountdir:
-  - exec_out: mkdir -p $$rootfs
-  - exec_out:  "echo Mounting root partition... ;  mount $${disk_device}1 $$rootfs || fail cannot mount /"
+  - exec_out: mkdir -p $${rootfs}
+  - exec_out:  "echo Mounting root partition... ;  mount $${disk_device}1 $${rootfs} || fail cannot mount /"
