@@ -42,11 +42,11 @@
   - write_in:
     - /etc/apt/sources.list
     - |
-      deb $$repository $$release main universe multiverse
+      deb $${repository} $${release} main universe multiverse
 
 - enable_restricted:
   - exec_in: |
-      if [ $$enable_restricted = true ]; then
+      if [ $${enable_restricted} = true ]; then
         REPO_RESTRICTED="restricted"
       fi
   - exec_in: perl -pi -e "s/multiverse$/multiverse $REPO_RESTRICTED/" /etc/apt/sources.list

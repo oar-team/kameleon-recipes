@@ -18,9 +18,9 @@ global:
     ./etc/fstab ./root/.bash_history ./root/kameleon_workdir
     ./var/tmp/* ./tmp/* ./var/log/* ./dev/* ./proc/* ./run/*
     ./sys/*
-#  input: $$virtualbox_image_disk
+#  input: $${virtualbox_image_disk}
   bootstrap_packages: >
-    linux-image-$$kernel_arch
+    linux-image-$${kernel_arch}
     isc-dhcp-client isc-dhcp-common ifupdown iptables iproute2 iputils-ping
     openssh-server
     - prepare appliance
@@ -32,7 +32,7 @@ global:
   os_family: debian
   os_release: jessie
   image_version: 2016083116
-  output: "$$kameleon_cwd/$${kameleon_recipe_name}" # output files basename
+  output: "$${kameleon_cwd}/$${kameleon_recipe_name}" # output files basename
   g5k_tgz_path: server:///path/to/your/image
   g5k_postinst_path: server:///grid5000/postinstalls/debian-x64-min-1.2-post.tgz
   arg_create: --basefolder /tmp
@@ -43,13 +43,13 @@ bootstrap:
 setup:
    # Install
   - configure_apt:
-    - repository: $$apt_repository
-    - enable_contrib_repo: $$apt_enable_contrib
-    - enable_nonfree_repo: $$apt_enable_nonfree
+    - repository: $${apt_repository}
+    - enable_contrib_repo: $${apt_enable_contrib}
+    - enable_nonfree_repo: $${apt_enable_nonfree}
   - upgrade_system:
     - dist_upgrade: true
   - install_software:
-    - packages: $$setup_packages
+    - packages: $${setup_packages}
   - install_bootloader
   - clean_udev_dir
   - setup_orchestrator

@@ -6,16 +6,16 @@
 - set_locales:
   # uncomment the locales
   - exec_in: |
-      echo $$locales | tr ' ' '\n' | xargs -I {} localedef -v -c -i {} -i {} -f UTF-8 $$lang 2>&1 || :
+      echo $${locales} | tr ' ' '\n' | xargs -I {} localedef -v -c -i {} -i {} -f UTF-8 $${lang} 2>&1 || :
 
 - set_timezone:
-  - exec_in: ln -sf /usr/share/zoneinfo/$$timezone /etc/localtime
+  - exec_in: ln -sf /usr/share/zoneinfo/$${timezone} /etc/localtime
 
 - set_wheel_sudo:
   - exec_in: echo "%wheel      ALL=(ALL) ALL" >> /etc/sudoers
 
 - set_root_password:
-  - exec_in: echo -n 'root:$$root_password' | chpasswd
+  - exec_in: echo -n 'root:$${root_password}' | chpasswd
 
 - remove_random_seed:
   - exec_in: echo "Removing random-seed so it's not the same in every image."
@@ -33,8 +33,8 @@
       #       enforcing - SELinux security policy is enforced.
       #       permissive - SELinux prints warnings instead of enforcing.
       #       disabled - SELinux is fully disabled.
-      SELINUX=$$selinux
+      SELINUX=$${selinux}
       # SELINUXTYPE= type of policy in use. Possible values are:
       #       targeted - Only targeted network daemons are protected.
       #       strict - Full SELinux protection.
-      SELINUXTYPE=$$selinuxtype
+      SELINUXTYPE=$${selinuxtype}

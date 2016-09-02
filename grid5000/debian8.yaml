@@ -18,8 +18,8 @@ global:
 
 bootstrap:
   - g5k_reserv:
-    - g5k_user: $$g5k_user
-    - kenv: $$kenv
+    - g5k_user: $${g5k_user}
+    - kenv: $${kenv}
     - walltime: "1:00:00"
 
 setup:

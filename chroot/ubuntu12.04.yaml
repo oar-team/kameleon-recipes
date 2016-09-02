@@ -18,8 +18,8 @@ global:
   ## System variables. Required by kameleon engine
   # Include specific steps
   include_steps:
-    - $$distrib/$$release
-    - $$distrib
+    - $${distrib}/$${release}
+    - $${distrib}
     - debian
 
   # Apt recipe options

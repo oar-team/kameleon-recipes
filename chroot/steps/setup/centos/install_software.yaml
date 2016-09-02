@@ -9,4 +9,4 @@
 
 # Software Install
 - install_packages:
-  - exec_in: yum install -y $$packages 2>&1
+  - exec_in: yum install -y $${packages} 2>&1
