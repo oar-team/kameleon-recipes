@@ -1,0 +1,19 @@
+# Virtualbox backend recipe
+---
+extend: VM.yaml
+
+checkpoint: virtualbox.yaml
+
+global:
+  include: virtualbox_options.yaml
+
+bootstrap:
+  - "@base"
+  - start_virtualbox
+
+setup:
+  - "@base"
+
+export:
+  - "@base"
+

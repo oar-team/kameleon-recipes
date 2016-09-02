@@ -1,0 +1,17 @@
+# Vagrant backend recipe
+---
+extend: virtualbox.yaml
+
+global:
+  user_name: vagrant
+
+setup:
+  - "@base"
+  - install_virtualbox_guestaddons_requirements
+  - install_virtualbox_guestaddons
+  - setup_vagrant_box
+
+export:
+  - disable_checkpoint
+  - vagrant_save_appliance:
+    - output: "$${kameleon_cwd}/$${kameleon_recipe_name}"

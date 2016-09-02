@@ -1,0 +1,19 @@
+# This recipe assumes that you have already set up a ssh proxy connection for
+# Grid'5000 as explain in:
+# https://www.grid5000.fr/mediawiki/index.php/SSH_quick_configuration
+#
+# In order for this recipe to work, please change the g5k username by yours.
+---
+global:
+  include: grid5000_options.yaml
+
+bootstrap:
+  - g5k_reserv
+
+setup:
+  - "@base"
+
+export:
+  - save_appliance_from_g5k:
+    - filename: "$${kameleon_recipe_name}"
+    - filesystem: "ext4"

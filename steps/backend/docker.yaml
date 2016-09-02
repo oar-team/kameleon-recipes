@@ -1,0 +1,17 @@
+# Docker backend recipe
+---
+checkpoint: docker.yaml
+
+global:
+  include: docker_options.yaml
+
+bootstrap:
+  - prepare_docker
+  - start_docker
+
+setup:
+  - "@base"
+
+export:
+  - export_docker_rootfs
+  - "@base"

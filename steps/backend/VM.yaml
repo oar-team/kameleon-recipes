@@ -1,0 +1,11 @@
+# Generic Virtual Machine backend recipe
+---
+bootstrap:
+  - prepare_appliance
+
+setup:
+  - "@base"
+
+export:
+  - disable_checkpoint
+  - save_appliance_VM

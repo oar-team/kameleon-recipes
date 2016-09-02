@@ -1,0 +1,18 @@
+# Qemu backend recipe
+---
+extend: VM.yaml
+
+checkpoint: qemu.yaml
+
+global:
+  include: qemu_options.yaml
+
+bootstrap:
+  - "@base"
+  - start_qemu
+
+setup:
+  - "@base"
+
+export:
+  - "@base"
