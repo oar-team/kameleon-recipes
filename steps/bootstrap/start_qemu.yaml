@@ -1,3 +1,4 @@
+# Require SSH_FWD_PORT bash environment variable to be set
 - boot_timeout: 100
 - shutdown_timeout: 100
 - disk_cache: none

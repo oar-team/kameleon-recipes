@@ -1,6 +1,7 @@
 # Generic Virtual Machine backend recipe
 ---
 bootstrap:
+  - create_appliance
   - prepare_appliance
 
 setup:

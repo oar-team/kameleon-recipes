@@ -23,6 +23,11 @@
   - exec_in: echo "Removing random-seed so it's not the same in every image."
   - exec_in: rm -f /var/lib/random-seed
 
+- cracklib_path: /usr/share/cracklib/pw_dict.pwd
+
+- compress_cracklib:
+  - exec_in: test ! -f $${cracklib_path} || gzip -9 $${cracklib_path}
+
 - selinux: disabled
 - selinuxtype: targeted
 

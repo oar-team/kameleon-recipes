@@ -1,0 +1,10 @@
+- create_initial_image:
+  - check_cmd_local: qemu-img
+  - exec_local: |
+      rm -f $${qemu_image_disk}
+      qemu-img create -f qcow2 $${qemu_image_disk} $${qemu_image_size}
+
+- delete_initial_image:
+  - on_checkpoint: skip
+  - on_export_clean:
+    - exec_local: rm -f $${qemu_image_disk}

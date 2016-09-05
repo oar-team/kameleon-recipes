@@ -1,0 +1,23 @@
+#==============================================================================
+# vim: softtabstop=2 shiftwidth=2 expandtab fenc=utf-8 cc=81 tw=80
+#==============================================================================
+#
+# DESCRIPTION: Fedora 20 base system built with qemu-kvm.
+#
+#==============================================================================
+---
+extend: fedora-base-bootstrap.yaml
+
+global:
+  release: 20
+  iso_filename: Fedora-$${release}-$${iso_arch}-netinst.iso
+  iso_url: http://archives.fedoraproject.org/pub/archive/$${distrib}/linux/releases/$${release}/Fedora/$${iso_arch}/iso/$${iso_filename}
+
+bootstrap:
+  - "@base"
+
+setup:
+  - "@base"
+
+export:
+  - "@base"

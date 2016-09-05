@@ -1,0 +1,21 @@
+#==============================================================================
+# vim: softtabstop=2 shiftwidth=2 expandtab fenc=utf-8 cc=81 tw=80
+#==============================================================================
+#
+# DESCRIPTION: Fedora 22 base system built with qemu-kvm.
+#
+#==============================================================================
+---
+extend: fedora-base-bootstrap.yaml
+
+global:
+  release: 22
+
+bootstrap:
+  - "@base"
+
+setup:
+  - "@base"
+
+export:
+  - "@base"

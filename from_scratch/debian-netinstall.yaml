@@ -1,0 +1,44 @@
+#==============================================================================
+# vim: softtabstop=2 shiftwidth=2 expandtab fenc=utf-8 cc=81 tw=80
+#==============================================================================
+#
+# DESCRIPTION: Debian generic system built with qemu-kvm + netinstall ISO.
+#
+# USAGE:
+#   Select directly in this recipe: see usage example commented in the global of
+#   this recipe
+#
+#   or, override the globals directly in CLI. For example:
+#
+#   kameleon build --global distrib:debian,release:wheezy
+#
+#   or extends this recipe with your own and override those variable in it.
+#
+#==============================================================================
+---
+extend: base-bootstrap.yaml
+
+global:
+  # Example of usage
+  # distrib: debian
+  # kernel_arch: amd64
+  # release: jessie
+  # release_number: 8.5.0
+  # iso_location: release
+
+  iso_filename: debian-$${release_number}-$${kernel_arch}-netinst.iso
+  iso_location: archive
+  iso_url: http://cdimage.debian.org/cdimage/$${iso_location}/$${release_number}/$${kernel_arch}/iso-cd/$${iso_filename}
+  iso_path: $${kameleon_cwd}/$${distrib}.iso
+
+  base_preseed_path: $${kameleon_data_dir}/$${distrib}-$${release}-preseed.cfg
+  preseed_path: $${kameleon_cwd}/preseed.cfg
+
+bootstrap:
+  - "@base"
+
+setup:
+  - "@base"
+
+export:
+  - "@base"

@@ -1,0 +1,9 @@
+- download_iso_install:
+  - download_file_local:
+    - $${iso_url}
+    - $${iso_path}
+
+- delete_iso_install:
+  - on_checkpoint: skip
+  - on_export_clean:
+    - exec_local: rm -f $${iso_path}

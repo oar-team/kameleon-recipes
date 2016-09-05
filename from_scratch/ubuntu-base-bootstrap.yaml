@@ -1,0 +1,33 @@
+#==============================================================================
+# vim: softtabstop=2 shiftwidth=2 expandtab fenc=utf-8 cc=81 tw=80
+#==============================================================================
+#
+# DESCRIPTION: Ubuntu 12.04 LTS base system built with qemu-kvm.
+#
+#==============================================================================
+---
+extend: debian-debootstrap.yaml
+# Global variables use by Kameleon engine and the steps
+global:
+  # Distribution
+  distrib: ubuntu
+
+  ## System variables. Required by kameleon engine
+  # Include specific steps
+  include_steps:
+    - $${distrib}/$${release}
+    - $${distrib}
+    - "debian"
+
+  repository: http://archive.ubuntu.com/ubuntu/
+  bootstrap_packages: locales openssh-server linux-image-generic
+  additional_packages: ""
+
+bootstrap:
+  - "@base"
+
+setup:
+  - "@base"
+
+export:
+  - "@base"

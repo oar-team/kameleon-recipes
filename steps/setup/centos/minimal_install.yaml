@@ -1,0 +1,6 @@
+
+- set_root_password:
+  - exec_in: echo -n 'root:$${root_password}' | chpasswd
+
+- update_system:
+  - exec_in: yum upgrade -y

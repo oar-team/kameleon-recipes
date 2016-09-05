@@ -1,0 +1,62 @@
+
+- prepare_ssh_config:
+  - on_bootstrap_init:
+    - write_local:
+      - $${ssh_config_file}
+      - |
+        Host $${kameleon_recipe_name}
+        HostName 127.0.0.1
+        Port $${qemu_ssh_port}
+        User root
+        UserKnownHostsFile /dev/null
+        StrictHostKeyChecking no
+        PasswordAuthentication no
+        IdentitiesOnly yes
+        LogLevel FATAL
+        ForwardAgent yes
+        Compression yes
+        Protocol 2
+
+- partition_disk:
+  - check_cmd_out: parted
+  - exec_out: |
+      echo "Partitioning disk..."
+      parted -s $${disk_device} mklabel msdos
+      parted -s -a none $${disk_device} mkpart primary 64s 100%
+      parted -s $${disk_device} set 1 boot on
+  - exec_out: |
+      echo Creating root partition...
+      mkfs.$${filesystem_type} -q $${disk_device}1 || fail cannot create / ext4
+
+- mount_mountdir:
+  - exec_out: mkdir -p $${rootfs}
+  - exec_out: echo Mounting root partition...
+  - exec_out: mount $${disk_device}1 $${rootfs} || fail cannot mount /
+  - on_setup_clean:
+    - exec_out: sync
+    - umount_out: $${rootfs}
+
+- copy_autoinstall_script:
+  - local2out:
+    - $${bootstrap_script}
+    - /tmp/debootstrap.sh
+
+- customize_autoinstall_script:
+  - exec_out: sed -i s'|^RELEASE=\(.*\)|RELEASE=$${release}|'g /tmp/debootstrap.sh
+  - exec_out: sed -i s'|^PACKAGES=\(.*\)|PACKAGES="$${bootstrap_packages}"|'g /tmp/debootstrap.sh
+  - exec_out: sed -i s'|^REPOSITORY=\(.*\)|REPOSITORY="$${repository}"|'g /tmp/debootstrap.sh
+  - exec_out: sed -i s'|^ARCH=\(.*\)|ARCH="$${arch}"|'g /tmp/debootstrap.sh
+  - exec_out: sed -i s'|^DEBIAN_ARCH=\(.*\)|DEBIAN_ARCH="$${debian_arch}"|'g /tmp/debootstrap.sh
+  - exec_out: sed -i s'|^DEBIAN_KERNEL_ARCH=\(.*\)|DEBIAN_KERNEL_ARCH="$${debian_kernel_arch}"|'g /tmp/debootstrap.sh
+  - exec_out: sed -i s'|^MNT=\(.*\)|MNT="$${rootfs}"|'g /tmp/debootstrap.sh
+
+- configure_proxy:
+  - exec_out: |
+      if [ ! "$${proxy_out}" = "" ]; then
+        sed -i s'|export http_proxy=\(.*\)|export http_proxy=http://$${proxy_out}|'g /tmp/debootstrap.sh
+      fi
+
+- debootstrap:
+  - exec_out: bash /tmp/debootstrap.sh
+  - on_setup_clean:
+    - exec_out: rm -f /tmp/debootstrap.sh

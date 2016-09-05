@@ -1,0 +1,22 @@
+#==============================================================================
+# vim: softtabstop=2 shiftwidth=2 expandtab fenc=utf-8 cc=81 tw=80
+#==============================================================================
+#
+# DESCRIPTION: Centos 6 base system built with qemu-kvm.
+#
+#==============================================================================
+---
+extend: centos-netinstall.yaml
+global:
+  release_major: 6
+  release_minor: 8
+  release: $${release_major}.$${release_minor}
+
+bootstrap:
+  - "@base"
+
+setup:
+  - "@base"
+
+export:
+  - "@base"

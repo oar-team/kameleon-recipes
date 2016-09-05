@@ -1,0 +1,23 @@
+- copy_autoinstall_script_to_http_directory:
+  - exec_local: mkdir -p $${http_directory}
+  - exec_local: cp $${autoinstall_script_path} $${http_directory}/autoinstall.sh
+
+- configure_proxy:
+  - exec_local: |
+      if [ ! "$${proxy_out}" = "" ]; then
+        sed -i s'|export http_proxy=\(.*\)|export http_proxy=http://$${proxy_out}|'g $${http_directory}/autoinstall.sh
+      fi
+
+- customize_autoinstall_script:
+  - exec_local: sed -i s'|PACKAGES=\(.*\)|PACKAGES="$${bootstrap_packages}"|'g $${http_directory}/autoinstall.sh
+  - exec_local: sed -i s'|MIRROR=\(.*\)|MIRROR="$${mirror_url}"|'g $${http_directory}/autoinstall.sh
+
+- write_boot_command:
+  - write_local:
+    - $${kameleon_cwd}/boot_command
+    - >
+      cat <gt> /tmp/autoinstall.sh <lt><lt>EOF<kp_enter>
+      apt-get update<kp_enter>
+      apt-get -y --force-yes install curl parted e2fsprogs syslinux coreutils haveged make m4<kp_enter>
+      curl -sSL http://10.0.2.2:$${http_port}/autoinstall.sh | bash<kp_enter>EOF<kp_enter>
+      bash /tmp/autoinstall.sh<kp_enter>

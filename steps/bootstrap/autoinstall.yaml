@@ -1,0 +1,73 @@
+- qemu_sendkeys_script: $${kameleon_data_dir}/qemu-sendkeys.rb
+- socat_monitor: socat - UNIX-CONNECT:$${qemu_monitor_socket}
+
+- boot_timeout: 5
+
+- start_qemu_vm:
+  - check_cmd_local: qemu-system-$${qemu_iso_arch}
+  - check_cmd_local: socat
+  - check_cmd_local: ruby
+  - exec_local: echo "Starting qemu..."
+  - exec_local: |
+      if [ "$${qemu_enable_kvm}" = "true" ]; then
+        ENABLE_KVM="-enable-kvm -cpu host"
+        BOOT_TIMEOUT=$${boot_timeout}
+      else
+        BOOT_TIMEOUT=$(($${boot_timeout}*2))
+      fi
+  - exec_local: |
+      # Find empty VNC port
+      VNC_PORT=$(( $(__find_free_port 5900 5910) - 5900 ))
+      echo "VNC port: $VNC_PORT"
+  - exec_local: |
+      qemu-system-$${qemu_iso_arch} $ENABLE_KVM \
+        -cdrom "$${iso_path}" \
+        -hda $${qemu_image_disk} \
+        -smp $${qemu_cpu} \
+        -m $${qemu_memory_size} \
+        -rtc base=localtime \
+        -net nic,model=virtio -net user \
+        -monitor unix:$${qemu_monitor_socket},server,nowait \
+        -pidfile $${qemu_pidfile} \
+        -daemonize -no-reboot \
+        -boot order=d
+  - exec_local: |
+      TIMEOUT=$(( $(date +%s) + $BOOT_TIMEOUT ))
+      until timeout 1 [ $(date +%s) -gt $TIMEOUT ];
+      do
+        echo -en "\rWaiting for VM to become available : ($(( TIMEOUT - $(date +%s) ))s)"
+        sleep 1
+      done
+      echo ""
+  - exec_local: ruby $${qemu_sendkeys_script} -d 0.05 "$(cat $${kameleon_cwd}/boot_command)" | $${socat_monitor} > /dev/null
+
+- wait_vm_to_shutdown:
+  - exec_local: |
+      if [ -f $${qemu_pidfile} ]; then
+        _QEMU_PID=$(cat $${qemu_pidfile})
+        if ps -p $_QEMU_PID > /dev/null; then
+          echo "Waiting for the autoinstall process to finished"
+          echo "Run 'vncviewer :$VNC_PORT' to connect to the vm"
+          while ps -p $_QEMU_PID > /dev/null;
+          do
+            sleep 2
+          done
+        fi
+      fi
+  - on_clean:
+    - exec_local: |
+        if [ -f $${qemu_pidfile} ]; then
+          _QEMU_PID=$(cat $${qemu_pidfile})
+          if ps -p $_QEMU_PID > /dev/null; then
+            if [ -S $${qemu_monitor_socket} ]; then
+              echo "  ~> Failed"
+            fi
+            echo "Killing QEMU (pid: $_QEMU_PID)..."
+            kill -9 "$_QEMU_PID"
+          else
+            if [ -S $${qemu_monitor_socket} ]; then
+              echo "  ~> Done"
+            fi
+          fi
+          rm -f $${qemu_pidfile}
+        fi
