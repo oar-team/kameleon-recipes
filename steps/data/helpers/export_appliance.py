@@ -57,11 +57,11 @@ def tar_convert(disk, output, excludes, compression_level):
         compr = "| %s %s" % (which("bzip2"), compression_level_opt)
     elif output.endswith(('tar.xz', 'txz')):
         compr = "| {} {} -c --threads=0 -".format(
-            (which("xz"), compression_level_opt))
+            which("xz"), compression_level_opt)
     elif output.endswith(('tar.lzo', 'tzo')):
         compr = "| %s %s -c -" % (which("lzop"), compression_level_opt)
 
-    tar_options_list = ["--selinux", "--acls", "--xattrs",
+    tar_options_list = ["selinux:true", "acls:true", "xattrs:true",
                         "numericowner:true",
                         "excludes:\"%s\"" % ' '.join(excludes)]
     tar_options = ' '.join(tar_options_list)
@@ -180,19 +180,15 @@ if __name__ == '__main__':
                         help='Enable very verbose messages')
     log_format = '%(levelname)s: %(message)s'
     level = logging.INFO
-    try:
-        args = parser.parse_args()
-        if args.verbose:
-            level = logging.DEBUG
+    args = parser.parse_args()
+    if args.verbose:
+        level = logging.DEBUG
 
-        handler = logging.StreamHandler(sys.stdout)
-        handler.setLevel(level)
-        handler.setFormatter(logging.Formatter(log_format))
+    handler = logging.StreamHandler(sys.stdout)
+    handler.setLevel(level)
+    handler.setFormatter(logging.Formatter(log_format))
 
-        logger.setLevel(level)
-        logger.addHandler(handler)
+    logger.setLevel(level)
+    logger.addHandler(handler)
 
-        convert_disk_image(args)
-    except Exception as exc:
-        sys.stderr.write(u"\nError: %s\n" % exc)
-        sys.exit(1)
+    convert_disk_image(args)
