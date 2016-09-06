@@ -6,7 +6,7 @@
       - |
         Host $${kameleon_recipe_name}
         HostName 127.0.0.1
-        Port $${qemu_ssh_port}
+        Port ${SSH_FWD_PORT}
         User root
         UserKnownHostsFile /dev/null
         StrictHostKeyChecking no

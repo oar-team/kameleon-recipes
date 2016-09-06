@@ -4,6 +4,7 @@
 from __future__ import division, unicode_literals
 
 import os
+# import time
 import os.path as op
 import sys
 import subprocess
@@ -86,8 +87,11 @@ def qemu_convert(disk, output_fmt, output_filename):
         raise subprocess.CalledProcessError(proc.returncode, ' '.join(cmd))
 
 
-def run_guestfish_script(disk, script, mount=False):
-    """Run guestfish script."""
+def run_guestfish_script(disk, script, mount=""):
+    """
+    Run guestfish script.
+    Mount should be in ("read_only", "read_write", "ro", "rw")
+    """
     args = [which("guestfish"), '-a', disk]
     if mount in ("read_only", "read_write", "ro", "rw"):
         args.append('-i')
@@ -108,7 +112,7 @@ def run_guestfish_script(disk, script, mount=False):
 def guestfish_zerofree(filename):
     """Fill free space with zero"""
     logger.info(guestfish_zerofree.__doc__)
-    cmd = "virt-list-filesystems %s" % filename
+    cmd = "virt-filesystems -a %s" % filename
     fs = subprocess.check_output(cmd.encode('utf-8'),
                                  stderr=subprocess.STDOUT,
                                  shell=True,
@@ -127,6 +131,18 @@ def convert_disk_image(args):
     os.environ['LIBGUESTFS_CACHEDIR'] = os.getcwd()
     if args.verbose:
         os.environ['LIBGUESTFS_DEBUG'] = '1'
+
+    # sometimes guestfish fails because of other virtualization tools are
+    # still running use a test and retry to wait for availability
+    # attempts = 0
+    # while attempts < 3:
+    #    try:
+    #        logger.info("Waiting for virtualisation to be available...")
+    #        run_guestfish_script(filename, "cat /etc/hostname", mount='ro')
+    #        break
+    #    except:
+    #        attempts += 1
+    #        time.sleep(1)
 
     if args.zerofree:
         guestfish_zerofree(filename)
