@@ -62,6 +62,7 @@ def tar_convert(disk, output, excludes, compression_level):
     elif output.endswith(('tar.lzo', 'tzo')):
         compr = "| %s %s -c -" % (which("lzop"), compression_level_opt)
 
+    # FIXME: This only work for newer version of guestfish
     tar_options_list = ["selinux:true", "acls:true", "xattrs:true",
                         "numericowner:true",
                         "excludes:\"%s\"" % ' '.join(excludes)]
