@@ -9,6 +9,6 @@ class env::xen ( $parent_parameters = {} ) {
   class{ 'env::base': }
 
   # xen packages
-  class{ 'env::xen::xen': }
+  class{ 'env::xen::configure_xen': }
 
 }

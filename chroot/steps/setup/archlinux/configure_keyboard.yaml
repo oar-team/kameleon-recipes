@@ -6,4 +6,4 @@
   - write_in:
     - /etc/vconsole.conf
     - |
-      KEYMAP=$$layout
+      KEYMAP=$${layout}

@@ -1,4 +1,4 @@
-class env::std::g5kcode {
+class env::std::add_g5kcode_to_path {
 
   file {
     '/root/.ssh':

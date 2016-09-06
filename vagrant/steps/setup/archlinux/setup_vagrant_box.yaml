@@ -3,36 +3,36 @@
 - enable_passwordless_sudo:
   - exec_in: |
       sed -i "s/^.*requiretty/#Defaults requiretty/" /etc/sudoers
-      echo "$$user_name ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
+      echo "$${user_name} ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
 
 - enable_nfs_server:
   - exec_in: systemctl enable rpcbind.service
 
 - copy_insecure_sshkey:
-  - exec_in: mkdir -pm 700 /home/$$user_name/.ssh/
+  - exec_in: mkdir -pm 700 /home/$${user_name}/.ssh/
   - download_file_in:
     - "https://raw.github.com/mitchellh/vagrant/master/keys/vagrant"
-    - /home/$$user_name/.ssh/id_rsa
+    - /home/$${user_name}/.ssh/id_rsa
   - download_file_in:
     - "https://raw.github.com/mitchellh/vagrant/master/keys/vagrant.pub"
-    - /home/$$user_name/.ssh/id_rsa.pub
-  - exec_in: cp /home/$$user_name/.ssh/id_rsa.pub /home/$$user_name/.ssh/authorized_keys
-  - exec_in: chmod 0600 /home/$$user_name/.ssh/*
+    - /home/$${user_name}/.ssh/id_rsa.pub
+  - exec_in: cp /home/$${user_name}/.ssh/id_rsa.pub /home/$${user_name}/.ssh/authorized_keys
+  - exec_in: chmod 0600 /home/$${user_name}/.ssh/*
 
 - config_ssh:
   - exec_in: echo "UseDNS no" >> /etc/ssh/sshd_config
   - write_in:
-    - /home/$$user_name/.ssh/config
+    - /home/$${user_name}/.ssh/config
     - |
       Host *
       ForwardX11 no
       StrictHostKeyChecking no
       PasswordAuthentication no
       AddressFamily inet
-  - exec_in: chmod 0600 /home/$$user_name/.ssh/config
-  - exec_in: rsync -ah /home/$$user_name/.ssh/ /root/.ssh
+  - exec_in: chmod 0600 /home/$${user_name}/.ssh/config
+  - exec_in: rsync -ah /home/$${user_name}/.ssh/ /root/.ssh
   - exec_in: cat /root/.ssh/.kameleon_authorized_keys >> /root/.ssh/authorized_keys
-  - exec_in: chown "$$user_name:$$user_name" -R /home/$$user_name
+  - exec_in: chown "$${user_name}:$${user_name}" -R /home/$${user_name}
 
 - customize_motd:
   - exec_in: echo 'Welcome to your Vagrant-built virtual machine.' > /etc/motd

@@ -28,4 +28,4 @@ setup:
 export:
   - disable_checkpoint
   - vagrant_save_appliance:
-    - output: "$$kameleon_cwd/$${kameleon_recipe_name}"
+    - output: "$${kameleon_cwd}/$${kameleon_recipe_name}"

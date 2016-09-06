@@ -1,4 +1,4 @@
-class env::nfs::nfs () {
+class env::nfs::install_nfs_requirements () {
 
   package {
     'nfs-common':

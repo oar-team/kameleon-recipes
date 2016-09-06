@@ -1,4 +1,4 @@
-class env::nfs::openiscsi (){
+class env::nfs::configure_iscsi (){
 
   # used by storage5k (bug #4309)
 

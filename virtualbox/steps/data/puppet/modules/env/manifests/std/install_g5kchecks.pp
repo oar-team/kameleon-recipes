@@ -1,4 +1,4 @@
-class env::std::g5kchecks {
+class env::std::install_g5kchecks {
 
   include 'env::std::ipmitool' # ipmitool is required by g5k-checks
   include 'env::std::dell'     # dell tools are required by g5k-checks

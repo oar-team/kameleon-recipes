@@ -12,6 +12,6 @@
 - add_puppet_repository:
   - exec_in: rpm -ivh https://yum.puppetlabs.com/el/7/products/x86_64/puppetlabs-release-7-11.noarch.rpm
 - install_provision_packages:
-  - exec_in: $$pkgmgr $$pkgmgr_yes $$pkgmgr_install $$provisioning_packages
+  - exec_in: $${pkgmgr} $${pkgmgr_yes} $${pkgmgr_install} $${provisioning_packages}
   - on_setup_clean:
-    - exec_in: $$pkgmgr $$pkgmgr_yes $$pkgmgr_purge $$pkgmgr_deinstall $$provisioning_packages
+    - exec_in: $${pkgmgr} $${pkgmgr_yes} $${pkgmgr_purge} $${pkgmgr_deinstall} $${provisioning_packages}

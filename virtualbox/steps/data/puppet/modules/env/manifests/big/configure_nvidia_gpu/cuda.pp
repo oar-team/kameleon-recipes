@@ -1,4 +1,4 @@
-class env::big::nvidia::cuda () {
+class env::big::configure_nvidia_gpu::cuda () {
 
   # May be changed to a link inside g5k if required
   $driver_source = 'https://www.grid5000.fr/packages/debian/cuda_7.0.28_linux.run'

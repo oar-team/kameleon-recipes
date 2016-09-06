@@ -1,4 +1,4 @@
-class env::std::sudog5k {
+class env::std::install_sudog5k {
 
   case $operatingsystem {
     'Debian': {

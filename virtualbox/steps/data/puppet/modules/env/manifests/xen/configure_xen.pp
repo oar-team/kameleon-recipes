@@ -1,4 +1,4 @@
-class env::xen::xen () {
+class env::xen::configure_xen () {
 
   $xen_packages = [ 'xen-utils', 'debootstrap', 'xen-tools', 'sysfsutils', 'lvm2', 'xen-linux-system-amd64' ]
   package {

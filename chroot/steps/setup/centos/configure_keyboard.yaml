@@ -4,8 +4,8 @@
   - write_in:
     - /etc/vconsole.conf
     - |
-      KEYMAP=$$layout
+      KEYMAP=$${layout}
   - write_in:
     - /etc/sysconfig/keyboard
     - |
-      KEYTABLE=$$layout
+      KEYTABLE=$${layout}

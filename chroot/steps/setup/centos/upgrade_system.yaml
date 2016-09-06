@@ -1,14 +1,14 @@
 - configure_yum:
-  - exec_in: echo $$release > /etc/yum/vars/releasever
+  - exec_in: echo $${release} > /etc/yum/vars/releasever
 
 - update_system:
-  - exec_in: yum update --releasever=$$release yum -y
-  - exec_in: yum upgrade -y --releasever=$$release 
+  - exec_in: yum update --releasever=$${release} yum -y
+  - exec_in: yum upgrade -y --releasever=$${release} 
   - exec_in: yum clean all -y
-  - exec_in: yum distro-sync --releasever=$$release -y
+  - exec_in: yum distro-sync --releasever=$${release} -y
 
 - minimal_install:
-  - exec_in: yum groupupdate --releasever=$$release 'Minimal Install' -y 2>&1
+  - exec_in: yum groupupdate --releasever=$${release} 'Minimal Install' -y 2>&1
 
 - clean:
   - on_setup_clean:

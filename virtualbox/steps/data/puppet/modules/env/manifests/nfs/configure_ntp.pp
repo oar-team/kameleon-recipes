@@ -1,4 +1,4 @@
-class env::nfs::ntp ( $drift_file = false ) {
+class env::nfs::configure_ntp ( $drift_file = false ) {
 
   $ntp = [ 'ntp', 'ntpdate' ]
   package {

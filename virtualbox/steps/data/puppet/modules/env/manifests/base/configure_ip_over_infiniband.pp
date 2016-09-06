@@ -1,4 +1,4 @@
-class env::base::infiniband (){
+class env::base::configure_ip_over_infiniband (){
 
   #  old packages [ 'ibverbs-utils', 'libibverbs-dev', 'libcxgb3-dev', 'libipathverbs-dev', 'libmlx4-dev', 'libmthca-dev', 'librdmacm-dev', 'rdmacm-utils', 'ibutils', 'infiniband-diags', 'perftest', 'qlvnictools', 'srptools' ]
   $infiniband_packages = ['qlvnictools']
@@ -23,6 +23,13 @@ class env::base::infiniband (){
       group    => root,
       mode     => '0755',
       source   => 'puppet:///modules/env/base/infiniband/openibd',
+      require  => Package[$infiniband_packages];
+    '/etc/systemd/system/openibd.service':
+      ensure   => file,
+      owner    => root,
+      group    => root,
+      mode     => '0644',
+      source   => 'puppet:///modules/env/base/infiniband/openibd.service',
       require  => Package[$infiniband_packages];
     '/etc/infiniband/ifcfg-ib0':
       ensure   => file,

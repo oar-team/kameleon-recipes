@@ -1,4 +1,4 @@
-class env::std::g5ksubnets {
+class env::std::install_g5ksubnets {
 
   exec {
     "retrieve_g5ksubnets":
