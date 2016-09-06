@@ -51,7 +51,7 @@ global:
 
   # appliance options
   image_disk: $${kameleon_cwd}/base_$${kameleon_recipe_name}
-  image_format: qcow2
+
   # Allowed formats are: tar.gz, tar.bz2, tar.xz, tar.lzo, qcow, qcow2, qed, vdi, raw, vmdk
   appliance_formats: tar.xz
   appliance_filename: "$${kameleon_cwd}/$${kameleon_recipe_name}"

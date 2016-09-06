@@ -1,4 +1,7 @@
 # qemu options
+
+image_format: qcow2
+
 qemu_enable_kvm: "$(egrep '(vmx|svm)' /proc/cpuinfo > /dev/null && echo true)"
 qemu_cpu: 2
 qemu_memory_size: 768
