@@ -27,7 +27,7 @@ MNT=/mnt
 MIRROR="http://mir.archlinux.fr"
 HOSTNAME="localhost"
 TIMEZONE="UTC"
-LOCALE="en_US.UTF-8 UTF-8"
+LOCALE="en_US.UTF-8"
 PACKAGES="base mkinitcpio dhcpcd linux systemd-sysvcompat iputils net-tools syslinux openssh vim"
 
 cd /tmp/
