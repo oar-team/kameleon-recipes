@@ -34,7 +34,7 @@ class env::std::dell {
   }
   
   service { 'dataeng':
-    ensure => 'running',
+    enable => 'true',
     require => Package['srvadmin-all', 'dtk-scripts']
   }
   
