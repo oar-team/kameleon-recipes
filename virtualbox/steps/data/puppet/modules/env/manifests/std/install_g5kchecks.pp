@@ -1,6 +1,9 @@
 class env::std::install_g5kchecks {
 
-  $g5kchecks_deps = [ 'ruby-rest-client', 'ohai', 'ruby-popen4', 'fio', 'ruby-json' ]
+  include 'env::std::ipmitool' # ipmitool is required by g5k-checks
+  include 'env::std::dell'     # dell tools are required by g5k-checks
+  
+  $g5kchecks_deps = [ 'ruby-rest-client', 'ohai', 'ruby-popen4', 'fio', 'ruby-json', 'x86info' ]
   case $operatingsystem {
     'Debian','Ubuntu': {
       require env::commonpackages::rake
@@ -30,7 +33,7 @@ class env::std::install_g5kchecks {
       }
     }
     default: {
-      err "${operatingsystem} not suported."
+      err "${operatingsystem} not supported."
     }
   }
 }
