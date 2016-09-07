@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 ROOT_PROJECT=$(dirname $(readlink -f ${BASH_SOURCE[0]}))
-BUILD_PATH=$ROOT_PROJECT/build
+BUILD_PATH=/tmp/from_scratch
 ROOTFS_PATH=$ROOT_PROJECT/rootfs
 
 trap ctrl_c INT
@@ -18,7 +18,8 @@ for RECIPE_PATH in `ls from_scratch/*.yaml`; do
     if [ ! -e "$ROOTFS_PATH/${RECIPE_NAME}.tar.xz" ]; then
         rm -rf $BUILD_PATH
         echo -e "===============================================================\n\n"
-        (set -x; kameleon build $ROOT_PROJECT/$RECIPE_PATH --build-path $BUILD_PATH --script --enable-cache)
+        (set -x; kameleon build $ROOT_PROJECT/$RECIPE_PATH --build-path \
+                    $BUILD_PATH --script --enable-cache --global disk_cache:unsafe)
         if [ $? -eq 0 ]; then
             mkdir -p $ROOTFS_PATH
             mv $BUILD_PATH/$RECIPE_NAME/*.tar.{gz,xz} $ROOTFS_PATH/

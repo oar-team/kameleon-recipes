@@ -19,7 +19,7 @@ env:
 # Global variables use by Kameleon engine and the steps
 global:
   ## Select backend for in context isolation
-  backend: virtualbox
+  backend: qemu
 
   ## User varibales : used by the recipe
   user_name: kameleon

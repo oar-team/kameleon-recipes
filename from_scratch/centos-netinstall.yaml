@@ -2,7 +2,7 @@
 # vim: softtabstop=2 shiftwidth=2 expandtab fenc=utf-8 cc=81 tw=80
 #==============================================================================
 #
-# DESCRIPTION: Centos netinstall base system built with qemu-kvm + Kickstart.
+# DESCRIPTION: Centos netinstall base system + Kickstart.
 #
 # USAGE: Select the release_major and release_minor
 #
