@@ -5,7 +5,14 @@ extend: VM.yaml
 checkpoint: qemu.yaml
 
 global:
-  include: qemu_options.yaml
+  image_format: qcow2
+
+  qemu_enable_kvm: "$(egrep '(vmx|svm)' /proc/cpuinfo > /dev/null && echo true)"
+  qemu_cpu: "echo $(($(nproc)-1))"
+  qemu_memory_size: 768
+  qemu_monitor_socket: $${kameleon_cwd}/qemu_monitor.socket
+  qemu_arch: $${arch}
+  qemu_pidfile: $${kameleon_cwd}/qemu.pid
 
 bootstrap:
   - "@base"

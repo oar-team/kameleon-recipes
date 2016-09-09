@@ -25,14 +25,22 @@
         # Find empty VNC port
         VNC_PORT=$(( $(__find_free_port 5900 5910) - 5900 ))
         echo "VNC port: $VNC_PORT"
+
+  - exec_local: |
+        # Select disk
+        if [ -z "$${iso_path}" ]; then
+          QEMU_DISK='-hda file="$${image_disk}.$${image_format}",cache=$${disk_cache},media=disk,if=virtio,id=drive0'
+        else
+          QEMU_DISK='-cdrom $${iso_path} -hda $${qemu_image_disk}'
+        fi
   - exec_local: |
         qemu-system-$${qemu_arch} $ENABLE_KVM \
-          -drive file="$${image_disk}.$${image_format}",cache=$${disk_cache},media=disk,if=virtio,id=drive0 \
+          $QEMU_DISK \
           -smp $${qemu_cpu} \
           -m $${qemu_memory_size} \
           -rtc base=localtime \
-          -net nic,model=virtio -net user \
-          -redir tcp:${SSH_FWD_PORT}::22 \
+          -net nic,model=virtio \
+          -net user,hostfwd=tcp::${SSH_FWD_PORT}-:22 \
           -monitor unix:$${qemu_monitor_socket},server,nowait \
           -pidfile $${qemu_pidfile} \
           -daemonize -vnc :$VNC_PORT $LOADVM
@@ -53,10 +61,10 @@
   - on_checkpoint: redo
   - check_cmd_local: socat
   - on_setup_clean:
-    - exec_in: echo "Sync"
-    - exec_in: sync
-    - exec_in: echo "Shutting down virtual machine"
-    - exec_in: shutdown -h now
+    - exec_out: echo "Sync"
+    - exec_out: sync
+    - exec_out: echo "Shutting down virtual machine"
+    - exec_out: shutdown -h now
     - exec_local: |
         if [ -f $${qemu_pidfile} ]; then
           _QEMU_PID=$(cat $${qemu_pidfile})

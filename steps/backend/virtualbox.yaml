@@ -5,7 +5,15 @@ extend: VM.yaml
 checkpoint: virtualbox.yaml
 
 global:
-  include: virtualbox_options.yaml
+  # appliance options
+  image_format: vmdk
+  # Allowed formats are: tar.gz, tar.bz2, tar.xz, tar.lzo, qcow, qcow2, qed, vdi, raw, vmdk
+  appliance_formats: vmdk tar.gz
+
+  ## VirtualBox options
+  virtualbox_memory_size: 768
+  virtualbox_os_type: Linux_64
+  virtualbox_vmid: $${kameleon_recipe_name}_$${kameleon_short_uuid}
 
 bootstrap:
   - "@base"
