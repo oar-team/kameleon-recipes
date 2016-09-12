@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 if [ -n "$new_host_name" ]; then
   if ! echo "$new_host_name" | egrep -q '^.*-eth.*$'; then
