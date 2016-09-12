@@ -1,5 +1,7 @@
 - qemu_sendkeys_script: $${kameleon_data_dir}/qemu-sendkeys.rb
 - socat_monitor: socat - UNIX-CONNECT:$${qemu_monitor_socket}
+  # Set debug to "true" to see Qemu directly the output on SDL window
+- debug: "false"
 
 - boot_timeout: 5
 
@@ -16,9 +18,14 @@
         BOOT_TIMEOUT=$(($${boot_timeout}*2))
       fi
   - exec_local: |
-      # Find empty VNC port
-      VNC_PORT=$(( $(__find_free_port 5900 5910) - 5900 ))
-      echo "VNC port: $VNC_PORT"
+      if [ "$${debug}" = "true" ]; then
+        VNC_OPT=""
+      else
+        # Find empty VNC port
+        VNC_PORT=$(( $(__find_free_port 5900 5910) - 5900 ))
+        echo "VNC port: $VNC_PORT"
+        VNC_OPT="-vnc :$VNC_PORT"
+      fi
   - exec_local: |
       qemu-system-$${qemu_iso_arch} $ENABLE_KVM \
         -cdrom "$${iso_path}" \
@@ -30,7 +37,7 @@
         -monitor unix:$${qemu_monitor_socket},server,nowait \
         -pidfile $${qemu_pidfile} \
         -daemonize -no-reboot \
-        -boot order=d
+        -boot order=d $VNC_OPT
   - exec_local: |
       TIMEOUT=$(( $(date +%s) + $BOOT_TIMEOUT ))
       until timeout 1 [ $(date +%s) -gt $TIMEOUT ];
