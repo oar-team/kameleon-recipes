@@ -19,6 +19,6 @@ resolvconf="/etc/resolv.conf"
 cmd=$(grep -c $globaldnsip $resolvconf)
 
 /bin/sed -i '/^search/ {/ grid5000.fr/! s/.*/& grid5000.fr/}' $resolvconf
-[ "$cmd" == "0" ] && echo "nameserver $globaldnsip" >> $resolvconf
+[ "$cmd" = "0" ] && echo "nameserver $globaldnsip" >> $resolvconf
 
 exit 0
