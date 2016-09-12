@@ -38,6 +38,7 @@ global:
   rootfs_archive_download_path: $${kameleon_cwd}/rootfs.tar.xz
   # rootfs options
   rootfs: $${kameleon_cwd}/rootfs
+  ssh_config_file: $${kameleon_cwd}/ssh_config
 
   # Distribution
   arch: x86_64

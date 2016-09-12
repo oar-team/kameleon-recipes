@@ -13,6 +13,7 @@ global:
   qemu_monitor_socket: $${kameleon_cwd}/qemu_monitor.socket
   qemu_arch: $${arch}
   qemu_pidfile: $${kameleon_cwd}/qemu.pid
+  qemu_image_disk: $${image_disk}.$${image_format}
 
 bootstrap:
   - "@base"

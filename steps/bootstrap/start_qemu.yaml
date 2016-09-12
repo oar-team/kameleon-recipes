@@ -1,7 +1,9 @@
 # Require SSH_FWD_PORT bash environment variable to be set
 - boot_timeout: 100
 - shutdown_timeout: 100
-- disk_cache: none
+- disk_cache: unsafe
+# This must be set if you want to boot an ISO image instead of a disk
+- iso_path: ""
 
 - start_qemu_vm:
   - on_checkpoint: redo
