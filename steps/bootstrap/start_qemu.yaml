@@ -31,13 +31,13 @@
   - exec_local: |
         # Select disk
         if [ -z "$${iso_path}" ]; then
-          QEMU_DISK='-hda file=$${image_disk}.$${image_format},cache=$${disk_cache},media=disk,if=virtio,id=drive0'
+          QEMU_DISK=''
         else
           QEMU_DISK='-cdrom $${iso_path} -hda $${qemu_image_disk}'
         fi
   - exec_local: |
         qemu-system-$${qemu_arch} $ENABLE_KVM \
-          $QEMU_DISK \
+          $QEMU_DISK -drive file=$${image_disk}.$${image_format},cache=$${disk_cache},media=disk,if=virtio,id=drive0 \
           -smp $${qemu_cpu} \
           -m $${qemu_memory_size} \
           -rtc base=localtime \
