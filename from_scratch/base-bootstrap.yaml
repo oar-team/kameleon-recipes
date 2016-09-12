@@ -60,6 +60,7 @@ global:
     ./etc/fstab ./root/.bash_history ./root/kameleon_workdir ./root/.ssh
     ./var/tmp/* ./tmp/* ./var/log/* ./dev/* ./proc/* ./run/*
     ./sys/* ./root/.rpmdb ./boot/extlinux ./boot/grub ./boot/grub2
+  zerofree: false
 
   http_directory: $${kameleon_cwd}/http_dir
   http_port: 15364
