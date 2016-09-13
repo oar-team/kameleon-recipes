@@ -13,25 +13,28 @@ function ctrl_c() {
 }
 
 if [ -z "$1" ]; then
-	RECIPES=from_scratch/*.yaml
+  RECIPES=from_scratch/*.yaml
 else
   RECIPES="$@"
 fi
-for RECIPE_PATH in $RECIPES; do
-    RECIPE_NAME=$(basename $RECIPE_PATH .yaml)
-    if [ -e "$ROOTFS_PATH/${RECIPE_NAME}.tar" -a -z "$FORCE" ]; then
-      echo "$ROOTFS_PATH/${RECIPE_NAME}.tar already exists"
+for r in $RECIPES; do
+    name=$(basename $r .yaml)
+    if [ -e "$ROOTFS_PATH/${name}.tar" -a -z "$FORCE" ]; then
+      echo "$ROOTFS_PATH/${name}.tar already exists"
     else
         rm -rf $BUILD_PATH
-        echo -e "===============================================================\nRECIPE_NAME"
+        echo -e "===============================================================\nname"
         echo -e "==============================================================="
-        (set -x; kameleon build $ROOT_PROJECT/$RECIPE_PATH --build-path \
+        (set -x; kameleon build $ROOT_PROJECT/$r --build-path \
                     $BUILD_PATH --script --enable-cache --cache-archive-compression=none --global=appliance_formats:tar)
         if [ $? -eq 0 ]; then
             mkdir -p $ROOTFS_PATH
-            mv $BUILD_PATH/$RECIPE_NAME/*.tar $ROOTFS_PATH/
+            date=$(date +%Y%m%d%H%M%S)
+            for f in *.tar; do
+              mv -v $BUILD_PATH/$name/$f $ROOTFS_PATH/${f%.tar}-$date.tar
+            done
         else
-            echo "\n$RECIPE_NAME FAILED\n"
+            echo "\n$name FAILED\n"
         fi
     fi
 done
