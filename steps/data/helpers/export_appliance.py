@@ -62,14 +62,28 @@ def tar_convert(disk, output, excludes, compression_level):
     elif output.endswith(('tar.lzo', 'tzo')):
         compr = "| %s %s -c -" % (which("lzop"), compression_level_opt)
 
-    # FIXME: This only work for newer version of guestfish
-    tar_options_list = ["selinux:true", "acls:true", "xattrs:true",
-                        "numericowner:true",
-                        "excludes:\"%s\"" % ' '.join(excludes)]
+    tar_options_list = ["--selinux", "--acls", "--xattrs",
+                        "--numeric-owner", "--one-file-system"] + \
+                       ['--exclude="%s"' % s for s in excludes]
     tar_options = ' '.join(tar_options_list)
-    cmd = which("guestfish") + \
-        " --ro -i tar-out -a %s / - %s %s > %s"
-    cmd = cmd % (disk, tar_options, compr, output)
+    directory = dir_path = os.path.dirname(os.path.realpath(disk))
+    cmds = [
+        which("mkdir") + " %s/.mnt" % directory,
+        which("guestmount") + " --ro -i -a %s %s/.mnt" % (disk, directory),
+        which("tar") + " -c %s -C %s/.mnt . %s > %s" % (tar_options, directory, compr, output),
+        which("guestunmount") + " %s/.mnt" % directory,
+        which("rmdir") + " %s/.mnt" % directory
+        ]
+    cmd = " && ".join(cmds)
+    # NB: guestfish version >= 1.32 supports the special tar options, but not available in Debian stable (jessie): do not use for now
+    #tar_options_list = ["selinux:true", "acls:true", "xattrs:true",
+    #                    "numericowner:true",
+    #                    "excludes:\"%s\"" % ' '.join(excludes)]
+    #tar_options = ' '.join(tar_options_list)
+    #cmd = which("guestfish") + \
+    #    " --ro -i tar-out -a %s / - %s %s > %s"
+    #cmd = cmd % (disk, tar_options, compr, output)
+
     proc = subprocess.Popen(cmd, env=os.environ.copy(), shell=True)
     proc.communicate()
     if proc.returncode:
