@@ -15,7 +15,7 @@ class env::std::dell {
   apt::source { 'linux.dell.com':
     comment  => 'Dell repository for OpenManage Server Administrator tools',
     location => 'http://linux.dell.com/repo/community/debian',
-    release  => 'jessie',
+    release  => 'wheezy',
     repos    => 'openmanage',
     key      => {
       'id'     => '42550ABD1E80D7C1BC0BAD851285491434D8786F',
