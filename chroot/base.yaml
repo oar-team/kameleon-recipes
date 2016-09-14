@@ -29,7 +29,7 @@ global:
 
   ## Initial rootfs archive built with kameleon
   ## See https://github.com/oar-team/kameleon-bootstrap-recipes.git
-  rootfs_archive_url: http://kameleon.imag.fr/rootfs/$${arch}/$${distrib}$${release_number}.tar.xz
+  rootfs_archive_url: http://kameleon.imag.fr/rootfs/$${arch}/$${distrib}$${release_number}_$${bootstrap_image_version}.tar.xz
   rootfs_archive_download_path: $${kameleon_cwd}/rootfs.tar.xz
   # rootfs options
   rootfs: $${kameleon_cwd}/rootfs
