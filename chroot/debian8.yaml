@@ -12,7 +12,7 @@ global:
   # Distribution
   release: jessie
   release_number: 8
-  bootstrap_image_version: 20150915
+  bootstrap_image_version: "20150915-1"
 
   setup_packages: >-
     sudo vim bash-completion curl resolvconf bzip2 bsdutils ca-certificates
