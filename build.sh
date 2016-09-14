@@ -23,15 +23,18 @@ for r in $RECIPES; do
       echo "$ROOTFS_PATH/${name}.tar already exists"
     else
         rm -rf $BUILD_PATH
-        echo -e "===============================================================\nname"
-        echo -e "==============================================================="
+        cat <<EOF
+===============================================================================
+=== $name
+===============================================================================
+EOF
         (set -x; kameleon build $ROOT_PROJECT/$r --build-path \
                     $BUILD_PATH --script --enable-cache --cache-archive-compression=none --global=appliance_formats:tar)
         if [ $? -eq 0 ]; then
             mkdir -p $ROOTFS_PATH
             date=$(date +%Y%m%d%H%M%S)
-            for f in *.tar; do
-              mv -v $BUILD_PATH/$name/$f $ROOTFS_PATH/${f%.tar}-$date.tar
+            for f in $BUILD_PATH/$name/*.tar; do
+              mv -v $f $ROOTFS_PATH/$(basename $f .tar)-$date.tar
             done
         else
             echo "\n$name FAILED\n"
