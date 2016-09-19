@@ -1,6 +1,6 @@
 # /etc/ntp.conf, configuration for ntpd; see ntp.conf(5) for help
 
-<% if scope.lookupvar('env::nfs::ntp::drift_file') == nil %>
+<% if scope.lookupvar('env::nfs::configure_ntp::drift_file') == nil %>
 #Used in standard environement, not in reference
 driftfile /var/lib/ntp/ntp.drift
 <% end %>
