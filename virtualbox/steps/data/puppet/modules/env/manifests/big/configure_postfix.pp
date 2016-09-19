@@ -34,6 +34,6 @@ class env::big::configure_postfix () {
       group     => root,
       mode      => '644',
       source    => 'puppet:///modules/env/big/mail/postfix.cfg',
-      require   => File['/etc/postfix'];
+      require   => File['/etc/postfix/'];
   }
 }
