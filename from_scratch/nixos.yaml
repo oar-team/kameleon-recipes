@@ -1,0 +1,51 @@
+#==============================================================================
+# vim: softtabstop=2 shiftwidth=2 expandtab fenc=utf-8 cc=81 tw=80
+#==============================================================================
+#
+# DESCRIPTION: Debian generic system + netinstall ISO.
+#
+# USAGE:
+#   Select directly in this recipe: see usage example commented in the global of
+#   this recipe
+#
+#   or, override the globals directly in CLI. For example:
+#
+#   kameleon build --global distrib:debian,release:wheezy
+#
+#   or extends this recipe with your own and override those variable in it.
+#
+#==============================================================================
+---
+extend: base-bootstrap.yaml
+
+global:
+  distrib: nixos
+  release: 16.03
+  release_minor_and_hash: 1313.b8f7f0e
+  iso_location: releases
+
+  iso_filename: nixos-minimal-$${release}.$${release_minor_and_hash}-$${arch}-linux.iso
+  iso_url: http://nixos.org/$${iso_location}/nixos/$${release}-small/nixos-$${release}.$${release_minor_and_hash}/$${iso_filename}
+  iso_path: $${kameleon_cwd}/$${distrib}.iso
+
+  autoinstall_script_path: $${kameleon_data_dir}/$${distrib}-autoinstall.sh
+  root_password: root
+  # wait for a full boot before run autoinstall script
+  boot_timeout: 20
+
+  # override this configuration by adding yours to this folder
+  # ./step/data/configuration.nix
+  nix_configuration: $${kameleon_data_dir}/configuration.nix
+
+bootstrap:
+  - enable_checkpoint
+  - download_iso
+  - prepare_disk
+  - prepare_autoinstall
+  - start_http_server
+  - autoinstall
+
+export:
+  - export:
+    - export_as_qcow2:
+      - exec_local: qemu-img convert -O qcow2 -c $${qemu_image_disk} $${appliance_filename}.qcow2
