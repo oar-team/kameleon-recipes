@@ -34,7 +34,7 @@ EOF
             mkdir -p $ROOTFS_PATH
             date=$(date +%Y%m%d%H%M%S)
             for f in $BUILD_PATH/$name/*.tar; do
-              mv -v $f $ROOTFS_PATH/$(basename $f .tar)-$date.tar
+              mv -v $f $ROOTFS_PATH/$(basename $f .tar)_$date.tar
             done
         else
             echo "\n$name FAILED\n"
