@@ -11,7 +11,7 @@ extend: debian-netinstall.yaml
 global:
   # Distribution
   distrib: debian
-  kernel_arch: amd64
+  debian_arch: amd64
   release: wheezy
   iso_location: archive
   # Be careful: Only the last minor version of an old major version ISO is

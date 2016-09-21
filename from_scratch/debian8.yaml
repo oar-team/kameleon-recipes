@@ -10,7 +10,7 @@ extend: debian-netinstall.yaml
 
 global:
   distrib: debian
-  kernel_arch: amd64
+  debian_arch: amd64
   release: jessie
   release_number: 8.5.0
   iso_location: release
