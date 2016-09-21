@@ -16,16 +16,20 @@
 #
 #==============================================================================
 ---
-extend: base-bootstrap.yaml
+extend: base.yaml
 
 global:
-  # Example of usage
-  # distrib: debian
-  # debian_arch: amd64
-  # release: jessie
-  # release_number: 8.5.0
-  # iso_location: release
+  # Boilerplate values, so that `kameleon info' works with the recipe.
+  # For a specific version of Debian, please see the dedicated recipe, as this
+  # recipe is mainly meant as being extended.
+  distrib: debian
+  debian_arch: amd64
+  release: jessie
+  release_number: 8.5.0
+  iso_location: release
 
+  # The following values should be OK with the last releases of Debian stable or
+  # or old stable. They should not need modified values in extending recipes.
   iso_filename: debian-$${release_number}-$${debian_arch}-netinst.iso
   iso_location: archive
   iso_url: http://cdimage.debian.org/cdimage/$${iso_location}/$${release_number}/$${debian_arch}/iso-cd/$${iso_filename}

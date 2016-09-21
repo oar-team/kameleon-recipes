@@ -2,18 +2,14 @@
 # vim: softtabstop=2 shiftwidth=2 expandtab fenc=utf-8 cc=81 tw=80
 #==============================================================================
 #
-# DESCRIPTION: Debian 8 (Jessie) base system.
+# DESCRIPTION: Debian testing base system.
 #
 #==============================================================================
 ---
-extend: debian-netinstall.yaml
+extend: debian-base.yaml
 
 global:
-  distrib: debian
-  debian_arch: amd64
   release: jessie
-  release_number: 8.5.0
-  iso_location: release
 
 bootstrap:
   - "@base"

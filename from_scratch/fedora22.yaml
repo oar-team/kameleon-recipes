@@ -6,7 +6,7 @@
 #
 #==============================================================================
 ---
-extend: fedora-base-bootstrap.yaml
+extend: fedora-base.yaml
 
 global:
   release: 22

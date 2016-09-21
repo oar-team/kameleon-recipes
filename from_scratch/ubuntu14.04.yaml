@@ -6,7 +6,7 @@
 #
 #==============================================================================
 ---
-extend: ubuntu-base-bootstrap.yaml
+extend: ubuntu-base.yaml
 
 global:
   release: trusty

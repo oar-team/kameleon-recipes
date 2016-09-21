@@ -7,7 +7,7 @@
 #
 #==============================================================================
 ---
-extend: debian-debootstrap.yaml
+extend: debian-base.yaml
 global:
   release: testing
 

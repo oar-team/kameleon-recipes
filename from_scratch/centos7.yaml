@@ -6,7 +6,7 @@
 #
 #==============================================================================
 ---
-extend: centos-netinstall.yaml
+extend: centos-base.yaml
 
 global:
   # Distribution

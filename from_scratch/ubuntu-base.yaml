@@ -2,27 +2,26 @@
 # vim: softtabstop=2 shiftwidth=2 expandtab fenc=utf-8 cc=81 tw=80
 #==============================================================================
 #
-# DESCRIPTION: Archlinux base system.
+# DESCRIPTION: Ubuntu 12.04 LTS base system.
 #
 #==============================================================================
 ---
-extend: base.yaml
-
+extend: debian-base.yaml
 # Global variables use by Kameleon engine and the steps
 global:
-  distrib: archlinux
+  # Distribution
+  distrib: ubuntu
 
+  ## System variables. Required by kameleon engine
+  # Include specific steps
   include_steps:
+    - $${distrib}/$${release}
     - $${distrib}
+    - "debian"
 
-  mirror_url: http://mir.archlinux.fr
-  iso_filename: debian-jessie-$${iso_arch}-live.iso
-  iso_url: http://kameleon.imag.fr/iso/$${iso_filename}
-  iso_path: $${kameleon_cwd}/$${iso_filename}
-
-  autoinstall_script_path: $${kameleon_data_dir}/$${distrib}-autoinstall.sh
-  bootstrap_packages: base mkinitcpio dhcpcd linux systemd-sysvcompat iputils net-tools syslinux openssh vim
-  boot_timeout: 15
+  repository: http://archive.ubuntu.com/ubuntu/
+  bootstrap_packages: locales openssh-server linux-image-generic
+  additional_packages: ""
 
 bootstrap:
   - "@base"
