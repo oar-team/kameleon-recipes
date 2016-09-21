@@ -8,7 +8,7 @@
 #
 #==============================================================================
 ---
-extend: base-bootstrap.yaml
+extend: base.yaml
 global:
   distrib: centos
   # release_major: 6

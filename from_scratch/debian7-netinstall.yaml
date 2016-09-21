@@ -6,7 +6,7 @@
 #
 #==============================================================================
 ---
-extend: debian-netinstall.yaml
+extend: debian-base-netinstall.yaml
 # Global variables use by Kameleon engine and the steps
 global:
   # Distribution

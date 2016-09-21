@@ -2,26 +2,19 @@
 # vim: softtabstop=2 shiftwidth=2 expandtab fenc=utf-8 cc=81 tw=80
 #==============================================================================
 #
-# DESCRIPTION: Ubuntu 12.04 LTS base system.
+# DESCRIPTION: Debian 8 (Jessie) base system.
 #
 #==============================================================================
 ---
-extend: debian-debootstrap.yaml
+extend: debian-base-netinstall.yaml
 # Global variables use by Kameleon engine and the steps
 global:
   # Distribution
-  distrib: ubuntu
-
-  ## System variables. Required by kameleon engine
-  # Include specific steps
-  include_steps:
-    - $${distrib}/$${release}
-    - $${distrib}
-    - "debian"
-
-  repository: http://archive.ubuntu.com/ubuntu/
-  bootstrap_packages: locales openssh-server linux-image-generic
-  additional_packages: ""
+  distrib: debian
+  debian_arch: amd64
+  release: jessie
+  release_number: 8.5.0
+  iso_location: release
 
 bootstrap:
   - "@base"

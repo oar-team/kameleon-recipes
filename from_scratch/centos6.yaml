@@ -6,7 +6,7 @@
 #
 #==============================================================================
 ---
-extend: centos-netinstall.yaml
+extend: centos-base.yaml
 global:
   release_major: 6
   release_minor: 8

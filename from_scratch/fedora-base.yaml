@@ -7,7 +7,7 @@
 # USAGE: Select the release
 #==============================================================================
 ---
-extend: centos-netinstall.yaml
+extend: centos-base.yaml
 
 global:
   distrib: fedora
