@@ -2,6 +2,8 @@ class env::std::install_g5kchecks {
 
   include 'env::std::ipmitool' # ipmitool is required by g5k-checks
   include 'env::std::dell'     # dell tools are required by g5k-checks
+
+  $g5kchecks_version = "0.7.5"
   
   $g5kchecks_deps = [ 'ruby-rest-client', 'ohai', 'ruby-popen4', 'fio', 'ruby-json', 'x86info' ]
   case $operatingsystem {
@@ -10,14 +12,14 @@ class env::std::install_g5kchecks {
       require env::commonpackages::rubyrspec
       exec {
         "retrieve_g5kchecks":
-          command  => "/usr/bin/wget --no-check-certificate -q https://www.grid5000.fr/packages/debian/g5kchecks_all.deb -O /tmp/g5kchecks_all.deb",
-          creates  => "/tmp/g5kchecks_all.deb";
+          command  => "/usr/bin/wget --no-check-certificate -q https://www.grid5000.fr/packages/debian/g5kchecks_${g5kchecks_version}_all.deb -O /tmp/g5kchecks_${g5kchecks_version}_all.deb",
+          creates  => "/tmp/g5kchecks_${g5kchecks_version}_all.deb";
       }
       package {
         "g5kchecks":
           ensure   => installed,
           provider => dpkg,
-          source   => "/tmp/g5kchecks_all.deb",
+          source   => "/tmp/g5kchecks_${g5kchecks_version}_all.deb",
           require  => [ Exec["retrieve_g5kchecks"], Package[$g5kchecks_deps], Package['rake'], Package['ntp'] ];
         $g5kchecks_deps:
           ensure   => installed;
