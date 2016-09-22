@@ -66,6 +66,17 @@ global:
   http_port: 15364
   http_pid:  $${kameleon_cwd}/http.pid
 
+  ssh_config_file: $${kameleon_cwd}/ssh_config
+  out_context:
+    cmd: ssh -F $${ssh_config_file} $${kameleon_recipe_name} -t /bin/bash
+    workdir: /root/kameleon_workdir
+    proxy_cache: 10.0.2.2
+
+  in_context:
+    cmd: ssh -F $${ssh_config_file} $${kameleon_recipe_name} -t /bin/bash
+    workdir: /root/kameleon_workdir
+    proxy_cache: 10.0.2.2
+
 # Bootstrap the new system and create the 'in_context'
 bootstrap:
   - enable_checkpoint
