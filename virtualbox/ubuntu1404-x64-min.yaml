@@ -6,7 +6,7 @@
 #
 #==============================================================================
 ---
-extend: ubuntu1404-global.yaml # Cf 'jessie-x64-global' for a real content. This recipe only overwrite variant.
+extend: ubuntu1404-common.yaml # Cf 'ubuntu1404-common' for a real content. This recipe only overwrite variant.
 global:
   variant: min
 
