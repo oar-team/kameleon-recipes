@@ -38,4 +38,10 @@ class env::std::dell {
     require => Package['srvadmin-all', 'dtk-scripts']
   }
   
+  # Fix bug 7324
+  file { '/etc/omreg.cfg'
+    ensure => 'link',
+    target => '/opt/dell/srvadmin/etc/omreg.cfg',
+    require => Package['srvadmin-all', 'dtk-scripts']
+  }
 }
