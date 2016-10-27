@@ -13,6 +13,7 @@ global:
   # Distribution
   release: trusty
   release_number: 14.04
+  bootstrap_image_version: "20150915-1"
 
   # Apt recipe options
   apt_repository: http://archive.ubuntu.com/ubuntu/
