@@ -6,7 +6,7 @@
 #
 #==============================================================================
 ---
-extend: jessie-x64-global.yaml # Cf 'jessie-x64-global' for a real content. This recipe only overwrite variant.
+extend: jessie-x64-common.yaml # Cf 'jessie-x64-common' for a real content. This recipe only overwrite variant.
 global:
   variant: base
   g5k_postinst_path: server:///grid5000/postinstalls/debian-x64-base-2.5-post.tgz
