@@ -1,0 +1,4 @@
+- set_cap:
+    - exec_in: /sbin/setcap CAP_NET_RAW=+ep /bin/ping
+    - exec_in: /sbin/setcap CAP_NET_RAW=+ep /bin/ping6
+    - exec_in: /sbin/setcap cap_dac_override,cap_sys_ptrace=+ep /usr/bin/systemd-detect-virt

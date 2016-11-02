@@ -52,6 +52,7 @@ setup:
     - packages: $${setup_packages}
   - install_bootloader
   - clean_udev_dir
+  - set_capabilities
   - setup_orchestrator
   - run_orchestrator
 
