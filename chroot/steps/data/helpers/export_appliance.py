@@ -57,7 +57,7 @@ def tar_convert(disk, output, excludes, compression_level):
     elif output.endswith(('tar.lzo', 'tzo')):
         compr = "| %s %s -c -" % (which("lzop"), compression_level_opt)
 
-    tar_options_list = ["--selinux", "--acls", "--xattrs",
+    tar_options_list = ["selinux:true", "acls:true", "xattrs:true",
                         "numericowner:true",
                         "excludes:\"%s\"" % ' '.join(excludes)]
     tar_options = ' '.join(tar_options_list)
