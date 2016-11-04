@@ -50,6 +50,7 @@ setup:
   - clean_udev_dir
   - configure_locales
   - configure_failsafe
+  - set_capabilities
   - setup_orchestrator
   - run_orchestrator
 

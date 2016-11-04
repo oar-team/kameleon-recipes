@@ -1,0 +1,4 @@
+- set_cap:
+    - exec_in: /sbin/setcap CAP_NET_RAW=+ep /bin/ping
+    - exec_in: /sbin/setcap CAP_NET_RAW=+ep /bin/ping6
+
