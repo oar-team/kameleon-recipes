@@ -36,4 +36,6 @@ class env::std ( $parent_parameters = {} ){
   class { 'env::std::configure_rsyslog_remote': }
   # sudo-g5k
   class { 'env::std::install_sudog5k': }
+  # g5k systemd generator
+  class { 'env::std::g5k_generator': }
 }

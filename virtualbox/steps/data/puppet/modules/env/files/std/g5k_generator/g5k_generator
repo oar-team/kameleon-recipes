@@ -1,0 +1,38 @@
+#!/bin/bash
+
+#for tests
+DEST=/tmp
+
+# Standard generator setup, they take three arguments but allow none too.
+if [[ $# -gt 0 && $# -ne 3 ]]; then
+    echo "This program takes three or no arguments."
+    exit 0
+fi
+
+# See https://www.freedesktop.org/wiki/Software/systemd/Generators/
+# Using $2 to override generated services by systemd-sysv-generator in $3
+DEST="$2"
+
+##### Disable the Dell dataeng service if not a Dell Machine #####
+
+SMBIOS_UTIL="/usr/sbin/smbios-sys-info-lite"
+
+if [[ ! -x "$SMBIOS_UTIL" ]];
+then
+    echo "G5k systemd generator, ${SMBIOS_UTIL} cannot be executed" > /dev/kmsg
+    exit 0
+fi
+
+#Simple check, copied from Dell tools (CheckSystemType).
+"$SMBIOS_UTIL" | /bin/egrep "(Vendor|OEM String 1)" | /usr/bin/awk -F":" '{print $2}' | /bin/grep -qi "Dell"
+
+if [[ "$?" != "0" ]]; then
+    /bin/ln -sf "/dev/null" "${DEST}/dataeng.service"
+else
+    #Remove possibly existing symlink
+    /bin/rm -f "${DEST}/dataeng.service"
+fi
+
+##### End dataeng service override #####
+
+exit 0
