@@ -15,7 +15,7 @@ global:
   include_steps:
     - $${distrib}
 
-  mirror_url: http://mir.archlinux.fr
+  mirror_url: http://archlinux.polymorf.fr
   iso_filename: debian-jessie-$${iso_arch}-live.iso
   iso_url: http://kameleon.imag.fr/iso/$${iso_filename}
   iso_path: $${kameleon_cwd}/$${iso_filename}

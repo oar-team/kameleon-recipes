@@ -17,6 +17,11 @@ if [ -z "$1" ]; then
 else
   RECIPES="$@"
 fi
+
+if [ ! -z "$HTTP_PROXY" ]; then
+  PROXY="--proxy $(echo $HTTP_PROXY | awk -F/ '{print $3}')"
+fi
+
 for r in $RECIPES; do
     name=$(basename $r .yaml)
     if [ -e "$ROOTFS_PATH/${name}.tar" -a -z "$FORCE" ]; then
@@ -29,7 +34,7 @@ for r in $RECIPES; do
 ===============================================================================
 EOF
         (set -x; kameleon build $ROOT_PROJECT/$r --build-path \
-                    $BUILD_PATH --script --enable-cache --cache-archive-compression=none --global=appliance_formats:tar)
+                    $BUILD_PATH --script --enable-cache --cache-archive-compression=none --global=appliance_formats:tar $PROXY)
         if [ $? -eq 0 ]; then
             mkdir -p $ROOTFS_PATH
             date=$(date +%Y%m%d%H%M%S)

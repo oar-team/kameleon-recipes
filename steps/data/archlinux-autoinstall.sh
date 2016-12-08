@@ -21,19 +21,23 @@ export no_proxy="localhost,$(echo $http_proxy | tr ":" "\n" | head -n 1),127.0.0
 export NO_PROXY="$no_proxy"
 export PATH=/usr/bin:/usr/sbin:/bin:/sbin:$PATH
 
+# install dependencies
+apt-get update
+apt-get -y install curl parted e2fsprogs syslinux coreutils haveged make m4
 
 DISK=/dev/sda
 MNT=/mnt
-MIRROR="http://mir.archlinux.fr"
+MIRROR="http://archlinux.polymorf.fr"
 HOSTNAME="localhost"
 TIMEZONE="UTC"
 LOCALE="en_US.UTF-8"
 PACKAGES="base mkinitcpio dhcpcd linux systemd-sysvcompat iputils net-tools syslinux openssh vim"
+INSTALL_SCRIPT_VERSION=17
 
 cd /tmp/
-curl -sSL https://projects.archlinux.org/arch-install-scripts.git/snapshot/arch-install-scripts-15.tar.gz > /tmp/arch-install-scripts-15.tar.gz
-tar xvf /tmp/arch-install-scripts-15.tar.gz
-cd arch-install-scripts-15
+curl -sSL https://projects.archlinux.org/arch-install-scripts.git/snapshot/arch-install-scripts-${INSTALL_SCRIPT_VERSION}.tar.gz > /tmp/arch-install-scripts.tar.gz
+tar xvf /tmp/arch-install-scripts.tar.gz
+cd arch-install-scripts-${INSTALL_SCRIPT_VERSION}
 make
 make install
 
