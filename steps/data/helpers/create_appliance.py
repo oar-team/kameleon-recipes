@@ -15,7 +15,13 @@ import contextlib
 
 logger = logging.getLogger(__name__)
 
-tar_options = ["--selinux", "--xattrs", "--xattrs-include='*'", "--numeric-owner", "--one-file-system"] 
+
+tar_options = ["--selinux",
+               "--xattrs",
+               "--xattrs-include='*'",
+               "--numeric-owner",
+               "--one-file-system"]
+
 
 @contextlib.contextmanager
 def temporary_directory():
@@ -228,7 +234,8 @@ mkfs %s /dev/sda1
     if "directory" in input_type:
         excludes = ['dev/*', 'proc/*', 'sys/*', 'tmp/*', 'run/*',
                     '/mnt/*']
-        tar_options_str = ' '.join(tar_options + ['--exclude="%s"' % s for s in excludes])
+        tar_options_str = ' '.join(tar_options +
+                                   ['--exclude="%s"' % s for s in excludes])
         make_tar_cmd = '%s -cf - %s -C %s $(cd %s; ls -A)' % \
             (which("tar"), tar_options_str, input_, input_)
 
@@ -275,6 +282,7 @@ def create_appliance(args):
         os.remove(temp_file) if os.path.exists(temp_file) else None
     else:
         shutil.move(temp_file, output_filename)
+
 
 if __name__ == '__main__':
     allowed_formats = ('qcow', 'qcow2', 'qed', 'vdi', 'raw', 'vmdk')
@@ -325,5 +333,6 @@ if __name__ == '__main__':
         logger.addHandler(handler)
         create_appliance(args)
     except Exception as exc:
-        sys.stderr.write(u"\nError: %s\n" % exc)
+        sys.stderr.write(u"\nError: %s\nTry to execute this script with "
+                         "the '--verbose' option to get more details" % exc)
         sys.exit(1)
