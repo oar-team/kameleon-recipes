@@ -296,7 +296,8 @@ if __name__ == '__main__':
         formatter_class=argparse.ArgumentDefaultsHelpFormatter
     )
     parser.add_argument('input', action="store",
-                        help='input')
+                        help='input root filesystem in directory (chroot) '
+                             'or a tarball (conpressed or not)')
     parser.add_argument('-F', '--format', action="store", type=str,
                         help=('Choose the output disk image format. %s' %
                               allowed_formats_help), default='qcow2')
