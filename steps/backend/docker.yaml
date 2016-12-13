@@ -1,5 +1,7 @@
 # Docker backend recipe
 ---
+extend: chroot.yaml
+
 checkpoint: docker.yaml
 
 global:
@@ -35,5 +37,5 @@ setup:
   - "@base"
 
 export:
-  - export_docker_rootfs
+  - save_appliance_docker
   - "@base"
