@@ -7,8 +7,8 @@ checkpoint: docker.yaml
 global:
 
   ## Docker options
-  docker_image: $${kameleon_recipe_name}
-  docker_hostname: $${kameleon_recipe_name}
+  docker_image: $${kameleon_recipe_name}_$${kameleon_short_uuid}
+  docker_hostname: kameleon-$${kameleon_short_uuid}
 
   # rootfs options
   rootfs: $${kameleon_cwd}/rootfs
@@ -27,7 +27,7 @@ global:
     cmd: LC_ALL=POSIX docker exec -i $(cat MAIN_CONTAINER_ID) /bin/bash
     interactive_cmd: LC_ALL=POSIX docker exec -it $(cat MAIN_CONTAINER_ID) /bin/bash
     workdir: /root/kameleon_workdir
-    proxy_cache: 172.17.42.1
+    proxy_cache: 172.17.0.1
 
 bootstrap:
   - prepare_docker
@@ -37,5 +37,8 @@ setup:
   - "@base"
 
 export:
+  - tag_docker_image:
+    - commit_container:
+      - exec_out: docker commit $(cat MAIN_CONTAINER_ID) $${docker_image}:$${kameleon_short_uuid}
   - save_appliance_docker
   - "@base"

@@ -1,7 +1,7 @@
 - export_docker_rootfs:
-  - exec_local: echo "Exporting the docker image to $${rootfs}"
-  - exec_local: mkdir -p $${rootfs}
-  - exec_local: docker export $(cat MAIN_CONTAINER_ID) | tar --touch -xf - -C $${rootfs}
-  - exec_local: chmod 755 $${rootfs}
+  - exec_out: echo "Exporting the docker image to $${rootfs}"
+  - exec_out: mkdir -p $${rootfs}
+  - exec_out: docker export $(cat MAIN_CONTAINER_ID) | tar --touch -xf - -C $${rootfs}
+  - exec_out: chmod 755 $${rootfs}
   - on_clean:
-      - exec_local: rm -f docker_export.tar.gz
+      - exec_out: rm -f docker_export.tar.gz
