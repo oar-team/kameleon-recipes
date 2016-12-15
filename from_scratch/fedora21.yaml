@@ -10,6 +10,7 @@ extend: fedora-base.yaml
 
 global:
   release: 21
+  base_url: http://archives.fedoraproject.org/pub/archive
 
 bootstrap:
   - "@base"
