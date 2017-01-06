@@ -13,12 +13,9 @@ class env::base::configure_cstates {
       owner   => root,
       group   => root,
       source  => "puppet:///modules/env/base/cstates/cstates.service";
+    '/etc/systemd/system/multi-user.target.wants/cstates.service':
+      ensure => link,
+      target => '/etc/systemd/system/cstates.service';
   }
 
-  service {
-    "cstates":
-      ensure  => running,
-      enable  => true,
-      require => File["/usr/local/sbin/force_cstates_c0-c1e.rb", "/etc/systemd/system/cstates.service"];
-  }
 }
