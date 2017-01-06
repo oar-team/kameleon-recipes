@@ -1,7 +1,7 @@
 class env::big::configure_kvm () {
 
   # If sudo is used somewhere else, he shoud be placed in 'packages' instead of 'kvm' class.
-  $packages = [ 'kvm', 'uml-utilities', 'virtinst',  'genisoimage', 'libvirt-bin', 'python-libvirt', 'libguestfs-tools' ]
+  $packages = [ 'kvm', 'uml-utilities', 'virtinst',  'genisoimage', 'libvirt-bin', 'python-libvirt' ]
   # WARNING! Due to bug #5257, this should NOT work on wheezy environments. Cf old chef recipe setup/recipes/kvm to see a workaround
 
   package {
