@@ -1,4 +1,8 @@
 - set_cap:
+    - exec_in: apt-get install -y libcap2-bin
     - exec_in: /sbin/setcap CAP_NET_RAW=+ep /bin/ping
-    - exec_in: /sbin/setcap CAP_NET_RAW=+ep /bin/ping6
+    - exec_in: |
+        if [[ ! -L /bin/ping6 ]]; then
+           /sbin/setcap CAP_NET_RAW=+ep /bin/ping6
+        fi
     - exec_in: /sbin/setcap cap_dac_override,cap_sys_ptrace=+ep /usr/bin/systemd-detect-virt
