@@ -12,8 +12,6 @@ class env::nfs ( $parent_parameters = {} ){
   }
   # Openiscsi (storage5k)
   class { 'env::nfs::configure_iscsi': }
-  # Ceph
-  class { 'env::nfs::install_ceph': }
   # ntp (required by nfs)
   class {
     'env::nfs::configure_ntp':

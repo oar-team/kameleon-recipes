@@ -35,4 +35,7 @@ class env::big ( $parent_parameters = {} ){
   class { 'env::big::configure_sshfs': }
   # Config OpenMPI
   class { 'env::big::install_openmpi': }
+  # Ceph
+  class { 'env::big::install_ceph': }
+
 }

@@ -1,4 +1,4 @@
-class env::nfs::install_ceph (
+class env::big::install_ceph (
   $version = 'hammer'
 ) {
 
@@ -9,7 +9,7 @@ class env::nfs::install_ceph (
     'Debian': {
       # Add ceph repositories.
       class {
-        'env::nfs::install_ceph::apt':
+        'env::big::install_ceph::apt':
           version => $version;
       }
 
@@ -17,7 +17,7 @@ class env::nfs::install_ceph (
       package {
         $ceph_packages :
           ensure   => installed,
-          require  => [Class['env::nfs::install_ceph::apt'], Exec['/usr/bin/apt-get update']];
+          require  => [Class['env::big::install_ceph::apt'], Exec['/usr/bin/apt-get update']];
       }
 
       # Ceph-deploy is used by dfsg5k to setup easily a ceph fs on g5k nodes.

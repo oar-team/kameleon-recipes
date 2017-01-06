@@ -1,4 +1,4 @@
-class env::nfs::install_ceph::apt (
+class env::big::install_ceph::apt (
   $version = 'hammer'
 ) {
 
