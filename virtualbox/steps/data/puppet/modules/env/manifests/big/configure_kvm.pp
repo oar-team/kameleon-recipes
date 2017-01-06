@@ -37,11 +37,11 @@ class env::big::configure_kvm () {
       source    => 'puppet:///modules/env/big/kvm/random_mac';
   }
 
-  service {
-    'uml-utilities':
-      provider  => systemd,
-      enable    => false;
-  }
+  Exec{
+  'disable uml-utilities service':
+  command => "/usr/sbin/update-rc.d uml-utilities disable",
+  require => Package['uml-utilities'];
+}
   # Not sure this is required anymore. Try without, uncomment if needed
   # augeas {
   #   'set_XDG_RUNTIME_DIR':
