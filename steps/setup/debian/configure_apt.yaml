@@ -1,6 +1,7 @@
 # Software Install
 - enable_contrib: true
 - enable_nonfree: true
+- enable_backports: true
 
 - configure_source_list:
   - write_in:
@@ -8,12 +9,16 @@
     - |
       deb $${apt_repository} $${release} main
       deb-src $${apt_repository} $${release} main
-      
-      deb $${apt_repository} $${release}-backports main
-      deb-src $${apt_repository} $${release}-backports main
-      
+            
       deb http://security.debian.org/ $${release}/updates main
       deb-src http://security.debian.org/ $${release}/updates main
+
+- add_backports:
+  - exec_in: |
+      if [ $${enable_backports} = true ]; then
+        echo "deb $${apt_repository} $${release}-backports main" >> /etc/apt/sources.list
+        echo "deb-src $${apt_repository} $${release}-backports main" >> /etc/apt/sources.list
+      fi
 
 - add_contribs_and_nonfree_sources:
   - exec_in: |
