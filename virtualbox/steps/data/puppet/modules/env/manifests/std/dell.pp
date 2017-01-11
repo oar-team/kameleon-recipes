@@ -30,7 +30,7 @@ class env::std::dell {
   package {
     ['srvadmin-all', 'dtk-scripts']:
       ensure   => 'installed',
-      require  => Apt::Source['linux.dell.com']
+      require  => [Apt::Source['linux.dell.com'], Exec['apt_update']]
   }
   
   service { 'dataeng':
