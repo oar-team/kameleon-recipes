@@ -8,11 +8,11 @@ class env::std::add_g5kcode_to_path {
       mode    => '0700';
   }
 
+exec {
+'set_path_g5kcode':
+     command => "/bin/bash -c \"if grep --quiet 'PATH' /etc/environment; then sed -i '/^PATH/ s/$/:\\/grid5000\\/code\\/bin/' /etc/environment; else  echo 'PATH=/usr/local/bin:/usr/bin:/bin:/grid5000/code/bin' >> /std/environment ;fi\"";
+}
   augeas {
-    'g5kcode_etc_environment_path':
-      lens    => "Shellvars.lns",
-      incl    => "/etc/environment",
-      changes => ["set PATH /usr/local/bin:/usr/bin:/bin:/grid5000/code/bin",];
     'g5kcode_root_environment_path':
       lens    => "Shellvars.lns",
       incl    => "/root/.ssh/environment",

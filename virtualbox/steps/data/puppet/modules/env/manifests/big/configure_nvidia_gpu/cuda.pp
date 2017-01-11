@@ -1,7 +1,7 @@
 class env::big::configure_nvidia_gpu::cuda () {
 
   # May be changed to a link inside g5k if required
-  $driver_source = 'https://www.grid5000.fr/packages/debian/cuda_7.0.28_linux.run'
+  $driver_source = 'https://www.grid5000.fr/packages/debian/cuda_8.0.44_linux-run'
   $opengl_packages = ['ocl-icd-libopencl1', 'opencl-headers', 'amd-opencl-icd']
 
   exec{
@@ -35,10 +35,17 @@ class env::big::configure_nvidia_gpu::cuda () {
       group     => root,
       mode      => '0755',
       source    => 'puppet:///modules/env/big/nvidia/profile';
-    '/usr/local/cuda-7.0/lib64/libcuda.so':
+    '/usr/local/cuda/lib64/libcuda.so':
       ensure    => 'link',
       target    => '/usr/lib/libcuda.so';
   }
+
+
+exec {
+'set_path_cuda':
+     command => "/bin/bash -c \"if grep --quiet 'PATH' /etc/environment; then sed -i '/^PATH/ s/$/:\\/usr\\/local\\/cuda\\/bin/' /etc/environment; else  echo 'PATH=/usr/local/bin:/usr/bin:/bin:/usr/local/cuda/bin' >> /etc/environment ;fi\"";
+}
+
   package{
     $opengl_packages:
       ensure    => installed;
