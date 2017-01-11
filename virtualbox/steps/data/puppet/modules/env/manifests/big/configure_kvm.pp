@@ -42,6 +42,13 @@ class env::big::configure_kvm () {
   command => "/usr/sbin/update-rc.d uml-utilities disable",
   require => Package['uml-utilities'];
 }
+
+  file_line {
+  'set XDG_RUNTIME_DIR':
+     path => '/etc/environment',
+     line => 'XDG_RUNTIME_DIR=/tmp/runtime-dir-libvirt';
+  }
+
   # Not sure this is required anymore. Try without, uncomment if needed
   # augeas {
   #   'set_XDG_RUNTIME_DIR':
