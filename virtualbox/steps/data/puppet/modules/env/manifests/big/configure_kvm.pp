@@ -43,10 +43,9 @@ class env::big::configure_kvm () {
   require => Package['uml-utilities'];
 }
 
-  file_line {
-  'set XDG_RUNTIME_DIR':
-     path => '/etc/environment',
-     line => 'XDG_RUNTIME_DIR=/tmp/runtime-dir-libvirt';
+file_line { 'kvm_etc_profile_path':
+     path => '/etc/profile',
+     line => 'export XDG_RUNTIME_DIR=/tmp/$USER-runtime-dir';
   }
 
   # Not sure this is required anymore. Try without, uncomment if needed
