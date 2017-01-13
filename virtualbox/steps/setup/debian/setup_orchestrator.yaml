@@ -31,4 +31,5 @@
     - exec_in: grep -q "Removing puppet-agent" /tmp/temp_purge && (rmdir /opt/puppetlabs && rc=$? || rc=$?)
     - exec_in: grep -q "Removing puppet-agent" /tmp/temp_purge && rm -rvf /etc/puppetlabs/puppet
     - exec_in: grep -q "Removing puppet-agent" /tmp/temp_purge && (rmdir /etc/puppetlabs && rc=$? || rc=$?)
+    - exec_in: apt-get autoremove -y lvm2 && dpkg --purge lvm2
     - exec_local: rm -r $${kameleon_cwd}/script_dir
