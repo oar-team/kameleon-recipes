@@ -29,22 +29,20 @@ class env::big::configure_nvidia_gpu::cuda () {
       mode      => '0644',
       source    => 'puppet:///modules/env/big/nvidia/cuda.conf',
       notify    => Exec['update_ld_conf'];
-    '/etc/profile':
-      ensure    => file,
-      owner      => root,
-      group     => root,
-      mode      => '0755',
-      source    => 'puppet:///modules/env/big/nvidia/profile';
     '/usr/local/cuda/lib64/libcuda.so':
       ensure    => 'link',
       target    => '/usr/lib/libcuda.so';
   }
 
-
-exec {
-'set_path_cuda':
-     command => "/bin/bash -c \"if grep --quiet 'PATH' /etc/environment; then sed -i '/^PATH/ s/$/:\\/usr\\/local\\/cuda\\/bin/' /etc/environment; else  echo 'PATH=/usr/local/bin:/usr/bin:/bin:/usr/local/cuda/bin' >> /etc/environment ;fi\"";
-}
+# Sounds dirty as fuck, but Augeas does not manage /etc/profile which is a bash file, and not a real configuration file (or I'm really bad with Augeas).
+file_line {
+  'cuda_etc_profile_path':
+     path => '/etc/profile',
+     line => 'export PATH=$PATH:/usr/local/cuda/bin';
+  'ld_library_path':
+     path => '/etc/profile',
+     line => 'export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/cuda/lib64';  
+  }
 
   package{
     $opengl_packages:
