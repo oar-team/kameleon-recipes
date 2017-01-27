@@ -1,0 +1,25 @@
+# INSTALLED BY PUPPET
+
+[Unit]
+SourcePath=/etc/init.d/ganglia-monitor
+Description=(null)
+Before=runlevel2.target runlevel3.target runlevel4.target runlevel5.target shutdown.target
+After=network-online.target nss-lookup.target remote-fs.target systemd-journald-dev-log.socket
+Wants=network-online.target
+Conflicts=shutdown.target
+
+[Service]
+Type=forking
+Restart=no
+TimeoutSec=5min
+IgnoreSIGPIPE=no
+KillMode=process
+GuessMainPID=no
+RemainAfterExit=yes
+SysVStartPriority=2
+ExecStartPre=/bin/bash -c "if [ `lsmod | grep -i -c nvidia` -eq 0 ]; then rm -f /etc/ganglia/conf.d/nvidia.pyconf; rm -f /etc/ganglia/conf.d/modpython-nvidia.conf;fi"
+ExecStart=/etc/init.d/ganglia-monitor start
+ExecStop=/etc/init.d/ganglia-monitor stop
+
+[Install]
+WantedBy=multi-user.target
