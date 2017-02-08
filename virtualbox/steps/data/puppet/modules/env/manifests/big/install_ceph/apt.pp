@@ -20,8 +20,8 @@ class env::big::install_ceph::apt (
       owner   => root,
       group   => root,
       content => "# ceph
-deb http://ceph.com/debian-${version}/ ${::lsbdistcodename} main
-deb-src http://ceph.com/debian-${version}/ ${::lsbdistcodename} main";
+deb http://download.ceph.com/debian-${version}/ ${::lsbdistcodename} main
+deb-src http://download.ceph.com/debian-${version}/ ${::lsbdistcodename} main";
   }
 
   Exec['import_ceph_apt_key'] -> File['/etc/apt/sources.list.d/ceph.list'] ~> Exec['/usr/bin/apt-get update']
