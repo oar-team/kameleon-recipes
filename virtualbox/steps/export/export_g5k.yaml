@@ -35,6 +35,7 @@
         compression: gzip
         script: traitement.ash /rambin
       boot:
+        kernel_params: "$${g5k_kernel_params}"
         kernel: /vmlinuz
         initrd: /initrd.img
       filesystem: ext4

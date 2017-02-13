@@ -35,6 +35,7 @@ global:
   output: "$${kameleon_cwd}/$${kameleon_recipe_name}" # output files basename
   g5k_tgz_path: server:///path/to/your/image
   g5k_postinst_path: server:///grid5000/postinstalls/debian-x64-min-1.2-post.tgz
+  g5k_kernel_params: ""
   arg_create: --basefolder /tmp
 
 bootstrap:
