@@ -17,7 +17,7 @@ KillMode=process
 GuessMainPID=no
 RemainAfterExit=yes
 SysVStartPriority=2
-ExecStartPre=/bin/bash -c "[[ $(lsmod | grep -ic nvidia) -eq 0 ]] && rm -f /etc/ganglia/conf.d/{nvidia.pyconf,modpython-nvidia.conf}"
+ExecStartPre=/bin/bash -c "[[ $(lsmod | grep -ic nvidia) -eq 0 ]] && rm -f /etc/ganglia/conf.d/{nvidia.pyconf,modpython-nvidia.conf} || true"
 ExecStart=/etc/init.d/ganglia-monitor start
 ExecStop=/etc/init.d/ganglia-monitor stop
 
