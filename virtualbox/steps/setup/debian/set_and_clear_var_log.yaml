@@ -1,0 +1,4 @@
+- clear_var_log:
+    - exec_in: rm -rf /var/log/*
+- set_persistent_syslog:
+    - exec_in: mkdir /var/log/journal

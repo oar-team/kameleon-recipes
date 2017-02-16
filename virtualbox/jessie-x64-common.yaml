@@ -16,7 +16,7 @@ global:
   appliance_formats: qcow2 tar.gz
   appliance_tar_excludes: >-
     ./etc/fstab ./root/.bash_history ./root/kameleon_workdir
-    ./var/tmp/* ./tmp/* ./var/log/* ./dev/* ./proc/* ./run/*
+    ./var/tmp/* ./tmp/* ./dev/* ./proc/* ./run/*
     ./sys/*
 #  input: $${virtualbox_image_disk}
   bootstrap_packages: >
@@ -56,6 +56,7 @@ setup:
   - set_capabilities
   - setup_orchestrator
   - run_orchestrator
+  - set_and_clear_var_log
 
 export:
   - disable_checkpoint
