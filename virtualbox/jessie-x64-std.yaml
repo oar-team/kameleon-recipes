@@ -11,6 +11,11 @@ global:
   variant: std
   g5k_postinst_path: server:///grid5000/postinstalls/debian-x64-prod-1.1-post.tgz
   g5k_kernel_params: "cgroup_enable=memory"
+  appliance_tar_excludes: >-
+    ./etc/fstab ./root/.bash_history ./root/kameleon_workdir
+    ./var/tmp/* ./tmp/* ./dev/* ./proc/* ./run/*
+    ./sys/*
+
 
 
 bootstrap:
@@ -18,6 +23,7 @@ bootstrap:
 
 setup:
   - "@base"
+  - set_and_clear_var_log
 
 export:
   - "@base"
