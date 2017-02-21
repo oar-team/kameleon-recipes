@@ -38,6 +38,8 @@ class env::std ( $parent_parameters = {} ){
   class { 'env::std::install_sudog5k': }
   # g5k systemd generator
   class { 'env::std::g5k_generator': }
-  #megacli
+  # megacli (RAID controler)
   class { 'env::std::install_megacli': }
+  # activate_all_disks
+  class { 'env::std::configure_activate_all_disks': }
 }

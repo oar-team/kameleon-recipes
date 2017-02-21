@@ -1,0 +1,12 @@
+[Unit]
+Description=Activate all disks of the node before g5k-checks is launched
+After=network-online.target
+Before=oar-node.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/sbin/activate-all-disks
+TimeoutSec=30
+
+[Install]
+WantedBy=multi-user.target
