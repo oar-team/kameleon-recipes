@@ -6,7 +6,6 @@ Before=oar-node.service
 [Service]
 Type=oneshot
 ExecStart=/usr/local/sbin/activate-all-disks
-TimeoutSec=30
 
 [Install]
 WantedBy=multi-user.target
