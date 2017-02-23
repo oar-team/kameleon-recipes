@@ -31,7 +31,7 @@ class env::std::configure_oar_client {
       require  => Exec["retrieve_liboar"];
   }
 
-  $hiera   = hiera("env::std::oar::ssh")
+
   file {
     '/var/lib/oar/checklogs/':
       ensure   => directory,
@@ -57,28 +57,28 @@ class env::std::configure_oar_client {
       owner    => root,
       group    => root,
       mode     => '0600',
-      content  => $hiera['oar_ssh_dsa_key'],
+      source   => 'puppet:///modules/env/std/oar/oar_ssh_host_dsa_key',
       require  => Package[$oar_packages];
     '/etc/oar/oar_ssh_host_rsa_key':
       ensure   => present,
       owner    => root,
       group    => root,
       mode     => '0600',
-      content  => $hiera['oar_ssh_rsa_key'],
+      source   => 'puppet:///modules/env/std/oar/oar_ssh_host_rsa_key',
       require  => Package[$oar_packages];
     '/etc/oar/oar_ssh_host_dsa_key.pub':
       ensure   => present,
       owner    => root,
       group    => root,
       mode     => '0600',
-      content  => $hiera['oar_ssh_dsa_key_pub'],
+      source   => 'puppet:///modules/env/std/oar/oar_ssh_host_dsa_key.pub',
       require  => Package[$oar_packages];
     '/etc/oar/oar_ssh_host_rsa_key.pub':
       ensure   => present,
       owner    => root,
       group    => root,
       mode     => '0600',
-      content  => $hiera['oar_ssh_rsa_key_pub'],
+      source   => 'puppet:///modules/env/std/oar/oar_ssh_host_rsa_key.pub',
       require  => Package[$oar_packages];
     '/var/lib/oar/.batch_job_bashrc':
       ensure   => present,
@@ -106,7 +106,7 @@ class env::std::configure_oar_client {
       owner    => oar,
       group    => oar,
       mode     => '0644',
-      content  => $hiera['oar_authorized_keys'],
+      source   => 'puppet:///modules/env/std/oar/oar_authorized_keys',
       require  => Package[$oar_packages];
     '/etc/default/oar-node':
       ensure   => present,
