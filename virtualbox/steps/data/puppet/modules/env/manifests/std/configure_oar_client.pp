@@ -57,28 +57,28 @@ class env::std::configure_oar_client {
       owner    => root,
       group    => root,
       mode     => '0600',
-      content  => $hiera['oar_ssh_dsa_key'],
+      content  => $hiera['oar_ssh_host_dsa_key'],
       require  => Package[$oar_packages];
     '/etc/oar/oar_ssh_host_rsa_key':
       ensure   => present,
       owner    => root,
       group    => root,
       mode     => '0600',
-      content  => $hiera['oar_ssh_rsa_key'],
+      content  => $hiera['oar_ssh_host_rsa_key'],
       require  => Package[$oar_packages];
     '/etc/oar/oar_ssh_host_dsa_key.pub':
       ensure   => present,
       owner    => root,
       group    => root,
       mode     => '0600',
-      content  => $hiera['oar_ssh_dsa_key_pub'],
+      content  => $hiera['oar_ssh_host_dsa_key_pub'],
       require  => Package[$oar_packages];
     '/etc/oar/oar_ssh_host_rsa_key.pub':
       ensure   => present,
       owner    => root,
       group    => root,
       mode     => '0600',
-      content  => $hiera['oar_ssh_rsa_key_pub'],
+      content  => $hiera['oar_ssh_host_rsa_key_pub'],
       require  => Package[$oar_packages];
     '/var/lib/oar/.batch_job_bashrc':
       ensure   => present,
