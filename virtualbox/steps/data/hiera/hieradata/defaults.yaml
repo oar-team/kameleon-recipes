@@ -5,3 +5,8 @@ env::std::oar::ssh:
   oarnodesetting_ssh_key_pub: ""
   id_rsa: ""
   id_rsa_pub: ""
+  oar_authorized_keys: ""
+  oar_ssh_host_dsa_key: ""
+  oar_ssh_host_dsa_key_pub: ""
+  oar_ssh_host_rsa_key: ""
+  oar_ssh_host_rsa_key_pub: ""
