@@ -142,9 +142,6 @@ end
 # Remove the first disk from the list (first disk is the main disk sda)
 physical_disks.shift
 
-num_disable_errors = 0
-num_enable_errors = 0
-
 # Disable the disks
 # The megacli command changes the state of the drive from JBOD to
 # Unconfigured Good. When in Unconfigured Good state, the disk is accessible
@@ -153,7 +150,6 @@ num_enable_errors = 0
 physical_disks.each do |disk|
   status, _output = sh("megacli -PDMakeGood -PhysDrv [#{disk[:enclosure]}:#{disk[:slot]}] -force -a#{disk[:adapter]}")
   debug "Disabling disk #{disk} => Return code = #{status}"
-  num_disable_errors += 1 unless status.zero?
 end
 
 # Enable the disks
@@ -162,6 +158,7 @@ end
 # A new drive in JBOD state is exposed to the host operating system as a
 # stand-alone drive. Drives in JBOD drive state are not part of the RAID
 # configuration.
+num_enable_errors = 0
 physical_disks.each do |disk|
   status, _output = sh("megacli -PDMakeJBOD -PhysDrv [#{disk[:enclosure]}:#{disk[:slot]}] -a#{disk[:adapter]}")
   debug "Enabling disk #{disk} => Return code = #{status}"
@@ -169,11 +166,10 @@ physical_disks.each do |disk|
 end
 
 # Exit
-num_errors = num_disable_errors + num_enable_errors
-if num_errors.zero?
+if num_enable_errors.zero?
   notice 'All disks have been activated with success'
 else
-  error(1, "#{num_disable_errors} errors occured while disabling the disks and #{num_enable_errors} errors occured while enabling the disks")
+  error(1, "#{num_enable_errors} errors occured while enabling the disks")
 end
 
 close
