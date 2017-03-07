@@ -8,7 +8,7 @@
 #==============================================================================
 
 ---
-extend: default/qemu/from_tarball.yaml
+extend: from_tarball.yaml
 
 global:
 
