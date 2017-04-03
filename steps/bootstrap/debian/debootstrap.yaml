@@ -55,6 +55,7 @@
   - exec_out: sed -i s'|^DEBIAN_ARCH=\(.*\)|DEBIAN_ARCH="$${debian_arch}"|'g /tmp/debootstrap.sh
   - exec_out: sed -i s'|^DEBIAN_KERNEL_ARCH=\(.*\)|DEBIAN_KERNEL_ARCH="$${debian_kernel_arch}"|'g /tmp/debootstrap.sh
   - exec_out: sed -i s'|^MNT=\(.*\)|MNT="$${rootfs}"|'g /tmp/debootstrap.sh
+  - exec_out: sed -i s'|^VARIANT=\(.*\)|VARIANT="$${bootstrap_variant}"|'g /tmp/debootstrap.sh
 
 - configure_proxy:
   - exec_out: |

@@ -33,6 +33,7 @@ global:
   iso_path: $${kameleon_cwd}/$${iso_filename}
 
   bootstrap_script: $${kameleon_data_dir}/debootstrap.sh
+  bootstrap_variant:
   repository: http://http.debian.net/debian/
 
   bootstrap_packages: locales openssh-server linux-image-$${debian_kernel_arch}

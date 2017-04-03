@@ -32,13 +32,17 @@ ARCH="$CURRENT_ARCH"
 DEBIAN_ARCH="$(dpkg --print-architecture)"
 DEBIAN_KERNEL_ARCH="$DEBIAN_ARCH"
 PACKAGES="less,locales,vim,openssh-server,linux-image-$DEBIAN_KERNEL_ARCH"
+VARIANT=
 
+if [ -n "$VARIANT" ]; then
+  VARIANT_OPT="--variant $VARIANT"
+fi
 
 if [ $CURRENT_ARCH == $ARCH ]; then
-  debootstrap --arch=$DEBIAN_ARCH --no-check-gpg --include="$PACKAGES" $RELEASE $MNT $REPOSITORY
+  debootstrap --arch=$DEBIAN_ARCH --no-check-gpg $VARIANT_OPT --include="$PACKAGES" $RELEASE $MNT $REPOSITORY
   CHROOT_CMD="chroot $MNT"
 else
-  debootstrap --foreign --arch=$DEBIAN_ARCH --no-check-gpg --include="$PACKAGES" $RELEASE $MNT $REPOSITORY
+  debootstrap --foreign --arch=$DEBIAN_ARCH --no-check-gpg $VARIANT_OPT --include="$PACKAGES" $RELEASE $MNT $REPOSITORY
   cp /usr/bin/qemu-$ARCH-static $MNT/usr/bin/
   CHROOT_CMD="chroot $MNT /usr/bin/qemu-$ARCH-static /bin/bash"
   $CHROOT_CMD /debootstrap/debootstrap --second-stage
