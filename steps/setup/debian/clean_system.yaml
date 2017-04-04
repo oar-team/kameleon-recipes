@@ -1,3 +1,5 @@
+- enable_lighten: false
+
 - clean_apt:
   - on_setup_clean:
     - exec_in: apt-get -y --force-yes autoremove
@@ -5,6 +7,12 @@
     - exec_in: apt-get -y --force-yes clean
     - exec_in: apt-get -y --force-yes purge
     - exec_in: rm -rf /var/lib/apt/lists/*
+    - exec_in: |
+        if [ $${enable_lighten} = true ]; then
+          rm -rf /usr/share/locale/*
+          rm -rf /usr/share/man/*
+          rm -rf /usr/share/doc/*
+        fi
 
 
 - clean_udev:
