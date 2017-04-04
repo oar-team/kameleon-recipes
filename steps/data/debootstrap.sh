@@ -74,5 +74,5 @@ if [ -f $MNT/etc/locale.gen ]; then
   for l in $LOCALES; do
     sed -i -e "s/^#$l/$l/" $MNT/etc/locale.gen
   done
+  $CHROOT_CMD /usr/sbin/locale-gen
 fi
-$CHROOT_CMD /usr/sbin/locale-gen
