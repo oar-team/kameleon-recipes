@@ -1,0 +1,248 @@
+#! /usr/bin/env ruby
+# coding: utf-8
+
+require 'open-uri'
+require 'json'
+require 'optparse'
+
+def main
+  options = parse_cmdline
+  start
+  if options[:on_boot]
+    startup_service
+  else
+    manage_disks(options)
+  end
+  close
+end
+
+def start
+  Dir.chdir(TMPDIR)
+end
+
+def close
+  rmtmp
+  exit 0
+end
+
+def rmtmp
+  Dir.chdir('/root')
+  sh("rm -rf #{TMPDIR}")
+end
+
+def sh(cmd)
+  output = `#{cmd}`.chomp
+  status = $?.exitstatus
+  return [status, output]
+end
+
+# systemd log levels:
+# see http://0pointer.net/blog/projects/journal-submit.html
+# and http://man7.org/linux/man-pages/man3/syslog.3.html
+def notice(msg)
+  log_notice = 5 # normal, but significant, condition
+  puts "<#{log_notice}> #{msg}"
+end
+
+def debug(msg)
+  log_debug = 7 # debug-level message
+  puts "<#{log_debug}> #{msg}" if DEBUG
+end
+
+def error(status, msg)
+  log_err = 3 # error conditions
+  puts "<#{log_err}> #{msg}"
+  rmtmp
+  exit status
+end
+
+def parse_cmdline
+  options = {}
+  OptionParser.new do |opts|
+    opts.banner = 'Usage: g5k-disk-manager [--on-boot | --enable 1,2,3 --disable 4,5]'
+    opts.on('--on-boot', 'Enable all disks at boot time') do |v|
+      options[:on_boot] = v
+    end
+    opts.on('--enable DISK_IDS', 'Enable disks') do |disks|
+      options[:enable] = disks
+    end
+    opts.on('--disable DISK_IDS', 'Disable disks') do |disks|
+      options[:disable] = disks
+    end
+    opts.on("-h", "--help", "Prints this help") do
+      puts opts
+      exit
+    end
+  end.parse!
+  return options
+end
+
+# The aim of this function is to activate all disks of the node in a predefined
+# order, so that sdb, sdc, ... devices names are always given to the same
+# physical disks.
+# It must be done just before g5k-checks is launched on the node, to avoid
+# g5k-checks errors.
+# See also /etc/systemd/system/g5k-disk-manager.service.
+def startup_service
+  if user_deploy?
+    notice 'The environment is deployed manually by a user: the disks have not been activated'
+    close
+  end
+
+  unless megacli_compliant?
+    notice 'No compliant RAID controller was found: the disks have not been activated'
+    close
+  end
+
+  # Get the disks identifiers
+  physical_disks, virtual_disks = get_disks
+
+  # If there is one virtual drive: exit, to exclude RAID 0 and RAID 1 configured
+  # clusters
+  num_virtual_drives = virtual_disks.count
+  debug "num_virtual_drives = #{num_virtual_drives}"
+  if num_virtual_drives >= 1
+    notice 'One virtual drive of RAID disks is present: the disks have not been activated'
+    close
+  end
+
+  # Remove the first disk from the list (first disk is the main disk sda)
+  physical_disks.shift
+
+  # Disable then enable the disks
+  disable(physical_disks)
+  num_enable_errors = enable(physical_disks)
+
+  if num_enable_errors.zero?
+    notice 'All disks have been activated with success'
+  else
+    error(1, "#{num_enable_errors} errors occured while enabling the disks")
+  end
+end
+
+def manage_disks(options)
+  error(2, 'No compliant RAID controller was found') unless megacli_compliant?
+
+  physical_disks, _virtual_disks = get_disks
+  disks_to_enable = disks_locations(physical_disks, options[:enable])
+  disks_to_disable = disks_locations(physical_disks, options[:disable])
+
+  # Array intersection
+  if (disks_to_enable & disks_to_disable) != []
+    error(3, 'You provided the same disk to enable and disable')
+  end
+
+  # First, we disable the disks (we will maybe re-enable them after)
+  disable(disks_to_disable) unless disks_to_disable == []
+  enable(disks_to_enable) unless disks_to_enable == []
+end
+
+def disks_locations(physical_disks, ids)
+  return [] if ids.nil?
+  ids = ids.split(',').map { |e| e.strip.to_i }
+  disks = []
+  ids.each do |id|
+    # id == 0 corresponds to the main disk sda
+    error(4, "Wrong disk id: #{id}") if id <= 0 || id >= physical_disks.length
+    disks.push(physical_disks[id])
+  end
+  return disks
+end
+
+# If property 'soft'='free', the standard environment is being
+# deployed by an admin (outside a job) or phoenix.
+# Else, it is a user that is deploying the standard environment
+# For the different states, see:
+# https://github.com/grid5000/g5k-api/lib/oar/resource.rb
+def user_deploy?
+  _status, hostname = sh('hostname')
+  site = hostname.split('.')[1]
+  url = G5K_API + '/sites/' + site + '/status'
+  hash = JSON::parse(open(url).read)
+  status = hash['nodes'][hostname]['soft']
+  debug("Node status: #{status}")
+  user_deploy = (status != 'free')
+  return user_deploy
+end
+
+def megacli_compliant?
+  # Get the number or RAID controllers supported by megacli
+  # The return code of the command is the number of controllers supported
+  num_controllers, _output = sh('megacli -AdpCount')
+  compliant = (num_controllers != 0)
+  return compliant
+end
+
+# This function retrieves the physical and virtual disk identifiers from
+# the output of the megasasctl command.
+#
+# If a virtual drive is present, the output of megasasctl looks like:
+# a0       PERC H330 Mini           encl:1 ldrv:1  batt:FAULT, low voltage
+# a0d0       557GiB RAID 0   1x2  optimal
+# a0e32s0     279GiB  a0d0  online
+# a0e32s1     279GiB  a0d0  online
+#
+# If no virtual drive is present, the output of megasasctl looks like:
+# a0       PERC H330 Mini           encl:1 ldrv:0  batt:FAULT, module missing, pack missing, charge failed
+# unconfigured:  a0e32s0   a0e32s1
+# a0e32s0     279GiB        ready
+# a0e32s1     279GiB        ready
+def get_disks
+  status, output = sh('megasasctl')
+  unless status.zero?
+    notice 'The command megasasctl failed'
+    close
+  end
+
+  physical_disks = []
+  virtual_disks = []
+  physical_disks_regexp = /^a(\d+)e(\d+)s(\d+)\s+.+$/
+  virtual_disks_regexp = /^a(\d+)d(\d+)\s+.+$/
+
+  output.each_line do |line|
+    if m = physical_disks_regexp.match(line)
+      physical_disks << { adapter: m[1].to_i, enclosure: m[2].to_i, slot: m[3].to_i }
+    elsif m = virtual_disks_regexp.match(line)
+      virtual_disks << { adapter: m[1].to_i, drive: m[2].to_i }
+    end
+  end
+
+  return [physical_disks, virtual_disks]
+end
+
+# Enable the disks
+# The megacli command changes the the state of the drive from Unconfigured Good
+# to JBOD (Just a Bunch of Disks).
+# A new drive in JBOD state is exposed to the host operating system as a
+# stand-alone drive. Drives in JBOD drive state are not part of the RAID
+# configuration.
+def enable(physical_disks)
+  num_enable_errors = 0
+  physical_disks.each do |disk|
+    status, _output = sh("megacli -PDMakeJBOD -PhysDrv [#{disk[:enclosure]}:#{disk[:slot]}] -a#{disk[:adapter]}")
+    debug "Enabling disk #{disk} => Return code = #{status}"
+    num_enable_errors += 1 unless status.zero?
+  end
+  return num_enable_errors
+end
+
+# Disable the disks
+# The megacli command changes the state of the drive from JBOD to
+# Unconfigured Good. When in Unconfigured Good state, the disk is accessible
+# to the RAID controller but not configured as a part of a virtual disk
+# or as a hot spare.
+def disable(physical_disks)
+  num_disable_errors = 0
+  physical_disks.each do |disk|
+    status, _output = sh("megacli -PDMakeGood -PhysDrv [#{disk[:enclosure]}:#{disk[:slot]}] -force -a#{disk[:adapter]}")
+    debug "Disabling disk #{disk} => Return code = #{status}"
+    num_disable_errors += 1 unless status.zero?
+  end
+  return num_disable_errors
+end
+
+# Main program
+G5K_API = 'https://api.grid5000.fr/stable'
+_status, TMPDIR = sh('mktemp -d /tmp/tmp.g5k-disk-manager.XXXXXX')
+DEBUG = true
+main

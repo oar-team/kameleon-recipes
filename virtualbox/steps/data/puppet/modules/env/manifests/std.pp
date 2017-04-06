@@ -40,6 +40,6 @@ class env::std ( $parent_parameters = {} ){
   class { 'env::std::g5k_generator': }
   # megacli (RAID controler)
   class { 'env::std::install_megacli': }
-  # activate_all_disks
-  class { 'env::std::configure_activate_all_disks': }
+  # g5k-disk-manager
+  class { 'env::std::configure_g5kdiskmanager': }
 }
