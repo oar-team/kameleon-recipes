@@ -60,12 +60,31 @@ bootstrap:
     - start_qemu_vm
     - shutdown_qemu_vm_on_export_clean
   - install_build_packages
-  - debootstrap
+  - debootstrap:
+    - partition_disk
+    - mount_mountdir
+    - run_debootstrap_script
   - start_chroot
 
 setup:
-  - "@base"
+  - configure_system:
+    - passwordless_root:
+      - exec_in: passwd -d root
+  - configure_debian:
+    - lighten_packages:
+      - exec_in: |
+          mkdir -p /etc/dpkg/dpkg.conf.d
+          echo 'path-exclude=/usr/share/locale/*' >> /etc/dpkg/dpkg.conf.d/01_lighten
+          echo 'path-exclude=/usr/share/man/*' >> /etc/dpkg/dpkg.conf.d/01_lighten
+          echo 'path-exclude=/usr/share/doc/*' >> /etc/dpkg/dpkg.conf.d/01_lighten
+          mkdir -p /etc/apt/apt.conf.d
+          echo 'APT::Install-Recommends "0" ; APT::Install-Suggests "0" ; ' > /etc/apt/apt.conf.d/01_lighten
   - create_ramdisk:
+    - clean_system:
+      - exec_in: apt-get -y --force-yes autoremove
+      - exec_in: apt-get -y --force-yes autoclean
+      - exec_in: apt-get -y --force-yes purge
+      - exec_in: apt-get -y --force-yes clean
     - create_rootfs:
       - exec_in: |
           cd /
@@ -74,92 +93,92 @@ setup:
               -o -path './usr/share/man/*' -prune \
               -o -path './usr/share/doc/*' -prune \
               -o -path './var/tmp/*' -prune \
+              -o -path './var/lib/apt/lists/*' -prune \
               -o -path './tmp/*' -prune \
               -o -xdev -print | cpio -o -H newc  | gzip -9 > /boot/root.cgz
     - add_initramfs_hook:
-      - write_in:
-        - /etc/initramfs-tools/hooks/copy-root-archive
-        - |
-            #!/bin/sh
-            PREREQ=""
-            prereqs()
-            {
-                 echo "$PREREQ"
-            }
-            case $1 in
-            prereqs)
-                 prereqs
-                 exit 0
-                 ;;
-            esac
-            . /usr/share/initramfs-tools/hook-functions
-            # Begin real processing below this line
-            cp -v /boot/root.cgz $DESTDIR
-      - exec_in: chmod 755 /etc/initramfs-tools/hooks/copy-root-archive
+      - exec_in: |
+          cat <<'EOF' > /etc/initramfs-tools/hooks/copy-root-archive
+          #!/bin/sh
+          PREREQ=""
+          prereqs()
+          {
+               echo "$PREREQ"
+          }
+          case $1 in
+          prereqs)
+               prereqs
+               exit 0
+               ;;
+          esac
+          . /usr/share/initramfs-tools/hook-functions
+          # Begin real processing below this line
+          cp -v /boot/root.cgz $DESTDIR
+          EOF
+          chmod 755 /etc/initramfs-tools/hooks/copy-root-archive
     - add_initramfs_scripts:
-      - write_in:
-        - /etc/initramfs-tools/scripts/local-premount/create-root-tmpfs
-        - |
-            #!/bin/sh
-            PREREQ="lvm"
-            prereqs()
-            {
-                 echo "$PREREQ"
-            }
-            case $1 in
-            prereqs)
-                 prereqs
-                 exit 0
-                 ;;
-            esac
-            . /scripts/functions
-            # Begin real processing below this line
-            log_begin_msg "Mount temporary rootfs"
-            cat <<EOF > /etc/fstab
-            ${rootmnt}.tmp ${rootmnt} root-tmpfs bind 0 0
-            EOF
-            mkdir -p ${rootmnt}.tmp
-            mount -t tmpfs -o size=1G root-tmpfs ${rootmnt}.tmp
-            if [ $? -ne 0 ]; then
-               panic "Failed to create tmpfs"
-            fi
-            log_end_msg
-            
-            log_begin_msg "Populate rootfs"
-            cd ${rootmnt}.tmp 
-            zcat /root.cgz | cpio -id
-            if [ $? -ne 0 ]; then
-               panic "Failed to populate"
-            fi
-            log_end_msg
-      - exec_in: chmod 755 /etc/initramfs-tools/scripts/local-premount/create-root-tmpfs
-      - write_in:
-        - /etc/initramfs-tools/scripts/local-bottom/remove-root-tmpfs
-        - |
-            #!/bin/sh
-            PREREQ="lvm"
-            prereqs()
-            {
-                 echo "$PREREQ"
-            }
-            case $1 in
-            prereqs)
-                 prereqs
-                 exit 0
-                 ;;
-            esac
-            . /scripts/functions
-            # Begin real processing below this line
-            log_begin_msg "Umount temporary rootfs"
-            cat <<EOF > ${rootmnt}.tmp/etc/fstab
-            rootfs / tmpfs size=1G 0 0
-            EOF
-            umount ${rootmnt}.tmp 
-            if [ $? -ne 0 ]; then
-              panic "Failed to umount"
-            fi
-            log_end_msg
-      - exec_in: chmod 755 /etc/initramfs-tools/scripts/local-bottom/remove-root-tmpfs
+      - exec_in: |
+          cat <<'EOS' > /etc/initramfs-tools/scripts/local-premount/create-root-tmpfs
+          #!/bin/sh
+          PREREQ="lvm"
+          prereqs()
+          {
+               echo "$PREREQ"
+          }
+          case $1 in
+          prereqs)
+               prereqs
+               exit 0
+               ;;
+          esac
+          . /scripts/functions
+          # Begin real processing below this line
+          log_begin_msg "Mount temporary rootfs"
+          cat <<EOF > /etc/fstab
+          ${rootmnt}.tmp ${rootmnt} root-tmpfs bind 0 0
+          EOF
+          mkdir -p ${rootmnt}.tmp
+          mount -t tmpfs -o size=1G root-tmpfs ${rootmnt}.tmp
+          if [ $? -ne 0 ]; then
+             panic "Failed to create tmpfs"
+          fi
+          log_end_msg
+          
+          log_begin_msg "Populate rootfs"
+          cd ${rootmnt}.tmp 
+          zcat /root.cgz | cpio -id
+          if [ $? -ne 0 ]; then
+             panic "Failed to populate"
+          fi
+          log_end_msg
+          EOS
+          chmod 755 /etc/initramfs-tools/scripts/local-premount/create-root-tmpfs
+          cat <<'EOS' > /etc/initramfs-tools/scripts/local-bottom/remove-root-tmpfs
+          #!/bin/sh
+          PREREQ="lvm"
+          prereqs()
+          {
+               echo "$PREREQ"
+          }
+          case $1 in
+          prereqs)
+               prereqs
+               exit 0
+               ;;
+          esac
+          . /scripts/functions
+          # Begin real processing below this line
+          log_begin_msg "Umount temporary rootfs"
+          cat <<EOF > ${rootmnt}.tmp/etc/fstab
+          rootfs / tmpfs size=1G 0 0
+          EOF
+          umount ${rootmnt}.tmp 
+          if [ $? -ne 0 ]; then
+            panic "Failed to umount"
+          fi
+          log_end_msg
+          EOS
+          chmod 755 /etc/initramfs-tools/scripts/local-bottom/remove-root-tmpfs
     - configure_initramfs:
       - exec_in: |
           sed -i -e 's/^MODULES=.*/MODULES=list/' \
