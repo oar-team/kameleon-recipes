@@ -69,12 +69,12 @@ setup:
     - create_rootfs:
       - exec_in: |
           cd /
-          find . -path ./boot/ -prune \
-              -o -path ./usr/share/locale/ -prune \
-              -o -path ./usr/share/man/ -prune \
-              -o -path ./usr/share/doc/ -prune \
-              -o -path ./var/tmp/ -prune \
-              -o -path ./tmp/ \
+          find . -path './boot/*' -prune \
+              -o -path './usr/share/locale/*' -prune \
+              -o -path './usr/share/man/*' -prune \
+              -o -path './usr/share/doc/*' -prune \
+              -o -path './var/tmp/*' -prune \
+              -o -path './tmp/*' -prune \
               -o -xdev -print | cpio -o -H newc  | gzip -9 > /boot/root.cgz
     - add_initramfs_hook:
       - write_in:
@@ -95,6 +95,7 @@ setup:
             . /usr/share/initramfs-tools/hook-functions
             # Begin real processing below this line
             cp -v /boot/root.cgz $DESTDIR
+      - exec_in: chmod 755 /etc/initramfs-tools/hooks/copy-root-archive
     - add_initramfs_scripts:
       - write_in:
         - /etc/initramfs-tools/scripts/local-premount/create-root-tmpfs
@@ -131,6 +132,7 @@ setup:
                panic "Failed to populate"
             fi
             log_end_msg
+      - exec_in: chmod 755 /etc/initramfs-tools/scripts/local-premount/create-root-tmpfs
       - write_in:
         - /etc/initramfs-tools/scripts/local-bottom/remove-root-tmpfs
         - |
@@ -157,17 +159,16 @@ setup:
               panic "Failed to umount"
             fi
             log_end_msg
+      - exec_in: chmod 755 /etc/initramfs-tools/scripts/local-bottom/remove-root-tmpfs
     - configure_initramfs:
       - exec_in: |
           sed -i -e 's/^MODULES=.*/MODULES=list/' \
             /etc/initramfs-tools/initramfs.conf
-    - regenerate_initrd:
-      - update_initramfs:
-        - exec_in: update-initramfs -u
+    - generate_new_initramfs:
+      - exec_in: update-initramfs -u
 export:
   - export_vmlinuz_initrd:
     - vmlinuz:
-      - exec_out: sleep 3600
       - in2local:
         - /vmlinuz
         - ./vmlinuz
