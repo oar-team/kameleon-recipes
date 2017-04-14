@@ -34,7 +34,7 @@ global:
 
   bootstrap_script: $${kameleon_data_dir}/debootstrap.sh
   bootstrap_variant:
-  repository: http://http.debian.net/debian/
+  debian_mirror_uri: http://http.debian.net/debian/
 
   bootstrap_packages: locales openssh-server linux-image-$${debian_kernel_arch}
   build_packages: qemu-user-static curl parted e2fsprogs

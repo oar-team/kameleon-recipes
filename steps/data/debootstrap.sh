@@ -12,7 +12,7 @@ fail() {
 [ -n "$CHROOT_DIR" ] || fail "No CHROOT_DIR defined"
 [ -n "$RELEASE" ] || fail "No RELEASE defined"
 
-REPOSITORY=${REPOSITORY:-http://http.debian.net/debian/}
+DEBIAN_MIRROR_URI=${DEBIAN_MIRROR_URI:-http://ftp.fr.debian.net/debian/}
 HOSTNAME=${HOSTNAME:-localhost}
 LOCALES=${LOCALES:-POSIX C en_US}
 LANG=${LANG:-en_US.UTF-8}
@@ -37,10 +37,10 @@ if [ -n "$PROXY" ]; then
 fi
 
 if [ $CURRENT_ARCH == $ARCH ]; then
-  debootstrap --arch=$DEBIAN_ARCH --no-check-gpg ${VARIANT:+--variant=$VARIANT} ${PACKAGES:+--include="$PACKAGES"} $RELEASE $CHROOT_DIR $REPOSITORY
+  debootstrap --arch=$DEBIAN_ARCH --no-check-gpg ${VARIANT:+--variant=$VARIANT} ${PACKAGES:+--include="$PACKAGES"} $RELEASE $CHROOT_DIR $DEBIAN_MIRROR_URI
   CHROOT_CMD="chroot $CHROOT_DIR"
 else
-  debootstrap --foreign --arch=$DEBIAN_ARCH --no-check-gpg ${VARIANT:+--variant=$VARIANT} ${PACKAGES:+--include="$PACKAGES"} $RELEASE $CHROOT_DIR $REPOSITORY
+  debootstrap --foreign --arch=$DEBIAN_ARCH --no-check-gpg ${VARIANT:+--variant=$VARIANT} ${PACKAGES:+--include="$PACKAGES"} $RELEASE $CHROOT_DIR $DEBIAN_MIRROR_URI
   cp /usr/bin/qemu-$ARCH-static $CHROOT_DIR/usr/bin/
   CHROOT_CMD="chroot $CHROOT_DIR /usr/bin/qemu-$ARCH-static /bin/bash"
   $CHROOT_CMD /debootstrap/debootstrap --second-stage
