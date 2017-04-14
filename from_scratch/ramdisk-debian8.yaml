@@ -27,6 +27,7 @@ global:
   variant: minbase
   enable_lighten: true
   root_authorized_keys: $${kameleon_data_dir}/kadeploy_root_authorized_keys
+  gpg_keyserver: keyserver.ubuntu.com
 
 bootstrap:
   - enable_checkpoint
@@ -112,7 +113,7 @@ setup:
         - /etc/apt/sources.list.d/hwraid.list
         - |
           deb http://hwraid.le-vert.net/debian $${release} main
-      - exec_in: apt-key adv --keyserver pool.sks-keyservers.net --recv-key 6005210E23B3D3B4
+      - exec_in: apt-key adv --keyserver $${gpg_keyserver} --recv-key 6005210E23B3D3B4
       - exec_in: apt-get update
     - debconf-noninteractive:
       - exec_in: |
