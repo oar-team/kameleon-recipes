@@ -30,7 +30,7 @@
       if [ -z "$${iso_path}" ]; then
         QEMU_DISK=''
       else
-        QEMU_DISK='-boot order d -cdrom $${iso_path} -hda $${qemu_image_disk}'
+        QEMU_DISK='-boot order=d -cdrom $${iso_path} -hda $${qemu_image_disk}'
       fi
       qemu-system-$${qemu_arch} $ENABLE_KVM \
         $QEMU_DISK -drive file=$${image_disk}.$${image_format},cache=$${disk_cache},media=disk,if=virtio,id=drive0 \
