@@ -23,9 +23,10 @@ extend: debian-base.yaml
 
 global:
   release: jessie
-  bootstrap_packages: openssh-server initramfs-tools linux-image-$${debian_kernel_arch}  
+  bootstrap_packages: initramfs-tools
   variant: minbase
   enable_lighten: true
+  root_authorized_keys: $${kameleon_data_dir}/kadeploy_root_authorized_keys
 
 bootstrap:
   - enable_checkpoint
@@ -55,7 +56,6 @@ bootstrap:
           ForwardAgent yes
           Compression yes
           Protocol 2
-
   - start_qemu:
     - start_qemu_vm
     - shutdown_qemu_vm_on_export_clean
@@ -68,8 +68,25 @@ bootstrap:
 
 setup:
   - configure_system:
-    - passwordless_root:
-      - exec_in: passwd -d root
+    - hosts:
+      exec_in: |
+          cat <<'EOF' > "${DEBIRF_ROOT}/etc/hosts"
+          127.0.0.1       localhost
+          ::1     ip6-localhost ip6-loopback
+          fe00::0 ip6-localnet
+          ff00::0 ip6-mcastprefix
+          ff02::1 ip6-allnodes
+          ff02::2 ip6-allrouters
+          ff02::3 ip6-allhosts
+          EOF
+    - network_interfaces:
+      - write_in:
+        - /etc/network/interfaces
+        - |
+          auto lo
+          iface lo inet loopback
+
+          iface dhcp inet dhcp
   - configure_debian:
     - lighten_packages:
       - exec_in: |
@@ -79,6 +96,128 @@ setup:
           echo 'path-exclude=/usr/share/doc/*' >> /etc/dpkg/dpkg.conf.d/01_lighten
           mkdir -p /etc/apt/apt.conf.d
           echo 'APT::Install-Recommends "0" ; APT::Install-Suggests "0" ; ' > /etc/apt/apt.conf.d/01_lighten
+    - configure_source_list:
+      - exec_in: sed -i -e 's/^/#/' /etc/apt/sources.list
+      - exec_in: mkdir -p /etc/apt/sources.list.d
+      - write_in:
+        - /etc/apt/sources.list.d/$${release}.list
+        - |
+          deb $${debian_mirror_uri} $${release} main contrib non-free
+          deb http://security.debian.org/ $${release}/updates main contrib non-free
+      - write_in:
+        - /etc/apt/sources.list.d/$${release}-backports.list
+        - |
+          deb $${debian_mirror_uri} $${release}-backports main contrib non-free
+      - write_in:
+        - /etc/apt/sources.list.d/hwraid.list
+        - |
+          deb http://hwraid.le-vert.net/debian $${release} main
+      - exec_in: apt-key adv --keyserver pool.sks-keyservers.net --recv-key 6005210E23B3D3B4
+      - exec_in: apt-get update
+    - debconf-noninteractive:
+      - exec_in: |
+          debconf-set-selections <<'EOF'
+          # Interface to use:
+          # Choices: Dialog, Readline, Gnome, Kde, Editor, Noninteractive
+          debconf debconf/frontend select Noninteractive
+          EOF
+          export DEBIAN_FRONTEND=noninteractive
+          export DEBCONF_NONINTERACTIVE_SEEN=true
+    - set_time:
+      - exec_in: |
+          debconf-set-selections <<'EOF'
+          tzdata tzdata/Areas select Europe
+          tzdata tzdata/Zones/Europe select Paris
+          EOF
+          rm -f /etc/localtime /etc/timezone
+          dpkg-reconfigure tzdata
+  - install_extra_packages:
+    - kernel:
+      - exec_in: apt-get install -y linux-image-$${debian_kernel_arch}
+    - firmware:
+      - exec_in: apt-get install -y firmware-linux firmware-bnx2 firmware-bnx2x
+    - extra_for_kadeploy: 
+      - exec_in: apt-get install -y ash systemd systemd-sysv ntpdate isc-dhcp-client openssh-client openssh-server taktuk kexec-tools
+      - exec_in: sed -i -e 's/\(NTPSERVERS=\).*/\1="ntp1.grid5000.fr ntp2.grid5000.fr"/;s/\(NTPDATE_USE_NTP_CONF=\).*/\1=no/' /etc/default/ntpdate
+      - exec_in: apt-get install -y tar bzip2 xz-utils grub-pc hdparm parted dosfstools fsarchiver ntfs-3g aufs-tools
+      - exec_in: apt-get install -y ruby ruby-net-ssh ruby-net-ssh-multi ruby-daemons 
+  - kadeploy_customization:
+    - set_motd:
+      - write_in:
+        - /etc/motd
+        - |
+          Welcome to Kadeploy deployment ramdisk OS (version: $(date +'%F %T'))
+    - set_root_authorized_keys:
+      - exec_in: mkdir -p /root/.ssh
+      - exec_in: chmod 755 /root/.ssh
+      - pipe:
+        - exec_local: |
+            if [ -r $${root_authorized_keys} ]; then
+              cat $${root_authorized_keys}
+            else
+              echo "# No key found"
+            fi
+        - exec_in: cat > /root/.ssh/authorized_keys
+      - exec_in: chmod 644 /root/.ssh/authorized_keys
+    - set_root_passwordless:
+      - exec_in: passwd -d root
+    - set_root_bashrc:
+      - exec_in: |
+          cat <<'EOF' > /root/.bashrc
+          export PS1='$? \h:\w\\ '
+          umask 022
+          export LS_OPTIONS='--color=auto'
+          eval "$(dircolors)"
+          alias ls='ls $LS_OPTIONS'
+          alias ll='ls $LS_OPTIONS -l'
+          alias l='ls $LS_OPTIONS -lA'
+          alias rm='rm -i'
+          alias cp='cp -i'
+          alias mv='mv -i'
+          export LC_ALL="C"
+          export LANG="C"
+          EOF
+    - set_rc_local:
+      - exec_in: |
+          cat <<'EOF' > /etc/rc.local
+          #!/bin/bash -e
+          # parse kadeploy-specific kernel command line arguments
+          if [ -f /sys/module/drm_kms_helper/parameters/poll ]; then
+            echo 'Desactivate drm_kms_helper poll...'
+            echo 0 > /sys/module/drm_kms_helper/parameters/poll
+          fi
+          netdev=eth0
+          for param in $(cat /proc/cmdline); do
+            case "$param" in
+              NET_DEV=*)
+                netdev=${param##NET_DEV=}
+              ;;
+            esac
+          done
+          ifup "$netdev"=dhcp
+          if [ ! -f "/var/lib/dhcp/dhclient.${netdev}.leases" ]
+          then
+            exit 1
+          fi
+          (while true; do nc -l -p 25300; done) &
+          exit 0
+          EOF
+          chmod 755 /etc/rc.local
+    - add_dhcp_hostname_script:
+      - exec_in: |
+          cat <<'EOF' > /etc/dhcp/dhclient-enter-hooks.d/hostname
+          if [ -n $new_host_name ] && [ -n $new_domain_name ]; then
+            echo "$new_host_name.$new_domain_name" > /etc/hostname
+            /bin/hostname "$new_host_name.$new_domain_name"
+            if [ -n $new_ip_address ]; then
+              echo "$new_ip_address $new_host_name.$new_domain_name $new_host_name" >> /etc/hosts
+            fi
+          fi
+          EOF
+          chmod 755 /etc/dhcp/dhclient-enter-hooks.d/hostname
+    - remove_udev_persistent-net_rules:
+      - exec_in: rm -f /etc/udev/rules.d/*-persistent-net.rules
+
   - create_ramdisk:
     - clean_system:
       - exec_in: apt-get -y --force-yes autoremove
