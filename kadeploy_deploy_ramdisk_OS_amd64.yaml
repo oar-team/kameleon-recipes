@@ -329,10 +329,11 @@ setup:
       - exec_in: update-initramfs -u
   - move_files_to_out:
     - on_checkpoint: redo
-    - exec_out: |
-        mkdir -p /tmp
-        cp $${rootfs}/vmlinuz /tmp/vmlinuz
-        cp $${rootfs}/initrd.img /tmp/initrd.img
+    - copy_files:
+      - exec_out: |
+          mkdir -p /tmp
+          cp $${rootfs}/vmlinuz /tmp/vmlinuz
+          cp $${rootfs}/initrd.img /tmp/initrd.img
 export:
   - export_vmlinuz_initrd:
     - vmlinuz:
