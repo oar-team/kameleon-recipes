@@ -23,7 +23,7 @@ extend: debian-base.yaml
 
 global:
   release: jessie
-  bootstrap_packages: initramfs-tools
+  bootstrap_packages: initramfs-tools busybox
   variant: minbase
   enable_lighten: true
   root_authorized_keys: $${kameleon_data_dir}/kadeploy_root_authorized_keys
@@ -165,7 +165,7 @@ setup:
     - set_root_bashrc:
       - exec_in: |
           cat <<'EOF' > /root/.bashrc
-          export PS1='$? \h:\w\\ '
+          export PS1='$? \h:\w \$'
           umask 022
           export LS_OPTIONS='--color=auto'
           eval "$(dircolors)"
@@ -235,6 +235,8 @@ setup:
               -o -path './var/tmp/*' -prune \
               -o -path './var/lib/apt/lists/*' -prune \
               -o -path './tmp/*' -prune \
+              -o -path './vmlinuz' -prune \
+              -o -path './initrd.img' -prune \
               -o -xdev -print | cpio -o -H newc  | gzip -9 > /boot/root.cgz
     - add_initramfs_hook:
       - exec_in: |
@@ -286,7 +288,7 @@ setup:
           
           log_begin_msg "Populate rootfs"
           cd ${rootmnt}.tmp 
-          zcat /root.cgz | cpio -id
+          gunzip -c /root.cgz | cpio -i
           if [ $? -ne 0 ]; then
              panic "Failed to populate"
           fi
