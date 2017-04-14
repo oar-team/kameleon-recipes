@@ -325,13 +325,24 @@ setup:
             /etc/initramfs-tools/initramfs.conf
     - generate_new_initramfs:
       - exec_in: update-initramfs -u
+  - move_files_to_out:
+    - on_checkpoint: redo
+    - exec_out: mkdir -p /tmp
+    - vmlinuz:
+      - in2out:
+        - /vmlinuz
+        - /tmp/vmlinuz
+    - initrd:
+      - in2out:
+        - /initrd.img
+        - /tmp/initrd.img
 export:
   - export_vmlinuz_initrd:
     - vmlinuz:
-      - in2local:
-        - /vmlinuz
+      - out2local:
+        - /tmp/vmlinuz
         - ./vmlinuz
     - initrd:
-      - in2local:
-        - /initrd.img
+      - out2local:
+        - /tmp/initrd.img
         - ./initrd.img
