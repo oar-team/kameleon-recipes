@@ -16,36 +16,32 @@
       else
         BOOT_TIMEOUT=$(($${boot_timeout}*2))
       fi
-  - exec_local: |
-        if [ -f "vm_state_to_load.txt" ]
-        then
-            SAVED_STATE="$(cat vm_state_to_load.txt)"
-            LOADVM="-loadvm $SAVED_STATE"
-            rm -f vm_state_to_load.txt
-        fi
-  - exec_local: |
-        # Find empty VNC port
-        VNC_PORT=$(( $(__find_free_port 5900 5910) - 5900 ))
-        echo "VNC port: $VNC_PORT"
+      if [ -f "vm_state_to_load.txt" ]
+      then
+          SAVED_STATE="$(cat vm_state_to_load.txt)"
+          LOADVM="-loadvm $SAVED_STATE"
+          rm -f vm_state_to_load.txt
+      fi
+      # Find empty VNC port
+      VNC_PORT=$(( $(__find_free_port 5900 5910) - 5900 ))
+      echo "VNC port: $VNC_PORT"
 
-  - exec_local: |
-        # Select disk
-        if [ -z "$${iso_path}" ]; then
-          QEMU_DISK=''
-        else
-          QEMU_DISK='-cdrom $${iso_path} -hda $${qemu_image_disk}'
-        fi
-  - exec_local: |
-        qemu-system-$${qemu_arch} $ENABLE_KVM \
-          $QEMU_DISK -drive file=$${image_disk}.$${image_format},cache=$${disk_cache},media=disk,if=virtio,id=drive0 \
-          -smp $${qemu_cpu} \
-          -m $${qemu_memory_size} \
-          -rtc base=localtime \
-          -net nic,model=virtio \
-          -net user,hostfwd=tcp::${SSH_FWD_PORT}-:22 \
-          -monitor unix:$${qemu_monitor_socket},server,nowait \
-          -pidfile $${qemu_pidfile} \
-          -daemonize -vnc :$VNC_PORT $LOADVM
+      # Select disk
+      if [ -z "$${iso_path}" ]; then
+        QEMU_DISK=''
+      else
+        QEMU_DISK='-boot order d -cdrom $${iso_path} -hda $${qemu_image_disk}'
+      fi
+      qemu-system-$${qemu_arch} $ENABLE_KVM \
+        $QEMU_DISK -drive file=$${image_disk}.$${image_format},cache=$${disk_cache},media=disk,if=virtio,id=drive0 \
+        -smp $${qemu_cpu} \
+        -m $${qemu_memory_size} \
+        -rtc base=localtime \
+        -net nic,model=virtio \
+        -net user,hostfwd=tcp::${SSH_FWD_PORT}-:22 \
+        -monitor unix:$${qemu_monitor_socket},server,nowait \
+        -pidfile $${qemu_pidfile} \
+        -daemonize -vnc :$VNC_PORT $LOADVM
   - exec_local: |
         SSH_AVAILABLE=0
         TIMEOUT=$(( $(date +%s) + $BOOT_TIMEOUT ))
