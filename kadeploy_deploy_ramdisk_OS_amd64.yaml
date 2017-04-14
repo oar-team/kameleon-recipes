@@ -188,10 +188,10 @@ setup:
             echo 0 > /sys/module/drm_kms_helper/parameters/poll
           fi
           netdev=eth0
-          for param in $(cat /proc/cmdline); do
-            case "$param" in
-              NET_DEV=*)
-                netdev=${param##NET_DEV=}
+          for param in $(< /proc/cmdline); do
+            case "$p" in
+              NETDEV=*)
+                netdev=${p#NETDEV=}
               ;;
             esac
           done
@@ -200,6 +200,7 @@ setup:
           then
             exit 1
           fi
+          mkdir -p /rambin /mnt/dest /mnt/tmp
           (while true; do nc -l -p 25300; done) &
           exit 0
           EOF
@@ -218,7 +219,6 @@ setup:
           chmod 755 /etc/dhcp/dhclient-enter-hooks.d/hostname
     - remove_udev_persistent-net_rules:
       - exec_in: rm -f /etc/udev/rules.d/*-persistent-net.rules
-
   - create_ramdisk:
     - clean_system:
       - exec_in: apt-get -y --force-yes autoremove
