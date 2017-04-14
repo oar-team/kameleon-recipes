@@ -35,6 +35,7 @@
       mkfs.$${filesystem_type} -q $${disk_device}1 || fail cannot create / ext4
 
 - mount_mountdir:
+  - on_checkpoint: redo
   - exec_out: mkdir -p $${rootfs}
   - exec_out: echo Mounting root partition...
   - exec_out: mount $${disk_device}1 $${rootfs} || fail cannot mount /
