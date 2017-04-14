@@ -2,24 +2,14 @@
 # vim: softtabstop=2 shiftwidth=2 expandtab fenc=utf-8 cc=81 tw=80
 #==============================================================================
 #
-# DESCRIPTION: Debian generic recipe + debootstrap to run in ramdisk
+# DESCRIPTION: Ramdisk OS for the deployment step of Kadeploy
 #
-# USAGE:
-#   Select directly in this recipe:
-#
-#   - distribution: debian or ubuntu
-#   - release: wheezy, testing, sid...
-#   - architechture: default amd64
-#
-#   or, override the globals directly in CLI:
-#
-#   kameleon build --global distrib:debian --global release:wheezy
-#
-#   or extends this recipe with your own and override those variable in it.
+# Notes:
+# - force use of busybox rather than klibc-utils (which breaks the mount)
 #
 #==============================================================================
 ---
-extend: debian-base.yaml
+extend: from_scratch/debian-base.yaml
 
 global:
   release: jessie
@@ -28,6 +18,8 @@ global:
   enable_lighten: true
   root_authorized_keys: $${kameleon_data_dir}/kadeploy_root_authorized_keys
   gpg_keyserver: keyserver.ubuntu.com
+  arch_specific_packages: kexec-tools grub-pc fsarchiver
+  version: beta
 
 bootstrap:
   - enable_checkpoint
@@ -109,11 +101,13 @@ setup:
         - /etc/apt/sources.list.d/$${release}-backports.list
         - |
           deb $${debian_mirror_uri} $${release}-backports main contrib non-free
-      - write_in:
-        - /etc/apt/sources.list.d/hwraid.list
-        - |
+      - exec_in: |
+          if [ "$${debian_arch}" == "amd64" ]; then
+            cat <<EOF >/etc/apt/sources.list.d/hwraid.list
           deb http://hwraid.le-vert.net/debian $${release} main
-      - exec_in: apt-key adv --keyserver $${gpg_keyserver} --recv-key 6005210E23B3D3B4
+          EOF
+            apt-key adv --keyserver $${gpg_keyserver} --recv-key 6005210E23B3D3B4
+          fi
       - exec_in: apt-get update
     - debconf-noninteractive:
       - exec_in: |
@@ -134,20 +128,26 @@ setup:
           dpkg-reconfigure tzdata
   - install_extra_packages:
     - kernel:
-      - exec_in: apt-get install -y linux-image-$${debian_kernel_arch}
+      - exec_in: apt-get install -y --force-yes linux-image-$${debian_kernel_arch}
     - firmware:
-      - exec_in: apt-get install -y firmware-linux firmware-bnx2 firmware-bnx2x
-    - extra_for_kadeploy: 
-      - exec_in: apt-get install -y ash systemd systemd-sysv ntpdate isc-dhcp-client openssh-client openssh-server taktuk kexec-tools
+      - exec_in: apt-get install -y --force-yes firmware-linux firmware-bnx2 firmware-bnx2x
+    - system_utils: 
+      - exec_in: apt-get install -y --force-yes ash systemd systemd-sysv ntpdate isc-dhcp-client openssh-client openssh-server taktuk
       - exec_in: sed -i -e 's/\(NTPSERVERS=\).*/\1="ntp1.grid5000.fr ntp2.grid5000.fr"/;s/\(NTPDATE_USE_NTP_CONF=\).*/\1=no/' /etc/default/ntpdate
-      - exec_in: apt-get install -y tar bzip2 xz-utils grub-pc hdparm parted dosfstools fsarchiver ntfs-3g aufs-tools
-      - exec_in: apt-get install -y ruby ruby-net-ssh ruby-net-ssh-multi ruby-daemons 
+      - exec_in: |
+          if [ -n "$${arch_specific_packages}" ]; then
+            apt-get install -y --force-yes $${arch_specific_packages}
+          fi
+    - disk_utils:
+      - exec_in: apt-get install -y --force-yes tar bzip2 xz-utils hdparm parted dosfstools ntfs-3g aufs-tools
+    - ruby_packages:
+      - exec_in: apt-get install -y --force-yes ruby ruby-net-ssh ruby-net-ssh-multi ruby-daemons 
   - kadeploy_customization:
     - set_motd:
       - write_in:
         - /etc/motd
         - |
-          Welcome to Kadeploy deployment ramdisk OS (version: $(date +'%F %T'))
+          Welcome to Kadeploy deployment ramdisk OS (version: $${release}-$${debian_arch}_$${version}, $(date +'%F %T'))
     - set_root_authorized_keys:
       - exec_in: mkdir -p /root/.ssh
       - exec_in: chmod 755 /root/.ssh
@@ -226,8 +226,8 @@ setup:
       - exec_in: apt-get -y --force-yes purge
       - exec_in: apt-get -y --force-yes clean
     - create_rootfs:
-      - exec_in: |
-          cd /
+      - exec_out: |
+          cd $${rootfs} # use out context: quicker if foreign arch
           find . -path './boot/*' -prune \
               -o -path './usr/share/locale/*' -prune \
               -o -path './usr/share/man/*' -prune \
@@ -237,7 +237,7 @@ setup:
               -o -path './tmp/*' -prune \
               -o -path './vmlinuz' -prune \
               -o -path './initrd.img' -prune \
-              -o -xdev -print | cpio -o -H newc  | gzip -9 > /boot/root.cgz
+              -o -xdev -print | cpio -o -H newc  | gzip -9 > $${rootfs}/boot/root.cgz
     - add_initramfs_hook:
       - exec_in: |
           cat <<'EOF' > /etc/initramfs-tools/hooks/copy-root-archive
@@ -329,22 +329,17 @@ setup:
       - exec_in: update-initramfs -u
   - move_files_to_out:
     - on_checkpoint: redo
-    - exec_out: mkdir -p /tmp
-    - vmlinuz:
-      - in2out:
-        - /vmlinuz
-        - /tmp/vmlinuz
-    - initrd:
-      - in2out:
-        - /initrd.img
-        - /tmp/initrd.img
+    - exec_out: |
+        mkdir -p /tmp
+        cp $${rootfs}/vmlinuz /tmp/vmlinuz
+        cp $${rootfs}/initrd.img /tmp/initrd.img
 export:
   - export_vmlinuz_initrd:
     - vmlinuz:
       - out2local:
         - /tmp/vmlinuz
-        - ./vmlinuz
+        - ./kadeploy-vmlinuz_$${release}-$${debian_arch}_$${version}
     - initrd:
       - out2local:
         - /tmp/initrd.img
-        - ./initrd.img
+        - ./kadeploy-initrd.img_$${release}-$${debian_arch}_$${version}

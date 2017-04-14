@@ -1,0 +1,32 @@
+#==============================================================================
+# vim: softtabstop=2 shiftwidth=2 expandtab fenc=utf-8 cc=81 tw=80
+#==============================================================================
+#
+# DESCRIPTION: Ramdisk OS for the deployment step of Kadeploy
+#
+# Notes:
+# - force use of busybox rather than klibc-utils (which breaks the mount)
+#
+#==============================================================================
+---
+extend: kadeploy_deploy_ramdisk_OS.yaml
+
+global:
+  arch: aarch64
+  debian_arch: arm64
+  debian_kernel_arch: $${debian_arch}
+  arch_specific_packages:
+
+  in_context:
+    cmd: ssh -F $${ssh_config_file} $${kameleon_recipe_name} -t chroot $${rootfs} /usr/bin/qemu-$${arch}-static /bin/bash
+    workdir: /root/kameleon_workdir
+    proxy_cache: 10.0.2.2
+
+bootstrap:
+  - "@base"
+
+setup:
+  - "@base"
+
+export:
+  - "@base"
