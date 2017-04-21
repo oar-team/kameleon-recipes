@@ -1,3 +1,5 @@
+- keyboard_commands: $${kameleon_cwd}/boot_command
+
 - copy_autoinstall_script_to_http_directory:
   - exec_local: mkdir -p $${http_directory}
   - exec_local: cp $${base_preseed_path} $${http_directory}/preseed.cfg
@@ -6,9 +8,9 @@
   - exec_local: sed -i s'|d-i passwd/root-password password\(.*\)|d-i passwd/root-password $${root_password}|'g $${http_directory}/preseed.cfg
   - exec_local: sed -i s'|d-i passwd/root-password-again password\(.*\)|d-i passwd/root-password-again $${root_password}|'g $${http_directory}/preseed.cfg
 
-- write_boot_command:
+- write_keyboard_commands:
   - write_local:
-    - $${kameleon_cwd}/boot_command
+    - $${keyboard_commands}
     - >
       <esc><wait>install preseed/url=http://10.0.2.2:$${http_port}/preseed.cfg
       debian-installer=en_US auto locale=en_US kbd-chooser/method=us

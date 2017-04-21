@@ -38,12 +38,12 @@ global:
   qemu_cpu: 2
   qemu_memory_size: 768
   qemu_monitor_socket: $${kameleon_cwd}/qemu_monitor.socket
-  qemu_arch: $${arch}}
+  qemu_arch: $${arch}
   qemu_image_size: 10G
   qemu_pidfile: $${kameleon_cwd}/qemu.pid
 
   # rootfs options
-  disk_device: /dev/sda
+  disk_device: /dev/vda
   rootfs: /rootfs
   filesystem_type: ext4
 
@@ -64,6 +64,8 @@ global:
   http_port: 15364
   http_pid:  $${kameleon_cwd}/http.pid
 
+  keyboard_commands: $${kameleon_cwd}/keyboard_commands
+
   ssh_config_file: $${kameleon_cwd}/ssh_config
   out_context:
     cmd: ssh -F $${ssh_config_file} $${kameleon_recipe_name} -t /bin/bash
@@ -82,9 +84,21 @@ bootstrap:
   - prepare_disk
   - prepare_autoinstall
   - start_http_server
-  - autoinstall
+  - start_qemu:
+    - force_vm_shutdown: false
+    - shutdown_vm_immediately: true
+    - vm_cleanup_section: bootstrap
+    - vm_expected_service:
+    - boot_timeout: 5
+    - vm_boot: cdrom
   - prepare_appliance
-  - start_qemu
+  - start_qemu:
+    - force_vm_shutdown: true
+    - shutdown_vm_immediately: false
+    - vm_cleanup_section: setup
+    - vm_expected_server: ssh
+    - boot_timeout: 100
+    - vm_boot: hdd
 
 # Install and configuration steps
 setup:
