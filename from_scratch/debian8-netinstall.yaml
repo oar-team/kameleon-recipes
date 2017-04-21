@@ -13,7 +13,7 @@ global:
   distrib: debian
   debian_arch: amd64
   release: jessie
-  release_number: 8.5.0
+  release_number: 8.7.1
   iso_location: release
 
 bootstrap:
