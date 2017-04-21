@@ -4,8 +4,11 @@
 - disk_cache: unsafe
 # This must be set if you want to boot an ISO image instead of a disk
 - iso_path: ""
+- debug: "false"
+- qemu_sendkeys_script: $${kameleon_data_dir}/qemu-sendkeys.rb
+- socat_monitor: socat - UNIX-CONNECT:$${qemu_monitor_socket}
 
-- start_qemu_vm:
+- start_vm:
   - on_checkpoint: redo
   - check_cmd_local: qemu-system-$${qemu_arch}
   - exec_local: echo "Starting qemu..."
@@ -22,9 +25,14 @@
           LOADVM="-loadvm $SAVED_STATE"
           rm -f vm_state_to_load.txt
       fi
-      # Find empty VNC port
-      VNC_PORT=$(( $(__find_free_port 5900 5910) - 5900 ))
-      echo "VNC port: $VNC_PORT"
+      if [ "$${debug}" = "true" ]; then
+        VNC_OPT=""
+      else
+        # Find empty VNC port
+        VNC_PORT=$(( $(__find_free_port 5900 5910) - 5900 ))
+        echo "VNC port: $VNC_PORT"
+        VNC_OPT="-vnc :$VNC_PORT"
+      fi
 
       # Select disk
       if [ -z "$${iso_path}" ]; then
@@ -41,7 +49,9 @@
         -net user,hostfwd=tcp::${SSH_FWD_PORT}-:22 \
         -monitor unix:$${qemu_monitor_socket},server,nowait \
         -pidfile $${qemu_pidfile} \
-        -daemonize -vnc :$VNC_PORT $LOADVM
+        -daemonize $VNC_OPT $LOADVM
+
+- wait_for_vm_sshd:
   - exec_local: |
         SSH_AVAILABLE=0
         TIMEOUT=$(( $(date +%s) + $BOOT_TIMEOUT ))
@@ -55,7 +65,52 @@
     - exec_local: test $SSH_AVAILABLE -eq 1
     - breakpoint: Failed to connect to VM via SSH. Please verify the VM successfully booted with a vnc client.
 
-- shutdown_qemu_vm_on_setup_clean: 
+- wait_for_vm
+  - exec_local: |
+      TIMEOUT=$(( $(date +%s) + $BOOT_TIMEOUT ))
+      until timeout 1 [ $(date +%s) -gt $TIMEOUT ];
+      do
+        echo -en "\rWaiting for VM to become available : ($(( TIMEOUT - $(date +%s) ))s)"
+        sleep 1
+      done
+      echo ""
+- command_vm_keyboard:
+  - check_cmd_local: socat
+  - check_cmd_local: ruby
+  - exec_local: ruby $${qemu_sendkeys_script} -d 0.05 "$(cat $${kameleon_cwd}/boot_command)" | $${socat_monitor} > /dev/null
+
+- wait_vm_to_shutdown:
+  - exec_local: |
+      if [ -f $${qemu_pidfile} ]; then
+        _QEMU_PID=$(cat $${qemu_pidfile})
+        if ps -p $_QEMU_PID > /dev/null; then
+          echo "Waiting for the autoinstall process to finished"
+          echo "Run 'vncviewer :$VNC_PORT' to connect to the vm"
+          while ps -p $_QEMU_PID > /dev/null;
+          do
+            sleep 2
+          done
+        fi
+      fi
+  - on_clean:
+    - exec_local: |
+        if [ -f $${qemu_pidfile} ]; then
+          _QEMU_PID=$(cat $${qemu_pidfile})
+          if ps -p $_QEMU_PID > /dev/null; then
+            if [ -S $${qemu_monitor_socket} ]; then
+              echo "  ~> Failed"
+            fi
+            echo "Killing QEMU (pid: $_QEMU_PID)..."
+            kill -9 "$_QEMU_PID"
+          else
+            if [ -S $${qemu_monitor_socket} ]; then
+              echo "  ~> Done"
+            fi
+          fi
+          rm -f $${qemu_pidfile}
+        fi
+
+- shutdown_vm_on_setup_clean: 
   - on_checkpoint: redo
   - check_cmd_local: socat
   - on_setup_clean: &1
@@ -92,7 +147,7 @@
         fi
         rm -f $${qemu_monitor_socket}
 
-- shutdown_qemu_vm_on_export_clean:
+- shutdown_vm_on_export_clean:
   - on_checkpoint: redo
   - check_cmd_local: socat
   - on_export_clean: *1

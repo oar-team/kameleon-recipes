@@ -38,8 +38,7 @@ global:
   qemu_cpu: 2
   qemu_memory_size: 768
   qemu_monitor_socket: $${kameleon_cwd}/qemu_monitor.socket
-  qemu_arch: x86_64
-  qemu_iso_arch: $${iso_arch}
+  qemu_arch: $${arch}}
   qemu_image_size: 10G
   qemu_pidfile: $${kameleon_cwd}/qemu.pid
 
