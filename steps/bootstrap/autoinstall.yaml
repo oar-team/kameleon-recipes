@@ -29,7 +29,7 @@
   - exec_local: |
       qemu-system-$${qemu_iso_arch} $ENABLE_KVM \
         -cdrom "$${iso_path}" \
-        -hda $${qemu_image_disk} \
+        -hda $${image_disk}.$${image_format} \
         -smp $${qemu_cpu} \
         -m $${qemu_memory_size} \
         -rtc base=localtime \

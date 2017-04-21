@@ -41,7 +41,6 @@ global:
   qemu_arch: x86_64
   qemu_iso_arch: $${iso_arch}
   qemu_image_size: 10G
-  qemu_image_disk: $${kameleon_cwd}/base_$${kameleon_recipe_name}.qcow2
   qemu_pidfile: $${kameleon_cwd}/qemu.pid
 
   # rootfs options
