@@ -100,6 +100,7 @@ bootstrap:
     - vm_expected_server: ssh
     - boot_timeout: 100
     - vm_boot: hdd
+    - qemu_sendkeys_commands:
 
 # Install and configuration steps
 setup:
