@@ -11,7 +11,7 @@
 - qemu_sendkeys_script: $${kameleon_data_dir}/qemu-sendkeys.rb
 - qemu_sendkeys_commands: 
 - vm_expected_service: ssh
-- vm_cleanup_section: bootstrap
+- vm_cleanup_section: setup
 - shutdown_vm_immediately: false
 - force_vm_shutdown: true
 - check_cmd_local: socat
