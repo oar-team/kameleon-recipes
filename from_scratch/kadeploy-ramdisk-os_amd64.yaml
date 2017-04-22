@@ -14,12 +14,12 @@ extend: debian-base.yaml
 global:
   release: jessie
   bootstrap_packages: initramfs-tools busybox
-  variant: minbase
+  bootstrap_variant: minbase
   enable_lighten: true
   root_authorized_keys: $${kameleon_data_dir}/kadeploy_root_authorized_keys
   gpg_keyserver: keyserver.ubuntu.com
   arch_specific_packages: kexec-tools grub-pc fsarchiver
-  version: beta
+  target_version: beta
 
 bootstrap:
   - enable_checkpoint
@@ -122,7 +122,7 @@ setup:
       - write_in:
         - /etc/motd
         - |
-          Welcome to Kadeploy deployment ramdisk OS (version: $${release}-$${debian_arch}_$${version}, $(date +'%F %T'))
+          Welcome to Kadeploy deployment ramdisk OS (version: $${release}-$${debian_arch}_$${target_version}, $(date +'%F %T'))
     - set_root_authorized_keys:
       - exec_in: mkdir -p /root/.ssh
       - exec_in: chmod 755 /root/.ssh
@@ -314,8 +314,8 @@ export:
     - vmlinuz:
       - out2local:
         - /tmp/vmlinuz
-        - ./kadeploy-vmlinuz_$${release}-$${debian_arch}_$${version}
+        - ./kadeploy-vmlinuz_$${release}-$${debian_arch}_$${target_version}
     - initrd:
       - out2local:
         - /tmp/initrd.img
-        - ./kadeploy-initrd.img_$${release}-$${debian_arch}_$${version}
+        - ./kadeploy-initrd.img_$${release}-$${debian_arch}_$${target_version}
