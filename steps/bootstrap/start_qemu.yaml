@@ -9,7 +9,7 @@
 - debug: "false"
 - socat_monitor: socat - UNIX-CONNECT:$${qemu_monitor_socket}
 - qemu_sendkeys_script: $${kameleon_data_dir}/qemu-sendkeys.rb
-- keyboard_commands: $${kameleon_cwd}/keyboard_commands
+- qemu_sendkeys_commands: 
 - vm_expected_service: ssh
 - vm_cleanup_section: bootstrap
 - shutdown_vm_immediately: false
@@ -81,11 +81,11 @@
     - breakpoint: |
         Failed to get VM up and running (expected service: $${vm_expected_service}). Please verify the VM successfully booted with a vnc client.
   - test:
-    - exec_local: test -e $${keyboard_commands} -a -s $${keyboard_commands}
+    - exec_local: test -e $${qemu_sendkeys_commands} -a -s $${qemu_sendkeys_commands}
     - exec_local: |
         echo "Sending keyboard commands to the VM"
-        ruby $${qemu_sendkeys_script} -d 0.05 "$(< $${keyboard_commands})" | $${socat_monitor} > /dev/null
-        rm $${keyboard_commands}
+        ruby $${qemu_sendkeys_script} -d 0.05 "$(< $${qemu_sendkeys_commands})" | $${socat_monitor} > /dev/null
+        rm $${qemu_sendkeys_commands}
     - exec_local: echo "No keyboard commands to send"
 
 - shutdown_vm:

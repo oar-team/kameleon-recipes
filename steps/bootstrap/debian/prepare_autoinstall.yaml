@@ -1,5 +1,3 @@
-- keyboard_commands: $${kameleon_cwd}/boot_command
-
 - copy_autoinstall_script_to_http_directory:
   - exec_local: mkdir -p $${http_directory}
   - exec_local: cp $${base_preseed_path} $${http_directory}/preseed.cfg
@@ -7,13 +5,3 @@
 - customize_preseed:
   - exec_local: sed -i s'|d-i passwd/root-password password\(.*\)|d-i passwd/root-password $${root_password}|'g $${http_directory}/preseed.cfg
   - exec_local: sed -i s'|d-i passwd/root-password-again password\(.*\)|d-i passwd/root-password-again $${root_password}|'g $${http_directory}/preseed.cfg
-
-- write_keyboard_commands:
-  - write_local:
-    - $${keyboard_commands}
-    - >
-      <esc><wait>install preseed/url=http://10.0.2.2:$${http_port}/preseed.cfg
-      debian-installer=en_US auto locale=en_US kbd-chooser/method=us
-      netcfg/get_hostname=localhost netcfg/get_domain=localdomain
-      fb=false debconf/frontend=noninteractive console-setup/ask_detect=false
-      console-keymaps-at/keymap=us keyboard-configuration/xkb-keymap=us <kp_enter>

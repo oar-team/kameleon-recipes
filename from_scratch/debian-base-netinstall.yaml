@@ -38,6 +38,8 @@ global:
   base_preseed_path: $${kameleon_data_dir}/$${distrib}-$${release}-preseed.cfg
   preseed_path: $${kameleon_cwd}/preseed.cfg
 
+  qemu_sendkeys_commands: $${kameleon_data_dir}/qemu-sendkeys/$${distrib}-netinst-iso
+
 bootstrap:
   - "@base"
 
