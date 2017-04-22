@@ -59,10 +59,10 @@
     - exec_local: test $SSH_AVAILABLE -eq 1
     - breakpoint: Failed to connect to VM via SSH. Please verify the VM successfully booted with a vnc client.
 
-- force_shutdown_qemu_vm:
+- shutdown_qemu_vm_on_setup_clean: 
   - on_checkpoint: redo
   - check_cmd_local: socat
-  - on_setup_clean:
+  - on_setup_clean: &1
     - exec_out: echo "Sync"
     - exec_out: sync
     - exec_out: echo "Shutting down virtual machine"
@@ -95,3 +95,8 @@
           fi
         fi
         rm -f $${qemu_monitor_socket}
+
+- shutdown_qemu_vm_on_export_clean:
+  - on_checkpoint: redo
+  - check_cmd_local: socat
+  - on_export_clean: *1
