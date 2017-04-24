@@ -64,8 +64,6 @@ global:
   http_port: 15364
   http_pid:  $${kameleon_cwd}/http.pid
 
-  keyboard_commands: $${kameleon_cwd}/keyboard_commands
-
   ssh_config_file: $${kameleon_cwd}/ssh_config
   local_ip: 10.0.2.2
   out_context:
