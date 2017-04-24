@@ -11,6 +11,7 @@ extend: ubuntu-base-netinstall.yaml
 global:
   # Distribution
   release: xenial
+  qemu_sendkeys_commands: $${kameleon_data_dir}/qemu-sendkeys/netinst-iso-ubuntu-xenial
 
 bootstrap:
   - "@base"
