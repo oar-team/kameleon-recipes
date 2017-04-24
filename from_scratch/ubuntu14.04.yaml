@@ -6,9 +6,10 @@
 #
 #==============================================================================
 ---
-extend: ubuntu-base.yaml
-
+extend: ubuntu-base-netinstall.yaml
+# Global variables use by Kameleon engine and the steps
 global:
+  # Distribution
   release: trusty
 
 bootstrap:

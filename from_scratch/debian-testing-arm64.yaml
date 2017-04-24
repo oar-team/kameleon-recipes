@@ -12,13 +12,12 @@ global:
   release: testing
 
   arch: aarch64
-  debian_arch: arm64
-  debian_kernel_arch: $${debian_arch}
+  deb_arch: arm64
 
   in_context:
     cmd: ssh -F $${ssh_config_file} $${kameleon_recipe_name} -t chroot $${rootfs} /usr/bin/qemu-$${arch}-static /bin/bash
     workdir: /root/kameleon_workdir
-    proxy_cache: 10.0.2.2
+    proxy_cache: $${local_ip}
 
 bootstrap:
   - "@base"

@@ -68,14 +68,14 @@ setup:
       - write_in:
         - /etc/apt/sources.list.d/$${release}.list
         - |
-          deb $${debian_mirror_uri} $${release} main contrib non-free
+          deb $${deb_mirror_uri} $${release} main contrib non-free
           deb http://security.debian.org/ $${release}/updates main contrib non-free
       - write_in:
         - /etc/apt/sources.list.d/$${release}-backports.list
         - |
-          deb $${debian_mirror_uri} $${release}-backports main contrib non-free
+          deb $${deb_mirror_uri} $${release}-backports main contrib non-free
       - exec_in: |
-          if [ "$${debian_arch}" == "amd64" ]; then
+          if [ "$${deb_arch}" == "amd64" ]; then
             cat <<EOF >/etc/apt/sources.list.d/hwraid.list
           deb http://hwraid.le-vert.net/debian $${release} main
           EOF
@@ -101,7 +101,7 @@ setup:
           dpkg-reconfigure tzdata
   - install_remove_packages:
     - kernel:
-      - exec_in: apt-get install -y --force-yes linux-image-$${debian_kernel_arch}
+      - exec_in: apt-get install -y --force-yes linux-image-$${deb_kernel_arch}
     - firmware:
       - exec_in: apt-get install -y --force-yes firmware-linux firmware-bnx2 firmware-bnx2x
     - system_utils: 
@@ -122,7 +122,7 @@ setup:
       - write_in:
         - /etc/motd
         - |
-          Welcome to Kadeploy deployment ramdisk OS (version: $${release}-$${debian_arch}_$${target_version}, $(date +'%F %T'))
+          Welcome to Kadeploy deployment ramdisk OS (version: $${release}-$${deb_arch}_$${target_version}, $(date +'%F %T'))
     - set_root_authorized_keys:
       - exec_in: mkdir -p /root/.ssh
       - exec_in: chmod 755 /root/.ssh
@@ -314,8 +314,8 @@ export:
     - vmlinuz:
       - out2local:
         - /tmp/vmlinuz
-        - ./kadeploy-vmlinuz_$${release}-$${debian_arch}_$${target_version}
+        - ./kadeploy-vmlinuz_$${release}-$${deb_arch}_$${target_version}
     - initrd:
       - out2local:
         - /tmp/initrd.img
-        - ./kadeploy-initrd.img_$${release}-$${debian_arch}_$${target_version}
+        - ./kadeploy-initrd.img_$${release}-$${deb_arch}_$${target_version}

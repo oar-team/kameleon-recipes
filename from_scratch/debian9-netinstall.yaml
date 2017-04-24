@@ -11,7 +11,6 @@ extend: debian-base-netinstall.yaml
 global:
   # Distribution
   distrib: debian
-  debian_arch: amd64
   release: stretch
   iso_url: http://cdimage.debian.org/cdimage/stretch_di_rc3/amd64/iso-cd/debian-stretch-DI-rc3-amd64-netinst.iso
 

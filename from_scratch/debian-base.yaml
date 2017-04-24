@@ -24,8 +24,8 @@ extend: base.yaml
 global:
   distrib: debian
   release: testing
-  debian_arch: amd64
-  debian_kernel_arch: $${debian_arch}
+  deb_arch: amd64
+  deb_kernel_arch: $${deb_arch}
 
   # This ISO is use to create the OUT context and not image itself
   iso_filename: debian-jessie-$${iso_arch}-live.iso
@@ -34,15 +34,15 @@ global:
 
   bootstrap_script: $${kameleon_data_dir}/debootstrap.sh
   bootstrap_variant:
-  debian_mirror_uri: http://http.debian.net/debian/
+  deb_mirror_uri: http://http.debian.net/debian/
 
-  bootstrap_packages: locales openssh-server linux-image-$${debian_kernel_arch}
+  bootstrap_packages: locales openssh-server linux-image-$${deb_kernel_arch}
   build_packages: qemu-user-static curl parted e2fsprogs
 
   in_context:
     cmd: ssh -F $${ssh_config_file} $${kameleon_recipe_name} -t chroot $${rootfs} /bin/bash
     workdir: /root/kameleon_workdir
-    proxy_cache: 10.0.2.2
+    proxy_cache: $${local_ip}
 
 bootstrap:
   - enable_checkpoint

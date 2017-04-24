@@ -17,5 +17,5 @@
   - write_local:
     - $${kameleon_cwd}/boot_command
     - >
-      curl -sSL http://10.0.2.2:$${http_port}/configuration.nix <gt> /tmp/configuration.nix<kp_enter>
-      curl -sSL http://10.0.2.2:$${http_port}/autoinstall.sh | bash<kp_enter>
+      curl -sSL http://$${local_ip}:$${http_port}/configuration.nix <gt> /tmp/configuration.nix<kp_enter>
+      curl -sSL http://$${local_ip}:$${http_port}/autoinstall.sh | bash<kp_enter>

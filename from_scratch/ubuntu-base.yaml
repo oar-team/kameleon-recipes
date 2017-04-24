@@ -11,6 +11,7 @@ extend: debian-base.yaml
 global:
   # Distribution
   distrib: ubuntu
+  release: zesty
 
   ## System variables. Required by kameleon engine
   # Include specific steps
@@ -19,7 +20,7 @@ global:
     - $${distrib}
     - "debian"
 
-  repository: http://archive.ubuntu.com/ubuntu/
+  deb_mirror_uri: http://archive.ubuntu.com/ubuntu/
   bootstrap_packages: locales openssh-server linux-image-generic
   additional_packages: ""
 

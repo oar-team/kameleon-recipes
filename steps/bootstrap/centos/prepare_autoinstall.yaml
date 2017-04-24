@@ -13,7 +13,7 @@
         KS_URL=ks=http://127.0.0.1:$${http_port}/ks.cfg
       else
         KS_PROXY=
-        KS_URL=ks=http://10.0.2.2:$${http_port}/ks.cfg
+        KS_URL=ks=http://$${local_ip}:$${http_port}/ks.cfg
       fi
   - write_local:
     - $${kameleon_cwd}/boot_command

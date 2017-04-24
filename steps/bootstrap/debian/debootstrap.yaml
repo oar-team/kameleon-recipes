@@ -25,10 +25,10 @@
   - exec_out: |
       RELEASE=$${release} \
       PACKAGES="$${bootstrap_packages}" \
-      DEBIAN_MIRROR_URI="$${debian_mirror_uri}" \
+      DEB_MIRROR_URI="$${deb_mirror_uri}" \
       ARCH="$${arch}" \
-      DEBIAN_ARCH="$${debian_arch}" \
-      DEBIAN_KERNEL_ARCH="$${debian_kernel_arch}" \
+      DEB_ARCH="$${deb_arch}" \
+      DEB_KERNEL_ARCH="$${deb_kernel_arch}" \
       CHROOT_DIR="$${rootfs}" \
       VARIANT="$${bootstrap_variant}" \
       PROXY=$${proxy_out}
