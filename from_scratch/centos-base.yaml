@@ -24,6 +24,8 @@ global:
 
   base_kickstart_path: $${kameleon_data_dir}/$${distrib}$${release_major}-ks.cfg
 
+  qemu_sendkeys_commands: $${kameleon_data_dir}/qemu-sendkeys/netinst-$${distrib}
+
 bootstrap:
   - "@base"
 
