@@ -5,7 +5,7 @@
 
 - script_name: puppet_install.sh
 - script_path: /tmp
-- puppet-agent_version: 1.5.1-1jessie
+- puppet-agent_version: 1.5.1-1$${os_release}
 - puppet_path: /opt/puppetlabs/bin
 
 - get_standalone_puppet_script:
