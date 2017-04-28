@@ -5,12 +5,12 @@
 
 - script_name: puppet_install.sh
 - script_path: /tmp
-- puppet-agent_version: 1.5.1-1wheezy
+- puppet-agent_version: 1.5.1-1jessie
 - puppet_path: /opt/puppetlabs/bin
 
 - get_standalone_puppet_script:
   - exec_local: mkdir -p $${kameleon_cwd}/script_dir
-  - exec_local: echo "chmod 777 /tmp && apt-get install -y wget lsb-release ; wget -q http://apt.puppetlabs.com/puppetlabs-release-pc1-wheezy.deb -O /tmp/puppetlabs-release-pc1-wheezy.deb && dpkg -i /tmp/puppetlabs-release-pc1-wheezy.deb ; apt-get update && rc=$? || rc=$? ; apt-get install -y --no-install-recommends puppet-agent="$${puppet-agent_version} > $${kameleon_cwd}/script_dir/$${script_name}
+  - exec_local: echo "chmod 777 /tmp && apt-get install -y wget lsb-release ; wget -q http://apt.puppetlabs.com/puppetlabs-release-pc1-$(lsb_release -cs).deb -O /tmp/puppetlabs-release-pc1-$(lsb_release -cs).deb && dpkg -i /tmp/puppetlabs-release-pc1-$(lsb_release -cs).deb ; apt-get update && rc=$? || rc=$? ; apt-get install -y --no-install-recommends puppet-agent="$${puppet-agent_version} > $${kameleon_cwd}/script_dir/$${script_name}
   - pipe:
     - exec_local: tar -cf - -C $${kameleon_cwd}/script_dir .
     - exec_in: tar xfp - -C $${script_path}
