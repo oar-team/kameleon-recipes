@@ -44,4 +44,15 @@ class env::std::dell {
     target => '/opt/dell/srvadmin/etc/omreg.cfg',
     require => Package['srvadmin-all', 'dtk-scripts']
   }
+
+  # Fix bug 8048
+  file {
+    '/etc/systemd/system/dataeng.service.d':
+      ensure  => 'directory',
+      require => Package['srvadmin-all', 'dtk-scripts'];
+    '/etc/systemd/system/dataeng.service.d/stop.conf':
+      ensure  => 'file',
+      content => "[Service]\nExecStop=\n",
+      require => Package['srvadmin-all', 'dtk-scripts'];
+  }
 }
