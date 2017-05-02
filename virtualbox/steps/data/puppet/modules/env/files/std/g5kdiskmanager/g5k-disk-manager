@@ -168,7 +168,7 @@ end
 def megacli_compliant?
   # Get the number or RAID controllers supported by megacli
   # The return code of the command is the number of controllers supported
-  num_controllers, _output = sh('megacli -AdpCount')
+  num_controllers, _output = sh("#{MEGACLI} -AdpCount")
   compliant = (num_controllers != 0)
   return compliant
 end
@@ -188,7 +188,7 @@ end
 # a0e32s0     279GiB        ready
 # a0e32s1     279GiB        ready
 def get_disks
-  status, output = sh('megasasctl')
+  status, output = sh(MEGASASCTL)
   unless status.zero?
     notice 'The command megasasctl failed'
     close
@@ -219,7 +219,7 @@ end
 def enable(physical_disks)
   num_enable_errors = 0
   physical_disks.each do |disk|
-    status, _output = sh("megacli -PDMakeJBOD -PhysDrv [#{disk[:enclosure]}:#{disk[:slot]}] -a#{disk[:adapter]}")
+    status, _output = sh("#{MEGACLI} -PDMakeJBOD -PhysDrv [#{disk[:enclosure]}:#{disk[:slot]}] -a#{disk[:adapter]}")
     debug "Enabling disk #{disk} => Return code = #{status}"
     num_enable_errors += 1 unless status.zero?
   end
@@ -234,7 +234,7 @@ end
 def disable(physical_disks)
   num_disable_errors = 0
   physical_disks.each do |disk|
-    status, _output = sh("megacli -PDMakeGood -PhysDrv [#{disk[:enclosure]}:#{disk[:slot]}] -force -a#{disk[:adapter]}")
+    status, _output = sh("#{MEGACLI} -PDMakeGood -PhysDrv [#{disk[:enclosure]}:#{disk[:slot]}] -force -a#{disk[:adapter]}")
     debug "Disabling disk #{disk} => Return code = #{status}"
     num_disable_errors += 1 unless status.zero?
   end
@@ -242,6 +242,9 @@ def disable(physical_disks)
 end
 
 # Main program
+MEGACLI = '/usr/sbin/megacli'
+MEGASASCTL = '/usr/sbin/megasasctl'
+
 G5K_API = 'https://api.grid5000.fr/stable'
 _status, TMPDIR = sh('mktemp -d /tmp/tmp.g5k-disk-manager.XXXXXX')
 DEBUG = true
