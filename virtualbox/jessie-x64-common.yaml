@@ -36,6 +36,7 @@ global:
   g5k_tgz_path: server:///path/to/your/image
   g5k_postinst_path: server:///grid5000/postinstalls/debian-x64-min-1.2-post.tgz
   g5k_kernel_params: ""
+  kernel_args: "net.ifnames=0 biosdevname=0 console=ttyS0"
   arg_create: --basefolder /tmp
 
 bootstrap:
