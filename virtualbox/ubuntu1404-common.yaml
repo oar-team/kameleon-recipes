@@ -29,7 +29,7 @@ global:
   image_version: 2016120110
   output: "$${kameleon_cwd}/$${kameleon_recipe_name}" # output files basename
   g5k_tgz_path: server:///path/to/your/image
-  g5k_postinst_path: server:///grid5000/postinstalls/users/ubuntu/ubuntu-prepost_0.2.0.tgz
+  g5k_postinst_path: server:///grid5000/postinstalls/users/ubuntu/ubuntu-prepost_0.2.1.tgz
   g5k_kernel_params: ""
 # Install and configuration steps
 
