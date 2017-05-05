@@ -44,18 +44,24 @@
 
       # Select disk
       QEMU_DRIVES="-drive file=$${image_disk}.$${image_format},cache=$${disk_cache},media=disk,if=virtio,id=drive0"
+      QENU_BOOT=
       if [ -n "$${iso_path}" ]; then
-        QEMU_DRIVES="$QEMU_DRIVES -drive file=$${iso_path},media=cdrom"
+        QEMU_DRIVES="-drive file=$${iso_path},readonly,media=cdrom $QEMU_DRIVES"
         if [ "$${vm_boot}" == "cdrom" ]; then
-          QEMU_DRIVES="-boot order=d $QEMU_DRIVES"
+          QEMU_BOOT="-boot order=d"
         fi
       fi
       if [ -n "${SSH_FWD_PORT}" ]; then
         HOSTFWD=",hostfwd=tcp::${SSH_FWD_PORT}-:22"
       fi
-      qemu-system-$${qemu_arch} $ENABLE_KVM $QEMU_DRIVES -smp $${qemu_cpu} -m $${qemu_memory_size} -rtc base=localtime \
+      qemu-system-$${qemu_arch} $ENABLE_KVM -smp $${qemu_cpu} -m $${qemu_memory_size} -rtc base=localtime \
         -net nic,model=virtio -net user${HOSTFWD} \
-        -monitor unix:$${qemu_monitor_socket},server,nowait -pidfile $${qemu_pidfile} -daemonize $VNC_OPT $LOADVM
+        $QEMU_DRIVES \
+        -monitor unix:$${qemu_monitor_socket},server,nowait -pidfile $${qemu_pidfile} -daemonize \
+        $QEMU_BOOT -no-reboot \
+        $VNC_OPT \
+        -serial telnet:localhost:7777,server \
+        $LOADVM
   - exec_local: |
       VM_AVAILABLE=0
       if [ "$${vm_expected_service}" == "ssh" ]; then
@@ -91,32 +97,34 @@
   - on_checkpoint: redo
   - test:
     - exec_local: test "$${shutdown_vm_immediately}" == "true"
-    - group: &1
-      - exec_local: |
-          if [ -f $${qemu_pidfile} ]; then
-            _QEMU_PID=$(< $${qemu_pidfile})
-            if ps -p $_QEMU_PID > /dev/null; then
-              if [ "$${force_vm_shutdown}" == "true" ]; then
-                if [ -S $${qemu_monitor_socket} ]; then
-                  NEXT_WAIT_TIME=0
-                  echo system_powerdown | socat - UNIX-CONNECT:$${qemu_monitor_socket} || true
-                  while ps -p $_QEMU_PID > /dev/null && [ $NEXT_WAIT_TIME -lt $${shutdown_timeout} ];
-                  do
-                    sleep 1
-                    echo -en "\rWaiting for qemu virtual machine to shutdown...($(( $${shutdown_timeout} - 1 - NEXT_WAIT_TIME++ ))s)"
-                  done
-                fi
-              else
-                echo "Waiting for the VM to shutdown"
-                echo "Run 'vncviewer :$VNC_PORT' to see what's happening in the VM"
-                while ps -p $_QEMU_PID > /dev/null;
+    - exec_local: &1 |
+        if [ -f $${qemu_pidfile} ]; then
+          _QEMU_PID=$(< $${qemu_pidfile})
+          if ps -p $_QEMU_PID > /dev/null; then
+            if [ "$${force_vm_shutdown}" == "true" ]; then
+              if [ -S $${qemu_monitor_socket} ]; then
+                NEXT_WAIT_TIME=0
+                echo system_powerdown | socat - UNIX-CONNECT:$${qemu_monitor_socket} || true
+                while ps -p $_QEMU_PID > /dev/null && [ $NEXT_WAIT_TIME -lt $${shutdown_timeout} ];
                 do
-                  sleep 2
+                  sleep 1
+                  echo -en "\rWaiting for qemu virtual machine to shutdown...($(( $${shutdown_timeout} - 1 - NEXT_WAIT_TIME++ ))s)"
                 done
               fi
+            else
+              echo "Waiting for the VM to shutdown"
+              echo "Run 'vncviewer :$VNC_PORT' to see what's happening in the VM"
+              while ps -p $_QEMU_PID > /dev/null;
+              do
+                sleep 2
+              done
             fi
           fi
-      - exec_local: |
+        fi
+  - on_clean:
+    - test:
+      - exec_local: test "$${shutdown_vm_immediately}" == "true"
+      - exec_local: &2 |
           if [ -f $${qemu_pidfile} ]; then
             _QEMU_PID=$(< $${qemu_pidfile})
             if ps -p $_QEMU_PID > /dev/null; then
@@ -136,12 +144,18 @@
   - on_bootstrap_clean:
     - test:
       - exec_local: test "$${shutdown_vm_immediately}" == "false" -a "$${vm_cleanup_section}" == "bootstrap"
-      - group: *1
+      - group: 
+        - exec_local: *1
+        - exec_local: *2
   - on_setup_clean:
     - test:
       - exec_local: test "$${shutdown_vm_immediately}" == "false" -a "$${vm_cleanup_section}" == "setup"
-      - group: *1
+      - group:
+        - exec_local: *1
+        - exec_local: *2
   - on_export_clean:
     - test:
       - exec_local: test "$${shutdown_vm_immediately}" == "false" -a "$${vm_cleanup_section}" == "export"
-      - group: *1
+      - group:
+        - exec_local: *1
+        - exec_local: *2
