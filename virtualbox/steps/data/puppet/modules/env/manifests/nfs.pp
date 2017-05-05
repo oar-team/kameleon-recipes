@@ -25,4 +25,6 @@ class env::nfs ( $parent_parameters = {} ){
   class { 'env::nfs::install_nfs_requirements': }
   # storage5k required
   class { 'env::nfs::install_storage5k_requirements': }
+  # osirim
+  class { 'env::nfs::install_osirim_requirements': }
 }
