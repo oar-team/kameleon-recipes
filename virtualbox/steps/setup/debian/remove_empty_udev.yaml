@@ -1,0 +1,2 @@
+- remove_empty_udev:
+    - exec_in: rm -rf /etc/udev/rules.d/70-persistent-net.rules/

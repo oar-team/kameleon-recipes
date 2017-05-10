@@ -1,0 +1,34 @@
+31;4803;0c#==============================================================================
+# vim: softtabstop=2 shiftwidth=2 expandtab fenc=utf-8 cc=81 tw=80
+#==============================================================================
+#
+# DESCRIPTION: Debian 8 (Jessie) base system built with virtualbox.
+#
+#==============================================================================
+---
+extend: jessie-x64-common.yaml
+# Enables qcow2 checkpoint
+checkpoint: virtualbox.yaml
+#== Global variables use by Kameleon engine and the steps
+global:
+  release: stretch
+  release_number: 9
+  bootstrap_image_version: "20160127-1"
+  os_release: stretch
+  image_version: 2017041209
+  variant: min
+  output: "$${kameleon_cwd}/$${kameleon_recipe_name}" # output files basename
+  g5k_tgz_path: server:///path/to/your/image
+  g5k_postinst_path: server:///grid5000/postinstalls/debian-x64-min-1.2-post.tgz
+  g5k_kernel_params: "net.ifnames=0 biosdevname=0" # Predictable interface name not supported yet
+  force_puppet_debian_version: jessie
+
+bootstrap:
+  - "@base"
+
+setup:
+  - remove_empty_udev #Dirty hack due to Bug #25
+  - "@base"
+
+export:
+  - "@base"
