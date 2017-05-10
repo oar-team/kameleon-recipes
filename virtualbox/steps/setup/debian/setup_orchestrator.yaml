@@ -7,10 +7,11 @@
 - script_path: /tmp
 - puppet-agent_version: 1.5.1-1
 - puppet_path: /opt/puppetlabs/bin
+- force_puppet_debian_version:
 
 - get_standalone_puppet_script:
   - exec_in: apt-get install -y wget lsb-release
-  - exec_in: echo "chmod 777 /tmp; wget -q http://apt.puppetlabs.com/puppetlabs-release-pc1-$(lsb_release -cs).deb -O /tmp/puppetlabs-release-pc1-$(lsb_release -cs).deb && dpkg -i /tmp/puppetlabs-release-pc1-$(lsb_release -cs).deb ; apt-get update && rc=$? || rc=$? ; apt-get install -y --no-install-recommends puppet-agent=$${puppet-agent_version}$(lsb_release -cs)" > $${script_path}/$${script_name}
+  - exec_in: echo "if [ -z $${force_puppet_debian_version} ] ; then version=$(lsb_release -cs) ; else version=$${force_puppet_debian_version} ; fi && chmod 777 /tmp; wget -q http://apt.puppetlabs.com/puppetlabs-release-pc1-\$version.deb -O /tmp/puppetlabs-release-pc1-\$version.deb && dpkg -i /tmp/puppetlabs-release-pc1-\$version.deb ; apt-get update && rc=$? || rc=$? ; apt-get install -y --no-install-recommends puppet-agent=$${puppet-agent_version}\$version" > $${script_path}/$${script_name}
   - exec_in: chmod +x $${script_path}/$${script_name}
   - exec_in: $${script_path}/$${script_name}
   # We tagged packet as "automatically installed" to auto-remove them at the end of the orchestration step
