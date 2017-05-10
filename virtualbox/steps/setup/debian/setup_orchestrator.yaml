@@ -5,15 +5,12 @@
 
 - script_name: puppet_install.sh
 - script_path: /tmp
-- puppet-agent_version: 1.5.1-1$${os_release}
+- puppet-agent_version: 1.5.1-1
 - puppet_path: /opt/puppetlabs/bin
 
 - get_standalone_puppet_script:
-  - exec_local: mkdir -p $${kameleon_cwd}/script_dir
-  - exec_local: echo "chmod 777 /tmp && apt-get install -y wget lsb-release ; wget -q http://apt.puppetlabs.com/puppetlabs-release-pc1-$(lsb_release -cs).deb -O /tmp/puppetlabs-release-pc1-$(lsb_release -cs).deb && dpkg -i /tmp/puppetlabs-release-pc1-$(lsb_release -cs).deb ; apt-get update && rc=$? || rc=$? ; apt-get install -y --no-install-recommends puppet-agent="$${puppet-agent_version} > $${kameleon_cwd}/script_dir/$${script_name}
-  - pipe:
-    - exec_local: tar -cf - -C $${kameleon_cwd}/script_dir .
-    - exec_in: tar xfp - -C $${script_path}
+  - exec_in: apt-get install -y wget lsb-release
+  - exec_in: echo "chmod 777 /tmp; wget -q http://apt.puppetlabs.com/puppetlabs-release-pc1-$(lsb_release -cs).deb -O /tmp/puppetlabs-release-pc1-$(lsb_release -cs).deb && dpkg -i /tmp/puppetlabs-release-pc1-$(lsb_release -cs).deb ; apt-get update && rc=$? || rc=$? ; apt-get install -y --no-install-recommends puppet-agent=$${puppet-agent_version}$(lsb_release -cs)" > $${script_path}/$${script_name}
   - exec_in: chmod +x $${script_path}/$${script_name}
   - exec_in: $${script_path}/$${script_name}
   # We tagged packet as "automatically installed" to auto-remove them at the end of the orchestration step
@@ -32,4 +29,3 @@
     - exec_in: grep -q "Removing puppet-agent" /tmp/temp_purge && rm -rvf /etc/puppetlabs/puppet
     - exec_in: grep -q "Removing puppet-agent" /tmp/temp_purge && (rmdir /etc/puppetlabs && rc=$? || rc=$?)
     - exec_in: apt-get autoremove -y lvm2 && dpkg --purge lvm2
-    - exec_local: rm -r $${kameleon_cwd}/script_dir
