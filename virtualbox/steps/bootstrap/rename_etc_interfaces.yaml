@@ -1,0 +1,3 @@
+- rename_etc_interfaces:
+  - check_cmd_local: virt-customize
+  - exec_local: virt-customize -a $${image_disk}.$${image_format} --run-command 'sed -i "s/ens./eth0/g" /etc/network/interfaces'

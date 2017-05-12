@@ -13,7 +13,7 @@ checkpoint: virtualbox.yaml
 global:
   release: stretch
   release_number: 9
-  bootstrap_image_version: "20160127-1"
+  bootstrap_image_version: "20170505-1"
   os_release: stretch
   image_version: 2017041209
   variant: min
@@ -24,7 +24,10 @@ global:
   force_puppet_debian_version: jessie #Because puppet strech is not released yet
 
 bootstrap:
-  - "@base"
+  - prepare_appliance
+  - rename_etc_interfaces #Predictable interfaces name not supported yet
+  - start_virtualbox
+
 
 setup:
   - remove_empty_udev #Dirty hack due to Bug #25
