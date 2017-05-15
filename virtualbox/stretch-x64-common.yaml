@@ -33,6 +33,7 @@ setup:
   - remove_empty_udev #Dirty hack due to Bug #25
   - "@base"
   - fix_lvm2_backup
+  - clean_unnecessary_packages
 
 export:
   - "@base"

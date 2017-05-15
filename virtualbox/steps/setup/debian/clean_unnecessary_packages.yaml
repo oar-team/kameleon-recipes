@@ -1,0 +1,2 @@
+- clean_unnecessary_packages:
+    - exec_in: apt remove -y acpi-support-base acpid bzip2 dictionaries-common discover discover-data eject emacsen-common extlinux iamerican ibritish ienglish-common ispell libdiscover2 sudo syslinux-common task-english util-linux-locales wamerican libusb-0.1-4
