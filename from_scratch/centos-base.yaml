@@ -22,7 +22,7 @@ global:
   iso_url: http://ftp.ciril.fr/pub/linux/centos/$${release}/isos/$${iso_arch}/$${iso_filename}
   iso_path: $${kameleon_cwd}/$${distrib}.iso
 
-  base_kickstart_path: $${kameleon_data_dir}/$${distrib}$${release_major}-ks.cfg
+  base_kickstart_path: $${kameleon_data_dir}/kickstart/$${distrib}$${release_major}-ks.cfg
 
   qemu_sendkeys_commands: $${kameleon_data_dir}/qemu-sendkeys/netinst-$${distrib}
 
