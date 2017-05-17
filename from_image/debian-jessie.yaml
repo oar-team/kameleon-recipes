@@ -6,13 +6,18 @@
 #
 #==============================================================================
 ---
-extend: debian-base-netinstall.yaml
-# Global variables use by Kameleon engine and the steps
+extend: debian-wheezy.yaml
+
 global:
   # Distribution
-  distrib: debian
-  release: stretch
-  iso_url: http://cdimage.debian.org/cdimage/stretch_di_rc3/amd64/iso-cd/debian-stretch-DI-rc3-amd64-netinst.iso
+  release: jessie
+  release_number: 8
+
+  setup_packages: >-
+    sudo vim bash-completion curl resolvconf bzip2 bsdutils ca-certificates
+    locales man-db less libui-dialog-perl dialog isc-dhcp-client ifupdown
+    iptables iputils-ping iproute2 netbase net-tools psmisc openssh-server
+    acpid acpi-support-base sysvinit systemd systemd-sysv pciutils
 
 bootstrap:
   - "@base"

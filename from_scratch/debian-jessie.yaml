@@ -2,25 +2,24 @@
 # vim: softtabstop=2 shiftwidth=2 expandtab fenc=utf-8 cc=81 tw=80
 #==============================================================================
 #
-# DESCRIPTION: Fedora 22 base system.
+# DESCRIPTION: Debian 8 (Jessie) base system.
 #
 #==============================================================================
 ---
-extend: fedora21.yaml
-
+extend: debian-base.yaml
 # Global variables use by Kameleon engine and the steps
 global:
   # Distribution
-  release: 22
+  distrib: debian
+  release: jessie
+  release_number: 8.7.1
+  iso_location: release
 
-# Bootstrap the new system and create the 'in_context'
 bootstrap:
   - "@base"
 
-# Install and configuration steps
 setup:
   - "@base"
 
-# Export the generated appliance in the format of your choice
 export:
   - "@base"

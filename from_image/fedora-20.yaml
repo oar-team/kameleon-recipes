@@ -2,30 +2,14 @@
 # vim: softtabstop=2 shiftwidth=2 expandtab fenc=utf-8 cc=81 tw=80
 #==============================================================================
 #
-# DESCRIPTION: Fedora 20 base system.
+# DESCRIPTION: Fedora 21 base system.
 #
 #==============================================================================
 ---
-extend: centos6.yaml
+extend: fedora-base.yaml
 
 # Global variables use by Kameleon engine and the steps
 global:
-  # Distribution
-  distrib: fedora
-  release: 20
-
-  # Include specific steps
-  include_steps:
-    - $${distrib}/$${release}
-    - $${distrib}
-    - "centos"
-
-  setup_packages: >-
-    bash-completion kbd sudo openssh-clients acpid ntp ntpdate
-
-  # E.g: net.ifnames=0 console=tty0 console=ttyS0,115200n8
-  kernel_args: "quiet net.ifnames=0 biosdevname=0"
-
 
 # Bootstrap the new system and create the 'in_context'
 bootstrap:

@@ -6,14 +6,13 @@
 #
 #==============================================================================
 ---
-extend: debian-base-netinstall.yaml
+extend: debian-base.yaml
 # Global variables use by Kameleon engine and the steps
 global:
   # Distribution
   distrib: debian
-  release: jessie
-  release_number: 8.7.1
-  iso_location: release
+  release: stretch
+  iso_url: http://cdimage.debian.org/cdimage/stretch_di_rc3/amd64/iso-cd/debian-stretch-DI-rc3-amd64-netinst.iso
 
 bootstrap:
   - "@base"

@@ -2,15 +2,13 @@
 # vim: softtabstop=2 shiftwidth=2 expandtab fenc=utf-8 cc=81 tw=80
 #==============================================================================
 #
-# DESCRIPTION: Ubuntu 12.04 LTS base system.
+# DESCRIPTION: Centos 6 base system.
 #
 #==============================================================================
 ---
-extend: ubuntu-base.yaml
+extend: centos-base.yaml
 
 global:
-  # Distribution
-  release: precise
 
 bootstrap:
   - "@base"

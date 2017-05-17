@@ -2,12 +2,12 @@
 # vim: softtabstop=2 shiftwidth=2 expandtab fenc=utf-8 cc=81 tw=80
 #==============================================================================
 #
-# DESCRIPTION: Ubuntu base system.
+# DESCRIPTION: Debian 8 (Jessie) base system.
 #
 #==============================================================================
 ---
 extend: debian-base.yaml
-# Global variables use by Kameleon engine and the steps
+
 global:
 
 bootstrap:

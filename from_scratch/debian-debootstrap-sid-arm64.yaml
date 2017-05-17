@@ -2,17 +2,26 @@
 # vim: softtabstop=2 shiftwidth=2 expandtab fenc=utf-8 cc=81 tw=80
 #==============================================================================
 #
-# DESCRIPTION: Debian sid base system.
+# DESCRIPTION: Debian 8 (Jessie) system for arm64 +
+# qemu-user-static.
 #
 #==============================================================================
 ---
-extend: debian-base.yaml
-
+extend: debian-debootstrap-base.yaml
 global:
   release: sid
 
+  arch: aarch64
+  deb_arch: arm64
+
+  in_context:
+    cmd: ssh -F $${ssh_config_file} $${kameleon_recipe_name} -t chroot $${rootfs} /usr/bin/qemu-$${arch}-static /bin/bash
+    workdir: /root/kameleon_workdir
+    proxy_cache: $${local_ip}
+
 bootstrap:
   - "@base"
+  - breakpoint
 
 setup:
   - "@base"

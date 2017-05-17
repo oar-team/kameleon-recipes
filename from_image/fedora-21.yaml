@@ -2,22 +2,25 @@
 # vim: softtabstop=2 shiftwidth=2 expandtab fenc=utf-8 cc=81 tw=80
 #==============================================================================
 #
-# DESCRIPTION: Debian 8 (Jessie) base system.
+# DESCRIPTION: Fedora 21 base system.
 #
 #==============================================================================
 ---
-extend: ubuntu-base-netinstall.yaml
+extend: fedora-base.yaml
+
 # Global variables use by Kameleon engine and the steps
 global:
   # Distribution
-  release: xenial
-  qemu_sendkeys_commands: $${kameleon_data_dir}/qemu-sendkeys/netinst-iso-ubuntu-xenial
+  release: 21
 
+# Bootstrap the new system and create the 'in_context'
 bootstrap:
   - "@base"
 
+# Install and configuration steps
 setup:
   - "@base"
 
+# Export the generated appliance in the format of your choice
 export:
   - "@base"
