@@ -1,7 +1,11 @@
 - http_script: $${kameleon_data_dir}/helpers/simple_http_server.py
 
 - run_http_server:
-  - exec_local: python2 $${http_script} --root $${http_directory} --bind 0.0.0.0 --port $${http_port} --daemon --pid $${http_pid}
+  - exec_local: |
+      HTTP_PORT=$(__find_free_port 8000 8100)
+      echo "HTTP port: $HTTP_PORT"
+      export HTTP_PORT
+  - exec_local: python2 $${http_script} --root $${http_directory} --bind 0.0.0.0 --port $HTTP_PORT --daemon --pid $${http_pid}
   - on_bootstrap_clean:
     - exec_local: |
         if [ -f $${http_pid} ]; then

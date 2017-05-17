@@ -61,7 +61,6 @@ global:
   zerofree: false
 
   http_directory: $${kameleon_cwd}/http_dir
-  http_port: 15364
   http_pid:  $${kameleon_cwd}/http.pid
 
   ssh_config_file: $${kameleon_cwd}/ssh_config
