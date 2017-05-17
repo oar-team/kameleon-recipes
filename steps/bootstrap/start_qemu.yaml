@@ -130,6 +130,7 @@
           fi
         fi
   - on_clean:
+    - exec_local: echo "QEMU SHUTDOWN VM ON CLEAN $${shutdown_vm_immediately} $${vm_cleanup_section}"
     - test:
       - exec_local: test "$${shutdown_vm_immediately}" == "true"
       - exec_local: &2 |
@@ -149,21 +150,28 @@
             rm -f $${qemu_pidfile}
           fi
           rm -f $${qemu_monitor_socket}
+      - exec_local: echo "NO VM CLEAN HERE"
   - on_bootstrap_clean:
+    - exec_local: echo "QEMU SHUTDOWN VM ON BOOTSTRAP CLEAN $${shutdown_vm_immediately} $${vm_cleanup_section}"
     - test:
       - exec_local: test "$${shutdown_vm_immediately}" == "false" -a "$${vm_cleanup_section}" == "bootstrap"
       - group: 
         - exec_local: *1
         - exec_local: *2
+      - exec_local: echo "NO VM CLEAN HERE"
   - on_setup_clean:
+    - exec_local: echo "QEMU SHUTDOWN VM ON SETUP CLEAN $${shutdown_vm_immediately} $${vm_cleanup_section}"
     - test:
       - exec_local: test "$${shutdown_vm_immediately}" == "false" -a "$${vm_cleanup_section}" == "setup"
       - group:
         - exec_local: *1
         - exec_local: *2
+      - exec_local: echo "NO VM CLEAN HERE"
   - on_export_clean:
+    - exec_local: echo "QEMU SHUTDOWN VM ON EXPORT CLEAN $${shutdown_vm_immediately} $${vm_cleanup_section}"
     - test:
       - exec_local: test "$${shutdown_vm_immediately}" == "false" -a "$${vm_cleanup_section}" == "export"
       - group:
         - exec_local: *1
         - exec_local: *2
+      - exec_local: echo "NO VM CLEAN HERE"
