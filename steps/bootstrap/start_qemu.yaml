@@ -6,7 +6,9 @@
 - vm_expected_service: ssh
 - boot_timeout: 100
 - shutdown_timeout: 100
-- debug: "false"
+- debug: false
+- telnet_port: ""
+- no_reboot: true
 - socat_monitor: socat - UNIX-CONNECT:$${qemu_monitor_socket}
 - qemu_sendkeys_script: $${kameleon_data_dir}/qemu-sendkeys.rb
 - qemu_sendkeys_commands: 
@@ -21,7 +23,7 @@
   - check_cmd_local: qemu-system-$${qemu_arch}
   - exec_local: |
       echo "Starting qemu..."
-      if [ "$${qemu_enable_kvm}" = "true" ]; then
+      if [ "$${qemu_enable_kvm}" == "true" ]; then
         ENABLE_KVM="-enable-kvm -cpu host"
         BOOT_TIMEOUT=$${boot_timeout}
       else
@@ -33,7 +35,7 @@
           LOADVM="-loadvm $SAVED_STATE"
           rm -f vm_state_to_load.txt
       fi
-      if [ "$${debug}" = "true" ]; then
+      if [ "$${debug}" == "true" ]; then
         VNC_OPT=""
       else
         # Find empty VNC port
@@ -41,7 +43,9 @@
         echo "VNC port: $VNC_PORT"
         VNC_OPT="-vnc :$VNC_PORT"
       fi
-
+      if [ -n "$$telnet_port" ]; then
+        SERIAL_TELNET="telnet:localhost:$${telnet_port},server"
+      fi
       # Select disk
       QEMU_DRIVES="-drive file=$${image_disk}.$${image_format},cache=$${disk_cache},media=disk,if=virtio,id=drive0"
       QENU_BOOT=
@@ -51,6 +55,9 @@
           QEMU_BOOT="-boot order=d"
         fi
       fi
+      if [ -n "$${no_reboot}" == "true" ]; then
+        NO_REBOOT="-no-reboot"
+      fi
       if [ -n "${SSH_FWD_PORT}" ]; then
         HOSTFWD=",hostfwd=tcp::${SSH_FWD_PORT}-:22"
       fi
@@ -58,9 +65,8 @@
         -net nic,model=virtio -net user${HOSTFWD} \
         $QEMU_DRIVES \
         -monitor unix:$${qemu_monitor_socket},server,nowait -pidfile $${qemu_pidfile} -daemonize \
-        $QEMU_BOOT -no-reboot \
-        $VNC_OPT \
-        -serial telnet:localhost:7777,server \
+        $QEMU_BOOT $NO_REBOOT \
+        $VNC_OPT $SERIAL_TELNET\
         $LOADVM
   - exec_local: |
       VM_AVAILABLE=0
