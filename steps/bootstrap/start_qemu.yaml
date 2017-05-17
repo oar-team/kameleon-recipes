@@ -17,6 +17,7 @@
 - shutdown_vm_immediately: false
 - force_vm_shutdown: true
 - check_cmd_local: socat
+- qemu_arch: x86_64
 
 - start_vm:
   - on_checkpoint: redo

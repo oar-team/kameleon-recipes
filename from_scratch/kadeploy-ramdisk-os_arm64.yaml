@@ -15,6 +15,7 @@ global:
   arch: aarch64
   deb_arch: arm64
   deb_kernel_arch: $${deb_arch}
+  qemu_arch: x86_64
   arch_specific_packages:
 
   in_context:
