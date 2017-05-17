@@ -2,7 +2,7 @@
 - disk_cache: unsafe
 # This must be set if you want to boot an ISO image instead of a disk
 - iso_path: ""
-- vm_boot: cdrom
+- iso_boot: "yes"
 - vm_expected_service: ssh
 - boot_timeout: 100
 - shutdown_timeout: 100
@@ -51,11 +51,11 @@
       QENU_BOOT=
       if [ -n "$${iso_path}" ]; then
         QEMU_DRIVES="-drive file=$${iso_path},readonly,media=cdrom $QEMU_DRIVES"
-        if [ "$${vm_boot}" == "cdrom" ]; then
+        if [ "$${iso_boot}" == "yes" ]; then
           QEMU_BOOT="-boot order=d"
         fi
       fi
-      if [ -n "$${no_reboot}" == "true" ]; then
+      if [ "$${no_reboot}" == "true" ]; then
         NO_REBOOT="-no-reboot"
       fi
       if [ -n "${SSH_FWD_PORT}" ]; then
