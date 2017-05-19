@@ -12,15 +12,15 @@ checkpoint: virtualbox.yaml
 #== Global variables use by Kameleon engine and the steps
 global:
   release: stretch
-  release_number: 9
-  bootstrap_image_version: "20170505-1"
+  release_number: -stretch
+  bootstrap_image_version: "20170519-1"
   os_release: stretch
-  image_version: 2017041209
+  image_version: 2017051909
   variant: min
   output: "$${kameleon_cwd}/$${kameleon_recipe_name}" # output files basename
   g5k_tgz_path: server:///path/to/your/image
   g5k_postinst_path: server:///grid5000/postinstalls/debian-x64-min-1.2-post.tgz
-  g5k_kernel_params: "net.ifnames=0 biosdevname=0 noresume" # Predictable interface name not supported yet
+  g5k_kernel_params: "net.ifnames=0 biosdevname=0" # Predictable interface name not supported yet
   force_puppet_debian_version: jessie #Because puppet strech is not released yet
 
 bootstrap:
@@ -32,8 +32,6 @@ bootstrap:
 setup:
   - remove_empty_udev #Dirty hack due to Bug #25
   - "@base"
-  - fix_lvm2_backup
-  - clean_unnecessary_packages
 
 export:
   - "@base"
