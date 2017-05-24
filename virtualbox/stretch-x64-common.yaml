@@ -15,7 +15,7 @@ global:
   release_number: -stretch
   bootstrap_image_version: "20170522-1"
   os_release: stretch
-  image_version: 2017051909
+  image_version: 2017052411
   variant: min
   output: "$${kameleon_cwd}/$${kameleon_recipe_name}" # output files basename
   g5k_tgz_path: server:///path/to/your/image
