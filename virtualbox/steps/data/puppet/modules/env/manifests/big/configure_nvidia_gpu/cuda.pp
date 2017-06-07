@@ -1,7 +1,7 @@
 class env::big::configure_nvidia_gpu::cuda () {
 
   # May be changed to a link inside g5k if required
-  $driver_source = 'https://www.grid5000.fr/packages/debian/cuda_8.0.44_linux-run'
+  $driver_source = 'https://www.grid5000.fr/packages/debian/cuda_8.0.61_linux-run'
   $opengl_packages = ['ocl-icd-libopencl1', 'opencl-headers', 'amd-opencl-icd']
 
   exec{
@@ -41,7 +41,7 @@ file_line {
      line => 'export PATH=$PATH:/usr/local/cuda/bin';
   'ld_library_path':
      path => '/etc/profile',
-     line => 'export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/cuda/lib64';  
+     line => 'export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/cuda/lib64';
   }
 
   package{
