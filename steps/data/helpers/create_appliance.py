@@ -15,7 +15,13 @@ import contextlib
 
 logger = logging.getLogger(__name__)
 
-tar_options = ["--selinux", "--xattrs", "--xattrs-include='*'", "--numeric-owner", "--one-file-system"] 
+
+tar_options = ["--selinux",
+               "--xattrs",
+               "--xattrs-include='*'",
+               "--numeric-owner",
+               "--one-file-system"]
+
 
 @contextlib.contextmanager
 def temporary_directory():
@@ -214,19 +220,13 @@ def create_disk(input_, output_filename, fmt, size, filesystem, verbose):
     if proc.returncode:
         raise subprocess.CalledProcessError(proc.returncode, ' '.join(cmd))
 
-    mkfs_options = ""
-    # Fix syslinux 6.03 compat for ext4 64bit, see:
-    # http://www.syslinux.org/wiki/index.php?title=Filesystem#ext
-    if "ext4" in filesystem:
-        mkfs_options = "features:^64bit"
     # parition disk and create the filesystem
     script = """
 echo "[guestfish] Create new MBR partition table on /dev/sda"
 part-disk /dev/sda mbr
-echo "[guestfish] Create {filesystem} filesystem on /dev/sda1"
-mkfs {filesystem} /dev/sda1 {mkfs_options}
-""".format(filesystem=filesystem,
-           mkfs_options=mkfs_options)
+echo "[guestfish] Create %s filesystem on /dev/sda1"
+mkfs %s /dev/sda1
+""" % (filesystem, filesystem)
     run_guestfish_script(output_filename, script, mount=False)
 
     # Fill disk with our data
@@ -234,7 +234,8 @@ mkfs {filesystem} /dev/sda1 {mkfs_options}
     if "directory" in input_type:
         excludes = ['dev/*', 'proc/*', 'sys/*', 'tmp/*', 'run/*',
                     '/mnt/*']
-        tar_options_str = ' '.join(tar_options + ['--exclude="%s"' % s for s in excludes])
+        tar_options_str = ' '.join(tar_options +
+                                   ['--exclude="%s"' % s for s in excludes])
         make_tar_cmd = '%s -cf - %s -C %s $(cd %s; ls -A)' % \
             (which("tar"), tar_options_str, input_, input_)
 
@@ -282,6 +283,7 @@ def create_appliance(args):
     else:
         shutil.move(temp_file, output_filename)
 
+
 if __name__ == '__main__':
     allowed_formats = ('qcow', 'qcow2', 'qed', 'vdi', 'raw', 'vmdk')
     allowed_formats_help = 'Allowed values are ' + ', '.join(allowed_formats)
@@ -294,7 +296,8 @@ if __name__ == '__main__':
         formatter_class=argparse.ArgumentDefaultsHelpFormatter
     )
     parser.add_argument('input', action="store",
-                        help='input')
+                        help='input root filesystem in directory (chroot) '
+                             'or a tarball (conpressed or not)')
     parser.add_argument('-F', '--format', action="store", type=str,
                         help=('Choose the output disk image format. %s' %
                               allowed_formats_help), default='qcow2')
@@ -331,5 +334,6 @@ if __name__ == '__main__':
         logger.addHandler(handler)
         create_appliance(args)
     except Exception as exc:
-        sys.stderr.write(u"\nError: %s\n" % exc)
+        sys.stderr.write(u"\nError: %s\nTry to execute this script with "
+                         "the '--verbose' option to get more details" % exc)
         sys.exit(1)
