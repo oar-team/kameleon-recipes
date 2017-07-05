@@ -44,7 +44,7 @@
         echo "VNC port: $VNC_PORT"
         VNC_OPT="-vnc :$VNC_PORT"
       fi
-      if [ -n "$$telnet_port" ]; then
+      if [ -n "$${telnet_port}" ]; then
         SERIAL_TELNET="telnet:localhost:$${telnet_port},server"
       fi
       # Select disk
