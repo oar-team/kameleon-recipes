@@ -12,8 +12,8 @@ global:
   # Distribution
   distrib: debian
   release: jessie
-  release_number: 8.7.1
-  iso_location: release
+  release_number: 8.8.0
+  iso_location: archive
 
 bootstrap:
   - "@base"
