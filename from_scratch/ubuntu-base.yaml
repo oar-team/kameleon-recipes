@@ -2,7 +2,7 @@
 # vim: softtabstop=2 shiftwidth=2 expandtab fenc=utf-8 cc=81 tw=80
 #==============================================================================
 #
-# DESCRIPTION: Ubuntu base system (variables based on 12.04 LTS)
+# DESCRIPTION: Ubuntu base system
 #
 #==============================================================================
 ---
@@ -11,7 +11,7 @@ extend: debian-base.yaml
 global:
   # Distribution
   distrib: ubuntu
-  release: zesty
+  release: xenial
 
   ## System variables. Required by kameleon engine
   # Include specific steps
@@ -21,6 +21,11 @@ global:
     - "debian"
 
   deb_mirror_uri: http://archive.ubuntu.com/ubuntu/
+
+  iso_filename: ubuntu-$${iso_location}-$${deb_arch}-mini.iso
+  iso_location: $${release}-updates
+  iso_url: http://archive.ubuntu.com/ubuntu/dists/$${iso_location}/main/installer-$${deb_arch}/current/images/netboot/mini.iso
+
   bootstrap_packages: locales openssh-server linux-image-generic
   additional_packages: ""
 

@@ -12,6 +12,8 @@ global:
   # Distribution
   release: zesty
 
+  iso_location: $${release}
+
 bootstrap:
   - "@base"
 
