@@ -28,6 +28,9 @@ global:
   release_number: 8.5.0
   iso_location: release
 
+  # URL to retrieve packages from (sources.list)
+  deb_mirror_uri: http://http.debian.net/debian/
+
   # The following values should be OK with the last releases of Debian stable or
   # or old stable. They should not need modified values in extending recipes.
   iso_filename: debian-$${release_number}-$${deb_arch}-netinst.iso
