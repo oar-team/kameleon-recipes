@@ -22,7 +22,6 @@ global:
 
 bootstrap:
   - "@base"
-  - breakpoint
 
 setup:
   - "@base"

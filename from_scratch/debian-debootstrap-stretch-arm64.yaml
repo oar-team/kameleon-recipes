@@ -9,7 +9,7 @@
 ---
 extend: debian-debootstrap-base.yaml
 global:
-  release: jessie
+  release: stretch
 
   arch: aarch64
   deb_arch: arm64
