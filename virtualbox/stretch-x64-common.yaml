@@ -28,10 +28,22 @@ bootstrap:
   - rename_etc_interfaces #Predictable interfaces name not supported yet
   - start_virtualbox
 
-
 setup:
   - remove_empty_udev #Dirty hack due to Bug #25
-  - "@base"
+  - configure_apt:
+    - repository: $${apt_repository}
+    - enable_contrib_repo: $${apt_enable_contrib}
+    - enable_nonfree_repo: $${apt_enable_nonfree}
+  - upgrade_system:
+    - dist_upgrade: true
+  - update_apt_keys
+  - install_software:
+    - packages: $${setup_packages}
+  - install_bootloader
+  - clean_udev_dir
+  - set_capabilities
+  - setup_orchestrator
+  - run_orchestrator
 
 export:
   - "@base"

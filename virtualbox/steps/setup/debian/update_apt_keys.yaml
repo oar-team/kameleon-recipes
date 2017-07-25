@@ -1,0 +1,10 @@
+update_apt_keys:
+  - exec_in: rm -f /var/lib/apt/lists/*debian.org_*
+  - exec_in: sed -i s/ftp.debian.org/deb.debian.org/ /etc/apt/sources.list
+  - exec_in: apt-get update --allow-unauthenticated
+  - exec_in: apt-get -y --allow-unauthenticated install debian-archive-keyring
+  - exec_in: apt-get update --allow-unauthenticated
+  - exec_in: apt-key net-update || true
+  - exec_in: apt-get update --allow-unauthenticated
+
+  
