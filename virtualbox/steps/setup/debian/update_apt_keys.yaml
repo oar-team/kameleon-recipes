@@ -1,4 +1,4 @@
-update_apt_keys:
+- update_apt_keys:
   - exec_in: rm -f /var/lib/apt/lists/*debian.org_*
   - exec_in: sed -i s/ftp.debian.org/deb.debian.org/ /etc/apt/sources.list
   - exec_in: apt-get update --allow-unauthenticated
