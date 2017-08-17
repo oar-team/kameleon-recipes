@@ -6,7 +6,7 @@
 #
 #==============================================================================
 ---
-extend: debian-wheezy.yaml
+extend: debian-base.yaml
 
 # Global variables use by Kameleon engine and the steps
 global:

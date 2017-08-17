@@ -6,7 +6,7 @@
 #
 #==============================================================================
 ---
-extend: debian-wheezy.yaml
+extend: debian-base.yaml
 
 global:
   # Distribution

@@ -12,12 +12,11 @@ extend: base.yaml
 global:
   # Distribution
   distrib: archlinux
-  arch: x86_64
-  hostname: kameleon-$${distrib}
+
+
   ## User varibales : used by the recipe
   user_groups: wheel
 
-  rootfs_archive_url: http://kameleon.imag.fr/rootfs/$${arch}/$${distrib}.tar.xz
 
   ## System variables. Required by kameleon engine
   # Include specific steps

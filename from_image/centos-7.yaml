@@ -6,7 +6,7 @@
 #
 #==============================================================================
 ---
-extend: centos-6.yaml
+extend: centos-base.yaml
 
 global:
   # Distribution
