@@ -21,7 +21,10 @@ global:
   ## Select backend for in context isolation
   backend: qemu
 
-  ## User varibales : used by the recipe
+  # Architecture for the target system
+  arch: x86_64
+  # Default hostname
+  hostname: kameleon-$${distrib}
   user_name: kameleon
   user_password: $${user_name}
   root_password: $${user_name}
@@ -31,6 +34,12 @@ global:
   default_lang: en_US.UTF-8
   default_timezone: UTC
   appliance_tar_compression_level: "9"
+
+  ## System variables. Required by kameleon engine
+  # Include specific steps
+  include_steps:
+    - $${distrib}/$${release}
+    - $${distrib}
 
   ## Location of an upstream recipe build to base this recipe on (build from image)
   upstream_recipe: $${distrib}-$${release}
@@ -42,12 +51,7 @@ global:
   upstream_store_dir: $${kameleon_cwd}/upstream_build/
   # rootfs options
   rootfs: $${kameleon_cwd}/rootfs
-  ssh_config_file: $${kameleon_cwd}/ssh_config
-
-  # Distribution
-  arch: x86_64
-  hostname: kameleon-$${distrib}
-
+  
   # output appliance options
   filesystem_type: ext4
   image_size: 10G
@@ -60,11 +64,9 @@ global:
     ./var/tmp/* ./tmp/* ./var/log/* ./dev/* ./proc/* ./run/*
     ./sys/*
 
-  ## System variables. Required by kameleon engine
-  # Include specific steps
-  include_steps:
-    - $${distrib}/$${release}
-    - $${distrib}
+  ssh_config_file: $${kameleon_cwd}/ssh_config
+  local_ip: 10.0.2.2
+
 
   # E.g: net.ifnames=0 console=tty0 console=ttyS0,115200n8
   kernel_args: "quiet net.ifnames=0 biosdevname=0"
