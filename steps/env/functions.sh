@@ -73,7 +73,7 @@ function __download_recipe_build() {
     builds_url=${6:-http://kameleon.imag.fr/builds}
     dest_dir="${7:-$recipe}"
     mkdir -p $dest_dir
-    pushd $dest_dir
+    pushd $dest_dir > /dev/null
     echo "Downloading $recipe ($version):"
     __download $builds_url/${recipe}_$version.manifest
     if [ "$do_checksign" == "true" ]; then
