@@ -45,8 +45,8 @@ global:
   upstream_recipe: $${distrib}-$${release}
   upstream_version: latest
   upstream_checksum: true
-  upstream_checksign: true
-  upstream_cache: true
+  upstream_checksign: false
+  upstream_cache: false
   upstream_url: http://kameleon.imag.fr/builds
   upstream_store_dir: $${kameleon_cwd}/upstream_build/
   # rootfs options
