@@ -1,0 +1,26 @@
+#==============================================================================
+# vim: softtabstop=2 shiftwidth=2 expandtab fenc=utf-8 cc=81 tw=80
+#==============================================================================
+#
+# DESCRIPTION: Centos 7 base system.
+#
+#==============================================================================
+---
+extend: centos-base.yaml
+
+global:
+  # Distribution
+  release_major: 7
+  release_minor: 2
+  release_date: 1611
+  release: $${release_major}
+  iso_filename: CentOS-7-$${iso_arch}-NetInstall-$${release_date}.iso
+
+bootstrap:
+  - "@base"
+
+setup:
+  - "@base"
+
+export:
+  - "@base"

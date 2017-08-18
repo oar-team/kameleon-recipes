@@ -1,0 +1,41 @@
+#==============================================================================
+# vim: softtabstop=2 shiftwidth=2 expandtab fenc=utf-8 cc=81 tw=80
+#==============================================================================
+#
+# DESCRIPTION: Fedora generic base system.
+#
+# USAGE: Select the release
+#==============================================================================
+---
+extend: centos-base.yaml
+
+global:
+  distrib: fedora
+  # release: 20
+
+  ## System variables. Required by kameleon engine
+  # Include specific steps
+  include_steps:
+    - $${distrib}/$${release}
+    - $${distrib}
+    - "centos"
+
+  # Use the following base_url for old release
+  # base_url: http://archives.fedoraproject.org/pub/
+  base_url: https://dl.fedoraproject.org/pub
+  mirror_url: $${base_url}/$${distrib}/linux/releases/$${release}/Everything/$${arch}/os/
+  iso_url:  $${base_url}/$${distrib}/linux/releases/$${release}/Server/$${iso_arch}/iso/$${iso_filename}
+
+  iso_filename: Fedora-Server-netinst-$${iso_arch}-$${release}.iso
+  setup_packages: kernel dracut dracut-kernel
+
+  base_kickstart_path: $${kameleon_data_dir}/$${distrib}$${release}-ks.cfg
+
+bootstrap:
+  - "@base"
+
+setup:
+  - "@base"
+
+export:
+  - "@base"

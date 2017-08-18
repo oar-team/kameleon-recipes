@@ -1,0 +1,21 @@
+- copy_autoinstall_script_to_http_directory:
+  - exec_local: mkdir -p $${http_directory}
+  - exec_local: cp $${autoinstall_script_path} $${http_directory}/autoinstall.sh
+  - exec_local: cp $${nix_configuration} $${http_directory}/configuration.nix
+
+- configure_proxy:
+  - exec_local: |
+      if [ ! "$${proxy_out}" = "" ]; then
+        sed -i s'|export http_proxy=\(.*\)|export http_proxy=http://$${proxy_out}|'g $${http_directory}/autoinstall.sh
+      fi
+
+- set_root_password:
+  - exec_local: |
+        sed -i s'|export PASSWD=\(.*\)|export PASSWD=$${root_password}|'g $${http_directory}/autoinstall.sh
+
+- write_boot_command:
+  - write_local:
+    - $${kameleon_cwd}/boot_command
+    - >
+      curl -sSL http://$${local_ip}:$${http_port}/configuration.nix <gt> /tmp/configuration.nix<kp_enter>
+      curl -sSL http://$${local_ip}:$${http_port}/autoinstall.sh | bash<kp_enter>

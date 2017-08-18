@@ -1,0 +1,22 @@
+#==============================================================================
+# vim: softtabstop=2 shiftwidth=2 expandtab fenc=utf-8 cc=81 tw=80
+#==============================================================================
+#
+# DESCRIPTION: Fedora 21 base system.
+#
+#==============================================================================
+---
+extend: fedora-base.yaml
+
+global:
+  release: 21
+  base_url: http://archives.fedoraproject.org/pub/archive
+
+bootstrap:
+  - "@base"
+
+setup:
+  - "@base"
+
+export:
+  - "@base"

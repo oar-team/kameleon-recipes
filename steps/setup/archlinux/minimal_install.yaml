@@ -1,0 +1,16 @@
+
+- setup_packages: syslinux
+
+- set_root_password:
+  - exec_in: echo -n 'root:$${root_password}' | chpasswd
+
+- do_upgrade:
+  - exec_in: pacman -Syy --noconfirm --force
+  - exec_in: pacman -Su --noconfirm --force
+
+- do_install:
+  - exec_in: pacman --noconfirm -Suy --force $${setup_packages}
+
+- generate_new_initramfs:
+  - exec_in: sed -i s'/HOOKS=\(.*\)/HOOKS="base udev block filesystems"/'g /etc/mkinitcpio.conf
+  - exec_in: mkinitcpio -p linux

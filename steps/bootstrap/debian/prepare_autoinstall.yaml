@@ -1,0 +1,7 @@
+- copy_autoinstall_script_to_http_directory:
+  - exec_local: mkdir -p $${http_directory}
+  - exec_local: cp $${base_preseed_path} $${http_directory}/preseed.cfg
+
+- customize_preseed:
+  - exec_local: sed -i s'|d-i passwd/root-password password\(.*\)|d-i passwd/root-password $${root_password}|'g $${http_directory}/preseed.cfg
+  - exec_local: sed -i s'|d-i passwd/root-password-again password\(.*\)|d-i passwd/root-password-again $${root_password}|'g $${http_directory}/preseed.cfg

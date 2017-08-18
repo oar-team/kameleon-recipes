@@ -1,0 +1,26 @@
+#==============================================================================
+# vim: softtabstop=2 shiftwidth=2 expandtab fenc=utf-8 cc=81 tw=80
+#==============================================================================
+#
+# DESCRIPTION: Fedora 21 base system.
+#
+#==============================================================================
+---
+extend: fedora-base.yaml
+
+# Global variables use by Kameleon engine and the steps
+global:
+  # Distribution
+  release: 21
+
+# Bootstrap the new system and create the 'in_context'
+bootstrap:
+  - "@base"
+
+# Install and configuration steps
+setup:
+  - "@base"
+
+# Export the generated appliance in the format of your choice
+export:
+  - "@base"

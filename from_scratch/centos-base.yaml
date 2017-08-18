@@ -1,0 +1,36 @@
+#==============================================================================
+# vim: softtabstop=2 shiftwidth=2 expandtab fenc=utf-8 cc=81 tw=80
+#==============================================================================
+#
+# DESCRIPTION: Centos netinstall base system + Kickstart.
+#
+# USAGE: Select the release_major and release_minor
+#
+#==============================================================================
+---
+extend: base.yaml
+global:
+  distrib: centos
+  # release_major: 6
+  # release_minor: 8
+  release: $${release_major}.$${release_minor}
+
+  #mirror_url: http://centos.mirrors.ovh.net/ftp.centos.org/$${release}/os/$${arch}/
+  mirror_url: http://ftp.ciril.fr/pub/linux/centos/$${release}/os/$${arch}/
+  iso_filename: CentOS-$${release}-$${iso_arch}-netinstall.iso
+  #iso_url: http://centos.mirrors.ovh.net/ftp.centos.org/$${release}/isos/$${iso_arch}/$${iso_filename}
+  iso_url: http://ftp.ciril.fr/pub/linux/centos/$${release}/isos/$${iso_arch}/$${iso_filename}
+  iso_path: $${kameleon_cwd}/$${distrib}.iso
+
+  base_kickstart_path: $${kameleon_data_dir}/kickstart/$${distrib}$${release_major}-ks.cfg
+
+  qemu_sendkeys_commands: $${kameleon_data_dir}/qemu-sendkeys/netinst-$${distrib}
+
+bootstrap:
+  - "@base"
+
+setup:
+  - "@base"
+
+export:
+  - "@base"

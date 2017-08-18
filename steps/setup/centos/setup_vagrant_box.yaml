@@ -1,0 +1,60 @@
+- reboot_timeout: 100
+
+- install_requirements:
+  - exec_in: |
+      yum -y install gcc make gcc-c++ kernel-devel-`uname -r` zlib-devel \
+        openssl-devel readline-devel sqlite-devel perl wget dkms nfs-utils rsync
+
+- enable_passwordless_sudo:
+  - exec_in: |
+      sed -i "s/^.*requiretty/#Defaults requiretty/" /etc/sudoers
+      echo "$${user_name} ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
+
+- install_puppet:
+  - write_in:
+    - /etc/yum.repos.d/puppetlabs.repo
+    - |
+      [puppetlabs-dependencies]
+      name=puppetlabdsdependencies
+      baseurl=http://yum.puppetlabs.com/el/$${release}/dependencies/\$basearch
+      enabled=1
+      gpgcheck=0
+      [puppetlabs]
+      name=puppetlabs
+      baseurl=http://yum.puppetlabs.com/el/$${release}/products/\$basearch
+      enabled=1
+      gpgcheck=0
+  - exec_in: echo "Installing puppet..."
+  - exec_in: yum -y install puppet facter ruby-shadow 2>&1
+
+- copy_insecure_sshkey:
+  - exec_in: mkdir -pm 700 /home/$${user_name}/.ssh/
+  - download_file_in:
+    - "https://raw.github.com/mitchellh/vagrant/master/keys/vagrant"
+    - /home/$${user_name}/.ssh/id_rsa
+  - download_file_in:
+    - "https://raw.github.com/mitchellh/vagrant/master/keys/vagrant.pub"
+    - /home/$${user_name}/.ssh/id_rsa.pub
+  - exec_in: cp /home/$${user_name}/.ssh/id_rsa.pub /home/$${user_name}/.ssh/authorized_keys
+  - exec_in: chmod 0600 /home/$${user_name}/.ssh/*
+
+- enable_network_manager:
+  - exec_in: chkconfig NetworkManager on
+
+- config_ssh:
+  - exec_in: echo "UseDNS no" >> /etc/ssh/sshd_config
+  - write_in:
+    - /home/$${user_name}/.ssh/config
+    - |
+      Host *
+      ForwardX11 no
+      StrictHostKeyChecking no
+      PasswordAuthentication no
+      AddressFamily inet
+  - exec_in: chmod 0600 /home/$${user_name}/.ssh/config
+  - exec_in: rsync -ah /home/$${user_name}/.ssh/ /root/.ssh
+  - exec_in: cat /root/.ssh/.kameleon_authorized_keys >> /root/.ssh/authorized_keys
+  - exec_in: chown "$${user_name}:$${user_name}" -R /home/$${user_name}
+
+- customize_motd:
+  - exec_in: echo 'Welcome to your Vagrant-built virtual machine.' > /etc/motd

@@ -1,0 +1,17 @@
+This directory contains continuous integration builds of Kameleon "from_scratch" upstream recipes, located at:
+ https://github.com/oar-team/kameleon-recipes
+
+For each build of a recipe, a manifest file lists the related files.
+
+Builds are pushed on a regular basis, to keep them up to date with the latest distribution updates (packages), even if recipes themselves may not change.
+
+For every recipe, only the latest 2 builds are kept: older builds are dropped upon the arrival of a new build.
+(If only old builds are listed for a recipe, mind that it might mean the recipe is currently broken.)
+
+We advise you to use the latest build and store it on your side if needed for your usage.
+
+The latest build manifest for a recipe can be retrieved using the following URL:
+ http://kameleon.imag.fr/builds/RECIPE_latest.manifest
+
+Finally, manifest and checksum files are gpg-signed by the Kameleon Builder <kameleonbuilder@kameleon.imag.fr> (fingerprint: 89A7 DDB3 8C19 58E2 8841  C1AF 1741 A017 CA22 303C)
+

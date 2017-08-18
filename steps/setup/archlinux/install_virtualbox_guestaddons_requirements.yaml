@@ -1,0 +1,3 @@
+
+- do_install:
+  - exec_in: pacman --noconfirm --arch $${arch} -Suy --force dkms linux-headers
