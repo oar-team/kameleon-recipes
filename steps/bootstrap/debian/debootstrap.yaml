@@ -1,28 +1,3 @@
-- select_empty_port:
-  - on_checkpoint: redo
-  - exec_local: |
-      # Find empty SSH forwarding port
-      SSH_FWD_PORT=$(__find_free_port 50000 60000)
-      echo "SSH forwarding port: $SSH_FWD_PORT"
-
-- prepare_ssh_config:
-  - on_bootstrap_init:
-    - write_local:
-      - $${ssh_config_file}
-      - |
-        Host $${kameleon_recipe_name}
-        HostName 127.0.0.1
-        Port ${SSH_FWD_PORT}
-        User root
-        UserKnownHostsFile /dev/null
-        StrictHostKeyChecking no
-        PasswordAuthentication no
-        IdentitiesOnly yes
-        LogLevel FATAL
-        ForwardAgent yes
-        Compression yes
-        Protocol 2
-
 - partition_disk:
   - check_cmd_out: parted
   - exec_out: |
@@ -35,6 +10,7 @@
       mkfs.$${filesystem_type} -q $${disk_device}1 || fail cannot create / ext4
 
 - mount_mountdir:
+  - on_checkpoint: redo
   - exec_out: mkdir -p $${rootfs}
   - exec_out: echo Mounting root partition...
   - exec_out: mount $${disk_device}1 $${rootfs} || fail cannot mount /
@@ -42,27 +18,20 @@
     - exec_out: sync
     - umount_out: $${rootfs}
 
-- copy_autoinstall_script:
+- run_debootstrap_script:
   - local2out:
     - $${bootstrap_script}
     - /tmp/debootstrap.sh
-
-- customize_autoinstall_script:
-  - exec_out: sed -i s'|^RELEASE=\(.*\)|RELEASE=$${release}|'g /tmp/debootstrap.sh
-  - exec_out: sed -i s'|^PACKAGES=\(.*\)|PACKAGES="$${bootstrap_packages}"|'g /tmp/debootstrap.sh
-  - exec_out: sed -i s'|^REPOSITORY=\(.*\)|REPOSITORY="$${repository}"|'g /tmp/debootstrap.sh
-  - exec_out: sed -i s'|^ARCH=\(.*\)|ARCH="$${arch}"|'g /tmp/debootstrap.sh
-  - exec_out: sed -i s'|^DEBIAN_ARCH=\(.*\)|DEBIAN_ARCH="$${debian_arch}"|'g /tmp/debootstrap.sh
-  - exec_out: sed -i s'|^DEBIAN_KERNEL_ARCH=\(.*\)|DEBIAN_KERNEL_ARCH="$${debian_kernel_arch}"|'g /tmp/debootstrap.sh
-  - exec_out: sed -i s'|^MNT=\(.*\)|MNT="$${rootfs}"|'g /tmp/debootstrap.sh
-
-- configure_proxy:
   - exec_out: |
-      if [ ! "$${proxy_out}" = "" ]; then
-        sed -i s'|export http_proxy=\(.*\)|export http_proxy=http://$${proxy_out}|'g /tmp/debootstrap.sh
-      fi
-
-- debootstrap:
-  - exec_out: bash /tmp/debootstrap.sh
+      RELEASE=$${release} \
+      PACKAGES="$${bootstrap_packages}" \
+      DEB_MIRROR_URI="$${deb_mirror_uri}" \
+      ARCH="$${arch}" \
+      DEB_ARCH="$${deb_arch}" \
+      DEB_KERNEL_ARCH="$${deb_kernel_arch}" \
+      CHROOT_DIR="$${rootfs}" \
+      VARIANT="$${bootstrap_variant}" \
+      PROXY=$${proxy_out}
+      bash /tmp/debootstrap.sh
   - on_setup_clean:
     - exec_out: rm -f /tmp/debootstrap.sh

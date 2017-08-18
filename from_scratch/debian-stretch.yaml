@@ -1,0 +1,24 @@
+#==============================================================================
+# vim: softtabstop=2 shiftwidth=2 expandtab fenc=utf-8 cc=81 tw=80
+#==============================================================================
+#
+# DESCRIPTION: Debian 8 (Jessie) base system.
+#
+#==============================================================================
+---
+extend: debian-base.yaml
+# Global variables use by Kameleon engine and the steps
+global:
+  # Distribution
+  distrib: debian
+  release: stretch
+  iso_url: http://cdimage.debian.org/cdimage/release/9.1.0/amd64/iso-cd/debian-9.1.0-amd64-netinst.iso
+
+bootstrap:
+  - "@base"
+
+setup:
+  - "@base"
+
+export:
+  - "@base"

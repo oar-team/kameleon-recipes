@@ -1,0 +1,43 @@
+#==============================================================================
+# vim: softtabstop=2 shiftwidth=2 expandtab fenc=utf-8 cc=81 tw=80
+#==============================================================================
+#
+# DESCRIPTION: Archlinux full system recipe
+#
+#==============================================================================
+---
+extend: base.yaml
+
+# Global variables use by Kameleon engine and the steps
+global:
+  # Distribution
+  distrib: archlinux
+
+
+  ## User varibales : used by the recipe
+  user_groups: wheel
+
+
+  ## System variables. Required by kameleon engine
+  # Include specific steps
+  include_steps:
+    - $${distrib}
+
+  setup_packages: >-
+    sudo base-devel ntp zip unzip rsync vim acpid bash-completion procps
+    iputils
+
+  # E.g: net.ifnames=0 console=tty0 console=ttyS0,115200n8
+  kernel_args: "quiet net.ifnames=0 biosdevname=0"
+
+# Bootstrap the new system and create the 'in_context'
+bootstrap:
+  - "@base"
+
+# Install and configuration steps
+setup:
+  - "@base"
+
+# Export the generated appliance in the format of your choice
+export:
+  - "@base"

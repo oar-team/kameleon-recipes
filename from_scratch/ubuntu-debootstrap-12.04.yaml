@@ -1,0 +1,22 @@
+#==============================================================================
+# vim: softtabstop=2 shiftwidth=2 expandtab fenc=utf-8 cc=81 tw=80
+#==============================================================================
+#
+# DESCRIPTION: Ubuntu 12.04 LTS base system.
+#
+#==============================================================================
+---
+extend: ubuntu-debootstrap-base.yaml
+
+global:
+  # Distribution
+  release: precise
+
+bootstrap:
+  - "@base"
+
+setup:
+  - "@base"
+
+export:
+  - "@base"

@@ -16,5 +16,5 @@
   - write_local:
     - $${kameleon_cwd}/boot_command
     - >
-      wget -q http://10.0.2.2:$${http_port}/autoinstall.sh -O /tmp/autoinstall.sh<kp_enter>
+      wget -q http://$${local_ip}:$${http_port}/autoinstall.sh -O /tmp/autoinstall.sh<kp_enter>
       bash /tmp/autoinstall.sh<kp_enter>

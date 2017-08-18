@@ -201,16 +201,6 @@ chmod 0755 /
 
 def create_disk(input_, output_filename, fmt, size, filesystem, verbose):
     """Make a disk image from a tar archive or files."""
-    input_type = file_type(input_).lower()
-
-    make_tar_cmd = ""
-    if "xz compressed data" in input_type:
-        make_tar_cmd = "%s %s" % (which("xzcat"), input_)
-    elif "bzip2 compressed data" in input_type:
-        make_tar_cmd = "%s %s" % (which("bzcat"), input_)
-    elif "gzip compressed data" in input_type:
-        make_tar_cmd = "%s %s" % (which("zcat"), input_)
-
     # create empty disk
     logger.info("Creating an empty disk image")
     qemu_img = which("qemu-img")
@@ -237,7 +227,16 @@ mkfs {filesystem} /dev/sda1 {mkfs_options}
 
     # Fill disk with our data
     logger.info("Copying the data into the disk image")
-    if "directory" in input_type:
+    input_type = file_type(input_).lower()
+
+    make_tar_cmd = ""
+    if "xz compressed data" in input_type:
+        make_tar_cmd = "%s %s" % (which("xzcat"), input_)
+    elif "bzip2 compressed data" in input_type:
+        make_tar_cmd = "%s %s" % (which("bzcat"), input_)
+    elif "gzip compressed data" in input_type:
+        make_tar_cmd = "%s %s" % (which("zcat"), input_)
+    elif "directory" in input_type:
         excludes = ['dev/*', 'proc/*', 'sys/*', 'tmp/*', 'run/*',
                     '/mnt/*']
         tar_options_str = ' '.join(tar_options +
