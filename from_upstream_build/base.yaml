@@ -68,8 +68,8 @@ global:
   local_ip: 10.0.2.2
 
 
-  # E.g: net.ifnames=0 console=tty0 console=ttyS0,115200n8
-  kernel_args: "quiet net.ifnames=0 biosdevname=0"
+  # E.g: net.ifnames=0 biosdevname=0 console=tty0 console=ttyS0,115200n8
+  kernel_args: quiet
 
 bootstrap:
   - "@base"
