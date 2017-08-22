@@ -6,5 +6,7 @@
   - exec_in: apt-get update --allow-unauthenticated
   - exec_in: apt-key net-update || true
   - exec_in: apt-get update --allow-unauthenticated
+  - exec_in: apt-get update
+  - exec_in: apt-get update
 
   
