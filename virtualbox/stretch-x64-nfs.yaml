@@ -2,14 +2,14 @@
 # vim: softtabstop=2 shiftwidth=2 expandtab fenc=utf-8 cc=81 tw=80
 #==============================================================================
 #
-# DESCRIPTION: Debian 9 (Stretch) min built with virtualbox.
+# DESCRIPTION: Debian 9 (Stretch) nfs built with virtualbox.
 #
 #==============================================================================
 ---
 extend: stretch-x64-common.yaml # Cf 'jessie-x64-common' for a real content. This recipe only overwrite variant.
 global:
-  variant: min
-  g5k_postinst_path: server:///grid5000/postinstalls/debian-x64-min-1.2-post.tgz
+  variant: nfs
+  g5k_postinst_path: server:///grid5000/postinstalls/debian-x64-nfs-1.2-post.tgz
 
 
 bootstrap:
