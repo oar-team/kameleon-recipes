@@ -21,6 +21,7 @@ class env::big::configure_nvidia_gpu::drivers () {
     'install_nvidia_driver':
       command   => "/tmp/NVIDIA-Linux.run -qa --no-cc-version-check --ui=none --dkms; /bin/rm /tmp/NVIDIA-Linux.run",
       user      => root,
+      timeout   => 0,
       require   => [Exec['prepare_kernel_module_build'], File['/tmp/NVIDIA-Linux.run'], Package['dkms']];
   }
   file{
