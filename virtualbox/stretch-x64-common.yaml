@@ -13,10 +13,11 @@ checkpoint: virtualbox.yaml
 global:
   release: stretch
   release_number: -stretch
-  bootstrap_image_version: "20170522-1"
+  bootstrap_image_version: "20170817-1"
   os_release: stretch
   image_version: 2017082214
   variant: min
+  rootfs_archive_url: http://kameleon.imag.fr/builds/$${distrib}$${release_number}_$${bootstrap_image_version}.tar.xz
   output: "$${kameleon_cwd}/$${kameleon_recipe_name}" # output files basename
   g5k_tgz_path: server:///path/to/your/image
   g5k_postinst_path: server:///grid5000/postinstalls/debian-x64-min-1.2-post.tgz
