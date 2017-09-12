@@ -17,7 +17,6 @@ bootstrap:
 
 setup:
   - "@base"
-  - clean_unnecessary_packages
 
 export:
   - "@base"
