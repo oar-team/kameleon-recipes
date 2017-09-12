@@ -11,3 +11,8 @@ http://kameleon.imag.fr/builds/
 These "from_scratch" recipes use qemu as virtualization backend.
 
 Basic examples of use of these upstream builds are provided in the from_upstream_build directory. These recipes support many virtualization backends, such as qemu, virtualbox.
+
+Requirements
+------------
+The expected version of kameleon to build these recipes is 2.9.0.
+Please upgrade if you currently have an older version installed.
