@@ -1,17 +1,19 @@
 #!/usr/bin/env python3
- -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 """Find the latest netinstall iso for a Debian version and system architecture."""
 
 from html.parser import HTMLParser
 from urllib.request import urlopen
 from urllib.parse import urljoin
 import re
+import sys
 import argparse
 import logging
 
-logger = loggin.getLogger(__name__)
+logger = logging.getLogger(__name__)
 
 class LinkParser(HTMLParser):
+    """Retrieve links (a hrefs) from a text/html document"""
     def __init__(self, url):
         super().__init__()
         self.url = url
@@ -35,13 +37,14 @@ class LinkParser(HTMLParser):
                         self.links.add(new_url)
 
     def get_links(self):
+        """Returns all the collected links"""
         "\n".join(self.links)
         return self.links
 
 
 def url_find(to_visit_url_set,visited_url_set,found_url_set):
     'Recursively look for urls given a regex, a set of urls to visit, a set of already visited urls, a set of already found urls. Returns the set of found urls'
-    print("to_visit:{} visited:{} found:{}".format(len(to_visit_url_set),len(visited_url_set),len(found_url_set)))
+    logger.debug("Progress: to_visit:{} visited:{} found:{}".format(len(to_visit_url_set),len(visited_url_set),len(found_url_set)))
     assert(len(to_visit_url_set.intersection(visited_url_set)) == 0)
     assert(len(to_visit_url_set.intersection(found_url_set)) == 0)
     if (len(to_visit_url_set) == 0):
@@ -59,9 +62,34 @@ def url_find(to_visit_url_set,visited_url_set,found_url_set):
             return url_find(to_visit_url_set, visited_url_set, found_url_set)
 
 if __name__ == '__main__':
-    version="9"
-    arch="arm64"
-    url_regex = re.compile("^http://cdimage.debian.org/cdimage/(?:release|archive)/(?:"+version+"\.\d+\.\d+/(?:"+arch+"/(?:iso-cd/(debian-"+version+"\.\d+\.\d+-"+arch+"-netinst\.iso)?)?)?)?$")
-    target_regex = re.compile("^.*-netinst\.iso$") 
-    [visited,found] = url_find(set(["http://cdimage.debian.org/cdimage/"+v+"/" for v in ["release","archive"]]), set(), set())
-    print(sorted(found,key=lambda x:re.sub(r".*/debian-(\d+).(\d+).(\d+)-amd64-netinst\.iso$",r"\1.\2.\3",x),reverse=True)[0])
+    parser = argparse.ArgumentParser(description=sys.modules[__name__].__doc__, formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+    parser.add_argument("version", metavar="VERSION", help="Debian version (numeric)")
+    parser.add_argument("arch", metavar="ARCH", help="Debian architecture")
+    parser.add_argument('--debug', action="store_true", default=False, help='print debug messages')
+    args = parser.parse_args()
+
+    handler = logging.StreamHandler()
+    if args.debug:
+        logger.setLevel(logging.DEBUG)
+        handler.setLevel(logging.DEBUG)
+    else:
+        logger.setLevel(logging.INFO)
+        handler.setLevel(logging.INFO)
+    handler.setFormatter(logging.Formatter('%(levelname)s: %(message)s'))
+    logger.addHandler(handler)
+
+    try:
+        args = parser.parse_args()
+        url_regex = re.compile("^http://cdimage.debian.org/cdimage/(?:release|archive)/(?:"+args.version+"\.\d+\.\d+/(?:"+args.arch+"/(?:iso-cd/(debian-"+args.version+"\.\d+\.\d+-"+args.arch+"-netinst\.iso)?)?)?)?$")
+        target_regex = re.compile("^.*-netinst\.iso$") 
+        [visited,found] = url_find(set(["http://cdimage.debian.org/cdimage/"+v+"/" for v in ["release","archive"]]), set(), set())
+        logger.debug("Visited URLs:")
+        for url in visited:
+             logger.debug(url)
+        logger.debug("Found URLs:")
+        for url in found:
+             logger.debug(url)
+        logger.info(sorted(found,key=lambda x:re.sub(r".*/debian-(\d+).(\d+).(\d+)-amd64-netinst\.iso$",r"\1.\2.\3",x),reverse=True)[0])
+    except Exception as exc:
+        sys.stderr.write(u"\nError: %s\n" % exc)
+        sys.exit(1)
