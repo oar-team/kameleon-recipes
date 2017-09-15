@@ -33,6 +33,10 @@ global:
     - $${distrib}/$${release}
     - $${distrib}
 
+  ## iso finder
+  iso_finder_helper:
+  iso_finder_args:
+
   ## QEMU options
   qemu_enable_kvm: "$(egrep '(vmx|svm)' /proc/cpuinfo > /dev/null && echo true)"
   qemu_cpu: 2
