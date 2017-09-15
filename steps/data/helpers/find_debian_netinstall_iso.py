@@ -1,10 +1,10 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python2
 # -*- coding: utf-8 -*-
 """Find the latest netinstall iso for a Debian version and system architecture."""
 
 from html.parser import HTMLParser
-from urllib.request import urlopen
-from urllib.parse import urljoin
+from urllib2 import urlopen
+from urlparse import urljoin
 import re
 import sys
 import argparse
@@ -15,11 +15,11 @@ logger = logging.getLogger(__name__)
 class LinkParser(HTMLParser):
     """Retrieve links (a hrefs) from a text/html document"""
     def __init__(self, url):
-        super().__init__()
+        HTMLParser.__init__(self)
         self.url = url
         self.links = set()
         response = urlopen(url)
-        contentType = response.getheader('Content-Type')
+        contentType = response.info().get('Content-Type')
         if not contentType:
             return
         (mediaType,charset) = contentType.split(";")
