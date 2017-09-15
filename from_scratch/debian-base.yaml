@@ -37,7 +37,7 @@ global:
   #iso_release_version: 8.0.0
   #iso_url: http://cdimage.debian.org/cdimage/$${iso_location}/$${iso_release_version}/$${deb_arch}/iso-cd/$${iso_filename}
   iso_url: 
-  iso_finder_helper: $${kameleon_data_dir}/helpers/find_debian_netinstall_iso.py
+  iso_finder_helper: $${kameleon_data_dir}/helpers/netinstall_iso_finder.py
   iso_finder_args: $${release_number} $${deb_arch}
   iso_path: $${kameleon_cwd}/$${distrib}.iso
 
