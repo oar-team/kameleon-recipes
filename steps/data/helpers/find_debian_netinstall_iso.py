@@ -43,7 +43,7 @@ class LinkParser(HTMLParser):
 
 
 def url_find(to_visit_url_set,visited_url_set,found_url_set):
-    'Recursively look for urls given a regex, a set of urls to visit, a set of already visited urls, a set of already found urls. Returns the set of found urls'
+    """Recursively look for urls given a regex, a set of urls to visit, a set of already visited urls, a set of already found urls. Returns the set of found urls"""
     logger.debug("Progress: to_visit:{} visited:{} found:{}".format(len(to_visit_url_set),len(visited_url_set),len(found_url_set)))
     assert(len(to_visit_url_set.intersection(visited_url_set)) == 0)
     assert(len(to_visit_url_set.intersection(found_url_set)) == 0)
@@ -85,11 +85,14 @@ if __name__ == '__main__':
         [visited,found] = url_find(set(["http://cdimage.debian.org/cdimage/"+v+"/" for v in ["release","archive"]]), set(), set())
         logger.debug("Visited URLs:")
         for url in visited:
-             logger.debug(url)
+            logger.debug(url)
         logger.debug("Found URLs:")
         for url in found:
-             logger.debug(url)
-        logger.info(sorted(found,key=lambda x:re.sub(r".*/debian-(\d+).(\d+).(\d+)-amd64-netinst\.iso$",r"\1.\2.\3",x),reverse=True)[0])
+            logger.debug(url)
+        if len(found) > 0:
+            print(sorted(found,key=lambda x:re.sub(r".*/debian-(\d+).(\d+).(\d+)-amd64-netinst\.iso$",r"\1.\2.\3",x),reverse=True)[0])
+        else:
+            raise Exception("no url found")
     except Exception as exc:
-        sys.stderr.write(u"\nError: %s\n" % exc)
+        sys.stderr.write(u"Error: %s\n" % exc)
         sys.exit(1)

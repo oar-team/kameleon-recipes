@@ -12,11 +12,7 @@ global:
   # Distribution
   distrib: debian
   release: wheezy
-  iso_location: archive
-  # Be careful: Only the last minor version of an old major version ISO is
-  # available on the mirror. Keep this number updated using this URL:
-  # http://cdimage.debian.org/cdimage/$${iso_location}
-  release_number: 7.11.0
+  release_number: 7
 
 bootstrap:
   - "@base"

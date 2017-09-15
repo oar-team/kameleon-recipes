@@ -10,6 +10,12 @@ export -f fail
 function __download {
     src=$1
     dst=$2
+    if [ -n "$DOWNLOAD_SRC_URL" ]; then
+        src="$DOWNLOAD_SRC_URL"
+    fi
+    if [ -z "$src" ]; then
+        fail "No URL to download from"
+    fi
     # If dst is unset or a directory, infers dst pathname from src
     if [ -z "$dst" -o "${dst: -1}" == "/" ]; then
         dst="$dst${src##*/}"

@@ -25,17 +25,20 @@ global:
   distrib: debian
   deb_arch: amd64
   release: jessie
-  release_number: 8.5.0
-  iso_location: release
+  release_number: 8
 
   # URL to retrieve packages from (sources.list)
   deb_mirror_uri: http://http.debian.net/debian/
 
-  # The following values should be OK with the last releases of Debian stable or
-  # or old stable. They should not need modified values in extending recipes.
-  iso_filename: debian-$${release_number}-$${deb_arch}-netinst.iso
-  iso_location: archive
-  iso_url: http://cdimage.debian.org/cdimage/$${iso_location}/$${release_number}/$${deb_arch}/iso-cd/$${iso_filename}
+  # location of the Debian netinstall iso
+  # can be set manually or guessed using a url finder helper script
+  #iso_filename: debian-$${release_number}-$${deb_arch}-netinst.iso
+  #iso_location: archive
+  #iso_release_version: 8.0.0
+  #iso_url: http://cdimage.debian.org/cdimage/$${iso_location}/$${iso_release_version}/$${deb_arch}/iso-cd/$${iso_filename}
+  iso_url: 
+  iso_finder_helper: $${kameleon_data_dir}/helpers/find_debian_netinstall_iso.py
+  iso_finder_args: $${release_number} $${deb_arch}
   iso_path: $${kameleon_cwd}/$${distrib}.iso
 
   base_preseed_path: $${kameleon_data_dir}/preseed/$${distrib}-$${release}-preseed.cfg
