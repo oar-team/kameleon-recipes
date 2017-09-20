@@ -11,16 +11,25 @@
 extend: base.yaml
 global:
   distrib: centos
-  # release_major: 6
-  # release_minor: 8
-  release: $${release_major}.$${release_minor}
+  release_major: 7
+  # release_minor and release_date are not required if using the iso_finder
+  # helper script
+  #release_minor: 4
+  #release_date: 1708
+  release: $${release_major}
 
-  #mirror_url: http://centos.mirrors.ovh.net/ftp.centos.org/$${release}/os/$${arch}/
-  mirror_url: http://ftp.ciril.fr/pub/linux/centos/$${release}/os/$${arch}/
-  iso_filename: CentOS-$${release}-$${iso_arch}-netinstall.iso
-  #iso_url: http://centos.mirrors.ovh.net/ftp.centos.org/$${release}/isos/$${iso_arch}/$${iso_filename}
-  iso_url: http://ftp.ciril.fr/pub/linux/centos/$${release}/isos/$${iso_arch}/$${iso_filename}
+  mirror_base_url: http://mirror.in2p3.fr/linux/CentOS/
+  mirror_url: $${mirror_base_url}$${release}/os/$${arch}/
+
+  # location of the CentOS netinstall iso
+  # can be set manually or guessed using a url finder helper script
+  #iso_filename: CentOS-$${release_major}-$${arch}-NetInstall-$${release_date}.iso
+  #iso_url: $${mirror_base_url}/$${release_major}.$${release_minor}.$${release_date}/isos/$${arch}/$${iso_filename}
+  iso_url:
+  iso_finder_helper: $${kameleon_data_dir}/helpers/netinstall_iso_finder.py
+  iso_finder_args: $${distrib} $${release_major} $${arch} $${mirror_base_url}
   iso_path: $${kameleon_cwd}/$${distrib}.iso
+
 
   base_kickstart_path: $${kameleon_data_dir}/kickstart/$${distrib}$${release_major}-ks.cfg
 

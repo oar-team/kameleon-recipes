@@ -9,12 +9,7 @@
 extend: centos-base.yaml
 
 global:
-  # Distribution
   release_major: 7
-  release_minor: 2
-  release_date: 1611
-  release: $${release_major}
-  iso_filename: CentOS-7-$${iso_arch}-NetInstall-$${release_date}.iso
 
 bootstrap:
   - "@base"
