@@ -65,7 +65,8 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=sys.modules[__name__].__doc__, formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument("distrib", metavar="DISTRIB", help="distribution")
     parser.add_argument("version", metavar="VERSION", help="version")
-    parser.add_argument("arch", metavar="ARCH", help="rchitecture")
+    parser.add_argument("arch", metavar="ARCH", help="architecture")
+    parser.add_argument("mirror", metavar="MIRROR", help="mirror", nargs="?")
     parser.add_argument('--debug', action="store_true", default=False, help='print debug messages')
     args = parser.parse_args()
 
@@ -84,14 +85,26 @@ if __name__ == '__main__':
         visited = set([])
         found = set([])
         if (args.distrib.lower() == "debian"):
+            if args.mirror == None:
+                args.mirror = "http://cdimage.debian.org/"
             if not re.match("^\d+$",args.version):
-                raise Exception("please give the Debian release number (e.g 8 for Jessie)")
-            url_regex = re.compile("^http://cdimage.debian.org/cdimage/(?:release|archive)/(?:"+args.version+"\.\d+\.\d+/(?:"+args.arch+"/(?:iso-cd/(debian-"+args.version+"\.\d+\.\d+-"+args.arch+"-netinst\.iso)?)?)?)?$")
+                raise Exception("please give the Debian release number (e.g. 8 for Jessie)")
+            url_regex = re.compile("^"+args.mirror+"cdimage/(?:release|archive)/(?:"+args.version+"\.\d+\.\d+/(?:"+args.arch+"/(?:iso-cd/(?:debian-"+args.version+"\.\d+\.\d+-"+args.arch+"-netinst\.iso)?)?)?)?$")
             target_regex = re.compile("^.*-netinst\.iso$") 
-            [visited,found] = url_find(set(["http://cdimage.debian.org/cdimage/"+v+"/" for v in ["release","archive"]]), set(), set())
-            logger.debug("Visited URLs:")
+            [visited,found] = url_find(set([args.mirror+"cdimage/"+v+"/" for v in ["release","archive"]]), set(), set())
+        elif (args.distrib.lower() == "centos"):
+            if args.mirror == None:
+                args.mirror = "http://mirror.in2p3.fr/linux/CentOS/"
+            if not re.match("^\d+$",args.version):
+                raise Exception("please give the CentOS release number (e.g. 7 for CentOS-7)")
+            url_regex = re.compile("^"+args.mirror+"(?:"+args.version+"/(?:isos/(?:"+args.arch+"/(?:CentOS-"+args.version+"-"+args.arch+"-NetInstall-\d+\.iso)?)?)?)?$")
+            target_regex = re.compile("^.*CentOS-\d+-\w+-NetInstall-\d+\.iso$") 
+            [visited,found] = url_find(set([args.mirror]), set(), set())
         else:
             raise Exception("this distribution is not supported")
+        logger.debug("URL regex: "+url_regex.pattern)
+        logger.debug("Target regex: "+target_regex.pattern)
+        logger.debug("Visited URLs:")
         for url in visited:
             logger.debug(url)
         logger.debug("Found URLs:")
