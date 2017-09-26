@@ -2,7 +2,7 @@
 # vim: softtabstop=2 shiftwidth=2 expandtab fenc=utf-8 cc=81 tw=80
 #==============================================================================
 #
-# DESCRIPTION: Centos 6 base system.
+# DESCRIPTION: Centos generic recipe using upstream builds
 #
 #==============================================================================
 ---

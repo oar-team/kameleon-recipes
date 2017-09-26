@@ -2,7 +2,7 @@
 # vim: softtabstop=2 shiftwidth=2 expandtab fenc=utf-8 cc=81 tw=80
 #==============================================================================
 #
-# DESCRIPTION: Ramdisk OS for the deployment step of Kadeploy
+# DESCRIPTION: Kadeploy3 ramdisk OS (used in the deployment phase)
 #
 # Notes:
 # - force use of busybox rather than klibc-utils (which breaks the mount)

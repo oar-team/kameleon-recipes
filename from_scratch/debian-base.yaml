@@ -2,7 +2,7 @@
 # vim: softtabstop=2 shiftwidth=2 expandtab fenc=utf-8 cc=81 tw=80
 #==============================================================================
 #
-# DESCRIPTION: Debian generic system + netinstall ISO.
+# DESCRIPTION: Debian generic recipe using the netinstall mechanim
 #
 # USAGE:
 #   Select directly in this recipe: see usage example commented in the global of

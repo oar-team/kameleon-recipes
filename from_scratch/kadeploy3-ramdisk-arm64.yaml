@@ -2,14 +2,14 @@
 # vim: softtabstop=2 shiftwidth=2 expandtab fenc=utf-8 cc=81 tw=80
 #==============================================================================
 #
-# DESCRIPTION: Ramdisk OS for the deployment step of Kadeploy
+# DESCRIPTION: Kadeploy3 ramdisk OS (used in the deployment phase) for ARM64
 #
 # Notes:
 # - force use of busybox rather than klibc-utils (which breaks the mount)
 #
 #==============================================================================
 ---
-extend: kadeploy-ramdisk-os_amd64.yaml
+extend: kadeploy3-ramdisk.yaml
 
 global:
   arch: aarch64

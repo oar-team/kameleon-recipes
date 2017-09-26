@@ -2,9 +2,9 @@
 # vim: softtabstop=2 shiftwidth=2 expandtab fenc=utf-8 cc=81 tw=80
 #==============================================================================
 #
-# DESCRIPTION: Centos netinstall base system + Kickstart.
+# DESCRIPTION: Centos generic recipe using the netinstall mechanism
 #
-# USAGE: Select the release_major and release_minor
+# Uses the netinstall + kickstart mechanism
 #
 #==============================================================================
 ---
