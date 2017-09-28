@@ -37,7 +37,7 @@ global:
   deb_mirror_uri: http://http.debian.net/debian/
 
   bootstrap_packages: locales openssh-server linux-image-$${deb_kernel_arch}
-  build_packages: qemu-user-static curl parted e2fsprogs
+  build_packages: debootstrap qemu-user-static curl parted e2fsprogs
 
   in_context:
     cmd: ssh -F $${ssh_config_file} $${kameleon_recipe_name} -t chroot $${rootfs} /bin/bash
