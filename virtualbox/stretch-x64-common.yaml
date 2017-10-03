@@ -13,7 +13,7 @@ checkpoint: virtualbox.yaml
 global:
   release: stretch
   release_number: -stretch
-  bootstrap_image_version: "20170817-1"
+  bootstrap_image_version: "latest"
   os_release: stretch
   image_version: 2017082214
   variant: min

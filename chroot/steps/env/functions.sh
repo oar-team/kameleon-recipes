@@ -79,6 +79,7 @@ function __download_recipe_build() {
     echo "Downloading $recipe ($version):"
     __download $builds_url/${recipe}_$version.manifest
     if [ "$do_checksign" == "true" ]; then
+        gpg --keyserver keys.gnupg.net --recv-keys CA22303C
         __download $builds_url/${recipe}_$version.manifest.sign
         gpg --verify ${recipe}_$version.manifest{.sign,} || fail "Cannot verify signature"
     fi
