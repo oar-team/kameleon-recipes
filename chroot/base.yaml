@@ -27,10 +27,14 @@ global:
   default_timezone: UTC
   appliance_tar_compression_level: "9"
 
-  ## Initial rootfs archive built with kameleon
-  ## See https://github.com/oar-team/kameleon-bootstrap-recipes.git
-  rootfs_archive_url: http://kameleon.imag.fr/rootfs/$${arch}/$${distrib}$${release_number}_$${bootstrap_image_version}.tar.xz
-  rootfs_archive_download_path: $${kameleon_cwd}/rootfs.tar.xz
+  ## Location of an upstream recipe build to base this recipe on (build from image)
+  upstream_recipe: $${distrib}-$${release}
+  upstream_version: latest
+  upstream_checksum: true
+  upstream_checksign: true
+  upstream_cache: true
+  upstream_url: http://kameleon.imag.fr/builds
+  upstream_store_dir: $${kameleon_cwd}/upstream_build/
   # rootfs options
   rootfs: $${kameleon_cwd}/rootfs
 

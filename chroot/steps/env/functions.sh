@@ -8,13 +8,20 @@ function fail {
 export -f fail
 
 function __download {
-    echo "Downloading: $1..."
+    src=$1
+    dst=$2
+    # If dst is unset or a directory, infers dst pathname from src
+    if [ -z "$dst" -o "${dst: -1}" == "/" ]; then
+        dst="$dst${src##*/}"
+        dst="${dst%%\?*}"
+    fi
+    echo "Downloading: ${src}..."
     if which wget >/dev/null; then
-        wget --retry-connrefused --progress=bar:force "$1" -O "$2" 2>&1
+        wget --retry-connrefused --progress=bar:force "$src" -O "$dst" 2>&1
     else
         echo "wget is missing, trying with curl..."
         if which curl >/dev/null; then
-            curl -# -L --retry 999 --retry-max-time 0 "$1" -o "$2" 2>&1
+            curl -# -L --retry 999 --retry-max-time 0 "$src" -o "$dst" 2>&1
         else
             echo "curl is missing, trying with python..."
             if which python >/dev/null; then
@@ -45,18 +52,59 @@ def reporthook(count, block_size, total_size):
                          % (percent, progress_size / (1024 * 1024), speed, duration))
         sys.stdout.flush()
 
-urllib.urlretrieve('$1', '$2', reporthook=reporthook)
+urllib.urlretrieve('$src', '$dst', reporthook=reporthook)
 print('\n')
 "
             true
             else
-                fail "Cannot download $1"
+                fail "Cannot download $src"
             fi
         fi
     fi
 }
 
 export -f __download
+
+function __download_recipe_build() {
+    set -e
+    recipe=$1
+    version=${2:-latest}
+    do_checksum=${3:-true}
+    do_checksign=${4:-false}
+    do_cache=${5:-false}
+    builds_url=${6:-http://kameleon.imag.fr/builds}
+    dest_dir="${7:-$recipe}"
+    mkdir -p $dest_dir
+    pushd $dest_dir
+    echo "Downloading $recipe ($version):"
+    __download $builds_url/${recipe}_$version.manifest
+    if [ "$do_checksign" == "true" ]; then
+        __download $builds_url/${recipe}_$version.manifest.sign
+        gpg --verify ${recipe}_$version.manifest{.sign,} || fail "Cannot verify signature"
+    fi
+    for f in $(< ${recipe}_$version.manifest); do
+        if [[ $f =~ ^$recipe-cache_ ]] && [ "$do_cache" != "true" ]; then
+            continue
+        fi
+        if [[ $f =~ \.sha[[:digit:]]+sum$ ]]; then
+            if [ "$do_checksum" == "true" ]; then
+                __download $builds_url/$f
+                ${f##*.} -c $f || fail "Cannot verify checksum"
+                if [ "$do_checksign" == "true" ]; then
+                    __download $builds_url/$f.sign
+                    gpg --verify $f{.sign,} || fail "Cannot verify signature"
+                fi
+            fi
+        else
+            __download $builds_url/$f
+            echo -n "Link to version-less filename: "
+            ln -fv $f ${f%_*}.${f#*.}
+        fi
+    done
+    set +e
+}
+
+export -f __download_recipe_build
 
 function __find_linux_boot_device() {
     local PDEVICE=`stat -c %04D /boot`
