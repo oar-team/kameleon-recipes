@@ -1,6 +1,6 @@
 # This file contains the 'min' class used to configure an environment with minimal modification to be executed in grid'5000.
 
-class env::min ( $parent_parameters = {} ) {
+class env::min ( $variant = "min", $parent_parameters = {} ) {
 
   $min_parameters = {
     misc_root_pwd => '$1$qzZwnZXQ$Ak1xs7Oma6HUHw/xDJ8q91',
@@ -43,4 +43,7 @@ class env::min ( $parent_parameters = {} ) {
   # Tagging to recognize images
   class { 'env::min::add_image_version_in_etc': }
 
+  if "${::lsbdistcodename}" == "stretch" {
+    class { 'env::install_metapackage': variant => $variant }
+  }
 }

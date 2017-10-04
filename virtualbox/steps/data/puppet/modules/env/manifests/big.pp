@@ -1,6 +1,6 @@
 # This file contains the 'big' class used to configure improved environment to be executed in grid'5000.
 
-class env::big ( $parent_parameters = {} ){
+class env::big ( $variant = "big", $parent_parameters = {} ){
 
   $big_parameters = {
     mic_enable => false
@@ -10,7 +10,8 @@ class env::big ( $parent_parameters = {} ){
   # Include nfs class
   class {
     'env::nfs':
-      parent_parameters => $parameters
+      variant => $variant,
+      parent_parameters => $parameters;
   }
   # Users packages
   class { 'env::big::packages': }

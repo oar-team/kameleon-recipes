@@ -1,6 +1,6 @@
 # This file contains the 'base' class used to configure a basic environment to be executed in grid'5000.
 
-class env::base ( $parent_parameters = {} ){
+class env::base ( $variant = "base", $parent_parameters = {} ){
 
   $base_parameters = {
     misc_keep_tmp => true,
@@ -11,6 +11,7 @@ class env::base ( $parent_parameters = {} ){
   # Include min class
   class {
     'env::min':
+      variant => $variant,
       parent_parameters => $parameters;
   }
 

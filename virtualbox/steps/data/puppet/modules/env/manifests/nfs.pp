@@ -1,6 +1,6 @@
 # This file contains the 'nfs' class used to configure a basic environment with nfs support to be executed in grid'5000.
 
-class env::nfs ( $parent_parameters = {} ){
+class env::nfs ( $variant = "nfs", $parent_parameters = {} ){
   $nfs_parameters = {
     ntp_drift_file => false
   }
@@ -8,7 +8,8 @@ class env::nfs ( $parent_parameters = {} ){
   # Include base class
   class {
     'env::base':
-      parent_parameters => $parameters
+      variant => $variant,
+      parent_parameters => $parameters;
   }
   # Openiscsi (storage5k)
   class { 'env::nfs::configure_iscsi': }

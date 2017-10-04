@@ -1,6 +1,6 @@
 # This file contains the 'std' class used to configure the standard environment to be executed in grid'5000.
 
-class env::std ( $parent_parameters = {} ){
+class env::std ( $variant = "std", $parent_parameters = {} ){
 
   if $env::target_g5k {
     $root_pwd = hiera("env::std::misc::rootpwd")
@@ -22,7 +22,8 @@ class env::std ( $parent_parameters = {} ){
   # Include big class
   class {
     'env::big':
-      parent_parameters => $parameters
+      variant => $variant,
+      parent_parameters => $parameters;
   }
   # OAR
   class { 'env::std::configure_oar_client': }
