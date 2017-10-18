@@ -14,7 +14,7 @@ global:
   release_number: 9
 
   # Apt recipe options
-  apt_repository: http://deb.debian.org/debian/
+  deb_mirror_uri: http://deb.debian.org/debian/
 
   setup_packages: >-
     sudo vim bash-completion curl resolvconf bzip2 bsdutils ca-certificates

@@ -18,19 +18,20 @@ global:
   include_steps:
     - $${distrib}/$${release}
     - $${distrib}
-    - "debian"
+    - debian
 
   deb_mirror_uri: http://archive.ubuntu.com/ubuntu/
 
   iso_filename: ubuntu-$${iso_location}-$${deb_arch}-mini.iso
   iso_location: $${release}-updates
-  iso_url: http://archive.ubuntu.com/ubuntu/dists/$${iso_location}/main/installer-$${deb_arch}/current/images/netboot/mini.iso
+  iso_url: $${deb_mirror_uri}ubuntu/dists/$${iso_location}/main/installer-$${deb_arch}/current/images/netboot/mini.iso
   iso_finder_helper:
   iso_finder_args:
 
   bootstrap_packages: locales openssh-server linux-image-generic
   additional_packages: ""
 
+  apt_enable_restricted: true
 bootstrap:
   - "@base"
 

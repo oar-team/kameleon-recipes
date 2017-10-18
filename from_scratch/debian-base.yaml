@@ -28,7 +28,7 @@ global:
   release_number: 8
 
   # URL to retrieve packages from (sources.list)
-  deb_mirror_uri: http://http.debian.net/debian/
+  deb_mirror_uri: http://ftp.debian.org/debian/
 
   # location of the Debian netinstall iso
   # can be set manually or guessed using a url finder helper script
@@ -45,6 +45,9 @@ global:
   preseed_path: $${kameleon_cwd}/preseed.cfg
 
   qemu_sendkeys_commands: $${kameleon_data_dir}/qemu-sendkeys/netinst-iso-$${distrib}
+
+  apt_enable_contrib: true
+  apt_enable_nonfree: true
 
 bootstrap:
   - "@base"

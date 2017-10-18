@@ -8,8 +8,8 @@
   - write_in:
     - /etc/apt/sources.list
     - |
-      deb $${apt_repository} $${release} main
-      deb-src $${apt_repository} $${release} main
+      deb $${deb_mirror_uri} $${release} main
+      deb-src $${deb_mirror_uri} $${release} main
             
       deb http://security.debian.org/ $${release}/updates main
       deb-src http://security.debian.org/ $${release}/updates main
@@ -17,8 +17,8 @@
 - add_backports:
   - exec_in: |
       if [ $${enable_backports} = true ]; then
-        echo "deb $${apt_repository} $${release}-backports main" >> /etc/apt/sources.list
-        echo "deb-src $${apt_repository} $${release}-backports main" >> /etc/apt/sources.list
+        echo "deb $${deb_mirror_uri} $${release}-backports main" >> /etc/apt/sources.list
+        echo "deb-src $${deb_mirror_uri} $${release}-backports main" >> /etc/apt/sources.list
       fi
 
 - add_contribs_and_nonfree_sources:

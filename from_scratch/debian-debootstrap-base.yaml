@@ -34,10 +34,13 @@ global:
 
   bootstrap_script: $${kameleon_data_dir}/debootstrap.sh
   bootstrap_variant:
-  deb_mirror_uri: http://http.debian.net/debian/
+  deb_mirror_uri: http://ftp.debian.org/debian/
 
   bootstrap_packages: locales openssh-server linux-image-$${deb_kernel_arch}
   build_packages: debootstrap qemu-user-static curl parted e2fsprogs
+
+  apt_enable_contrib: true
+  apt_enable_nonfree: true
 
   in_context:
     cmd: ssh -F $${ssh_config_file} $${kameleon_recipe_name} -t chroot $${rootfs} /bin/bash

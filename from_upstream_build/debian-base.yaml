@@ -16,8 +16,8 @@ global:
   release_number: 7
   kernel_arch: amd64
 
-  # Apt recipe options
-  apt_repository: http://ftp.debian.org/debian/
+  deb_mirror_uri: http://ftp.debian.org/debian/
+
   apt_enable_contrib: true
   apt_enable_nonfree: true
 
@@ -34,7 +34,7 @@ bootstrap:
 # Install and configuration steps
 setup:
   - configure_apt:
-    - repository: $${apt_repository}
+    - repository: $${deb_mirror_uri}
     - enable_contrib_repo: $${apt_enable_contrib}
     - enable_nonfree_repo: $${apt_enable_nonfree}
   - "@base"

@@ -22,8 +22,8 @@ global:
     - $${distrib}
     - debian
 
-  # Apt recipe options
-  apt_repository: http://archive.ubuntu.com/ubuntu/
+  deb_mirror_uri: http://archive.ubuntu.com/ubuntu/
+
   apt_enable_restricted: true
 
   setup_packages: >-
