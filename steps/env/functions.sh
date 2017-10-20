@@ -102,7 +102,7 @@ function __download_recipe_build() {
         else
             __download $builds_url/$f
             echo -n "Link to version-less filename: "
-            ln -fv $f ${f%_*}.${f#*.}
+            ln -fv $f ${f%_*}.tar.${f#*.tar.}
         fi
     done
     set +e

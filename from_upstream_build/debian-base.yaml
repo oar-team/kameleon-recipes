@@ -37,6 +37,7 @@ setup:
     - repository: $${deb_mirror_uri}
     - enable_contrib_repo: $${apt_enable_contrib}
     - enable_nonfree_repo: $${apt_enable_nonfree}
+  - configure_light_packages
   - "@base"
 
 # Export the generated appliance in the format of your choice
