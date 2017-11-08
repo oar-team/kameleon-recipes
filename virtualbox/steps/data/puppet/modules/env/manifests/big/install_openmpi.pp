@@ -1,6 +1,10 @@
 class env::big::install_openmpi () {
 
-  $openmpi_packages = [ 'librdmacm1', 'libgfortran3', 'libnuma1', 'blcr-util', 'libibverbs1-dbg', 'libopenmpi1.6', 'openmpi-common', 'openmpi-bin', 'libopenmpi-dev', 'openmpi-checkpoint' ]
+  if "${::lsbdistcodename}" == "stretch" {
+    $openmpi_packages = [ 'librdmacm1', 'libgfortran3', 'libnuma1', 'blcr-util', 'libibverbs1-dbg', 'libopenmpi2', 'openmpi-common', 'openmpi-bin', 'libopenmpi-dev' ]
+  } else {
+    $openmpi_packages = [ 'librdmacm1', 'libgfortran3', 'libnuma1', 'blcr-util', 'libibverbs1-dbg', 'libopenmpi1.6', 'openmpi-common', 'openmpi-bin', 'libopenmpi-dev', 'openmpi-checkpoint' ]
+  }
 
   package{
     'libibverbs-dev':

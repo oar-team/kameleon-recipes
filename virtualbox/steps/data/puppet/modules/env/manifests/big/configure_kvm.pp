@@ -1,8 +1,12 @@
 class env::big::configure_kvm () {
 
-  # If sudo is used somewhere else, he shoud be placed in 'packages' instead of 'kvm' class.
-  $packages = [ 'kvm', 'uml-utilities', 'virtinst',  'genisoimage', 'libvirt-bin', 'python-libvirt' ]
-  # WARNING! Due to bug #5257, this should NOT work on wheezy environments. Cf old chef recipe setup/recipes/kvm to see a workaround
+  if "${::lsbdistcodename}" == "stretch" {
+    $packages = [ 'kvm', 'uml-utilities', 'virtinst',  'genisoimage', 'libvirt-daemon-system', 'libvirt-dev', 'libvirt-clients', 'python-libvirt' ]
+  } else {
+    # If sudo is used somewhere else, he shoud be placed in 'packages' instead of 'kvm' class.
+    $packages = [ 'kvm', 'uml-utilities', 'virtinst',  'genisoimage', 'libvirt-bin', 'python-libvirt' ]
+    # WARNING! Due to bug #5257, this should NOT work on wheezy environments. Cf old chef recipe setup/recipes/kvm to see a workaround
+  }
 
   package {
     $packages:
@@ -41,9 +45,16 @@ class env::big::configure_kvm () {
   'disable uml-utilities service':
   command => "/usr/sbin/update-rc.d uml-utilities disable",
   require => Package['uml-utilities'];
-}
+  }
 
-file_line { 'kvm_etc_profile_path':
+  if "${::lsbdistcodename}" == "stretch" {
+    package {
+      'sudo':
+        ensure   => installed;
+    }
+  }
+
+  file_line { 'kvm_etc_profile_path':
      path => '/etc/profile',
      line => 'export XDG_RUNTIME_DIR=/tmp/$USER-runtime-dir';
   }

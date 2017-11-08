@@ -29,10 +29,12 @@ class env::big ( $variant = "big", $parent_parameters = {} ){
   class { 'env::big::configure_kvm': }
   # nvidia
   class { 'env::big::configure_nvidia_gpu': }
-  # xeon phi
-  class {
-    'env::big::install_xeon_phi_requirements':
-      enable  => $parameters['mic_enable']
+  if "${::lsbdistcodename}" == "jessie" {
+    # xeon phi, only on jessie. currently no package compiled for strecth
+    class {
+      'env::big::install_xeon_phi_requirements':
+        enable  => $parameters['mic_enable']
+    }
   }
   #Allow sshfs
   class { 'env::big::configure_sshfs': }
