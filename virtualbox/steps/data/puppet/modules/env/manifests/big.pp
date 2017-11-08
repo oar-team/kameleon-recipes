@@ -13,8 +13,10 @@ class env::big ( $variant = "big", $parent_parameters = {} ){
       variant => $variant,
       parent_parameters => $parameters;
   }
-  # Users packages
-  class { 'env::big::packages': }
+  if "${::lsbdistcodename}" == "jessie" {
+    # Users packages
+    class { 'env::big::packages': }
+  }
   # gem
   if $env::target_g5k {
     class { 'env::big::configure_gemrc':
