@@ -15,7 +15,7 @@ global:
   release_number: -stretch
   bootstrap_image_version: "latest"
   os_release: stretch
-  image_version: 2017100912
+  image_version: 2017110822
   variant: min
   rootfs_archive_url: http://kameleon.imag.fr/builds/$${distrib}$${release_number}_$${bootstrap_image_version}.tar.xz
   output: "$${kameleon_cwd}/$${kameleon_recipe_name}" # output files basename
