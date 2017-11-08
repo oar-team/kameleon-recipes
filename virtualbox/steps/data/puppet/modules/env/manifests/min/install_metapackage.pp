@@ -1,4 +1,7 @@
-class env::install_metapackage ( $variant ) {
+class env::min::install_metapackage ( $variant ) {
+
+    require env::min::add_grid5000_apt_repo
+
     case $operatingsystem {
     'Debian','Ubuntu': {
 
@@ -6,7 +9,10 @@ class env::install_metapackage ( $variant ) {
 
       package {
         $g5kmetapackages:
-          ensure => installed;
+          ensure => installed,
+      }->
+      exec { 'run apt-mark hold for g5k metapackage':
+        command => "/usr/bin/apt-mark hold $g5kmetapackages",
       }
 
     }

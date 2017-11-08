@@ -28,6 +28,10 @@ class env::min ( $variant = "min", $parent_parameters = {} ) {
   class { 'env::min::generate_etc_motd': }
   # tgs-g5k
   class { 'env::min::install_tgz_g5k': }
+  # install meta-packages
+  if "${::lsbdistcodename}" == "stretch" {
+    class { 'env::min::install_metapackage': variant => $variant }
+  }
   # network configuration
   class { 'env::min::configure_network_and_install_drivers': }
   # root password
@@ -42,8 +46,4 @@ class env::min ( $variant = "min", $parent_parameters = {} ) {
   class { 'env::min::configure_kernel_and_blacklist_some_modules': }
   # Tagging to recognize images
   class { 'env::min::add_image_version_in_etc': }
-
-  if "${::lsbdistcodename}" == "stretch" {
-    class { 'env::install_metapackage': variant => $variant }
-  }
 }
