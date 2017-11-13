@@ -10,9 +10,6 @@ class env::min::install_metapackage ( $variant ) {
       package {
         $g5kmetapackages:
           ensure => installed,
-      }->
-      exec { 'run apt-mark hold for g5k metapackage':
-        command => "/usr/bin/apt-mark hold $g5kmetapackages",
       }
 
     }
