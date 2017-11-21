@@ -59,7 +59,7 @@ end
 def parse_cmdline
   options = {}
   OptionParser.new do |opts|
-    opts.banner = 'Usage: g5k-disk-manager [--on-boot | --enable 1,2,3 --disable 4,5]'
+    opts.banner = 'Usage: g5k-disk-manager [--enable 1,2,3] [--disable 4,5]'
     opts.on('--on-boot', 'Enable all disks at boot time') do |v|
       options[:on_boot] = v
     end
@@ -259,7 +259,7 @@ end
 # Clusters with reservable disks are clusters whose
 # reference-repository storage_devices property contains property
 # reservation: true
-CLUSTERS_WITH_RESERVABLE_DISKS = ['grimoire'].freeze
+CLUSTERS_WITH_RESERVABLE_DISKS = ['grimoire', 'chifflet', 'parasilo'].freeze
 
 MEGACLI = '/usr/sbin/megacli'.freeze
 MEGASASCTL = '/usr/sbin/megasasctl'.freeze
