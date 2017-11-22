@@ -9,7 +9,7 @@ class env::std::install_hwraid_apt_source {
     },
     comment  => 'Repo for megacli package',
     location => 'http://hwraid.le-vert.net/debian',
-    release  => 'jessie',
+    release  => "${::lsbdistcodename}",
     repos    => 'main',
      include  => {
       'deb' => true,

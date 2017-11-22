@@ -1,0 +1,27 @@
+#==============================================================================
+# vim: softtabstop=2 shiftwidth=2 expandtab fenc=utf-8 cc=81 tw=80
+#==============================================================================
+#
+# DESCRIPTION: Debian 9 (Stretch) min built with virtualbox.
+#
+#==============================================================================
+---
+extend: debian9-x64-common.yaml # Cf 'jessie-x64-common' for a real content. This recipe only overwrite variant.
+global:
+  variant: std
+  g5k_postinst_path: server:///grid5000/postinstalls/debian-x64-min-1.2-post.tgz
+  g5k_kernel_params: "cgroup_enable=memory"
+  appliance_tar_excludes: >-
+    ./etc/fstab ./root/.bash_history ./root/kameleon_workdir
+    ./var/tmp/* ./tmp/* ./dev/* ./proc/* ./run/*
+    ./sys/*
+
+
+bootstrap:
+  - "@base"
+
+setup:
+  - "@base"
+
+export:
+  - "@base"

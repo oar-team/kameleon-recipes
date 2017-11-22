@@ -5,22 +5,30 @@ class env::std::install_g5kchecks {
 
   $g5kchecks_version = "0.7.15"
 
-  $g5kchecks_deps = [ 'ruby-rest-client', 'ohai', 'ruby-popen4', 'fio', 'ruby-json', 'x86info' ]
+  if "${::lsbdistcodename}" == "jessie" {
+    $g5kchecks_deps = [ 'ruby-rest-client', 'ohai', 'ruby-popen4', 'fio', 'ruby-json', 'x86info' ]
+    $g5kchecks_dist = ""
+  }
+  if "${::lsbdistcodename}" == "stretch" {
+    $g5kchecks_deps = [ 'ruby-rest-client', 'ohai', 'fio', 'ruby-json', 'x86info', 'ethtool' ]
+    $g5kchecks_dist = "_stretch"
+  }
   case $operatingsystem {
     'Debian','Ubuntu': {
       require env::commonpackages::rake
       require env::commonpackages::rubyrspec
       exec {
         "retrieve_g5kchecks":
-          command  => "/usr/bin/wget --no-check-certificate -q https://www.grid5000.fr/packages/debian/g5kchecks_${g5kchecks_version}_amd64.deb -O /tmp/g5kchecks_${g5kchecks_version}_amd64.deb",
-          creates  => "/tmp/g5kchecks_${g5kchecks_version}_amd64.deb";
+          command  => "/usr/bin/wget --no-check-certificate -q https://www.grid5000.fr/packages/debian/g5kchecks_${g5kchecks_version}_amd64${g5kchecks_dist}.deb -O /tmp/g5kchecks_amd64.deb",
+          creates  => "/tmp/g5kchecks_amd64.deb";
       }
       package {
         "g5kchecks":
           ensure   => installed,
           provider => dpkg,
-          source   => "/tmp/g5kchecks_${g5kchecks_version}_amd64.deb",
-          require  => [ Exec["retrieve_g5kchecks"], Package[$g5kchecks_deps], Package['rake'], Package['ntp'] ];
+          source   => "/tmp/g5kchecks_amd64.deb",
+#          require  => [ Exec["retrieve_g5kchecks"], Package[$g5kchecks_deps], Package['rake'], Package['ntp'] ];
+          require  => [ Exec["retrieve_g5kchecks"], Package[$g5kchecks_deps] ];
         $g5kchecks_deps:
           ensure   => installed;
       }

@@ -4,7 +4,7 @@ class env::std::configure_g5kdiskmanager {
 
   case $operatingsystem {
     'Debian': {
-      if "${::lsbdistcodename}" == "jessie" { 
+      if ("${::lsbdistcodename}" == "jessie") or ("${::lsbdistcodename}" == "stretch") { 
         file {
           '/etc/systemd/system/g5k-disk-manager.service':
             source => 'puppet:///modules/env/std/g5kdiskmanager/g5k-disk-manager.service',
@@ -19,7 +19,8 @@ class env::std::configure_g5kdiskmanager {
         }
 	package {
 	  'megactl':
-	  ensure => installed
+	  ensure => installed,
+          require  => [Apt::Source['hwraid.le-vert.net'], Exec['apt_update']]
 	}
       }
       else {
