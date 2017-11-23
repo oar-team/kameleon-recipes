@@ -9,7 +9,7 @@
 extend: debian9-x64-common.yaml # Cf 'jessie-x64-common' for a real content. This recipe only overwrite variant.
 global:
   variant: std
-  g5k_postinst_path: server:///grid5000/postinstalls/debian-x64-min-1.2-post.tgz
+  g5k_postinst_path: server:///grid5000/postinstalls/debian-x64-std-1.2-post.tgz
   g5k_kernel_params: "cgroup_enable=memory"
   appliance_tar_excludes: >-
     ./etc/fstab ./root/.bash_history ./root/kameleon_workdir
@@ -22,6 +22,7 @@ bootstrap:
 
 setup:
   - "@base"
+  - set_and_clear_var_log
 
 export:
   - "@base"
