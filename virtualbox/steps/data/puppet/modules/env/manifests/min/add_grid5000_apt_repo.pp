@@ -1,17 +1,5 @@
 class env::min::add_grid5000_apt_repo {
 
-  if "${::lsbdistcodename}" == "jessie" {
-    file_line { 'Add jessie-update repository':
-      path => '/etc/apt/sources.list',
-      line => '
-deb http://ftp.debian.org/debian/ jessie-updates main contrib non-free
-deb-src http://ftp.debian.org/debian/ jessie-updates main contrib non-free',
-    }->
-    exec { 'run apt-get update for jessie-update repository':
-      command => '/usr/bin/apt-get update',
-    }
-  }
-
   augeas {
     'apt_g5k_repository':
        context  => "/files/etc/apt/sources.list",
@@ -37,4 +25,5 @@ deb-src http://ftp.debian.org/debian/ jessie-updates main contrib non-free',
   exec { 'run apt-get update for g5k metapackage repository':
     command => '/usr/bin/apt-get update',
   }
+
 }
