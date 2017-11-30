@@ -38,7 +38,7 @@ class env::std::install_g5kchecks {
           owner    => root,
           group    => root,
           mode     => '0644',
-          source   => 'puppet:///modules/env/std/g5kchecks/g5k-checks.conf',
+          source   => "puppet:///modules/env/std/g5kchecks/g5k-checks${g5kchecks_dist}.conf",
           require  => Package["g5kchecks"];
       }
     }
