@@ -46,12 +46,27 @@ class env::base::configure_ip_over_infiniband (){
       source  => 'puppet:///modules/env/base/infiniband/90-ib.rules';
   }
 
-  service {
-    'openibd':
-      enable   => true,
-      require  => [
-               Package[$infiniband_packages],
-               File['/etc/init.d/openibd']
+  if "${::lsbdistcodename}" == "stretch" {
+    service {
+      'openibd':
+        provider => 'systemd',
+        enable   => true,
+        require  => [
+                 Package[$infiniband_packages],
+                 File['/etc/systemd/system/openibd.service']
       ];
+    }
+  } else {
+    if "${::lsbdistcodename}" == "jessie" {
+      service {
+        'openibd':
+          enable   => true,
+          require  => [
+                   Package[$infiniband_packages],
+                   File['/etc/init.d/openibd']
+        ];
+      }
+    }
   }
+
 }
