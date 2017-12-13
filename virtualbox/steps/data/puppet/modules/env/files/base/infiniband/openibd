@@ -701,7 +701,7 @@ bring_up()
                 ;;
                 Debian)
                     . ${NETWORK_CONF_DIR}/ifcfg-${i}
-                    /sbin/ifconfig ${i} ${IPADDR} netmask ${NETMASK} > /dev/null 2>&1
+                    /sbin/ip address add ${IPADDR}/${NETMASK} dev ${i} > /dev/null 2>&1
                 ;;
             *)
                     /sbin/ifup ${i} 2> /dev/null
