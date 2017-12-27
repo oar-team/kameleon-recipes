@@ -33,7 +33,7 @@
       postinstalls:
       - archive: $${g5k_postinst_path}
         compression: gzip
-        script: traitement.ash /rambin
+        script: $${g5k_postinst_script}
       boot:
         kernel_params: "$${g5k_kernel_params}"
         kernel: /vmlinuz
@@ -59,7 +59,7 @@
       postinstalls:
       - archive: $${g5k_postinst_path}
         compression: gzip
-        script: traitement.ash /rambin
+        script: $${g5k_postinst_script}
       boot:
         kernel: /vmlinuz
         initrd: /initrd.img

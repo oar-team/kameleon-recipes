@@ -26,6 +26,7 @@
 - set_release:
   - exec_in: echo "$${os_release}-x64-$${variant}-$${image_version}" >> $${puppet_build_path}/$${release_file}
   - exec_in: echo "$${g5k_postinst_path}" >> $${puppet_build_path}/$${release_file}
+  - exec_in: echo "$${g5k_postinst_script}" >> $${puppet_build_path}/$${release_file}
   # this extracts last git commit hash from local repo
   - pipe:
     - exec_local: |
