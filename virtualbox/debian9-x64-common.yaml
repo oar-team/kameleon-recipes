@@ -20,8 +20,8 @@ global:
   rootfs_archive_url: http://kameleon.imag.fr/builds/$${distrib}$${release_number}_$${bootstrap_image_version}.tar.xz
   output: "$${kameleon_cwd}/$${kameleon_recipe_name}" # output files basename
   g5k_tgz_path: server:///path/to/your/image
-  g5k_postinst_path: server:///grid5000/postinstalls/debian-x64-min-1.2-post.tgz
-  g5k_postinst_script: traitement.ash /rambin
+  g5k_postinst_path: http://public.nancy.grid5000.fr/~lnussbaum/postinstalls/g5k-postinstall.tgz
+  g5k_postinst_script: g5k-postinstall --net debian,traditional-names
   g5k_kernel_params: "net.ifnames=0 biosdevname=0 modprobe.blacklist=myri10ge" # Predictable interface name not supported yet
   force_puppet_debian_version: jessie #Because puppet stretch is not released yet
 
