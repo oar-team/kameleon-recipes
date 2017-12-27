@@ -30,7 +30,7 @@ class env::big ( $variant = "big", $parent_parameters = {} ){
   # nvidia
   class { 'env::big::configure_nvidia_gpu': }
   if "${::lsbdistcodename}" == "jessie" {
-    # xeon phi, only on jessie. currently no package compiled for strecth
+    # xeon phi, only on jessie. currently no package compiled for stretch
     class {
       'env::big::install_xeon_phi_requirements':
         enable  => $parameters['mic_enable']
