@@ -60,7 +60,7 @@ class env::std::dell {
         }
       }
       'stretch' : {
-        $packToInstall = [ 'srvadmin-base', 'srvadmin-omcommon', 'srvadmin-server-cli', 'srvadmin-server-snmp', 'srvadmin-storageservices', 'srvadmin-storageservices-cli', 'srvadmin-storageservices-snmp', 'srvadmin-idracadm8', 'srvadmin-idrac-ivmcli', 'srvadmin-idrac-snmp', 'srvadmin-idrac-vmcli', 'srvadmin-deng-snmp' ]
+        $packToInstall = [ 'srvadmin-base', 'srvadmin-omcommon', 'srvadmin-server-cli', 'srvadmin-server-snmp', 'srvadmin-storageservices', 'srvadmin-storageservices-cli', 'srvadmin-storageservices-snmp', 'srvadmin-idracadm8', 'srvadmin-idrac-ivmcli', 'srvadmin-idrac-snmp', 'srvadmin-idrac-vmcli', 'srvadmin-deng', 'srvadmin-deng-snmp' ]
 
         exec {
           "retrieve_libssl1.0.0_1.0.1t-1+deb8u6_amd64":
@@ -91,6 +91,29 @@ class env::std::dell {
           },
         } -> package { $packToInstall:
           ensure => installed,
+        }
+
+        service { 'dataeng':
+          enable => 'true',
+          require => Package['srvadmin-base']
+        }
+  
+        # Fix bug 7324
+        file { '/etc/omreg.cfg':
+          ensure => 'link',
+          target => '/opt/dell/srvadmin/etc/omreg.cfg',
+          require => Package['srvadmin-base']
+        }
+
+        # Fix bug 8048
+        file {
+          '/etc/systemd/system/dataeng.service.d':
+            ensure  => 'directory',
+            require => Package['srvadmin-base'];
+          '/etc/systemd/system/dataeng.service.d/stop.conf':
+            ensure  => 'file',
+            content => "[Service]\nExecStop=\n",
+            require => Package['srvadmin-base'];
         }
       }
     }
