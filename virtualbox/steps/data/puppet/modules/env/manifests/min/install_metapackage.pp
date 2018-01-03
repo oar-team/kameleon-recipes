@@ -5,7 +5,11 @@ class env::min::install_metapackage ( $variant ) {
     case $operatingsystem {
     'Debian','Ubuntu': {
 
-      $g5kmetapackages = "g5k-meta-packages-${::lsbdistcodename}-$variant"
+      if "${::lsbdistcodename}" == "stretch" {
+        $g5kmetapackages = "g5k-meta-packages-debian9-$variant" 
+      } else {
+        $g5kmetapackages = "g5k-meta-packages-${::lsbdistcodename}-$variant"
+      }
 
       package {
         $g5kmetapackages:
