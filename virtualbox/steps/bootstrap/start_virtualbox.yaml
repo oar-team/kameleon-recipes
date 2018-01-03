@@ -15,6 +15,7 @@
   - exec_local: VBoxManage modifyvm $${virtualbox_vmid} --ostype $${virtualbox_os_type}
   - exec_local: VBoxManage modifyvm $${virtualbox_vmid} --boot1 disk
   - exec_local: VBoxManage modifyvm $${virtualbox_vmid} --memory $${virtualbox_memory_size}
+  - exec_local: VBoxManage modifyvm $${virtualbox_vmid} --cpus $${virtualbox_cpus}
   - exec_local: VBoxManage modifyvm $${virtualbox_vmid} --acpi on
   - exec_local: VBoxManage modifyvm $${virtualbox_vmid} --nictype1 82540EM
   - exec_local: VBoxManage modifyvm $${virtualbox_vmid} --nictype2 82540EM
