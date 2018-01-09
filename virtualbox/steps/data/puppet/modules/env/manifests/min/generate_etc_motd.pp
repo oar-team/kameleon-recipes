@@ -1,4 +1,11 @@
 class env::min::generate_etc_motd {
+
+  if "${::lsbdistcodename}" == "stretch" {
+    $userdistribname = "debian9"
+  } else {
+    $userdistribname = "${::lsbdistcodename}"
+  }
+
   file {
     '/etc/motd':
       ensure  => file,
