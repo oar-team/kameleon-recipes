@@ -7,6 +7,9 @@ apt-get install -y libguestfs-tools
 apt-get install -y dirmngr 
 gem install --no-ri --no-rdoc kameleon-builder
 mount -t tmpfs tmpfs /tmp
-mv /bin/gzip /bin/gzip.OLD
-ln -s /usr/bin/pigz /bin/gzip
-cd /tmp
+memSize=`df /tmp | tail -l | tr -s ' ' | cut -f 4 -d ' '`
+if [ $memSize -gt 13631488 ]; then
+  mv /bin/gzip /bin/gzip.OLD
+  ln -s /usr/bin/pigz /bin/gzip
+  cd /tmp
+fi
