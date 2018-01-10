@@ -6,9 +6,9 @@ apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install
 apt-get install -y libguestfs-tools
 apt-get install -y dirmngr 
 gem install --no-ri --no-rdoc kameleon-builder
-mount -t tmpfs tmpfs /tmp
-memSize=`df /tmp | tail -l | tr -s ' ' | cut -f 4 -d ' '`
-if [ $memSize -gt 13631488 ]; then
+memSize=`grep MemTotal /proc/meminfo | tr -s ' ' | cut -f 2 -d ' '`
+if [ "$memSize" -gt "27262976" ]; then
+  mount -t tmpfs tmpfs /tmp
   mv /bin/gzip /bin/gzip.OLD
   ln -s /usr/bin/pigz /bin/gzip
   cd /tmp
