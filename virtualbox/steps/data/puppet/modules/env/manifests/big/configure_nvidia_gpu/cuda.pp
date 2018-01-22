@@ -30,16 +30,18 @@ class env::big::configure_nvidia_gpu::cuda () {
       '/tmp/NVIDIA-Linux_cuda.run':
         ensure    => file,
         require   => Exec['retrieve_nvidia_cuda'];
+      '/usr/local/cuda/lib64/libcuda.so':
+        ensure    => 'link',
+        target    => '/usr/lib/x86_64-linux-gnu/libcuda.so',
+        require   => Exec['install_nvidia_cuda'],
+        notify    => Exec['update_ld_conf'];
       '/etc/ld.so.conf.d/cuda.conf':
         ensure    => file,
         owner     => root,
         group     => root,
         mode      => '0644',
-        source    => 'puppet:///modules/env/big/nvidia/cuda.conf',
+        source    => 'puppet:///modules/env/big/nvidia/cuda-9.0.conf',
         notify    => Exec['update_ld_conf'];
-      '/usr/lib/x86_64-linux-gnu/libcuda.so':
-        ensure    => 'link',
-        target    => '/usr/lib/libcuda.so';
     }
   } else {
     file{
