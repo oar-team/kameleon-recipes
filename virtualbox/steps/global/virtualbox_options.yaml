@@ -4,7 +4,8 @@ image_format: vmdk
 appliance_formats: vmdk tar.gz
 
 ## VirtualBox options
-virtualbox_memory_size: 768
+virtualbox_memory_size: 8192
+virtualbox_cpus: 2
 virtualbox_os_type: Linux_64
 virtualbox_vmid: $${kameleon_recipe_name}_$${kameleon_short_uuid}
 
