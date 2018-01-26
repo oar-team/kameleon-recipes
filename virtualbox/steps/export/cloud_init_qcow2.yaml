@@ -1,0 +1,8 @@
+# Install cloud_init only in qcow2 output file
+
+- install_cloud_init:
+  - exec_local: |
+      echo "Install cloud_init in qcow2"
+      virt-customize -a $${output}.qcow2 --install cloud-init
+      echo "Configure datasource for cloud_init"
+      virt-customize -a $${output}.qcow2 --run-command 'echo "datasource_list: [  NoCloud, Ec2, None ]" > /etc/cloud/cloud.cfg.d/91-set-datasources.cfg'

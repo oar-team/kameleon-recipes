@@ -61,4 +61,5 @@ setup:
 export:
   - disable_checkpoint
   - "@base"
+  - cloud_init_qcow2
   - export_g5k
