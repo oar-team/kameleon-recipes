@@ -1,3 +1,5 @@
+- puppet_deb_url: "http://apt.puppetlabs.com/puppet-release-$${release}.deb"
+
 - install_requirements:
   - exec_in: apt-get install -y rsync curl virtualbox-guest-utils linux-headers-amd64
 
@@ -9,7 +11,7 @@
 
 - install_puppet:
   - download_file_in:
-    - "http://apt.puppetlabs.com/puppet-release-$${release}.deb"
+    - $${puppet_deb_url}
     - $KAMELEON_WORKDIR/puppet.deb
   - exec_in: |
       dpkg -i $KAMELEON_WORKDIR/puppet.deb
