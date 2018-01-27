@@ -22,6 +22,76 @@
 - start_vm:
   - on_checkpoint: redo
   - check_cmd_local: qemu-system-$${qemu_arch}
+  - on_bootstrap_clean:
+    - test:
+      - exec_local: test "$${shutdown_vm_immediately}" == "false" -a "$${vm_cleanup_section}" == "bootstrap"
+      - group: 
+        - exec_local: &1 |
+            if [ -f $${qemu_pidfile} ]; then
+              _QEMU_PID=$(< $${qemu_pidfile})
+              if ps -p $_QEMU_PID > /dev/null; then
+                if [ "$${force_vm_shutdown}" == "true" ]; then
+                  if [ -S $${qemu_monitor_socket} ]; then
+                    echo "Executing a graceful shutdown of the qemu VM via the monitor socket..."
+                    NEXT_WAIT_TIME=0
+                    echo system_powerdown | socat - UNIX-CONNECT:$${qemu_monitor_socket} || true
+                    while ps -p $_QEMU_PID > /dev/null && [ $NEXT_WAIT_TIME -lt $${shutdown_timeout} ];
+                    do
+                      sleep 1
+                      echo -en "\rWaiting for qemu virtual machine to shutdown...($(( $${shutdown_timeout} - 1 - NEXT_WAIT_TIME++ ))s)"
+                    done
+                  fi
+                else
+                  echo "Waiting for the VM to shutdown"
+                  echo "Run 'vncviewer :$VNC_PORT' to see what's happening in the VM"
+                  while ps -p $_QEMU_PID > /dev/null;
+                  do
+                    sleep 2
+                  done
+                fi
+              fi
+            fi
+        - exec_local: &2 |
+            if [ -f $${qemu_pidfile} ]; then
+              _QEMU_PID=$(< $${qemu_pidfile})
+              if ps -p $_QEMU_PID > /dev/null; then
+                if [ -S $${qemu_monitor_socket} ]; then
+                  echo "The graceful shutdown of the qemu VM should have failed (monitor socket is there)..."
+                fi
+                echo "Killing qemu (pid: $_QEMU_PID)."
+                kill -9 "$_QEMU_PID"
+              fi
+              rm -f $${qemu_pidfile}
+            fi
+            rm -f $${qemu_monitor_socket}
+  - on_setup_clean:
+    - test:
+      - exec_local: test "$${shutdown_vm_immediately}" == "false" -a "$${vm_cleanup_section}" == "setup"
+      - group:
+        - exec_local: *1
+        - exec_local: *2
+  - on_export_clean:
+    - test:
+      - exec_local: test "$${shutdown_vm_immediately}" == "false" -a "$${vm_cleanup_section}" == "export"
+      - group:
+        - exec_local: *1
+        - exec_local: *2
+  - exec_local: |
+      if [ "$${shutdown_vm_immediately}" == "true" ]; then
+        echo "Qemu VM shutdown: immediately"
+      else
+        echo "Qemu VM shutdown: in $${vm_cleanup_section} section cleaning"
+      fi
+  - exec_local: |
+      if [ -r $${qemu_pidfile} ] && pgrep -F $${qemu_pidfile} > /dev/null; then
+        echo "Qemu pid file found, with process running: killing it !" 1>&2
+        pkill -F $${qemu_pidfile}
+        sleep 0.5
+        if pgrep -F $${qemu_pidfile} > /dev/null; then
+          echo "Failed to kill qemu process." 1>&2
+          exit 1
+        fi
+      fi
   - exec_local: |
       echo "Starting qemu..."
       if [ "$${qemu_enable_kvm}" == "true" ]; then
@@ -103,75 +173,10 @@
 
 - shutdown_vm:
   - on_checkpoint: redo
-  - test:
-    - exec_local: test "$${shutdown_vm_immediately}" == "true"
-    - exec_local: &1 |
-        if [ -f $${qemu_pidfile} ]; then
-          _QEMU_PID=$(< $${qemu_pidfile})
-          if ps -p $_QEMU_PID > /dev/null; then
-            if [ "$${force_vm_shutdown}" == "true" ]; then
-              if [ -S $${qemu_monitor_socket} ]; then
-                NEXT_WAIT_TIME=0
-                echo system_powerdown | socat - UNIX-CONNECT:$${qemu_monitor_socket} || true
-                while ps -p $_QEMU_PID > /dev/null && [ $NEXT_WAIT_TIME -lt $${shutdown_timeout} ];
-                do
-                  sleep 1
-                  echo -en "\rWaiting for qemu virtual machine to shutdown...($(( $${shutdown_timeout} - 1 - NEXT_WAIT_TIME++ ))s)"
-                done
-              fi
-            else
-              echo "Waiting for the VM to shutdown"
-              echo "Run 'vncviewer :$VNC_PORT' to see what's happening in the VM"
-              while ps -p $_QEMU_PID > /dev/null;
-              do
-                sleep 2
-              done
-            fi
-          fi
-        fi
   - on_clean:
-    - exec_local: echo "QEMU SHUTDOWN VM ON CLEAN $${shutdown_vm_immediately} $${vm_cleanup_section}"
     - test:
       - exec_local: test "$${shutdown_vm_immediately}" == "true"
-      - exec_local: &2 |
-          if [ -f $${qemu_pidfile} ]; then
-            _QEMU_PID=$(< $${qemu_pidfile})
-            if ps -p $_QEMU_PID > /dev/null; then
-              if [ -S $${qemu_monitor_socket} ]; then
-                echo "  ~> Failed"
-              fi
-              echo "Killing QEMU (pid: $_QEMU_PID)..."
-              kill -9 "$_QEMU_PID"
-            else
-              if [ -S $${qemu_monitor_socket} ]; then
-                echo "  ~> Done"
-              fi
-            fi
-            rm -f $${qemu_pidfile}
-          fi
-          rm -f $${qemu_monitor_socket}
-      - exec_local: echo "NO VM CLEAN HERE"
-  - on_bootstrap_clean:
-    - exec_local: echo "QEMU SHUTDOWN VM ON BOOTSTRAP CLEAN $${shutdown_vm_immediately} $${vm_cleanup_section}"
-    - test:
-      - exec_local: test "$${shutdown_vm_immediately}" == "false" -a "$${vm_cleanup_section}" == "bootstrap"
-      - group: 
-        - exec_local: *1
-        - exec_local: *2
-      - exec_local: echo "NO VM CLEAN HERE"
-  - on_setup_clean:
-    - exec_local: echo "QEMU SHUTDOWN VM ON SETUP CLEAN $${shutdown_vm_immediately} $${vm_cleanup_section}"
-    - test:
-      - exec_local: test "$${shutdown_vm_immediately}" == "false" -a "$${vm_cleanup_section}" == "setup"
-      - group:
-        - exec_local: *1
-        - exec_local: *2
-      - exec_local: echo "NO VM CLEAN HERE"
-  - on_export_clean:
-    - exec_local: echo "QEMU SHUTDOWN VM ON EXPORT CLEAN $${shutdown_vm_immediately} $${vm_cleanup_section}"
-    - test:
-      - exec_local: test "$${shutdown_vm_immediately}" == "false" -a "$${vm_cleanup_section}" == "export"
-      - group:
-        - exec_local: *1
-        - exec_local: *2
-      - exec_local: echo "NO VM CLEAN HERE"
+      - exec_local: *2
+  - test:
+    - exec_local: test "$${shutdown_vm_immediately}" == "true"
+    - exec_local: *1
