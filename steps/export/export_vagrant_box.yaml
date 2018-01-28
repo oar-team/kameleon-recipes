@@ -8,7 +8,7 @@
     - exec_local: |
         if VBoxManage list vms | grep -q $${virtualbox_vmid}; then
           echo "Deleting VBox machine $${virtualbox_vmid}"
-          VBoxManage unregistervm $${virtualbox_vmid}
+          VBoxManage unregistervm $${virtualbox_vmid} --delete
         fi
     - exec_local: |
         if [ -e $${virtualbox_disk_filename} ]; then
@@ -38,5 +38,5 @@
 - save_box:
   - check_cmd_local: vagrant
   - exec_local: echo "Create vagrant box $${vagrant_box_filename}..."
-  - exec_local: rm -f $${vagrant_box_filename}.box
+  - exec_local: rm -f $${vagrant_box_filename}
   - exec_local: vagrant package --base $${virtualbox_vmid} --output $${vagrant_box_filename}
