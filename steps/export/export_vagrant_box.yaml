@@ -4,6 +4,17 @@
 - vagrant_box_filename: $${kameleon_cwd}/$${kameleon_recipe_name}.box
 
 - create_vbox_machine:
+  - on_export_clean:
+    - exec_local: |
+        if VBoxManage list vms | grep -q $${virtualbox_vmid}; then
+          echo "Deleting VBox machine $${virtualbox_vmid}"
+          VBoxManage unregistervm $${virtualbox_vmid}
+        fi
+    - exec_local: |
+        if [ -e $${virtualbox_disk_filename} ]; then
+        echo "Deleting disk file $${virtualbox_disk_filename}"
+          rm $${virtualbox_disk_filename}
+        fi
   - exec_local: echo "Creating VBox machine $${virtualbox_vmid}"
   - exec_local: VBoxManage createvm --name $${virtualbox_vmid} --register
   - exec_local: VBoxManage modifyvm $${virtualbox_vmid} --ostype $${virtualbox_os_type}
@@ -29,13 +40,3 @@
   - exec_local: echo "Create vagrant box $${vagrant_box_filename}..."
   - exec_local: rm -f $${vagrant_box_filename}.box
   - exec_local: vagrant package --base $${virtualbox_vmid} --output $${vagrant_box_filename}
-
-- drop_vbox_machine:
-  - on_export_clean:
-    - exec_local: echo "Deleting VBox machine $${virtualbox_vmid}"
-    - exec_local: VBoxManage unregistervm $${virtualbox_vmid}
-
-- drop_vdi_disk:
-  - on_export_clean:
-    - exec_local: echo "Deleting disk file $${virtualbox_disk_filename}"
-    - exec_local: rm $${virtualbox_disk_filename}
