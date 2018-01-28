@@ -6,11 +6,14 @@
 #
 #==============================================================================
 ---
-extend: ../from_scratch/debian-base.yaml
+extend: ../from_scratch/debian-debootstrap-base.yaml
 # Global variables use by Kameleon engine and the steps
 global:
   user_name: vagrant
   appliance_formats: vdi
+  # Puppet: use stretch version by default since there is no version for 
+  # Debian testing or sid
+  puppet_deb_url: http://apt.puppetlabs.com/puppet-release-stretch.deb
 
 bootstrap:
   - "@base"
