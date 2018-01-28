@@ -1,0 +1,54 @@
+#==============================================================================
+# vim: softtabstop=2 shiftwidth=2 expandtab fenc=utf-8 cc=81 tw=80
+#==============================================================================
+#
+# DESCRIPTION: Debian generic recipe using the debootstrap mechanism
+#
+# USAGE:
+#   Select directly in this recipe:
+#
+#   - distribution: debian or ubuntu
+#   - release: wheezy, testing, sid...
+#   - architechture: default amd64
+#
+#   or, override the globals directly in CLI:
+#
+#   kameleon build --global distrib:debian --global release:wheezy
+#
+#   or extends this recipe with your own and override those variable in it.
+#
+#==============================================================================
+---
+extend: ../from_scratch/base.yaml
+
+global:
+  distrib: debian
+  release: testing
+  deb_arch: amd64
+  deb_kernel_arch: $${deb_arch}
+
+  # This ISO is use to create the OUT context and not image itself
+  iso_filename: debian-jessie-$${iso_arch}-live.iso
+  iso_url: http://kameleon.imag.fr/iso/$${iso_filename}
+  iso_path: $${kameleon_cwd}/$${iso_filename}
+
+  in_context:
+    cmd: ssh -F $${ssh_config_file} $${kameleon_recipe_name} -t chroot $${rootfs} /bin/bash
+    workdir: /root/kameleon_workdir
+    proxy_cache: $${local_ip}
+
+bootstrap:
+  - enable_checkpoint
+  - download_iso
+  - prepare_disk
+  - prepare_ssh_to_out_context
+  - start_qemu
+  - force_exit:
+    - force_error:
+      - exec_local: exit 1
+
+setup:
+  - "@base"
+
+export:
+  - "@base"
