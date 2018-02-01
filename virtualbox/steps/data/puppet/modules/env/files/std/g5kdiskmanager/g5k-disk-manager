@@ -162,7 +162,7 @@ end
 # For the different states, see:
 # https://github.com/grid5000/g5k-api/lib/oar/resource.rb
 def user_deploy?(hostname)
-  url = G5K_API + '/sites/' + site(hostname) + '/clusters/' + cluster(hostname) + '/status'
+  url = G5K_API + '/sites/' + site(hostname) + '/status?disks=no&job_details=no&waiting=no&network_address=' + hostname
   hash = JSON::parse(open(url).read)
   status = hash['nodes'][hostname]['soft']
   debug("Node status: #{status}")
