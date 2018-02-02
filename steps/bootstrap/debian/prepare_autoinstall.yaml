@@ -3,5 +3,5 @@
   - exec_local: cp $${base_preseed_path} $${http_directory}/preseed.cfg
 
 - customize_preseed:
-  - exec_local: sed -i s'|d-i passwd/root-password password\(.*\)|d-i passwd/root-password $${root_password}|'g $${http_directory}/preseed.cfg
-  - exec_local: sed -i s'|d-i passwd/root-password-again password\(.*\)|d-i passwd/root-password-again $${root_password}|'g $${http_directory}/preseed.cfg
+  - exec_local: sed -i -e 's|\(d-i passwd/root-password password \).*|\1$${root_password}|g' $${http_directory}/preseed.cfg
+  - exec_local: sed -i -e 's|\(d-i passwd/root-password-again password \).*|\1$${root_password}|g' $${http_directory}/preseed.cfg
