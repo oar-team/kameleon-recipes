@@ -98,6 +98,17 @@ if __name__ == '__main__':
             url_regex = re.compile("^"+args.mirror+"cdimage/(?:release|archive)/(?:"+args.version+"\.\d+\.\d+/(?:"+args.arch+"/(?:iso-cd/(?:debian-"+args.version+"\.\d+\.\d+-"+args.arch+"-netinst\.iso)?)?)?)?$")
             target_regex = re.compile("^.*-netinst\.iso$") 
             [visited,found] = url_find(set([args.mirror+"cdimage/"+v+"/" for v in ["release","archive"]]), set(), set())
+        elif (args.distrib.lower() == "ubuntu"):
+            if args.mirror == None:
+                args.mirror = "http://(?:archive|old-releases).ubuntu.com/"
+                servers = set(["http://"+s+".ubuntu.com/ubuntu/" for s in ["old-releases","archive"]])
+            else:
+                servers = set([args.mirror])
+            if not re.match("^\w+$",args.version):
+                raise Exception("please give the Ubuntu release name")
+            url_regex = re.compile("^"+args.mirror+"ubuntu/dists/(?:"+args.version+"(?:-updates)?/(?:main/(?:installer-"+args.arch+"/(?:current/(?:images/(?:netboot/(?:mini\.iso)?)?)?)?)?)?)?$")
+            target_regex = re.compile("^.*/mini\.iso$") 
+            [visited,found] = url_find(servers, set(), set())
         elif (args.distrib.lower() == "centos"):
             if args.mirror == None:
                 args.mirror = "http://mirror.in2p3.fr/linux/CentOS/"
@@ -121,7 +132,10 @@ if __name__ == '__main__':
         for url in found:
             logger.info(url)
         if len(found) > 0:
-            print(sorted(found,key=lambda x:re.sub(r".*/debian-(\d+).(\d+).(\d+)-amd64-netinst\.iso$",r"\1.\2.\3",x),reverse=True)[0])
+            if (args.distrib.lower() == "debian"):
+                print(sorted(found,key=lambda x:re.sub(r".*/debian-(\d+).(\d+).(\d+)-amd64-netinst\.iso$",r"\1.\2.\3",x),reverse=True)[0])
+            else:
+                print(sorted(found, reverse=False)[0])
         else:
             raise Exception("no url found")
     except Exception as exc:
