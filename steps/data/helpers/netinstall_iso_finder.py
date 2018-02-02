@@ -22,11 +22,14 @@ class LinkParser(HTMLParser):
         contentType = response.info().get('Content-Type')
         if not contentType:
             return
-        (mediaType,charset) = contentType.split(";")
-        if mediaType =='text/html':
-            htmlBytes = response.read()
-            htmlString = htmlBytes.decode(charset.split("=")[1])
-            self.feed(htmlString)
+        logger.debug("url = " + url );
+        logger.debug("contenType = " + contentType );
+        if ';' in contentType:
+            (mediaType,charset) = contentType.split(";")
+            if mediaType =='text/html':
+                htmlBytes = response.read()
+                htmlString = htmlBytes.decode(charset.split("=")[1])
+                self.feed(htmlString)
             
     def handle_starttag(self, tag, attrs):
         if tag == 'a':
@@ -38,7 +41,6 @@ class LinkParser(HTMLParser):
 
     def get_links(self):
         """Returns all the collected links"""
-        "\n".join(self.links)
         return self.links
 
 
@@ -56,7 +58,7 @@ def url_find(to_visit_url_set,visited_url_set,found_url_set):
             found_url_set.add(url)
             return url_find(to_visit_url_set, visited_url_set, found_url_set)
         else:
-            new_url_set = set([url for url in LinkParser(url).get_links() if url_regex.match(url)])
+            new_url_set = set([url for url in LinkParser(url).get_links() if (logger.debug(url) or True) and url_regex.match(url)])
             new_url_set.difference_update(visited_url_set)
             to_visit_url_set.update(new_url_set)
             return url_find(to_visit_url_set, visited_url_set, found_url_set)
@@ -67,6 +69,7 @@ if __name__ == '__main__':
     parser.add_argument("version", metavar="VERSION", help="version")
     parser.add_argument("arch", metavar="ARCH", help="architecture")
     parser.add_argument("mirror", metavar="MIRROR", help="mirror", nargs="?")
+    parser.add_argument('--info', action="store_true", default=False, help='print info messages')
     parser.add_argument('--debug', action="store_true", default=False, help='print debug messages')
     args = parser.parse_args()
 
@@ -74,9 +77,12 @@ if __name__ == '__main__':
     if args.debug:
         logger.setLevel(logging.DEBUG)
         handler.setLevel(logging.DEBUG)
-    else:
+    elif args.info:
         logger.setLevel(logging.INFO)
         handler.setLevel(logging.INFO)
+    else:
+        logger.setLevel(logging.WARNING)
+        handler.setLevel(logging.WARNING)
     handler.setFormatter(logging.Formatter('%(levelname)s: %(message)s'))
     logger.addHandler(handler)
 
@@ -97,19 +103,23 @@ if __name__ == '__main__':
                 args.mirror = "http://mirror.in2p3.fr/linux/CentOS/"
             if not re.match("^\d+$",args.version):
                 raise Exception("please give the CentOS release number (e.g. 7 for CentOS-7)")
-            url_regex = re.compile("^"+args.mirror+"(?:"+args.version+"/(?:isos/(?:"+args.arch+"/(?:CentOS-"+args.version+"-"+args.arch+"-NetInstall-\d+\.iso)?)?)?)?$")
-            target_regex = re.compile("^.*CentOS-\d+-\w+-NetInstall-\d+\.iso$") 
+            if args.version == '6':
+                url_regex = re.compile("^"+args.mirror+"(?:"+args.version+"/(?:isos/(?:"+args.arch+"/(?:CentOS-"+args.version+"(?:\.\d+)?-"+args.arch+"-netinstall\.iso)?)?)?)?$")
+                target_regex = re.compile("^.*CentOS-\d+(?:\.\d+)?-\w+-netinstall\.iso$") 
+            else:
+                url_regex = re.compile("^"+args.mirror+"(?:"+args.version+"/(?:isos/(?:"+args.arch+"/(?:CentOS-"+args.version+"-"+args.arch+"-NetInstall-\d+\.iso)?)?)?)?$")
+                target_regex = re.compile("^.*CentOS-\d+-\w+-NetInstall-\d+\.iso$") 
             [visited,found] = url_find(set([args.mirror]), set(), set())
         else:
             raise Exception("this distribution is not supported")
-        logger.debug("URL regex: "+url_regex.pattern)
-        logger.debug("Target regex: "+target_regex.pattern)
+        logger.info("URL regex: "+url_regex.pattern)
+        logger.info("Target regex: "+target_regex.pattern)
         logger.debug("Visited URLs:")
         for url in visited:
             logger.debug(url)
-        logger.debug("Found URLs:")
+        logger.info("Found URLs:")
         for url in found:
-            logger.debug(url)
+            logger.info(url)
         if len(found) > 0:
             print(sorted(found,key=lambda x:re.sub(r".*/debian-(\d+).(\d+).(\d+)-amd64-netinst\.iso$",r"\1.\2.\3",x),reverse=True)[0])
         else:
