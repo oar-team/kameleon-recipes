@@ -11,8 +11,7 @@ extend: ubuntu-base.yaml
 global:
   # Distribution
   release: zesty
-
-  iso_location: $${release}
+  deb_mirror_hostname: old-releases.ubuntu.com
 
 bootstrap:
   - "@base"

@@ -28,7 +28,8 @@ global:
   release_number: 8
 
   # URL to retrieve packages from (sources.list)
-  deb_mirror_uri: http://ftp.debian.org/debian/
+  deb_mirror_hostname: ftp.debian.org
+  deb_mirror_uri: http://$${deb_mirror_hostname}/debian/
 
   # location of the Debian netinstall iso
   # can be set manually or guessed using a url finder helper script

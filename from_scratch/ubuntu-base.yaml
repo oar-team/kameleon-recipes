@@ -20,13 +20,13 @@ global:
     - $${distrib}
     - debian
 
-  deb_mirror_uri: http://archive.ubuntu.com/ubuntu/
+  deb_mirror_hostname: archive.ubuntu.com
   # For old non-LTS release, use:
-  # deb_mirror_uri: http://old-releases.ubuntu.com/ubuntu
+  # deb_mirror_hostname: old-releases.ubuntu.com
+  deb_mirror_uri: http://$${deb_mirror_hostname}/ubuntu/
 
-  #iso_filename: ubuntu-$${iso_location}-$${deb_arch}-mini.iso
   #iso_location: $${release}-updates
-  #iso_url: $${deb_mirror_uri}ubuntu/dists/$${iso_location}/main/installer-$${deb_arch}/current/images/netboot/mini.iso
+  #iso_url: $${deb_mirror_uri}/dists/$${iso_location}/main/installer-$${deb_arch}/current/images/netboot/mini.iso
   iso_finder_helper: $${kameleon_data_dir}/helpers/netinstall_iso_finder.py
   iso_finder_args: $${distrib} $${release} $${deb_arch}
 
