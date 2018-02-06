@@ -122,9 +122,9 @@ def get_boot_information(disk):
     """Looking for boot information"""
     script_1 = """
 blkid /dev/sda1 | grep ^UUID: | awk '{print $2}'
-ls /boot/ | grep ^vmlinuz | head -n 1
-ls /boot/ | grep ^init | grep -v fallback | head -n 1
-ls /boot/ | grep ^init | grep fallback | head -n 1"""
+ls /boot/ | grep ^vmlinuz | sort -rn | head -n 1
+ls /boot/ | grep ^init | grep -v fallback | sort -rn | head -n 1
+ls /boot/ | grep ^init | grep fallback | sort -rn | head -n 1"""
     logger.info(get_boot_information.__doc__)
     output_1 = run_guestfish_script(disk, script_1, piped_output=True)
     try:
