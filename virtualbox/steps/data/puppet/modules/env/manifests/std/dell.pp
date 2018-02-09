@@ -29,18 +29,18 @@ class env::std::dell {
             'src' => false
           }
         }
-    
+
         package {
           ['srvadmin-all', 'dtk-scripts']:
             ensure   => 'installed',
             require  => [Apt::Source['linux.dell.com'], Exec['apt_update']]
         }
-  
+
         service { 'dataeng':
           enable => 'true',
           require => Package['srvadmin-all', 'dtk-scripts']
         }
-  
+
         # Fix bug 7324
         file { '/etc/omreg.cfg':
           ensure => 'link',
@@ -97,7 +97,7 @@ class env::std::dell {
           enable => 'true',
           require => Package['srvadmin-base']
         }
-  
+
         # Fix bug 7324
         file { '/etc/omreg.cfg':
           ensure => 'link',
@@ -105,14 +105,14 @@ class env::std::dell {
           require => Package['srvadmin-base']
         }
 
-        # Fix bug 8048
+        # Fix bug 8048 and 8975
         file {
           '/etc/systemd/system/dataeng.service.d':
             ensure  => 'directory',
             require => Package['srvadmin-base'];
           '/etc/systemd/system/dataeng.service.d/stop.conf':
             ensure  => 'file',
-            content => "[Service]\nExecStop=\n",
+            content => "[Service]\nExecStop=\nKillMode=control-group\nKillSignal=9",
             require => Package['srvadmin-base'];
         }
       }
