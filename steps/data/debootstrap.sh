@@ -50,6 +50,7 @@ fi
 echo $HOSTNAME >> $CHROOT_DIR/etc/hostname
 
 # Configure network interfaces
+mkdir -p $CHROOT_DIR/etc/network
 cat > $CHROOT_DIR/etc/network/interfaces <<EOF
 auto lo
 iface lo inet loopback

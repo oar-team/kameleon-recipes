@@ -13,16 +13,27 @@ extend: debian-debootstrap-base.yaml
 
 global:
   release: jessie
-  bootstrap_packages: initramfs-tools busybox
+  bootstrap_packages: initramfs-tools busybox gnupg dirmngr
   bootstrap_variant: minbase
   enable_lighten: true
-  root_authorized_keys: $${kameleon_data_dir}/kadeploy_root_authorized_keys
+  #root_authorized_keys: $${kameleon_data_dir}/kadeploy_root_authorized_keys
   gpg_keyserver: keyserver.ubuntu.com
   arch_specific_packages: kexec-tools grub-pc fsarchiver
-  target_version: beta
+  deb_kernel: 
+  version_suffix:
 
 bootstrap:
   - enable_checkpoint
+  - check_root_authorized_keys:
+    - check_file_exist:
+      - exec_local: |
+          if ! [ -n "$${root_authorized_keys}" -a -r "$${root_authorized_keys}" ]; then 
+            pwd
+            ls -l "$${root_authorized_keys}"
+            echo "File: '$${root_authorized_keys}' is not readable from $PWD" 1>&2
+            echo 'Please give "-g root_authorized_keys:<file>"' 1>&2
+            exit 1
+          fi
   - download_iso
   - prepare_disk
   - prepare_ssh_to_out_context
@@ -101,7 +112,13 @@ setup:
           dpkg-reconfigure tzdata
   - install_remove_packages:
     - kernel:
-      - exec_in: apt-get install -y --force-yes linux-image-$${deb_kernel_arch}
+      - exec_in: |
+          if [ "$${deb_kernel}" == "bpo" ]; then
+            KERNEL_BPO=$(apt-cache search "^linux-image.[[:digit:].-]+bpo[[:digit:].]+-$${deb_kernel_arch}$" | sort -h | tail -n1 | cut -f1 -d\ )
+            apt-get install -y --force-yes $KERNEL_BPO
+          else
+            apt-get install -y --force-yes linux-image-$${deb_kernel_arch}
+          fi
     - firmware:
       - exec_in: apt-get install -y --force-yes firmware-linux firmware-bnx2 firmware-bnx2x
     - system_utils: 
@@ -116,13 +133,13 @@ setup:
     - ruby_packages:
       - exec_in: apt-get install -y --force-yes ruby ruby-net-ssh ruby-net-ssh-multi ruby-daemons 
     - wget:
-      - exec_in: apt-get remove --purge -y --force-yes wget libicu52 libpsl0
+      - exec_in: apt-get remove --purge -y --force-yes wget libpsl5
   - kadeploy_customization:
     - set_motd:
       - write_in:
         - /etc/motd
         - |
-          Welcome to Kadeploy deployment ramdisk OS (version: $${release}-$${deb_arch}_$${target_version}, $(date +'%F %T'))
+          Welcome to Kadeploy3 deployment ramdisk OS (version: $${kameleon_recipe_name} $${release} $${deb_arch} $${deb_kernel} $${version_suffix} $(date +'%F %T'))
     - set_root_authorized_keys:
       - exec_in: mkdir -p /root/.ssh
       - exec_in: chmod 755 /root/.ssh
@@ -314,8 +331,8 @@ export:
     - vmlinuz:
       - out2local:
         - /tmp/vmlinuz
-        - ./kadeploy-vmlinuz_$${release}-$${deb_arch}_$${target_version}
+        - ./$${kameleon_recipe_name}_vmlinuz
     - initrd:
       - out2local:
         - /tmp/initrd.img
-        - ./kadeploy-initrd.img_$${release}-$${deb_arch}_$${target_version}
+        - ./$${kameleon_recipe_name}_initrd.img

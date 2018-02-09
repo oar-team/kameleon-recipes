@@ -9,7 +9,7 @@
 #
 #==============================================================================
 ---
-extend: kadeploy3-ramdisk.yaml
+extend: kadeploy3-deployrd-jessie.yaml
 
 global:
   arch: aarch64
