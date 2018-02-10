@@ -4,23 +4,22 @@
 #
 # DESCRIPTION: Kadeploy3 ramdisk OS (used in the deployment phase)
 #
-# Notes:
-# - force use of busybox rather than klibc-utils (which breaks the mount)
-#
 #==============================================================================
 ---
 extend: debian-debootstrap-base.yaml
 
 global:
   release: jessie
-  bootstrap_packages: initramfs-tools busybox gnupg dirmngr
+  # force use of busybox rather than klibc-utils (which breaks the mount)
+  bootstrap_packages: initramfs-tools busybox
   bootstrap_variant: minbase
   enable_lighten: true
   #root_authorized_keys: $${kameleon_data_dir}/kadeploy_root_authorized_keys
+  # -> set on command line using "-g root_authorized_keys:$PWD/steps/data/kadeploy_root_authorized_keys"
   gpg_keyserver: keyserver.ubuntu.com
-  arch_specific_packages: kexec-tools grub-pc fsarchiver
-  deb_kernel: 
-  version_suffix:
+  arch_specific_packages: kexec-tools grub-pc
+  deb_kernel: default
+  # -> other option: bpo - e.g. set on command line using "-g deb_kernel:bpo"
 
 bootstrap:
   - enable_checkpoint
@@ -139,7 +138,8 @@ setup:
       - write_in:
         - /etc/motd
         - |
-          Welcome to Kadeploy3 deployment ramdisk OS (version: $${kameleon_recipe_name} $${release} $${deb_arch} $${deb_kernel} $${version_suffix} $(date +'%F %T'))
+          Welcome to Kadeploy3 deployment ramdisk OS
+          Geerated from $${kameleon_recipe_name} (Debian $${release}, $${deb_kernel} kernel, $${deb_arch}) on $(date +'%F %T')
     - set_root_authorized_keys:
       - exec_in: mkdir -p /root/.ssh
       - exec_in: chmod 755 /root/.ssh
