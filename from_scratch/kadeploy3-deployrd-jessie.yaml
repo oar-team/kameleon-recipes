@@ -22,7 +22,7 @@ global:
   # -> other option: bpo - e.g. set on command line using "-g deb_kernel:bpo"
   firmware_packages: firmware-linux firmware-bnx2 firmware-bnx2x
   system_packages: ash systemd systemd-sysv
-  net_packages: ntpdate isc-dhcp-client openssh-client openssh-server taktuk netcat
+  net_packages: ifupdown ntpdate isc-dhcp-client openssh-client openssh-server taktuk netcat
   disk_packages: tar bzip2 xz-utils hdparm parted dosfstools ntfs-3g aufs-tools
   ruby_packages: ruby ruby-net-ssh ruby-net-ssh-multi ruby-daemons
   to_remove_packages:

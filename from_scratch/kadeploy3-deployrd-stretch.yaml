@@ -10,7 +10,7 @@ extend: kadeploy3-deployrd-jessie.yaml
 # Global variables use by Kameleon engine and the steps
 global:
   release: stretch
-  bootstrap_packages: initramfs-tools busybox gnupg dirmngr ifupdown
+  bootstrap_packages: initramfs-tools busybox gnupg dirmngr
   ruby_packages: ruby ruby-net-ssh ruby-net-ssh-multi ruby-daemons ruby-psych
   to_remove_packages: wget libpsl5
 
