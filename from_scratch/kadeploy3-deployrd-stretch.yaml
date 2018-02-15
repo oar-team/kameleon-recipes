@@ -11,6 +11,7 @@ extend: kadeploy3-deployrd-jessie.yaml
 global:
   release: stretch
   bootstrap_packages: initramfs-tools busybox gnupg dirmngr ifupdown
+  ruby_packages: ruby ruby-net-ssh ruby-net-ssh-multi ruby-daemons ruby-psych
 
 bootstrap:
   - "@base"
