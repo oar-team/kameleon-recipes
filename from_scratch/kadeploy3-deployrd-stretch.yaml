@@ -12,6 +12,7 @@ global:
   release: stretch
   bootstrap_packages: initramfs-tools busybox gnupg dirmngr ifupdown
   ruby_packages: ruby ruby-net-ssh ruby-net-ssh-multi ruby-daemons ruby-psych
+  to_remove_packages: wget libpsl5
 
 bootstrap:
   - "@base"

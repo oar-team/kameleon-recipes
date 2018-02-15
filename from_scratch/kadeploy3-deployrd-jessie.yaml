@@ -20,11 +20,12 @@ global:
   arch_specific_packages: kexec-tools grub-pc
   deb_kernel: default
   # -> other option: bpo - e.g. set on command line using "-g deb_kernel:bpo"
-  firmware-packages: firmware-linux firmware-bnx2 firmware-bnx2x
+  firmware_packages: firmware-linux firmware-bnx2 firmware-bnx2x
   system_packages: ash systemd systemd-sysv
   net_packages: ntpdate isc-dhcp-client openssh-client openssh-server taktuk netcat
   disk_packages: tar bzip2 xz-utils hdparm parted dosfstools ntfs-3g aufs-tools
   ruby_packages: ruby ruby-net-ssh ruby-net-ssh-multi ruby-daemons
+  to_remove_packages:
 
 bootstrap:
   - enable_checkpoint
@@ -115,7 +116,7 @@ setup:
           rm -f /etc/localtime /etc/timezone
           dpkg-reconfigure tzdata
   - install_packages:
-    - kernel_packages:
+    - install_kernel_packages:
       - exec_in: |
           if [ "$${deb_kernel}" == "bpo" ]; then
             KERNEL_BPO=$(apt-cache search "^linux-image.[[:digit:].-]+bpo[[:digit:].]+-$${deb_kernel_arch}$" | sort -h | tail -n1 | cut -f1 -d\ )
@@ -123,26 +124,25 @@ setup:
           else
             apt-get install -y --force-yes linux-image-$${deb_kernel_arch}
           fi
-    - firmware_packages:
-      - exec_in: apt-get install -y --force-yes $${firmware-packages}
-    - system_packages: 
-      - exec_in: apt-get install -y --force-yes $${system_packages}
-    - net_packages:
-      - exec_in: apt-get install -y --force-yes $${net_packages}
-    - arch_specific_packages:
+    - install_arch_specific_packages:
       - exec_in: |
           if [ -n "$${arch_specific_packages}" ]; then
             apt-get install -y --force-yes $${arch_specific_packages}
           fi
-    - disk_utils:
-      - exec_in: apt-get install -y --force-yes $${disk_packages}
-    - ruby_packages:
-      - exec_in: apt-get install -y --force-yes $${ruby_packages}
-  - fix_packages:
+    - install_other_packages:
+      - exec_in: |
+          echo "Installing $${firmware_packages} $${system_packages} $${net_packages} $${disk_packages} $${ruby_packages}"
+          apt-get install -y --force-yes $${firmware_packages} $${system_packages} $${net_packages} $${disk_packages} $${ruby_packages}
+          echo "Done"
     - fix_ntp:
       - exec_in: sed -i -e 's/\(NTPSERVERS=\).*/\1="ntp1.grid5000.fr ntp2.grid5000.fr"/;s/\(NTPDATE_USE_NTP_CONF=\).*/\1=no/' /etc/default/ntpdate
-    - remove_wget:
-      - exec_in: apt-get remove --purge -y --force-yes wget libpsl5
+    - remove_some_packages:
+      - exec_in: |
+          if [ -n "$${to_remove_packages}" ]; then
+            apt-get remove --purge -y --force-yes $${to_remove_packages}
+          else
+            echo "No package to remove"
+          fi
   - kadeploy_customization:
     - set_motd:
       - write_in:
