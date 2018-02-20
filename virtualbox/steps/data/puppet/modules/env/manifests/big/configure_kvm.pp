@@ -27,6 +27,12 @@ class env::big::configure_kvm () {
       group     => root,
       mode      => '0644',
       source    => 'puppet:///modules/env/big/kvm/60-qemu-system.rules';
+    '/usr/local/bin/create_tap':
+      ensure    => present,
+      owner     => root,
+      group     => root,
+      mode      => '0755',
+      source    => 'puppet:///modules/env/big/kvm/create_tap';
     '/usr/lib/qemu/qemu-bridge-helper':
       ensure    => present,
       owner     => root,
