@@ -1,0 +1,41 @@
+#==============================================================================
+# vim: softtabstop=2 shiftwidth=2 expandtab fenc=utf-8 cc=81 tw=80
+#==============================================================================
+#
+# DESCRIPTION: test aliases
+#
+#==============================================================================
+---
+aliases:
+  myalias1:
+    - exec_local: echo @1 line 1
+    - exec_local: echo @1 line 2
+  myalias2:
+    - myalias1: "@1"
+  myalias3:
+    - test:
+      - exec_local: "@1"
+      - group:
+        - myalias1: "@2"
+      - group:
+        - myalias2: "@3"
+global:
+  test: true
+
+bootstrap:
+  - test_macro:
+    - test_micro1:
+      - exec_local: echo $${test}
+      - test:
+        - exec_local: /bin/$${test}
+        - exec_local: echo test_then
+        - exec_local: echo test_else
+      - myalias1: in myalias1
+      - myalias2: in myalias2
+      - myalias3: 
+        - "/bin/$${test}"
+        - in myalias3 then
+        - in myalias3 else
+setup:
+
+export:

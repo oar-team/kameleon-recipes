@@ -1,0 +1,18 @@
+#==============================================================================
+# vim: softtabstop=2 shiftwidth=2 expandtab fenc=utf-8 cc=81 tw=80
+#==============================================================================
+#
+# DESCRIPTION: test aliases
+#
+#==============================================================================
+---
+global:
+  test: true
+
+bootstrap:
+  - test_macro:
+    - test_micro1:
+      - exec_local: echo $${test}
+setup:
+
+export:
