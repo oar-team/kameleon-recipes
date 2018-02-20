@@ -33,6 +33,23 @@ class env::big::configure_kvm () {
       group     => root,
       mode      => '0755',
       source    => 'puppet:///modules/env/big/kvm/create_tap';
+    '/usr/lib/qemu/qemu-bridge-helper':
+      ensure    => present,
+      owner     => root,
+      group     => root,
+      mode      => '4755';
+    '/etc/qemu':
+      ensure    => directory,
+      owner     => root,
+      group     => root,
+      mode      => '0755';
+    '/etc/qemu/bridge.conf':
+      ensure    => file,
+      owner     => root,
+      group     => root,
+      mode      => '0644',
+      content   => "allow br0",
+      require   => File['/etc/qemu'];
     '/usr/local/bin/random_mac':
       ensure    => present,
       owner     => root,
