@@ -17,7 +17,15 @@
 - shutdown_vm_immediately: false
 - force_vm_shutdown: true
 - check_cmd_local: socat
-- qemu_arch: x86_64
+- qemu_enable_kvm: "$(egrep '(vmx|svm)' /proc/cpuinfo > /dev/null && echo true)"
+- qemu_cpu: 2
+- qemu_memory_size: 768
+- qemu_monitor_socket: $${kameleon_cwd}/qemu_monitor.socket
+- qemu_arch: $${arch}
+- qemu_image_size: 10G
+- qemu_pidfile: $${kameleon_cwd}/qemu.pid
+
+
 
 - start_vm:
   - on_checkpoint: redo
