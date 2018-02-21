@@ -9,7 +9,7 @@
 extend: debian9-x64-common.yaml # Cf 'jessie-x64-common' for a real content. This recipe only overwrite variant.
 global:
   variant: nfs
-  g5k_postinst_script: g5k-postinstall --net debian,traditional-names --fstab nfs
+  g5k_postinst_script: g5k-postinstall --net debian --net traditional-names --fstab nfs
 
 bootstrap:
   - "@base"

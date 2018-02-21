@@ -9,7 +9,7 @@
 extend: debian9-x64-common.yaml # Cf 'jessie-x64-common' for a real content. This recipe only overwrite variant.
 global:
   variant: std
-  g5k_postinst_script: g5k-postinstall --net debian,traditional-names --fstab nfs,site-specific --restrict-user std
+  g5k_postinst_script: g5k-postinstall --net debian --net traditional-names --fstab nfs --fstab site-specific --restrict-user std
   g5k_kernel_params: "cgroup_enable=memory net.ifnames=0 biosdevname=0 modprobe.blacklist=myri10ge"
   appliance_tar_excludes: >-
     ./etc/fstab ./root/.bash_history ./root/kameleon_workdir
