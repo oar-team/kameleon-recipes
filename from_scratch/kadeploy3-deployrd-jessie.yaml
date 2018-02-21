@@ -26,6 +26,8 @@ global:
   disk_packages: tar bzip2 xz-utils hdparm parted dosfstools ntfs-3g aufs-tools
   ruby_packages: ruby ruby-net-ssh ruby-net-ssh-multi ruby-daemons
   to_remove_packages:
+  # xz is greedy in memory
+  qemu_memory_size: 2G
 
 bootstrap:
   - enable_checkpoint
@@ -273,7 +275,7 @@ export:
           esac
           . /usr/share/initramfs-tools/hook-functions
           # Begin real processing below this line
-          cp -v /boot/root.cgz $DESTDIR
+          cp -v /boot/root.cxz $DESTDIR
           EOF
           chmod 755 /etc/initramfs-tools/hooks/copy-root-archive
     - add_initramfs_scripts:
@@ -306,7 +308,7 @@ export:
           
           log_begin_msg "Populate rootfs"
           cd ${rootmnt}.tmp 
-          gunzip -c /root.cgz | cpio -i
+          xzcat /root.cxz | cpio -i
           if [ $? -ne 0 ]; then
              panic "Failed to populate"
           fi
