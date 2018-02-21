@@ -9,25 +9,23 @@
 #
 #==============================================================================
 ---
-extend: kadeploy3-deployrd-jessie.yaml
+extend: kadeploy3_deploy_kernel-jessie.yaml
 
 global:
-  arch: aarch64
-  deb_arch: arm64
-  deb_kernel_arch: $${deb_arch}
-  qemu_arch: x86_64
-  arch_specific_packages:
-
-  in_context:
-    cmd: ssh -F $${ssh_config_file} $${kameleon_recipe_name} -t chroot $${rootfs} /usr/bin/qemu-$${arch}-static /bin/bash
-    workdir: /root/kameleon_workdir
-    proxy_cache: $${local_ip}
 
 bootstrap:
   - "@base"
 
 setup:
   - "@base"
-
+  - install_oot_megaraid-sas_driver:
+    - add_oot_megaraid-sas_repo:
+      - write_in:
+        - /etc/apt/sources.list.d/megaraid-sas.list
+        - |
+          deb http://apt.grid5000.fr/megaraid_sas/ /
+      - exec_in: apt-get update
+    - install_driver:
+      - exec_in: apt-get install --force-yes --allow-unauthenticated megaraid-sas-modules-3.16.0-5-amd64
 export:
   - "@base"

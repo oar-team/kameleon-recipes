@@ -6,7 +6,7 @@
 #
 #==============================================================================
 ---
-extend: debian-debootstrap-base.yaml
+extend: ../from_scratch/debian-debootstrap-base.yaml
 
 global:
   release: jessie
