@@ -15,7 +15,7 @@ global:
   release_number: -debian9
   bootstrap_image_version: "latest"
   os_release: debian9
-  image_version: 2018022018
+  image_version: 2018022114
   variant: min
   rootfs_archive_url: http://kameleon.imag.fr/builds/$${distrib}$${release_number}_$${bootstrap_image_version}.tar.xz
   output: "$${kameleon_cwd}/$${kameleon_recipe_name}" # output files basename
