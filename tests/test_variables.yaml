@@ -11,7 +11,7 @@ global:
 
 bootstrap:
   - test_macro:
-    - test_micro1:
+    - test_micro:
       - exec_local: echo $${test}
 setup:
 

@@ -25,7 +25,6 @@ global:
 bootstrap:
   - test_macro:
     - test_micro1:
-      - exec_local: echo $${test}
       - test:
         - exec_local: /bin/$${test}
         - exec_local: echo test_then
