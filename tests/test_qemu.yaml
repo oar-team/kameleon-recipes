@@ -2,20 +2,7 @@
 # vim: softtabstop=2 shiftwidth=2 expandtab fenc=utf-8 cc=81 tw=80
 #==============================================================================
 #
-# DESCRIPTION: Debian generic recipe using the debootstrap mechanism
-#
-# USAGE:
-#   Select directly in this recipe:
-#
-#   - distribution: debian or ubuntu
-#   - release: wheezy, testing, sid...
-#   - architechture: default amd64
-#
-#   or, override the globals directly in CLI:
-#
-#   kameleon build --global distrib:debian --global release:wheezy
-#
-#   or extends this recipe with your own and override those variable in it.
+# DESCRIPTION: test recipe for qemu
 #
 #==============================================================================
 ---

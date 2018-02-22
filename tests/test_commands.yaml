@@ -2,7 +2,7 @@
 # vim: softtabstop=2 shiftwidth=2 expandtab fenc=utf-8 cc=81 tw=80
 #==============================================================================
 #
-# DESCRIPTION: Debian 9 (Stretch) recipe using the netinstall mechanism
+# DESCRIPTION: test recipe for the test and group commands and hooks
 #
 #==============================================================================
 ---
