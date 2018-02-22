@@ -2,9 +2,10 @@
 # vim: softtabstop=2 shiftwidth=2 expandtab fenc=utf-8 cc=81 tw=80
 #==============================================================================
 #
-# DESCRIPTION: Simple recipe that use a docker image directly. It is made to
-# conserve docker layers for the exported image.
-# No setup section is provided: You have to implement yours
+# DESCRIPTION: Simple recipe that use a docker image directly.
+#
+# It is made to conserve docker layers for the exported image.  No setup section
+# is provided: You have to implement yours
 #
 #==============================================================================
 ---
