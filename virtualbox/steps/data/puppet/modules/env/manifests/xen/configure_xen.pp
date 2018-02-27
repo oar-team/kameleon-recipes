@@ -1,5 +1,16 @@
 class env::xen::configure_xen () {
 
+  if "$operatingsystem" == "Debian" {
+    case "${::lsbdistcodename}" {
+      'jessie' : {
+        $hypervisor = '/boot/xen-4.4-amd64.gz'
+      }
+      'stretch' : {
+        $hypervisor = '/boot/xen-4.8-amd64.gz'
+      }
+    }
+  }
+
   $xen_packages = [ 'xen-utils', 'debootstrap', 'xen-tools', 'sysfsutils', 'xen-linux-system-amd64' ]
   package {
     $xen_packages :
@@ -9,7 +20,7 @@ class env::xen::configure_xen () {
   file {
     '/hypervisor':  # Given in dsc file to kadeploy to configure /boot/grub/grub.cfg correctly.
       ensure   => link,
-      target   => '/boot/xen-4.4-amd64.gz';
+      target   => "$hypervisor";
     '/etc/xen/xend-config.sxp':
       ensure   => file,
       owner    => root,

@@ -1,0 +1,23 @@
+#==============================================================================
+# vim: softtabstop=2 shiftwidth=2 expandtab fenc=utf-8 cc=81 tw=80
+#==============================================================================
+#
+# DESCRIPTION: Debian 9 (Stretch) base system built with virtualbox.
+#
+#==============================================================================
+---
+extend: debian9-x64-common.yaml # Cf 'debian9-x64-common' for a real content. This recipe only overwrite variant.
+global:
+  variant: xen
+  g5k_postinst_path: server:///grid5000/postinstalls/debian-x64-xen-2.6-post.tgz
+
+
+bootstrap:
+  - "@base"
+
+setup:
+  - "@base"
+
+export:
+  - "@base"
+
