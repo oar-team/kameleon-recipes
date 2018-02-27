@@ -8,7 +8,7 @@ apt-get install -y dirmngr
 gem install --no-ri --no-rdoc kameleon-builder
 memSize=`grep MemTotal /proc/meminfo | tr -s ' ' | cut -f 2 -d ' '`
 if [ "$memSize" -gt "27262976" ]; then
-  mount -t tmpfs tmpfs /tmp
+  #mount -t tmpfs tmpfs /tmp
   mv /bin/gzip /bin/gzip.OLD
   ln -s /usr/bin/pigz /bin/gzip
 fi
