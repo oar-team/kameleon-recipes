@@ -164,7 +164,7 @@ setup:
         - /etc/motd
         - |
           Welcome to Kadeploy3 deployment ramdisk OS
-          Geerated from $${kameleon_recipe_name} (Debian $${release}, $${deb_kernel} kernel, $${deb_arch}) on $(date +'%F %T')
+          Generated from $${kameleon_recipe_name} (Debian $${release}, $${deb_kernel} kernel, $${deb_arch}) on $(date +'%F %T')
     - set_root_authorized_keys:
       - exec_in: mkdir -p /root/.ssh
       - exec_in: chmod 755 /root/.ssh
@@ -212,12 +212,28 @@ setup:
               ;;
             esac
           done
+          echo -n "Wait for ${eth_dev} link to be ready."
+          timeout=30
+          while ! [ -r "/sys/class/net/${eth_dev}/operstate" -a $(< /sys/class/net/${eth_dev}/operstate) == "up" ] && [ $((timeout--)) -gt 0 ]; do
+            ip link set dev ${eth_dev} up || true
+            echo -n .
+            sleep 1
+          done
+          if [ $timeout -le 0 ]; then
+            echo "failed: $eth_dev link is not ready."
+            exit 1
+          else
+            echo
+          fi
+          echo "Call dhclient on ${eth_dev}."
           ifup "$eth_dev"=dhcp
           if [ ! -f "/var/lib/dhcp/dhclient.${eth_dev}.leases" ]
           then
+            echo "failed: no DHCP lease for $eth_dev."
             exit 1
           fi
           mkdir -p /rambin /mnt/dest /mnt/tmp
+          echo "Listen on TCP port 25300 for kadeploy3 server."
           (while true; do nc -l -p 25300; done) &
           exit 0
           EOF
@@ -253,6 +269,7 @@ export:
               -o -path './var/tmp/*' -prune \
               -o -path './var/cache/*' -prune \
               -o -path './var/lib/apt/lists/*' -prune \
+              -o -path './var/lib/dhcp/*' -prune \
               -o -path './tmp/*' -prune \
               -o -path './root/kameleon_workdir' -prune \
               -o -path './vmlinuz' -prune \
