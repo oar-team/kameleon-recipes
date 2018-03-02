@@ -7,12 +7,17 @@
 #==============================================================================
 ---
 global:
-  test: true
+  testvar: global
 
 bootstrap:
-  - test_macro:
-    - test_micro:
+  - macrostep:
+    - test: toto
+    - microstep:
       - exec_local: echo $${test}
+  - test_variables
+  - test_variables:
+    - testvar: set_in_bootstrap
+
 setup:
 
 export:
