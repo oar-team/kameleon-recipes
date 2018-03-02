@@ -81,13 +81,13 @@ setup:
           path-exclude=/usr/share/man/*
           path-exclude=/usr/share/doc/*
           path-exclude=/usr/lib/ruby/*/rdoc/*
-          path-exclude=/lib/modules/*/kernel/drivers/net/*
-          path-exclude=/lib/modules/*/kernel/drivers/staging/*
-          path-exclude=/lib/modules/*/kernel/drivers/media/*
-          path-exclude=/lib/modules/*/kernel/drivers/gpu/*
-          path-exclude=/lib/modules/*/kernel/drivers/usb/*
-          path-exclude=/lib/modules/*/kernel/drivers/infiniband/*
-          path-include=/lib/modules/*/kernel/drivers/net/ethernet/*
+          #path-exclude=/lib/modules/*/kernel/drivers/net/*
+          #path-exclude=/lib/modules/*/kernel/drivers/staging/*
+          #path-exclude=/lib/modules/*/kernel/drivers/media/*
+          #path-exclude=/lib/modules/*/kernel/drivers/gpu/*
+          #path-exclude=/lib/modules/*/kernel/drivers/usb/*
+          #path-exclude=/lib/modules/*/kernel/drivers/infiniband/*
+          #path-include=/lib/modules/*/kernel/drivers/net/ethernet/*
       - write_in:
         - /etc/apt/apt.conf.d/01lighten
         - |
