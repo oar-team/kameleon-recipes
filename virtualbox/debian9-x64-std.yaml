@@ -25,4 +25,5 @@ setup:
   - set_and_clear_var_log
 
 export:
+  - clear_systemd_logs
   - "@base"

@@ -1,0 +1,2 @@
+- clear_systemd_logs:
+  - exec_local: guestfish --rw -a $${image_disk}.$${image_format} -i rm-rf /var/log/journal/*
