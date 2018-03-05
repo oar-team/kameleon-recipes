@@ -18,10 +18,6 @@ class env::nfs ( $variant = "nfs", $parent_parameters = {} ){
     'env::nfs::configure_ntp':
       drift_file => $parameters['ntp_drift_file']
   }
-  if "${::lsbdistcodename}" == "jessie" {
-    # package (shells)
-    class { 'env::nfs::packages': }
-  }
   # ldap
   class { 'env::nfs::configure_ldap': }
   # nfs

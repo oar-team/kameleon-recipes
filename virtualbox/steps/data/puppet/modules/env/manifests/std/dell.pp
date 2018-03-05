@@ -8,6 +8,12 @@
 
 include env::std::dell
 
+class { 'apt':
+  update => {
+    timeout => 1000
+  }
+}
+
 class env::std::dell {
 
   include apt
