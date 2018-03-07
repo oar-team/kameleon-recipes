@@ -3,7 +3,8 @@
 - install_cloud_init:
   - exec_local: |
       echo "Install cloud_init in qcow2"
-      virt-customize -a $${output}.qcow2 --install cloud-init
+      # First unset any proxy variable (set to http://127.0.0.1:8000 if kameleon's cache is enabled) so that virt-customise works ok
+      (for e in $(env | grep -i _proxy); do unset ${e%%=*}; done; virt-customize -a $${output}.qcow2 --install cloud-init)
       echo "Configure datasource and timeout for cloud_init"
       virt-customize -a $${output}.qcow2 --run-command 'echo "datasource_list: [  NoCloud, Ec2, None ]" > /etc/cloud/cloud.cfg.d/91-set-datasources.cfg'
       virt-customize -a $${output}.qcow2 --run-command 'echo "datasource:\n  Ec2:\n    timeout: 3\n    max_wait: 5" > /etc/cloud/cloud.cfg.d/92-set-ec2-timeout.cfg'

@@ -19,7 +19,7 @@
       if [[ "x$${variant}" != "xxen" ]]; then
       cat << EOF > $${output}.dsc
       $${dashes}
-      name: $${os_release}-x64-$${variant}
+      name: $${kameleon_recipe_name}
       version: $${image_version}
       description: $(echo $${os_family}|cut -c1|tr [a-z] [A-Z])$(echo $${os_family}|cut -c2-) $(echo $${os_release}|cut -c1|tr [a-z] [A-Z])$(echo $${os_release}|cut -c2-) ($${variant})
       author: support-staff@lists.grid5000.fr
@@ -45,7 +45,7 @@
       else
       cat << EOF > $${output}.dsc
       $${dashes}
-      name: $${os_release}-x64-$${variant}
+      name: $${kameleon_recipe_name}
       version: $${image_version}
       description: $(echo $${os_family}|cut -c1|tr [a-z] [A-Z])$(echo $${os_family}|cut -c2-) $(echo $${os_release}|cut -c1|tr [a-z] [A-Z])$(echo $${os_release}|cut -c2-) ($${variant})
       author: support-staff@lists.grid5000.fr
@@ -71,6 +71,4 @@
       EOF
       fi
 - generate_md5:
-  - exec_local: |
-      md5sum $${os_release}-x64-$${variant}.* > $${os_release}-x64-$${variant}.md5
-      
+  - exec_local: md5sum $${kameleon_recipe_name}.* > $${kameleon_recipe_name}.md5
