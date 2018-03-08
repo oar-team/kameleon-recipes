@@ -6,4 +6,3 @@
     - exec_in: mkdir /var/log/journal
     - exec_in: install -d -g systemd-journal /var/log/journal
     - exec_in: setfacl -R -nm g:adm:rx,d:g:adm:rx /var/log/journal
-    - exec_in: journalctl --flush

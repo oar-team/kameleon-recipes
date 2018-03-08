@@ -1,7 +1,7 @@
 - clear_systemd_logs:
   - exec_local: | 
       guestfish --rw -a $${image_disk}.$${image_format} -i rm-rf /var/log/journal/*
-      guestfish --rw -a $${image_disk}.$${image_format} -i rm-rf /var/log/apt/*
+      guestfish --rw -a $${image_disk}.$${image_format} -i rm-rf /var/log/apt
       guestfish --rw -a $${image_disk}.$${image_format} -i rm-rf /var/log/auth.log
       guestfish --rw -a $${image_disk}.$${image_format} -i rm-rf /var/log/dpkg.log
 
