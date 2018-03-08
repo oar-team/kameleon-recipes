@@ -31,6 +31,7 @@ global:
   upstream_recipe: $${distrib}-$${release}
   upstream_version: latest
   upstream_checksum: true
+  local_gpg_key: $${kameleon_data_dir}/kameleon.gpg
   upstream_checksign: true
   upstream_cache: true
   upstream_url: http://kameleon.imag.fr/builds
