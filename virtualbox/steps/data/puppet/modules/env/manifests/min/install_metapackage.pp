@@ -6,7 +6,7 @@ class env::min::install_metapackage ( $variant ) {
     'Debian','Ubuntu': {
 
       if "${::lsbdistcodename}" == "stretch" {
-        $g5kmetapackages = "g5k-meta-packages-debian9-$variant" 
+        $g5kmetapackages = "g5k-meta-packages-debian9-$variant"
       } else {
         $g5kmetapackages = "g5k-meta-packages-${::lsbdistcodename}-$variant"
       }
