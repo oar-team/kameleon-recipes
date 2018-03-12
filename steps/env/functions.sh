@@ -21,6 +21,10 @@ function __download {
         dst="$dst${src##*/}"
         dst="${dst%%\?*}"
     fi
+    dstdir=${dst%/*}
+    if [ -n "$dstdir" -a "$dstdir" != "$dst" ]; then
+        mkdir -p $dstdir
+    fi
     echo -n "Downloading: $src..."
     # Put cURL first because it accept URIs (like file://...)
     if which curl >/dev/null; then
