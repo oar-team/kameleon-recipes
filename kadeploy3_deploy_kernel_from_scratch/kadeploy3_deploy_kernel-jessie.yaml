@@ -18,8 +18,9 @@ global:
   # -> set on command line using "-g root_authorized_keys:$PWD/steps/data/kadeploy_root_authorized_keys"
   gpg_keyserver: keyserver.ubuntu.com
   arch_specific_packages: kexec-tools grub-pc
-  deb_kernel: default
+  #deb_kernel: default
   # -> other option: bpo - e.g. set on command line using "-g deb_kernel:bpo"
+  deb_kernel: bpo
   firmware_packages: firmware-linux firmware-bnx2 firmware-bnx2x
   system_packages: ash systemd systemd-sysv
   net_packages: ifupdown ntpdate isc-dhcp-client openssh-client openssh-server taktuk netcat
