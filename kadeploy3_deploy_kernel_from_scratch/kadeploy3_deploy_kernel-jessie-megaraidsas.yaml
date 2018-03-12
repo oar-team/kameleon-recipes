@@ -24,6 +24,8 @@ setup:
           deb http://apt.grid5000.fr/megaraid_sas/ /
       - exec_in: apt-get update
     - install_driver:
-      - exec_in: apt-get install --force-yes --allow-unauthenticated megaraid-sas-modules-3.16.0-5-amd64
+      - exec_in: |
+          KERNEL_PKG=$(dpkg -l linux-image-*-amd64 | tail -n+6 | sort -h | cut -f3 -d\ )
+          apt-get install --force-yes --allow-unauthenticated megaraid-sas-modules-${KERNEL_PKG#linux-image-}
 export:
   - "@base"
