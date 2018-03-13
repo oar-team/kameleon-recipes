@@ -1,9 +1,5 @@
 - insecure_ssh_key: $${kameleon_cwd}/insecure_ssh_key
 
-- kameleon_authorized_keys: /root/.ssh/.kameleon_authorized_keys
-- authorized_keys: /root/.ssh/authorized_keys
-- safe_authorized_keys: /root/.ssh/safe_authorized_keys
-
 - generate_ssh_keys:
   - check_cmd_local: ssh-keygen
   - exec_local: echo -e  'y\n' | ssh-keygen -q -t rsa -b 4096 -f $${insecure_ssh_key} -N ''
@@ -14,19 +10,19 @@
   - exec_local: >-
       virt-customize \
         -a $${image_disk}.$${image_format} \
-        --run-command 'mkdir -p /root/.ssh/' \
+        --run-command 'mkdir -p /root/.ssh' \
         --upload $${insecure_ssh_key}.pub:/root/.ssh/.kameleon_authorized_keys \
+        --run-command 'touch /root/.ssh/authorized_keys' \
+        --run-command 'cp /root/.ssh/authorized_keys /root/.ssh/authorized_keys.bak' \
         --run-command 'cat /root/.ssh/.kameleon_authorized_keys >> /root/.ssh/authorized_keys' \
-        --run-command 'chmod 700 /root/.ssh/' \
-        --run-command 'chmod 600 /root/.ssh/authorized_keys' \
+        --run-command 'chmod 700 /root/.ssh' \
+        --run-command 'chmod -R go-rw /root/.ssh' \
         --run-command 'chown -R root:root /root/.ssh'
   - on_export_init:
     - exec_local: >-
         virt-customize \
           -a $${image_disk}.$${image_format} \
-          --run-command 'diff -U $(wc -l < $${authorized_keys}) $${authorized_keys} $${kameleon_authorized_keys} | grep '^-' | sed 's/^-//g' > $${safe_authorized_keys}' \
-          --run-command 'mv $${safe_authorized_keys} $${authorized_keys}' \
-          --run-command 'chmod 600 $${authorized_keys}' \
+          --run-command 'mv /root/.ssh/authorized_keys.bak /root/.ssh/authorized_keys' \
           --delete /root/.ssh/.kameleon_authorized_keys
 
 - add_insecure_key_to_ssh_config:
