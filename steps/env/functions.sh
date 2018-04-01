@@ -109,10 +109,47 @@ function __download_recipe_build() {
             ln -fv $f ${f%_*}.tar.${f#*.tar.}
         fi
     done
+    popd > /dev/null
     set +e
 }
 
 export -f __download_recipe_build
+
+function __download_kadeploy_environment_image() {
+    set -e
+    kaenv_name=$1
+    kaenv_user=$2
+    dest_dir=${3:-$kaenv_name}
+    mkdir -p $dest_dir
+    echo "Retrieve image for Kadeploy environment $kaenv_name ${kaenv_user:+(user $kaenv_user)}"
+    which kaenv3 > /dev/null || fail "kaenv3 command not found"
+    # retrieve image[file], image[kind] and image[compression] from kaenv3
+    declare -a image
+    __kaenv() { image[${2%%:*}]=${2#*:}; }
+    mapfile -s 1 -t -c1 -C __kaenv < <(kaenv3${kaenv_user:+ -u $kaenv_user} -p $kaenv_name | grep -e '^image:' | sed -e 's/ //g')
+    if ${image[compression]} == "gzip"; then
+        image[compression]="gz"
+    elif ${image[compression]} == "bzip2"; then
+        image[compression]="bz2"
+    fi
+    image[protocol]=${image[file]%%:*}
+    image[path]=${image[file]#*://}
+    image[filename]=${image[path]##/}
+    dest=$dest_dir/${image[filename]%%.*}.${image[kind]}.${image[compression]}
+    if [ "${image[kind]}" == "tar" ];
+        if [ "${image[protocol]}" == "http" -o "${image[protocol]}" == "https" ]; then
+            __download ${image[file]} $dest
+        else # If server:// => see if available locally (NFS) or fail, same as if local:// <=> ""
+            [ -r ${image[path]} ] || fail "Cannot retrieve ${image[file]}"
+            cp -v ${image[path]} $dest
+        fi
+    else # dd or whatever
+        fail "${image[kind]} is not supported"
+    fi
+    return 0
+}
+
+export -f __download_kadeploy_image
 
 function __find_linux_boot_device() {
     local PDEVICE=`stat -c %04D /boot`

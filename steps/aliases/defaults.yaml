@@ -115,3 +115,6 @@ download_file_local:
 
 download_recipe_build_local:
   - exec_local: __download_recipe_build "@1" "@2" "@3" "@4" "@5" "@6" "@7"
+
+download_kadeploy_environment_image_local:
+  - exec_local: __download_kadeploy_environment_image "@1" "@2" "@3"
