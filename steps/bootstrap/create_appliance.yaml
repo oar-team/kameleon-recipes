@@ -1,31 +1,13 @@
 - create_appliance_script: $${kameleon_data_dir}/helpers/create_appliance.py
 
-- download_upstream_build:
-  - test:
-    - exec_local: test -n "$${upstream_tarball}"
-    - download_file_local:
-      - $${upstream_url}/$${upstream_tarball}
-      - $${upstream_store_dir}/$${upstream_tarball}
-    - download_recipe_build_local:
-      - $${upstream_recipe}
-      - $${upstream_version}
-      - $${upstream_checksum}
-      - $${upstream_checksign}
-      - $${upstream_cache}
-      - $${upstream_url}
-      - $${upstream_store_dir}
-
 - create_appliance:
   - check_cmd_local: virt-make-fs
   - exec_local: |
       rm -f $${image_disk}.$${image_format}
+      [ -n "$UPSTREAM_TARBALL" ] || fail "UPSTREAM_TARBALL is not defined"
+      [ -r "$UPSTREAM_TARBALL" ] || fail "UPSTREAM_TARBALL ($UPSTREAM_TARBALL) is not readable"
       # Create an appliance from rootfs directory
-      if [ -n "$${upstream_tarball}" ]; then
-        tarball="$${upstream_store_dir}/$${upstream_tarball}"
-      else
-        tarball="$${upstream_store_dir}/$${upstream_recipe}.tar.xz"
-      fi
-      python $${create_appliance_script} $tarball \
+      python $${create_appliance_script} $UPSTREAM_TARBALL \
         --size $${image_size} \
         -o $${image_disk} \
         --filesystem $${filesystem_type} \

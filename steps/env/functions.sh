@@ -8,8 +8,8 @@ function fail {
 export -f fail
 
 function __download {
-    src=$1
-    dst=$2
+    local src=$1
+    local dst=$2
     if [ -n "$DOWNLOAD_SRC_URL" ]; then
         src="$DOWNLOAD_SRC_URL"
     fi
@@ -21,7 +21,7 @@ function __download {
         dst="$dst${src##*/}"
         dst="${dst%%\?*}"
     fi
-    dstdir=${dst%/*}
+    local dstdir=${dst%/*}
     if [ -n "$dstdir" -a "$dstdir" != "$dst" ]; then
         mkdir -p $dstdir
     fi
@@ -75,13 +75,14 @@ export -f __download
 
 function __download_recipe_build() {
     set -e
-    recipe=$1
-    version=${2:-latest}
-    do_checksum=${3:-true}
-    do_checksign=${4:-false}
-    do_cache=${5:-false}
-    builds_url=${6:-http://kameleon.imag.fr/builds}
-    dest_dir="${7:-$recipe}"
+    local recipe=$1
+    local version=${2:-latest}
+    local do_checksum=${3:-true}
+    local do_checksign=${4:-false}
+    local do_cache=${5:-false}
+    local builds_url=${6:-http://kameleon.imag.fr/builds}
+    local dest_dir="${7:-$recipe}"
+    local dest=""
     mkdir -p $dest_dir
     pushd $dest_dir > /dev/null
     echo "Downloading $recipe ($version):"
@@ -106,10 +107,12 @@ function __download_recipe_build() {
         else
             __download $builds_url/$f
             echo -n "Link to version-less filename: "
-            ln -fv $f ${f%_*}.tar.${f#*.tar.}
+            dest=${f%_*}.tar.${f#*.tar.}
+            ln -fv $f $dest
         fi
     done
     popd > /dev/null
+    export UPSTREAM_TARBALL="$dest_dir/$dest"
     set +e
 }
 
@@ -117,26 +120,27 @@ export -f __download_recipe_build
 
 function __download_kadeploy_environment_image() {
     set -e
-    kaenv_name=$1
-    kaenv_user=$2
-    dest_dir=${3:-$kaenv_name}
+    local kaenv_name=$1
+    local kaenv_user=$2
+    local dest_dir=${3:-$kaenv_name}
     mkdir -p $dest_dir
     echo "Retrieve image for Kadeploy environment $kaenv_name ${kaenv_user:+(user $kaenv_user)}"
-    which kaenv3 > /dev/null || fail "kaenv3 command not found"
+    ssh frontend "which kaenv3 > /dev/null" || fail "kaenv3 command not found"
     # retrieve image[file], image[kind] and image[compression] from kaenv3
-    declare -a image
-    __kaenv() { image[${2%%:*}]=${2#*:}; }
-    mapfile -s 1 -t -c1 -C __kaenv < <(kaenv3${kaenv_user:+ -u $kaenv_user} -p $kaenv_name | grep -e '^image:' | sed -e 's/ //g')
-    if ${image[compression]} == "gzip"; then
+    declare -A image
+    __kaenv() { local k=${2%%:*}; image[$k]=${2#*:}; }
+    mapfile -s 1 -t -c1 -C __kaenv < <(ssh frontend "kaenv3${kaenv_user:+ -u $kaenv_user} -p $kaenv_name " | grep -A3 -e '^image:' | sed -e 's/ //g')
+    [ -n "${image[file]}" ] || fail "Failed to retrieve environment $kaenv_name"
+    if [ "${image[compression]}" == "gzip" ]; then
         image[compression]="gz"
-    elif ${image[compression]} == "bzip2"; then
+    elif [ "${image[compression]}" == "bzip2" ]; then
         image[compression]="bz2"
     fi
     image[protocol]=${image[file]%%:*}
     image[path]=${image[file]#*://}
-    image[filename]=${image[path]##/}
-    dest=$dest_dir/${image[filename]%%.*}.${image[kind]}.${image[compression]}
-    if [ "${image[kind]}" == "tar" ];
+    image[filename]=${image[path]##*/}
+    local dest=$dest_dir/${image[filename]%%.*}.${image[kind]}.${image[compression]}
+    if [ "${image[kind]}" == "tar" ]; then
         if [ "${image[protocol]}" == "http" -o "${image[protocol]}" == "https" ]; then
             __download ${image[file]} $dest
         else # If server:// => see if available locally (NFS) or fail, same as if local:// <=> ""
@@ -144,12 +148,13 @@ function __download_kadeploy_environment_image() {
             cp -v ${image[path]} $dest
         fi
     else # dd or whatever
-        fail "${image[kind]} is not supported"
+        fail "Image format${image[kind]:+ ${image[kind]}} is not supported"
     fi
-    return 0
+    export UPSTREAM_TARBALL=$dest_dir/$dest
+    set +e
 }
 
-export -f __download_kadeploy_image
+export -f __download_kadeploy_environment_image
 
 function __find_linux_boot_device() {
     local PDEVICE=`stat -c %04D /boot`

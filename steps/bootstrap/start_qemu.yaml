@@ -24,8 +24,6 @@
 - qemu_image_size: 10G
 - qemu_pidfile: $${kameleon_cwd}/qemu.pid
 
-
-
 - start_vm:
   - on_checkpoint: redo
   - check_cmd_local: qemu-system-$${qemu_arch}

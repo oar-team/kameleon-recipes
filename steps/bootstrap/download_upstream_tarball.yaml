@@ -1,0 +1,37 @@
+- upstream_tarball: ""
+- upstream_recipe: ""
+- upstream_version: ""
+- upstream_checksum: ""
+- upstream_checksign: ""
+- upstream_cache: ""
+- upstream_url: ""
+- upstream_store_dir: ""
+- kadeploy_environment_name: ""
+- kadeploy_environment_user: ""
+
+- download:
+  - test:
+    - exec_local: test -n "$${upstream_tarball}"
+    - group:
+      - exec_local: echo "Download tarball..."
+      - download_file_local:
+        - $${upstream_url}/$${upstream_tarball}
+        - $${upstream_store_dir}/$${upstream_tarball}
+      - exec_local: export UPSTREAM_TARBALL="$${upstream_store_dir}/$${upstream_tarball}"
+    - test:
+      - exec_local: test -n "$${upstream_recipe}"
+      - download_recipe_build_local:
+        - $${upstream_recipe}
+        - $${upstream_version}
+        - $${upstream_checksum}
+        - $${upstream_checksign}
+        - $${upstream_cache}
+        - $${upstream_url}
+        - $${upstream_store_dir}
+      - test:
+        - exec_local: test -n "$${kadeploy_environment_name}"
+        - download_kadeploy_environment_image_local:
+          - $${kadeploy_environment_name}
+          - $${kadeploy_environment_user}
+          - $${upstream_store_dir}
+        - exec_local: fail "Nothing to download ???"

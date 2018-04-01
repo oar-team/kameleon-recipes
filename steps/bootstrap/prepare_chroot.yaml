@@ -1,13 +1,10 @@
-
-- download_rootfs_archive:
-  - download_file_local:
-    - $${rootfs_archive_url}
-    - $${rootfs_archive_download_path}
-
 - unpack_rootfs_archive:
-  - exec_local: echo "Unpacking $${rootfs_archive_download_path}"
-  - exec_local: mkdir -p $${rootfs}
-  - exec_local: tar --touch -xf $${rootfs_archive_download_path} -C $${rootfs}
+  - exec_local: |
+      [ -n "$UPSTREAM_TARBALL" ] || fail "UPSTREAM_TARBALL is not defined"
+      [ -r "$UPSTREAM_TARBALL" ] || fail "UPSTREAM_TARBALL ($UPSTREAM_TARBALL) is not readable"
+      echo "Unpacking $UPSTREAM_TARBALL in $${rootfs}"
+      mkdir -p $${rootfs}
+      tar --touch -xf $UPSTREAM_TARBALL -C $${rootfs}
 
 - delete_rootfs_directory_at_the_end:
   - on_checkpoint: skip

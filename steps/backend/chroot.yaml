@@ -23,6 +23,7 @@ global:
 
 bootstrap:
   - enable_checkpoint
+  - download_upstream_tarball
   - prepare_chroot
   - start_chroot
 

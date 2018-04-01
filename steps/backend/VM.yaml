@@ -13,6 +13,7 @@ global:
     proxy_cache: $${local_ip}
 
 bootstrap:
+  - download_upstream_tarball
   - create_appliance
   - prepare_appliance
 
