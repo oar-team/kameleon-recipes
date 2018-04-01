@@ -12,8 +12,8 @@ extend: base.yaml
 global:
   # Distribution
   distrib: debian
-  release: wheezy
-  release_number: 7
+  release: stretch
+  release_number: 9
   kernel_arch: amd64
 
   deb_mirror_uri: http://ftp.debian.org/debian/

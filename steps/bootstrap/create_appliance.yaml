@@ -13,7 +13,6 @@
         --filesystem $${filesystem_type} \
         --format $${image_format} \
         --append "$${kernel_args}"
-  - exec_local: rm -rf $${upstream_store_dir}
 
 - delete_initial_image_at_the_end:
   - on_checkpoint: skip

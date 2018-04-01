@@ -226,7 +226,7 @@ mkfs {filesystem} /dev/sda1 {mkfs_options}
     run_guestfish_script(output_filename, script, mount=False)
 
     # Fill disk with our data
-    logger.info("Copying the data into the disk image")
+    logger.info("Copying data in the disk image")
     input_type = file_type(input_).lower()
 
     make_tar_cmd = ""

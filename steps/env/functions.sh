@@ -122,14 +122,16 @@ function __download_kadeploy_environment_image() {
     set -e
     local kaenv_name=$1
     local kaenv_user=$2
-    local dest_dir=${3:-$kaenv_name}
+    local kaenv_version=$3
+    local remote=$4
+    local dest_dir=${5:-$kaenv_name}
     mkdir -p $dest_dir
-    echo "Retrieve image for Kadeploy environment $kaenv_name ${kaenv_user:+(user $kaenv_user)}"
-    ssh frontend "which kaenv3 > /dev/null" || fail "kaenv3 command not found"
+    echo "Retrieve image for Kadeploy environment $kaenv_name"
+    ${remote:+ssh $remote }which kaenv3 > /dev/null || fail "kaenv3 command not found (${remote:-localhost})"
     # retrieve image[file], image[kind] and image[compression] from kaenv3
     declare -A image
     __kaenv() { local k=${2%%:*}; image[$k]=${2#*:}; }
-    mapfile -s 1 -t -c1 -C __kaenv < <(ssh frontend "kaenv3${kaenv_user:+ -u $kaenv_user} -p $kaenv_name " | grep -A3 -e '^image:' | sed -e 's/ //g')
+    mapfile -s 1 -t -c1 -C __kaenv < <(${remote:+ssh $remote }kaenv3${kaenv_user:+ -u $kaenv_user}${kaenv_version:+ --env-version $kaenv_version} -p $kaenv_name | grep -A3 -e '^image:' | sed -e 's/ //g')
     [ -n "${image[file]}" ] || fail "Failed to retrieve environment $kaenv_name"
     if [ "${image[compression]}" == "gzip" ]; then
         image[compression]="gz"
@@ -150,7 +152,7 @@ function __download_kadeploy_environment_image() {
     else # dd or whatever
         fail "Image format${image[kind]:+ ${image[kind]}} is not supported"
     fi
-    export UPSTREAM_TARBALL=$dest_dir/$dest
+    export UPSTREAM_TARBALL=$dest
     set +e
 }
 

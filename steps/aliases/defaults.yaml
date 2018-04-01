@@ -83,9 +83,10 @@ check_cmd_out:
     - breakpoint: "@1 is missing from out_context"
 
 check_cmd_local:
-  - rescue:
-    - exec_local: command -V @1 2> /dev/null
-    - breakpoint: "@1 is missing from local_context"
+  - on_bootstrap_init:
+    - rescue:
+      - exec_local: command -V @1 2> /dev/null
+      - breakpoint: "@1 is missing from local_context"
 
 check_cmd_in:
   - rescue:
@@ -117,4 +118,4 @@ download_recipe_build_local:
   - exec_local: __download_recipe_build "@1" "@2" "@3" "@4" "@5" "@6" "@7"
 
 download_kadeploy_environment_image_local:
-  - exec_local: __download_kadeploy_environment_image "@1" "@2" "@3"
+  - exec_local: __download_kadeploy_environment_image "@1" "@2" "@3" "@4" "@5"
