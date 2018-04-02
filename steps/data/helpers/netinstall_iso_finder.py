@@ -87,7 +87,6 @@ if __name__ == '__main__':
     logger.addHandler(handler)
 
     try:
-        args = parser.parse_args()
         visited = set([])
         found = set([])
         if (args.distrib.lower() == "debian"):
