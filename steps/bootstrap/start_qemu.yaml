@@ -16,7 +16,6 @@
 - vm_cleanup_section: setup
 - shutdown_vm_immediately: false
 - force_vm_shutdown: true
-- check_cmd_local: socat
 - qemu_enable_kvm: "$(egrep '(vmx|svm)' /proc/cpuinfo > /dev/null && echo true)"
 - qemu_cpu: 2
 - qemu_memory_size: 768
@@ -30,6 +29,7 @@
 - start_vm:
   - on_checkpoint: redo
   - check_cmd_local: qemu-system-$${qemu_arch}
+  - check_cmd_local: socat
   - on_bootstrap_clean:
     - test:
       - exec_local: test "$${shutdown_vm_immediately}" == "false" -a "$${vm_cleanup_section}" == "bootstrap"
