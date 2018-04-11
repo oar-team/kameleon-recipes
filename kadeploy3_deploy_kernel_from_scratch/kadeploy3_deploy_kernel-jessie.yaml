@@ -136,9 +136,9 @@ setup:
       - exec_in: |
           if [ "$${deb_kernel}" == "bpo" ]; then
             KERNEL_BPO=$(apt-cache search "^linux-image.[[:digit:].-]+bpo[[:digit:].]+-$${deb_kernel_arch}$" | sort -h | tail -n1 | cut -f1 -d\ )
-            apt-get install -y --force-yes -t $${release}-backports $KERNEL_BPO
+            apt-get install -y --force-yes -t $${release}-backports $KERNEL_BPO $${firmware_packages}
           else
-            apt-get install -y --force-yes linux-image-$${deb_kernel_arch}
+            apt-get install -y --force-yes linux-image-$${deb_kernel_arch} $${firmware_packages}
           fi
     - install_arch_specific_packages:
       - exec_in: |
@@ -147,7 +147,7 @@ setup:
           fi
     - install_other_packages:
       - exec_in: |
-          echo "Installing $${firmware_packages} $${system_packages} $${net_packages} $${disk_packages} $${ruby_packages}"
+          echo "Installing $${system_packages} $${net_packages} $${disk_packages} $${ruby_packages}"
           apt-get install -y --force-yes $${firmware_packages} $${system_packages} $${net_packages} $${disk_packages} $${ruby_packages}
           echo "Done"
     - fix_ntp:
