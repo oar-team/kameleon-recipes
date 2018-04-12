@@ -27,6 +27,7 @@ global:
   disk_packages: tar bzip2 xz-utils hdparm parted dosfstools ntfs-3g aufs-tools
   ruby_packages: ruby ruby-net-ssh ruby-net-ssh-multi ruby-daemons
   to_remove_packages:
+  target_directory: /grid5000/kadeploy-kernels
   # xz is greedy in memory
   qemu_memory_size: 2G
 
@@ -373,11 +374,66 @@ export:
           cp $${rootfs}/boot/vmlinuz* /tmp/vmlinuz
           cp $${rootfs}/boot/initrd.img* /tmp/initrd.img
   - export_vmlinuz_initrd:
+    - create_directory:
+      - exec_local: mkdir -p $${kameleon_recipe_name}
     - vmlinuz:
       - out2local:
         - /tmp/vmlinuz
-        - ./$${kameleon_recipe_name}_vmlinuz
+        - $${kameleon_recipe_name}/$${kameleon_recipe_name}.vmlinuz
     - initrd:
       - out2local:
         - /tmp/initrd.img
-        - ./$${kameleon_recipe_name}_initrd.img
+        - $${kameleon_recipe_name}/$${kameleon_recipe_name}.initrd.img
+  - create_deb_package:
+    - create_debian_files:
+      - check_cmd_local: dch
+      - exec_local: |
+           rm -rf $${kameleon_recipe_name}/debian
+           mkdir -p $${kameleon_recipe_name}/debian
+      - exec_local: |
+          (cd $${kameleon_recipe_name} && \
+           dch --create \
+               --package $${kameleon_recipe_name} \
+               --newversion 1.$(date +%Y%m%d) \
+               "Generated with kameleon using recipe $${kameleon_recipe_name}")
+      - exec_local: |
+          cat > $${kameleon_recipe_name}/debian/control <<EOF
+          Source: $${kameleon_recipe_name}
+          Section: admin
+          Priority: optional
+          Maintainer: Grid'5000 team <support-staff@lists.grid5000.fr>
+          Build-Depends: debhelper (>= 9)
+          Standards-Version: 3.9.8
+          
+          Package: $${kameleon_recipe_name}
+          Architecture: all
+          Depends: ${shlibs:Depends}, ${misc:Depends}
+          Description: kadeploy3 deploy kernel
+           Deploymenet kernel used by kadeploy3
+          EOF
+      - exec_local: echo 9 > $${kameleon_recipe_name}/debian/compat
+      - exec_local: |
+          cat > $${kameleon_recipe_name}/debian/copyright <<EOF
+          Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+          Upstream-Name: $${kameleon_recipe_name}
+          Source: https://github.com/oar-team/kameleon-recipes/tree/master/kadeploy3_deploy_kernel_from_scratch
+          EOF
+      - exec_local: |
+          cat > $${kameleon_recipe_name}/debian/rules <<'EOF'
+          #!/usr/bin/make -f
+          
+          %:
+          	dh $@
+          EOF
+          chmod +x $${kameleon_recipe_name}/debian/rules
+      - exec_local: |
+          mkdir -p $${kameleon_recipe_name}/debian/source
+          echo "3.0 (native)" > $${kameleon_recipe_name}/debian/source/format
+      - exec_local: |
+          cat > $${kameleon_recipe_name}/debian/install <<EOF
+          $${kameleon_recipe_name}.vmlinuz $${target_directory}
+          $${kameleon_recipe_name}.initrd.img $${target_directory}
+          EOF
+    - generate_deb_package:
+      - check_cmd_local: dpkg-buildpackage
+      - exec_local: (cd $${kameleon_recipe_name} && dpkg-buildpackage -uc -us)
