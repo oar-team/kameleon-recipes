@@ -17,7 +17,7 @@ class env::big::configure_nvidia_gpu::cuda () {
       creates   => "/tmp/NVIDIA-Linux_cuda.run";
     'install_nvidia_cuda':
       command   => "/tmp/NVIDIA-Linux_cuda.run --silent --toolkit --samples ; /bin/rm /tmp/NVIDIA-Linux_cuda.run",
-      timeout   => 1200, # 20 min
+      timeout   => 2400, # 20 min
       user      => root,
       require   =>  File['/tmp/NVIDIA-Linux_cuda.run'];
     'update_ld_conf':
