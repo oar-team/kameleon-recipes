@@ -12,7 +12,7 @@
 - get_standalone_puppet_script:
   - exec_in: apt-get install -y wget lsb-release
   - exec_in: if [ $(lsb_release -cs) == "stretch" ] ; then wget -O /tmp/libreadline6.deb http://snapshot.debian.org/archive/debian/20161005T102332Z/pool/main/r/readline6/libreadline6_6.3-9_amd64.deb && dpkg -i /tmp/libreadline6.deb ; fi
-  - exec_in: echo "if [ -z $${force_puppet_debian_version} ] ; then version=$(lsb_release -cs) ; else version=$${force_puppet_debian_version} ; fi && chmod 777 /tmp; wget -q http://apt.puppetlabs.com/puppetlabs-release-pc1-\$version.deb -O /tmp/puppetlabs-release-pc1-\$version.deb && dpkg -i /tmp/puppetlabs-release-pc1-\$version.deb ; apt-get update && rc=$? || rc=$? ; apt-get install -y --no-install-recommends puppet-agent=$${puppet-agent_version}\$version" > $${script_path}/$${script_name}
+  - exec_in: echo "if [ -z $${force_puppet_debian_version} ] ; then version=$(lsb_release -cs) ; else version=$${force_puppet_debian_version} ; fi && chmod 777 /tmp; wget -q http://apt.puppetlabs.com/puppetlabs-release-pc1-\$version.deb -O /tmp/puppetlabs-release-pc1-\$version.deb && dpkg -i /tmp/puppetlabs-release-pc1-\$version.deb ; apt-get update && rc=$? || rc=$? ; apt-get install -y --no-install-recommends --allow-unauthenticated puppet-agent=$${puppet-agent_version}\$version" > $${script_path}/$${script_name}
   - exec_in: chmod +x $${script_path}/$${script_name}
   - exec_in: $${script_path}/$${script_name}
   # We tagged packet as "automatically installed" to auto-remove them at the end of the orchestration step
