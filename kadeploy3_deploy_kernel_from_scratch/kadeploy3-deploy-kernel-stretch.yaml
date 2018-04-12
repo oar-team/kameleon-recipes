@@ -6,7 +6,7 @@
 #
 #==============================================================================
 ---
-extend: kadeploy3_deploy_kernel-jessie.yaml
+extend: kadeploy3-deploy-kernel-jessie.yaml
 # Global variables use by Kameleon engine and the steps
 global:
   release: stretch

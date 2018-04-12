@@ -7,7 +7,7 @@
 #
 #==============================================================================
 ---
-extend: kadeploy3_deploy_kernel-jessie.yaml
+extend: kadeploy3-deploy-kernel-jessie.yaml
 
 global:
 
