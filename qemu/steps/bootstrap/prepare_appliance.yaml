@@ -11,6 +11,7 @@
     - $${upstream_version}
     - $${upstream_checksum}
     - $${upstream_checksign}
+    - $${local_gpg_key}
     - $${upstream_cache}
     - $${upstream_url}
     - $${upstream_store_dir}

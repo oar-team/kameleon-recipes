@@ -71,15 +71,16 @@ function __download_recipe_build() {
     version=${2:-latest}
     do_checksum=${3:-true}
     do_checksign=${4:-false}
-    do_cache=${5:-false}
-    builds_url=${6:-http://kameleon.imag.fr/builds}
-    dest_dir="${7:-$recipe}"
+    local_gpg_key=$5
+    do_cache=${6:-false}
+    builds_url=${7:-http://kameleon.imag.fr/builds}
+    dest_dir="${8:-$recipe}"
     mkdir -p $dest_dir
     pushd $dest_dir
     echo "Downloading $recipe ($version):"
     __download $builds_url/${recipe}_$version.manifest
     if [ "$do_checksign" == "true" ]; then
-        gpg --keyserver keys.gnupg.net --recv-keys CA22303C
+        cat $local_gpg_key | gpg --import -
         __download $builds_url/${recipe}_$version.manifest.sign
         gpg --verify ${recipe}_$version.manifest{.sign,} || fail "Cannot verify signature"
     fi

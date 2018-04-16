@@ -114,4 +114,4 @@ download_file_local:
   - exec_local: __download "@1" "@2"
 
 download_recipe_build:
-  - exec_local: __download_recipe_build "@1" "@2" "@3" "@4" "@5" "@6" "@7"
+  - exec_local: __download_recipe_build "@1" "@2" "@3" "@4" "@5" "@6" "@7" "@8"
