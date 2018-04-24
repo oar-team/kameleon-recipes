@@ -90,6 +90,10 @@
           done
         fi
     - exec_local: |
+        echo "Syncing and waiting for 10 seconds to allow things to settle (workaround for bug 9203)."
+        sync
+        sleep 10
+    - exec_local: |
         if VBoxManage list runningvms | grep -q $${virtualbox_vmid}; then
           echo "  ~> Failed"
           echo "Forcing shutdown !"
