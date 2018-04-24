@@ -7,12 +7,12 @@ class env::nfs::configure_ntp ( $drift_file = false ) {
     package {
       'ntpdate':
         ensure    => installed;
-      'openntpd':
-        ensure    => installed,
-        require   => Package['ntp'];
       'ntp':
         ensure    => absent,
         require   => Service['ntp'];
+      'openntpd':
+        ensure    => installed,
+        require   => Package['ntp'];
     }
 
     file {
@@ -26,14 +26,14 @@ class env::nfs::configure_ntp ( $drift_file = false ) {
     }
 
     service {
-      'openntpd':
-        enable    => true;
-    }
-
-    service {
       'ntp':
         ensure    => stopped,
         enable    => false;
+    }
+
+    service {
+      'openntpd':
+        enable    => true;
     }
 
   } else {
