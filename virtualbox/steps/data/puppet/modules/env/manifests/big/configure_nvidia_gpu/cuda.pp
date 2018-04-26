@@ -34,20 +34,6 @@ class env::big::configure_nvidia_gpu::cuda () {
         ensure    => 'link',
         target    => '/usr/lib/x86_64-linux-gnu/libcuda.so',
         require   => Exec['install_nvidia_cuda'],
-        notify    => Exec['update_ld_conf'];
-      '/etc/ld.so.conf.d/cuda.conf':
-        ensure    => file,
-        owner     => root,
-        group     => root,
-        mode      => '0644',
-        source    => 'puppet:///modules/env/big/nvidia/cuda-9.0.conf',
-        notify    => Exec['update_ld_conf'];
-      '/etc/systemd/system/nvidia-persistenced.service':
-        ensure    => file,
-        owner     => root,
-        group     => root,
-        mode      => '0644',
-        source    => 'puppet:///modules/env/big/nvidia/nvidia-persistenced-9.0.service';
     }
   } else {
     file{
