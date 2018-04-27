@@ -127,12 +127,12 @@ class env::xen::configure_xen () {
       require  => File['/etc/xen-tools/skel/root/.ssh/authorized_keys'];
   }
 
-  
+
   exec {
     'create_example_domU':
       command  => '/usr/bin/xen-create-image --hostname=domU --role=udev --genpass=0 --password=grid5000 --dhcp --mac=$(random_mac) --bridge=br0 --size=1G',
       creates  => '/etc/xen/domU.cfg',
-      timeout  => 600,
+      timeout  => 1200,
       require => [
         Package['xen-tools', 'xen-utils'],
         File_line['/etc/xen-tools/skel/root/.ssh/authorized_keys dom0_key'],

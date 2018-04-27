@@ -64,11 +64,9 @@ class env::big::configure_kvm () {
   require => Package['uml-utilities'];
   }
 
-  if "${::lsbdistcodename}" == "stretch" {
-    package {
-      'sudo':
-        ensure   => installed;
-    }
+  package {
+    'sudo':
+      ensure   => installed;
   }
 
   file_line { 'kvm_etc_profile_path':

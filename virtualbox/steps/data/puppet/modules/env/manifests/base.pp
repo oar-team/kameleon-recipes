@@ -34,10 +34,6 @@ class env::base ( $variant = "base", $parent_parameters = {} ){
   }
   # Force cstates configuration
   class { 'env::base::configure_cstates': }
-  if "${::lsbdistcodename}" == "jessie" {
-    # User packages
-    class { 'env::base::packages': }
-  }
   #IbOverIP
   class { 'env::base::configure_ip_over_infiniband': }
   # memlock tuning for infiniband

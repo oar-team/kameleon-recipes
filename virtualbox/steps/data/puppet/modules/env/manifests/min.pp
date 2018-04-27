@@ -29,9 +29,7 @@ class env::min ( $variant = "min", $parent_parameters = {} ) {
   # tgs-g5k
   class { 'env::min::install_tgz_g5k': }
   # install meta-packages
-  if "${::lsbdistcodename}" == "stretch" {
-    class { 'env::min::install_metapackage': variant => $variant }
-  }
+  class { 'env::min::install_metapackage': variant => $variant }
   # network configuration
   class { 'env::min::configure_network_and_install_drivers': }
   # root password
