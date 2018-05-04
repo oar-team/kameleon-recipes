@@ -3,7 +3,11 @@ class env::big::configure_nvidia_gpu::drivers () {
   ### This class exists for gpuclus cluster, that require a recent version of nvidia driver (346.22)
 
   # May be changed to a link inside g5k if required
-  $driver_source = 'https://www.grid5000.fr/packages/debian/NVIDIA-Linux-x86_64-390.25.run'
+  if "${::lsbdistcodename}" == "jessie" {
+    $driver_source = 'https://www.grid5000.fr/packages/debian/NVIDIA-Linux-x86_64-384.66.run'
+  } else {
+    $driver_source = 'https://www.grid5000.fr/packages/debian/NVIDIA-Linux-x86_64-390.25.run'
+  }
 
   package {
     ['module-assistant', 'dkms']:
