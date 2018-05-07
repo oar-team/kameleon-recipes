@@ -5,6 +5,9 @@ require 'open-uri'
 require 'json'
 require 'optparse'
 
+ENABLE_DELAY = 1
+ENABLE_LAST_DELAY = 2
+
 def main
   options = parse_cmdline
   start
@@ -232,10 +235,17 @@ end
 def enable(physical_disks)
   num_enable_errors = 0
   physical_disks.each do |disk|
+    # Sleep a bit before enabling to give the kernel time to detect disks that were
+    # previously removed, or disks that were just enabled.
+    # If we do that too fast, the kernel might pick up disks in a random order.
+    # See bug https://intranet.grid5000.fr/bugzilla/show_bug.cgi?id=9238 for details.
+    sleep(ENABLE_DELAY)
     status, _output = sh("#{MEGACLI} -PDMakeJBOD -PhysDrv [#{disk[:enclosure]}:#{disk[:slot]}] -a#{disk[:adapter]}")
     debug "Enabling disk #{disk} => Return code = #{status}"
     num_enable_errors += 1 unless status.zero?
   end
+  # Also sleep after enabling the last disk
+  sleep(ENABLE_LAST_DELAY)
   return num_enable_errors
 end
 
