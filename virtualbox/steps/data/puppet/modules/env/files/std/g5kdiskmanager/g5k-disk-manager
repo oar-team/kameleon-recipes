@@ -5,6 +5,7 @@ require 'open-uri'
 require 'json'
 require 'optparse'
 
+DISABLE_DELAY = 2
 ENABLE_DELAY = 1
 ENABLE_LAST_DELAY = 2
 
@@ -261,6 +262,7 @@ def disable(physical_disks)
     debug "Disabling disk #{disk} => Return code = #{status}"
     num_disable_errors += 1 unless status.zero?
   end
+  sleep(DISABLE_DELAY)
   return num_disable_errors
 end
 
