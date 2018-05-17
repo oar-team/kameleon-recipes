@@ -1,0 +1,8 @@
+[Unit]
+Description=Generate MAC addresse for Xen DomU and create /var/log/xen
+
+[Service]
+ExecStart=/usr/sbin/xen-g5k start
+
+[Install]
+WantedBy=multi-user.target

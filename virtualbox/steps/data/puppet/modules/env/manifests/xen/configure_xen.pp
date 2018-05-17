@@ -71,13 +71,32 @@ class env::xen::configure_xen () {
       group    => root,
       mode     => '0755',
       source   => 'puppet:///modules/env/xen/xen/random_mac';
-    '/etc/init.d/xen-g5k':
+    '/usr/sbin/xen-g5k':
       ensure   => file,
       owner    => root,
       group    => root,
       mode     => '0755',
       source   => 'puppet:///modules/env/xen/xen/xen-g5k';
+    '/etc/systemd/system/xen-g5k.service':
+      ensure   => file,
+      owner    => root,
+      group    => root,
+      mode     => '0644',
+      source   => 'puppet:///modules/env/xen/xen/xen-g5k.service',
+      notify   => Exec['daemon-reload'];
+    '/etc/systemd/system/multi-user.target.wants/xen-g5k.service':
+      ensure   => link,
+      target   => '/etc/systemd/system/xen-g5k.service',
+      require  => File['/etc/systemd/system/xen-g5k.service'],
+      notify   => Exec['daemon-reload'];
   }
+
+  exec {
+    'daemon-reload':
+      command     => '/bin/systemctl daemon-reload',
+      refreshonly => true;
+  }
+
   if $env::target_g5k {
     file {
       '/etc/xen-tools/skel/etc':
@@ -130,7 +149,7 @@ class env::xen::configure_xen () {
 
   exec {
     'create_example_domU':
-      command  => '/usr/bin/xen-create-image --hostname=domU --role=udev --genpass=0 --password=grid5000 --dhcp --mac=$(random_mac) --bridge=br0 --size=1G',
+      command  => '/usr/bin/xen-create-image --hostname=domU --role=udev --genpass=0 --password=grid5000 --dhcp --mac=$(random_mac) --bridge=br0 --size=1G --memory=512M',
       creates  => '/etc/xen/domU.cfg',
       timeout  => 1200,
       require => [

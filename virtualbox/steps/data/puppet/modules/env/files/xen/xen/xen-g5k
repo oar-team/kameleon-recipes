@@ -12,6 +12,7 @@ test -d $XEN_DIR      || exit 0
 case "$1" in
 	start|reload|force-reload|restart)
 
+      mkdir -p /var/log/xen
       for conf_file in $DOMUS_CONF_FILES; do
         sed -i s/mac=[A-Za-z0-9:]*/mac=$($RAND_MAC_CMD)/g $conf_file
       done
