@@ -27,8 +27,8 @@ class env::std::dell {
           release  => 'wheezy',
           repos    => 'openmanage',
           key      => {
-            'id'     => '42550ABD1E80D7C1BC0BAD851285491434D8786F',
-            'server' => 'pool.sks-keyservers.net',
+            'id'      => '42550ABD1E80D7C1BC0BAD851285491434D8786F',
+            'content' => template('env/std/dell/linux.dell.com.key.erb'),
           },
           include  => {
             'deb' => true,
@@ -88,8 +88,8 @@ class env::std::dell {
           repos    => 'main',
           pin      => '500',
           key      => {
-            'id'     => '1285491434D8786F',
-            'server' => 'pool.sks-keyservers.net',
+            'id'      => '1285491434D8786F',
+            'content' => template('env/std/dell/linux.dell.com.key.erb'),
           },
           include  => {
             'src' => false,
