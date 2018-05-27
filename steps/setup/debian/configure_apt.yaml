@@ -12,8 +12,8 @@
   - exec_in: |
       if [ "$${release}" != "sid" ]; then
         echo
-        echo "deb $${deb_mirror_uri}  $${release}-updates main" >> /etc/apt/source.list
-        echo "deb-src $${deb_mirror_uri} $${release}-updates main" >> /etc/apt/source.list
+        echo "deb $${deb_mirror_uri}  $${release}-updates main" >> /etc/apt/sources.list
+        echo "deb-src $${deb_mirror_uri} $${release}-updates main" >> /etc/apt/sources.list
         echo 
         echo "deb http://security.debian.org/ $${release}/updates main" >> /etc/apt/sources.list
         echo "deb-src http://security.debian.org/ $${release}/updates main" >> /etc/apt/sources.list
