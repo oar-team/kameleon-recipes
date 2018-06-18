@@ -10,7 +10,7 @@ extend: debian9-x64-common.yaml # Cf 'jessie-x64-common' for a real content. Thi
 global:
   variant: std
   g5k_postinst_script: g5k-postinstall --net debian-bridged --net hpc --fstab nfs --fstab site-specific --restrict-user std
-  g5k_kernel_params: "cgroup_enable=memory modprobe.blacklist=myri10ge"
+  g5k_kernel_params: "cgroup_enable=memory"
   appliance_tar_excludes: >-
     ./etc/fstab ./root/.bash_history ./root/kameleon_workdir
     ./var/tmp/* ./tmp/* ./dev/* ./proc/* ./run/*

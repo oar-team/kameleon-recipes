@@ -22,7 +22,6 @@ global:
   g5k_tgz_path: server:///path/to/your/image
   g5k_postinst_path: server:///grid5000/postinstalls/g5k-postinstall.tgz
   g5k_postinst_script: g5k-postinstall --net debian
-  g5k_kernel_params: "modprobe.blacklist=myri10ge"
   force_puppet_debian_version: jessie #Because puppet stretch is not released yet
 
 bootstrap:
