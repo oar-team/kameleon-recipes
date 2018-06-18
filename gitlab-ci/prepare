@@ -1,0 +1,32 @@
+#!/bin/bash
+set -xeo pipefail
+
+# force hostname to make postfix happy
+sed -i 's/127.0.0.1 .*/127.0.0.1 example-vm.nancy.grid5000.fr example-vm localhost/' /etc/hosts
+hostnamectl set-hostname example-vm.nancy.grid5000.fr
+
+# install puppet
+apt-get update
+apt-get -y install --no-install-recommends wget lsb-release
+apt-get -y install readline-common linux-image-amd64
+wget -O /tmp/libreadline6.deb http://snapshot.debian.org/archive/debian/20161005T102332Z/pool/main/r/readline6/libreadline6_6.3-9_amd64.deb && dpkg -i /tmp/libreadline6.deb
+wget -q http://apt.puppetlabs.com/puppetlabs-release-pc1-jessie.deb -O /tmp/puppetlabs-release-pc1.deb
+dpkg -i /tmp/puppetlabs-release-pc1.deb
+apt-get update
+apt-get install -y --no-install-recommends --allow-unauthenticated puppet-agent=1.5.1-1jessie
+/opt/puppetlabs/bin/puppet module install puppetlabs-stdlib
+/opt/puppetlabs/bin/puppet module install puppetlabs-apt
+
+# initialize data
+cd virtualbox/steps/data/puppet
+cat <<-EOF > modules/env/files/min/image_versioning/release
+echo debian9-x64-std-2018999999
+server:///grid5000/postinstalls/g5k-postinstall.tgz
+g5k-postinstall --foo
+9999999999999999999999999999999999999999
+EOF
+echo 2018999999 > modules/env/files/version
+# copy fake hiera data
+cp ../../../../gitlab-ci/fake.yaml ../hiera/hieradata/common.yaml
+ln -sf $(realpath ../hiera) /tmp/hiera
+/opt/puppetlabs/bin/puppet config set hiera_config /tmp/hiera/hiera.yaml

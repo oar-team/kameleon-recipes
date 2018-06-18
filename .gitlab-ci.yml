@@ -1,0 +1,31 @@
+.defaults: &defaults
+  tags:
+   - shell
+  artifacts:
+     paths:
+      - apt-history.log
+     expire_in: '1 week'
+
+debian9-x64-min:
+  <<: *defaults
+  script: /srv/ci-runner-scripts/bin/test-environment-recipes debian9-x64-min min
+
+debian9-x64-base:
+  <<: *defaults
+  script: /srv/ci-runner-scripts/bin/test-environment-recipes debian9-x64-base base
+
+debian9-x64-nfs:
+  <<: *defaults
+  script: /srv/ci-runner-scripts/bin/test-environment-recipes debian9-x64-nfs nfs
+
+debian9-x64-xen:
+  <<: *defaults
+  script: /srv/ci-runner-scripts/bin/test-environment-recipes debian9-x64-xen xen
+
+debian9-x64-big:
+  <<: *defaults
+  script: /srv/ci-runner-scripts/bin/test-environment-recipes debian9-x64-big big
+
+debian9-x64-std:
+  <<: *defaults
+  script: /srv/ci-runner-scripts/bin/test-environment-recipes debian9-x64-std std
