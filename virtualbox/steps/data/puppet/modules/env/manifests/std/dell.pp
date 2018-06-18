@@ -83,7 +83,7 @@ class env::std::dell {
 
         apt::source { 'linux.dell.com':
           comment  => 'Dell repository for OpenManage Server Administrator tools',
-          location => 'http://linux.dell.com/repo/community/openmanage/901/xenial',
+          location => 'http://linux.dell.com/repo/community/openmanage/910/xenial',
           release  => 'xenial',
           repos    => 'main',
           pin      => '500',
