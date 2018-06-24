@@ -25,6 +25,12 @@ class env::base::configure_omnipath(){
       ensure  => installed,
       require => [File['/etc/apt/sources.list.d/scibian9-opa10.6.list'], Exec['apt_update_scibian']]
     }
+
+    # There's a bug in the renicing of ib_mad processes (see bug 9421), so we disable it.
+    exec {
+      'disable renicing':
+        command => "/bin/sed -i 's/RENICE_IB_MAD=yes/RENICE_IB_MAD=no/' /etc/rdma/rdma.conf",
+        require => Package['opa-scripts']
     }
   }
 }
