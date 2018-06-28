@@ -6,7 +6,7 @@ class env::std::install_g5kchecks {
   if "${::lsbdistcodename}" == "stretch" {
     $g5kchecks_deps = [ 'ruby-rest-client', 'ohai', 'fio', 'ruby-json', 'x86info', 'ethtool' ]
     $g5kchecks_dist = "_stretch"
-    $g5kchecks_version = "0.8.2"
+    $g5kchecks_version = "0.8.3"
   }
   case $operatingsystem {
     'Debian','Ubuntu': {
@@ -15,7 +15,7 @@ class env::std::install_g5kchecks {
       if "${::lsbdistcodename}" != "jessie" {
         exec {
           "retrieve_g5kchecks":
-            command  => "/usr/bin/wget --no-check-certificate -q https://www.grid5000.fr/packages/debian/g5kchecks_${g5kchecks_version}_amd64${g5kchecks_dist}.deb -O /tmp/g5kchecks_amd64.deb",
+            command  => "/usr/bin/wget --no-check-certificate -q https://www.grid5000.fr/packages/debian/g5kchecks_${g5kchecks_version}_amd64.deb -O /tmp/g5kchecks_amd64.deb",
             creates  => "/tmp/g5kchecks_amd64.deb";
         }
         package {
