@@ -13,7 +13,7 @@ class env::base::configure_omnipath(){
         owner   => root,
         group   => root,
         mode    => '0644',
-        content => "deb [trusted=yes] http://apt.grid5000.fr/scibian9-opa10.6 /\ndeb [trusted=yes] http://apt.grid5000.fr/scibian9-opa10.6 /",
+        content => "deb [trusted=yes] http://apt.grid5000.fr/scibian9-opa10.6 /\ndeb-src [trusted=yes] http://apt.grid5000.fr/scibian9-opa10.6 /",
     } ~>
     exec {
       'apt_update_scibian':
