@@ -207,15 +207,18 @@ setup:
             echo 0 > /sys/module/drm_kms_helper/parameters/poll
           fi
           eth_dev=eth0
+          timeout=60
           for p in $(< /proc/cmdline); do
             case "$p" in
               ETH_DEV=*)
                 eth_dev=${p#ETH_DEV=}
               ;;
+              LINK_UP_TOUT=*)
+                timeout=${p#LINK_UP_TOUT=}
+              ;;
             esac
           done
           echo -n "Wait for ${eth_dev} link to be ready."
-          timeout=30
           while ! [ -r "/sys/class/net/${eth_dev}/operstate" -a $(< /sys/class/net/${eth_dev}/operstate) == "up" ] && [ $((timeout--)) -gt 0 ]; do
             ip link set dev ${eth_dev} up || true
             echo -n .
