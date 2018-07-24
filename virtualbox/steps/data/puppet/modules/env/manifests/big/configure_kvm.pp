@@ -71,7 +71,7 @@ class env::big::configure_kvm () {
 
   file_line { 'kvm_etc_profile_createpath':
      path => '/etc/profile',
-     line => 'mkdir /tmp/$USER-runtime-dir';
+     line => 'mkdir -p /tmp/$USER-runtime-dir';
   }
 
   file_line { 'kvm_etc_profile_path':
