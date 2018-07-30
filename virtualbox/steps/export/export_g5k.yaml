@@ -64,7 +64,7 @@
         kernel: /vmlinuz
         initrd: /initrd.img
         hypervisor: /hypervisor
-        hypervisor_params: dom0_mem=1000000
+        hypervisor_params: dom0_mem=4096M
       filesystem: ext4
       partition_type: 131
       multipart: false
