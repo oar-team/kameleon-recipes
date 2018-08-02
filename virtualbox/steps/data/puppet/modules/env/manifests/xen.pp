@@ -10,6 +10,4 @@ class env::xen ( $parent_parameters = {} ) {
 
   # xen packages
   class{ 'env::xen::configure_xen': }
-  # motd
-  class { 'env::xen::generate_etc_motd': }
 }
