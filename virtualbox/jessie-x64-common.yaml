@@ -31,6 +31,7 @@ global:
   variant: min # default value for variant. Can be overwritten by --global=variant:<my_variant> when calling kameleon
   os_family: debian
   os_release: jessie
+  os_codename: jessie
   image_version: 2018061910
   output: "$${kameleon_cwd}/$${kameleon_recipe_name}" # output files basename
   g5k_tgz_path: server:///path/to/your/image

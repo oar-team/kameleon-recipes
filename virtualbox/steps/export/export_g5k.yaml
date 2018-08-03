@@ -21,7 +21,7 @@
       $${dashes}
       name: $${kameleon_recipe_name}
       version: $${image_version}
-      description: $(echo $${os_family}|cut -c1|tr [a-z] [A-Z])$(echo $${os_family}|cut -c2-) $(echo $${os_release}|cut -c1|tr [a-z] [A-Z])$(echo $${os_release}|cut -c2-) ($${variant})
+      description: $(echo $${os_family}|cut -c1|tr [a-z] [A-Z])$(echo $${os_family}|cut -c2-) $(echo $${os_codename}|cut -c1|tr [a-z] [A-Z])$(echo $${os_codename}|cut -c2-) ($${variant})
       author: support-staff@lists.grid5000.fr
       visibility: public
       destructive: false
@@ -47,7 +47,7 @@
       $${dashes}
       name: $${kameleon_recipe_name}
       version: $${image_version}
-      description: $(echo $${os_family}|cut -c1|tr [a-z] [A-Z])$(echo $${os_family}|cut -c2-) $(echo $${os_release}|cut -c1|tr [a-z] [A-Z])$(echo $${os_release}|cut -c2-) ($${variant})
+      description: $(echo $${os_family}|cut -c1|tr [a-z] [A-Z])$(echo $${os_family}|cut -c2-) $(echo $${os_codename}|cut -c1|tr [a-z] [A-Z])$(echo $${os_codename}|cut -c2-) ($${variant})
       author: support-staff@lists.grid5000.fr
       visibility: public
       destructive: false

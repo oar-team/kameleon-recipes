@@ -15,6 +15,7 @@ global:
   release_number: -debian9
   bootstrap_image_version: "latest"
   os_release: debian9
+  os_codename: stretch
   image_version: 2018071814
   variant: min
   rootfs_archive_url: http://kameleon.imag.fr/builds/$${distrib}$${release_number}_$${bootstrap_image_version}.tar.xz
