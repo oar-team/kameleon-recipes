@@ -36,7 +36,7 @@ class env::std::configure_oar_client {
       }
       'stretch' : {
         # Can specify oar client version below
-        $oar_version       = "installed";
+        $oar_version       = "2.5.8~rc6-1~bpo9+1";
         $oar_repos         = "2.5/debian/";
         $oar_repos_release = "stretch-backports_beta"
 
@@ -82,6 +82,13 @@ class env::std::configure_oar_client {
               ensure          => $oar_version,
               install_options => ['-t', "$oar_repos_release"],
               require         => Apt::Source['oar-repo'];
+          }
+        }
+        if ($oar_version != "installed") {
+          apt::pin { 'oar client pin':
+            packages => [ 'oar-common', 'oar-node', 'liboar-perl' ],
+            version  => $oar_version,
+            priority => 1001,
           }
         }
       }
