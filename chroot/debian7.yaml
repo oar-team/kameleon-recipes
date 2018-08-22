@@ -13,6 +13,7 @@ global:
   # Distribution
   distrib: debian
   release: wheezy
+  release_suffix: 7
   release_number: 7
   kernel_arch: amd64
 

@@ -26,6 +26,7 @@ global:
   variant: min # default value for variant. Can be overwritten by --global=variant:<my_variant> when calling kameleon
   os_family: ubuntu
   os_release: ubuntu1404
+  os_codename: ubuntu1404
   image_version: 2017050413
   output: "$${kameleon_cwd}/$${kameleon_recipe_name}" # output files basename
   g5k_tgz_path: server:///path/to/your/image

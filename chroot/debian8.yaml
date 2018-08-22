@@ -11,6 +11,7 @@ extend: debian7.yaml
 global:
   # Distribution
   release: jessie
+  release_suffix: 8
   release_number: 8
   bootstrap_image_version: "20150915-1"
 

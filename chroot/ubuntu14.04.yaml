@@ -12,6 +12,7 @@ extend: ubuntu12.04.yaml
 global:
   # Distribution
   release: trusty
+  release_suffix: 14.04
   release_number: 14.04
   bootstrap_image_version: "20150915-1"
 
