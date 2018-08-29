@@ -6,7 +6,7 @@ class env::big::configure_nvidia_gpu::drivers () {
   if "${::lsbdistcodename}" == "jessie" {
     $driver_source = 'https://www.grid5000.fr/packages/debian/NVIDIA-Linux-x86_64-384.66.run'
   } else {
-    $driver_source = 'https://www.grid5000.fr/packages/debian/NVIDIA-Linux-x86_64-390.25.run'
+    $driver_source = 'https://www.grid5000.fr/packages/debian/NVIDIA-Linux-x86_64-396.44.run'
   }
 
   package {
