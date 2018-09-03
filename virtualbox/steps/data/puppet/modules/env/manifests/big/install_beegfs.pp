@@ -1,5 +1,9 @@
 class env::big::beegfs::params {
   if "${::lsbdistcodename}" == "stretch" {
+    package { 'apt-transport-https':
+        ensure => installed,
+    }
+
     apt::source { 'beegfs':
         location     => 'http://www.beegfs.com/release/beegfs_7/',
         release      => 'deb9',
@@ -9,6 +13,7 @@ class env::big::beegfs::params {
             id       => '055D000F1A9A092763B1F0DD14E8E08064497785',
             source   => 'https://www.beegfs.io/release/beegfs_7/gpg/DEB-GPG-KEY-beegfs',
         },
+        require => Package['apt-transport-https'],
     }
 
     package { # for manual inspection, mostly.
