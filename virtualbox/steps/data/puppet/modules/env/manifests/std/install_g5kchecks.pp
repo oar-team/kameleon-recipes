@@ -6,7 +6,7 @@ class env::std::install_g5kchecks {
   if "${::lsbdistcodename}" == "stretch" {
     $g5kchecks_deps = [ 'ruby-rest-client', 'ohai', 'fio', 'ruby-json', 'x86info', 'ethtool' ]
     $g5kchecks_dist = "_stretch"
-    $g5kchecks_version = "0.8.4"
+    $g5kchecks_version = "0.8.3"
   }
   case $operatingsystem {
     'Debian','Ubuntu': {
