@@ -4,10 +4,6 @@ set -x
 echo "libguestfs0     libguestfs/update-appliance     boolean false" | debconf-set-selections
 echo "mdadm   mdadm/initrdstart       string  none" | debconf-set-selections
 
-# Removing this file is needed because of bug 9423. The line below
-# can be removed once scibian.org is removed from our repositories
-rm -f /etc/apt/sources.list.d/scibian9opa10.6.list
-
 apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends git virtualbox linux-headers-amd64 socat qemu-utils ruby-dev ruby-childprocess polipo pigz linux-headers-$(uname -r) netcat eatmydata
 apt-get install -y libguestfs-tools
 apt-get install -y dirmngr
