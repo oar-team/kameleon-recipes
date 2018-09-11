@@ -18,12 +18,7 @@ class env::min::add_grid5000_apt_repo {
                    ];
 
   }->
-  file_line { 'Add g5k metapackage repository':
-    path => '/etc/apt/sources.list',
-    line => 'deb [trusted=yes] http://apt.grid5000.fr/g5k-meta-packages /',
-  }->
-  exec { 'run apt-get update for g5k metapackage repository':
+  exec { 'run apt-get update for g5k apt.grid5000.fr repository':
     command => '/usr/bin/apt-get update',
   }
-
 }

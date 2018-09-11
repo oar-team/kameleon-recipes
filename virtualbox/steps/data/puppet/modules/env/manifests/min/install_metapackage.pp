@@ -1,24 +1,37 @@
 class env::min::install_metapackage ( $variant ) {
 
-    require env::min::add_grid5000_apt_repo
+  include apt
 
-    case $operatingsystem {
+  $g5k_meta_packages_version = '0.7.16'
+
+  case $operatingsystem {
     'Debian','Ubuntu': {
-
       if "${::lsbdistcodename}" == "stretch" {
         $g5kmetapackages = "g5k-meta-packages-debian9-$variant"
-      } else {
-        $g5kmetapackages = "g5k-meta-packages-${::lsbdistcodename}-$variant"
-      }
-
-      package {
-        $g5kmetapackages:
-          ensure => installed,
-      }
-
+        } else {
+          $g5kmetapackages = "g5k-meta-packages-${::lsbdistcodename}-$variant"
+        }
     }
     default: {
-      err "${operatingsystem} not suported."
+      err "${operatingsystem} not supported."
     }
+  }
+
+  apt::source { 'g5k-meta-packages':
+    key      => {
+      'id'      => '3C38BDEAA05D4A7BED7815E5B1F34F56797BF2D1',
+      'content' => file('env/min/apt/grid5000-archive-key.asc')
+    },
+    comment  => 'Grid5000 repository for g5k-meta-packages',
+    location => 'http://packages.grid5000.fr/deb/g5k-meta-packages/',
+    release  => "/",
+    repos    => '',
+    include  => { 'deb' => true, 'src' => false }
+  }
+
+  package {
+    $g5kmetapackages:
+       ensure  => $g5k_meta_packages_version,
+       require => Class['apt::update']
   }
 }
