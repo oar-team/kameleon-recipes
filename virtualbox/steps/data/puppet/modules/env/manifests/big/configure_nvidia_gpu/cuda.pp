@@ -1,12 +1,11 @@
 class env::big::configure_nvidia_gpu::cuda () {
 
   # May be changed to a link inside g5k if required
-  #$driver_source = 'https://www.grid5000.fr/packages/debian/cuda_8.0.61_linux-run'
   if "${::lsbdistcodename}" == "stretch" {
     $driver_source = 'https://www.grid5000.fr/packages/debian/cuda_9.0.176_384.81_linux-run'
     $opengl_packages = ['ocl-icd-libopencl1', 'opencl-headers']
   } else {
-    $driver_source = 'https://www.grid5000.fr/packages/debian/cuda_8.0.61_linux-run'
+    $driver_source = 'https://www.grid5000.fr/packages/debian/cuda_9.0.176_384.81_linux-run' 
     $opengl_packages = ['ocl-icd-libopencl1', 'opencl-headers', 'amd-opencl-icd']
   }
 

@@ -4,7 +4,7 @@ class env::big::configure_nvidia_gpu::drivers () {
 
   # May be changed to a link inside g5k if required
   if "${::lsbdistcodename}" == "jessie" {
-    $driver_source = 'https://www.grid5000.fr/packages/debian/NVIDIA-Linux-x86_64-384.66.run'
+    $driver_source = 'https://www.grid5000.fr/packages/debian/NVIDIA-Linux-x86_64-396.44.run'
   } else {
     $driver_source = 'https://www.grid5000.fr/packages/debian/NVIDIA-Linux-x86_64-396.44.run'
   }
