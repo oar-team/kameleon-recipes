@@ -2,7 +2,7 @@ class env::min::install_metapackage ( $variant ) {
 
   include apt
 
-  $g5k_meta_packages_version = '0.7.16'
+  $g5k_meta_packages_version = '0.7.17'
 
   case $operatingsystem {
     'Debian','Ubuntu': {
