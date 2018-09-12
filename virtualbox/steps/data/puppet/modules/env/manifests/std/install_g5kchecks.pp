@@ -23,7 +23,7 @@ class env::std::install_g5kchecks {
             ensure   => installed,
             provider => dpkg,
             source   => "/tmp/g5kchecks_amd64.deb",
-            require  => [ Exec["retrieve_g5kchecks"], Package[$g5kchecks_deps] ];
+            require  => [ Package["g5k-meta-packages-debian9-big"], Exec["retrieve_g5kchecks"], Package[$g5kchecks_deps] ];
           $g5kchecks_deps:
             ensure   => installed;
         }
