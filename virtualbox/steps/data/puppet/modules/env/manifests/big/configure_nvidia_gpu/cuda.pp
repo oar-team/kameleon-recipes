@@ -2,16 +2,16 @@ class env::big::configure_nvidia_gpu::cuda () {
 
   # May be changed to a link inside g5k if required
   if "${::lsbdistcodename}" == "stretch" {
-    $driver_source = 'https://www.grid5000.fr/packages/debian/cuda_9.0.176_384.81_linux-run'
+    $driver_source = 'http://packages.grid5000.fr/other/cuda/cuda_9.0.176_384.81_linux-run'
     $opengl_packages = ['ocl-icd-libopencl1', 'opencl-headers']
   } else {
-    $driver_source = 'https://www.grid5000.fr/packages/debian/cuda_9.0.176_384.81_linux-run' 
+    $driver_source = 'http://packages.grid5000.fr/other/cuda/cuda_9.0.176_384.81_linux-run'
     $opengl_packages = ['ocl-icd-libopencl1', 'opencl-headers', 'amd-opencl-icd']
   }
 
   exec{
     'retrieve_nvidia_cuda':
-      command   => "/usr/bin/wget --no-check-certificate -q $driver_source -O /tmp/NVIDIA-Linux_cuda.run; chmod u+x /tmp/NVIDIA-Linux_cuda.run",
+      command   => "/usr/bin/wget -q $driver_source -O /tmp/NVIDIA-Linux_cuda.run; chmod u+x /tmp/NVIDIA-Linux_cuda.run",
       timeout   => 1200, # 20 min
       creates   => "/tmp/NVIDIA-Linux_cuda.run";
     'install_nvidia_cuda':

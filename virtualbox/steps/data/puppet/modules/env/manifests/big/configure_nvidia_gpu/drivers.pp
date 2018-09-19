@@ -4,9 +4,9 @@ class env::big::configure_nvidia_gpu::drivers () {
 
   # May be changed to a link inside g5k if required
   if "${::lsbdistcodename}" == "jessie" {
-    $driver_source = 'https://www.grid5000.fr/packages/debian/NVIDIA-Linux-x86_64-396.44.run'
+    $driver_source = 'http://packages.grid5000.fr/other/nvidia//NVIDIA-Linux-x86_64-396.44.run'
   } else {
-    $driver_source = 'https://www.grid5000.fr/packages/debian/NVIDIA-Linux-x86_64-396.44.run'
+    $driver_source = 'http://packages.grid5000.fr/other/nvidia//NVIDIA-Linux-x86_64-396.44.run'
   }
 
   package {
@@ -15,7 +15,7 @@ class env::big::configure_nvidia_gpu::drivers () {
   }
   exec{
     'retrieve_nvidia_drivers':
-      command   => "/usr/bin/wget --no-check-certificate -q $driver_source -O /tmp/NVIDIA-Linux.run; chmod u+x /tmp/NVIDIA-Linux.run",
+      command   => "/usr/bin/wget -q $driver_source -O /tmp/NVIDIA-Linux.run; chmod u+x /tmp/NVIDIA-Linux.run",
       timeout   => 1200, # 20 min
       creates   => "/tmp/NVIDIA-Linux.run";
     'prepare_kernel_module_build':
