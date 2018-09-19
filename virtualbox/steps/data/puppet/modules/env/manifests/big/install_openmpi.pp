@@ -8,13 +8,13 @@ class env::big::install_openmpi () {
     package{
       $openmpi_deps_packages:
         ensure     => installed,
-        require  => [File['/etc/apt/sources.list.d/scibian9-opa10.6.list'], Exec['apt_update_scibian']]
+        require => Class['apt::update']
     }
 
     package {
       $openmpi_packages:
         ensure     => $openmpi_scibian_version,
-        require  => [File['/etc/apt/sources.list.d/scibian9-opa10.6.list'], Exec['apt_update_scibian']]
+        require => Class['apt::update']
     }
 
   } else {
