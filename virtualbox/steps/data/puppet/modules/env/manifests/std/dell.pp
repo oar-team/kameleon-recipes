@@ -68,17 +68,22 @@ class env::std::dell {
       'stretch' : {
         $packToInstall = [ 'srvadmin-base', 'srvadmin-omcommon', 'srvadmin-server-cli', 'srvadmin-server-snmp', 'srvadmin-storageservices', 'srvadmin-storageservices-cli', 'srvadmin-storageservices-snmp', 'srvadmin-idracadm8', 'srvadmin-idrac-ivmcli', 'srvadmin-idrac-snmp', 'srvadmin-idrac-vmcli', 'srvadmin-deng', 'srvadmin-deng-snmp' ]
 
-        exec {
-          "retrieve_libssl1.0.0_1.0.1t-1+deb8u6_amd64":
-          command  => "/usr/bin/wget --no-check-certificate -q https://www.grid5000.fr/packages/debian/libssl1.0.0_1.0.1t-1+deb8u6_amd64.deb -O /tmp/libssl_amd64.deb",
-          creates  => "/tmp/libssl_amd64.deb";
+        apt::source { 'ssl4dell':
+          key      => {
+            'id'      => '3C38BDEAA05D4A7BED7815E5B1F34F56797BF2D1',
+            'content' => file('env/min/apt/grid5000-archive-key.asc')
+          },
+          comment  => 'Grid5000 repository for ssl4dell',
+          location => 'http://packages.grid5000.fr/deb/ssl4dell/',
+          release  => "/",
+          repos    => '',
+          include  => { 'deb' => true, 'src' => false }
         }
-        package {
-          "libssl1.0.0_1.0.1t-1+deb8u6_amd64":
-          ensure   => installed,
-          provider => dpkg,
-          source   => "/tmp/libssl_amd64.deb",
-          require  => [ Exec["retrieve_libssl1.0.0_1.0.1t-1+deb8u6_amd64"] ];
+
+
+        package { 'libssl1.0.0':
+          ensure  => present,
+          require => Class['apt::update']
         }
 
         apt::source { 'linux.dell.com':
