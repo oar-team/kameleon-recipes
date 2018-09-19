@@ -10,7 +10,6 @@ class env::min ( $variant = "min", $parent_parameters = {} ) {
   # Package manager
   case $operatingsystem {
     'Debian','Ubuntu': {
-      class { 'env::min::add_grid5000_apt_repo': }
     }
     'Centos': {
       class { 'env::min::yum': }
