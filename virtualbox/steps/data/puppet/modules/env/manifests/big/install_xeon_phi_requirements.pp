@@ -1,42 +1,32 @@
-
-# This is a dirty workaround induced by this bug in puppet: https://projects.puppetlabs.com/issues/15718 or https://tickets.puppetlabs.com/browse/PUP-1263
-# this is used later to automatically install a package with dpkg after a retrivial using wget. Looped on an array.
-define my_package {
-  exec {
-    $name:
-      command => "/usr/bin/wget --no-check-certificate -q https://www.grid5000.fr/packages/debian/jessie/${name}_amd64.deb -O /tmp/${name}.deb",
-      creates => "/tmp/${name}.deb";
-  }
-  package {
-    $name:
-      ensure  => installed,
-      provider => dpkg,
-      source   => "/tmp/${name}.deb",
-      require  =>  Exec["${name}"];
-  }
-}
-
-
-
 class env::big::install_xeon_phi_requirements ($enable = false) {
 
-  # TODO: add non debian version
-  # TODO: add condition over kernel version to get mpss packages at good version
-  # mpss-modules-3.2.0-4-amd64
   case $operatingsystem {
     'Debian','Ubuntu': {
 
+      apt::source { 'mpss':
+        key      => {
+          'id'      => '3C38BDEAA05D4A7BED7815E5B1F34F56797BF2D1',
+          'content' => file('env/min/apt/grid5000-archive-key.asc')
+        },
+        comment  => 'Grid5000 repository for mpss',
+        location => 'http://packages.grid5000.fr/deb/mpss/',
+        release  => "/",
+        repos    => '',
+        include  => { 'deb' => true, 'src' => false }
+      }
+
       $installed_packages = [ 'mpss-micmgmt', 'mpss-miccheck', 'mpss-coi', 'mpss-mpm', 'mpss-miccheck-bin', 'glibc2.12.2pkg-libsettings0', 'glibc2.12.2pkg-libmicmgmt0', 'libscif0', 'mpss-daemon', 'mpss-boot-files', 'mpss-sdk-k1om', 'intel-composerxe-compat-k1om' ]
 
-      my_package { $installed_packages:
-        require  => File['/usr/lib64'];
+      package { $installed_packages:
+        ensure => present,
+        require  => [File['/usr/lib64'], Class['apt::update']];
       }
       if "${::lsbdistcodename}" == "stretch" {
         file{ '/usr/lib64':
           ensure => directory;
         '/etc/systemd/system/mpss.service':
           mode => "644",
-          require => My_package[$installed_packages];
+          require => Package[$installed_packages];
         }
       } else {
         file{ '/usr/lib64':
@@ -44,7 +34,7 @@ class env::big::install_xeon_phi_requirements ($enable = false) {
           target => '/usr/lib';
         '/etc/systemd/system/mpss.service':
           mode => "644",
-          require => My_package[$installed_packages];
+          require => Package[$installed_packages];
         }
       }
     }
@@ -53,11 +43,9 @@ class env::big::install_xeon_phi_requirements ($enable = false) {
     }
   }
 
-  # Kernel module for mpss. Fixed with kernel 3.16.0-4 (jessie).
-  # TODO: add condition over kernel version to get mpss kernel module at good version
   exec {
     'retrieve_mpss-modules':
-      command => "/usr/bin/wget --no-check-certificate -q https://www.grid5000.fr/packages/debian/jessie/mpss-modules.tar.bz2 -O /tmp/mpss-modules/mpss-modules.tar.bz2",
+      command => "/usr/bin/wget -q http://packages.grid5000.fr/deb/mpss/mpss-modules.tar.bz2 -O /tmp/mpss-modules/mpss-modules.tar.bz2",
       creates => "/tmp/mpss-modules/mpss-modules.tar.bz2",
       require => File['/tmp/mpss-modules'];
     'extract_mpss-modules':
