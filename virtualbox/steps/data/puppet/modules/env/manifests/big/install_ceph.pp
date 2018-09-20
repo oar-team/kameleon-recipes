@@ -22,19 +22,21 @@ class env::big::install_ceph (
         }
 
         # Ceph-deploy is used by dfsg5k to setup easily a ceph fs on g5k nodes.
-        # Retrieve ceph-deploy: not availaible on ceph repositories atm.
-        exec {
-          "retrieve_ceph-deploy":
-            command  => "/usr/bin/wget --no-check-certificate -q https://www.grid5000.fr/packages/debian/ceph-deploy_all.deb -O /tmp/ceph-deploy_all.deb",
-            creates  => "/tmp/g5kchecks_all.deb";
+        apt::source { 'ceph-deploy':
+          key      => {
+            'id'      => '3C38BDEAA05D4A7BED7815E5B1F34F56797BF2D1',
+            'content' => file('env/min/apt/grid5000-archive-key.asc')
+          },
+          comment  => 'Grid5000 repository for ceph-deploy',
+          location => 'http://packages.grid5000.fr/deb/ceph-deploy/',
+          release  => "/",
+          repos    => '',
+          include  => { 'deb' => true, 'src' => false }
         }
-        # Install ceph-deploy from deb retrieved on g5k.
         package {
-          "ceph-deploy":
-            ensure   => installed,
-            provider => dpkg,
-            source   => "/tmp/ceph-deploy_all.deb",
-            require  => [Exec["retrieve_ceph-deploy"], Package[$ceph_packages_g5k_repository_dep] ] ;
+          'ceph-deploy':
+            ensure  => '1.5.28~bpo70+1',
+            require  => [Class['apt::update'], Package[$ceph_packages_g5k_repository_dep] ];
           $ceph_packages_g5k_repository_dep:
             ensure   => installed;
         }
