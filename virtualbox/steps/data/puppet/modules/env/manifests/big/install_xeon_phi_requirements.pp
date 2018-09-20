@@ -45,7 +45,7 @@ class env::big::install_xeon_phi_requirements ($enable = false) {
 
   exec {
     'retrieve_mpss-modules':
-      command => "/usr/bin/wget -q http://packages.grid5000.fr/deb/mpss/mpss-modules.tar.bz2 -O /tmp/mpss-modules/mpss-modules.tar.bz2",
+      command => "/usr/bin/wget -q http://packages.grid5000.fr/deb/mpss/mpss-modules-3.4.4.tar.bz2 -O /tmp/mpss-modules/mpss-modules.tar.bz2",
       creates => "/tmp/mpss-modules/mpss-modules.tar.bz2",
       require => File['/tmp/mpss-modules'];
     'extract_mpss-modules':
