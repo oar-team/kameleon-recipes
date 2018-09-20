@@ -2,21 +2,28 @@ class env::big::configure_nvidia_gpu::ganglia () {
 
   case $operatingsystem {
     'Debian','Ubuntu': {
-      # This package is retrieve from www.grid5000.fr. I guess this is because it needs to be retrievable from outside of g5k.
-      exec{'retrieve_ganglia-monitor-python-nvidia_deb':
-        command => "/usr/bin/wget --no-check-certificate -q https://www.grid5000.fr/packages/debian/ganglia-monitor-python-nvidia_0.1.deb -O /tmp/ganglia-monitor-python-nvidia.deb",
-        creates => "/tmp/ganglia-monitor-python-nvidia.deb";
+
+      apt::source { 'ganglia-monitor-nvidia':
+        key      => {
+          'id'      => '3C38BDEAA05D4A7BED7815E5B1F34F56797BF2D1',
+          'content' => file('env/min/apt/grid5000-archive-key.asc')
+        },
+        comment  => 'Grid5000 repository for ganglia-monitor-nvidia',
+        location => 'http://packages.grid5000.fr/deb/ganglia-monitor-nvidia/',
+        release  => "/",
+        repos    => '',
+        include  => { 'deb' => true, 'src' => false }
       }
+
       package {
         'ganglia-monitor-python-nvidia':
           ensure   => installed,
-          provider => dpkg,
-          source   => "/tmp/ganglia-monitor-python-nvidia.deb",
           require  =>  [
-              Exec['retrieve_ganglia-monitor-python-nvidia_deb'],
-              Package['ganglia-monitor']
+            Class['apt::update'],
+            Package['ganglia-monitor']
           ]
       }
+
       file{
         '/etc/ganglia/conf.d/modpython-nvidia.conf':
           ensure  => file,
