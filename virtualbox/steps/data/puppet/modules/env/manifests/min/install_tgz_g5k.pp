@@ -1,20 +1,22 @@
 class env::min::install_tgz_g5k {
   case $operatingsystem {
     'Debian','Ubuntu': {
-      # This package is retrieve from www.grid5000.fr. I guess this is because it needs to be retrievable from outside of g5k.
-      exec{'retrieve_tgz-g5k_deb':
-        command => "/usr/bin/wget --no-check-certificate -q https://www.grid5000.fr/packages/debian/tgz-g5k_all.deb -O /tmp/tgz-g5k_all.deb",
-        creates => "/tmp/tgz-g5k_all.deb",
+
+      apt::source { 'tgz-g5k':
+        key      => {
+          'id'      => '3C38BDEAA05D4A7BED7815E5B1F34F56797BF2D1',
+          'content' => file('env/min/apt/grid5000-archive-key.asc')
+        },
+        comment  => 'Grid5000 repository for tgz-g5k',
+        location => 'http://packages.grid5000.fr/deb/tgz-g5k/',
+        release  => "/",
+        repos    => '',
+        include  => { 'deb' => true, 'src' => false }
       }
-      package {
-        'tgz-g5k':
-          ensure   => installed,
-          provider => dpkg,
-          source   => '/tmp/tgz-g5k_all.deb',
-          require  =>  [
-              Exec['retrieve_tgz-g5k_deb'],
-              Package['ssh client']
-          ]
+
+      package { 'tgz-g5k':
+        ensure  => '1.0.12',
+        require => Class['apt::update']
       }
     }
     default: {
