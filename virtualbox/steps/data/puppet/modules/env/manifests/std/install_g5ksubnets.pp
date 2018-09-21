@@ -14,7 +14,7 @@ class env::std::install_g5ksubnets {
 
   package {
     'g5k-subnets':
-      ensure   => '1.4',
+      ensure   => '1.4.1',
       require  =>  Class['apt::update'];
   }
 }
