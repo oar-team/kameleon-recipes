@@ -3,38 +3,40 @@ class env::std::install_g5kchecks {
   include 'env::std::ipmitool' # ipmitool is required by g5k-checks
   include 'env::std::dell'     # dell tools are required by g5k-checks
 
-  if "${::lsbdistcodename}" == "stretch" {
-    $g5kchecks_deps = [ 'ruby-rest-client', 'ohai', 'fio', 'ruby-json', 'x86info', 'ethtool' ]
-    $g5kchecks_dist = "_stretch"
-    $g5kchecks_version = "0.8.4"
-  }
   case $operatingsystem {
+
     'Debian','Ubuntu': {
+
       require env::commonpackages::rake
       require env::commonpackages::rubyrspec
+
       if "${::lsbdistcodename}" != "jessie" {
-        exec {
-          "retrieve_g5kchecks":
-            command  => "/usr/bin/wget --no-check-certificate -q https://www.grid5000.fr/packages/debian/g5kchecks_${g5kchecks_version}_amd64.deb -O /tmp/g5kchecks_amd64.deb",
-            creates  => "/tmp/g5kchecks_amd64.deb";
+        apt::source { 'g5k-checks':
+          key      => {
+            'id'      => '3C38BDEAA05D4A7BED7815E5B1F34F56797BF2D1',
+            'content' => file('env/min/apt/grid5000-archive-key.asc')
+          },
+          comment  => 'Grid5000 repository for g5k-checks',
+          location => 'http://packages.grid5000.fr/deb/g5k-checks/',
+          release  => "/",
+          repos    => '',
+          include  => { 'deb' => true, 'src' => false }
         }
+
         package {
-          "g5kchecks":
-            ensure   => installed,
-            provider => dpkg,
-            source   => "/tmp/g5kchecks_amd64.deb",
-            require  => [ Package["g5k-meta-packages-debian9-big"], Exec["retrieve_g5kchecks"], Package[$g5kchecks_deps] ];
-          $g5kchecks_deps:
-            ensure   => installed;
+          "g5k-checks":
+            ensure   => '0.8.4',
+            require  =>  Class['apt::update'];
         }
+
         file {
           '/etc/g5k-checks.conf':
             ensure   => present,
             owner    => root,
             group    => root,
             mode     => '0644',
-            source   => "puppet:///modules/env/std/g5kchecks/g5k-checks${g5kchecks_dist}.conf",
-            require  => Package["g5kchecks"];
+            source   => "puppet:///modules/env/std/g5kchecks/g5k-checks.conf",
+            require  => Package["g5k-checks"];
         }
       }
     }
