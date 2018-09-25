@@ -41,13 +41,6 @@ class env::big::install_ceph (
             ensure   => installed;
         }
 
-
-        # Ensure service does not start at boot
-        service {
-          'ceph':
-            enable  => false,
-            require => Package['ceph'];
-        }
       } else {
         # Stretch use distribution binaries
 
@@ -55,12 +48,6 @@ class env::big::install_ceph (
         package {
           $ceph_packages :
             ensure   => installed,
-        }
-        # Ensure service does not start at boot
-        service {
-          'ceph':
-            enable  => false,
-            require => Package['ceph'];
         }
       }
 
