@@ -25,7 +25,7 @@ class env::std::install_g5kchecks {
 
         package {
           "g5k-checks":
-            ensure   => '0.8.4',
+            ensure   => '0.8.5',
             require  =>  Class['apt::update'];
         }
 
