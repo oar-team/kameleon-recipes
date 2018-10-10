@@ -4,6 +4,8 @@ set -xeo pipefail
 # force hostname to make postfix happy
 sed -i 's/127.0.0.1 .*/127.0.0.1 example-vm.nancy.grid5000.fr example-vm localhost/' /etc/hosts
 hostnamectl set-hostname example-vm.nancy.grid5000.fr
+# redirect connections to packages to intranet
+iptables -t nat -A OUTPUT -p tcp -d 172.16.47.152 --dport 80 -j DNAT --to-destination 194.254.60.39
 
 # install puppet
 apt-get update
