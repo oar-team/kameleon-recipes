@@ -2,7 +2,7 @@ class env::big::install_ceph (
   $version = 'hammer'
 ) {
 
-  $ceph_packages = [ 'ceph', 'ceph-fs-common', 'ceph-fuse', 'ceph-mds' ]
+  $ceph_packages = [ 'ceph-common', 'ceph-fs-common', 'ceph-fuse' ]
   $ceph_packages_g5k_repository = [ 'ceph-deploy' ] # Ceph deploy is not distributed on ceph repo for jessie. So we picked wheezy package that works on jessie and distribute it.
   $ceph_packages_g5k_repository_dep = [ 'python-setuptools' ]
   case $operatingsystem {
@@ -41,13 +41,6 @@ class env::big::install_ceph (
             ensure   => installed;
         }
 
-
-        # Ensure service does not start at boot
-        service {
-          'ceph':
-            enable  => false,
-            require => Package['ceph'];
-        }
       } else {
         # Stretch use distribution binaries
 
@@ -55,12 +48,6 @@ class env::big::install_ceph (
         package {
           $ceph_packages :
             ensure   => installed,
-        }
-        # Ensure service does not start at boot
-        service {
-          'ceph':
-            enable  => false,
-            require => Package['ceph'];
         }
       }
 
