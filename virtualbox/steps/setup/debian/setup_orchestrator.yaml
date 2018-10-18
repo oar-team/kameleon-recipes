@@ -17,9 +17,10 @@
   - exec_in: $${script_path}/$${script_name}
   # We tagged packet as "automatically installed" to auto-remove them at the end of the orchestration step
   - exec_in: apt-mark auto puppet-agent lsb-release puppetlabs-release-pc1
-  # We also install stdlib module that contains some usefull functions
-  - exec_in: apt-get install -y ca-certificates ; $${puppet_path}/puppet module install puppetlabs-stdlib
-  - exec_in: $${puppet_path}/puppet module install puppetlabs-apt
+  # We also install stdlib module that contains some useful functions
+  # We force the version of puppetlabs-stdlib and puppetlabs-apt so that we use a version that works on our old version of puppet
+  - exec_in: apt-get install -y ca-certificates ; $${puppet_path}/puppet module install puppetlabs-stdlib --version 5.0.0
+  - exec_in: $${puppet_path}/puppet module install puppetlabs-apt --version 6.0.0
   - on_setup_clean:
     # module apt must be uninstalled BEFORE stdlib for dependency reasons
     - exec_in: $${puppet_path}/puppet module uninstall puppetlabs-apt
