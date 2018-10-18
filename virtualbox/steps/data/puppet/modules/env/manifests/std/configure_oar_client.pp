@@ -8,13 +8,13 @@ class env::std::configure_oar_client {
         # Installed oar packages from g5k 'mirror'.
         exec {
           "retrieve_oar-common":
-            command  => "/usr/bin/wget --no-check-certificate -q http://oar-ftp.imag.fr/oar/2.5/debian/pool/main/o/oar/oar-common_2.5.7-2~bpo8+1_amd64.deb -O /tmp/oar-common_amd64.deb",
+            command  => "/usr/bin/wget --no-check-certificate -q http://oar-ftp.imag.fr/oar/2.5/debian/pool/main/o/oar/oar-common_2.5.8~rc8-1~bpo8+1_amd64.deb -O /tmp/oar-common_amd64.deb",
             creates  => "/tmp/oar-common_amd64.deb";
           "retrieve_oar-node":
-            command  => "/usr/bin/wget --no-check-certificate -q http://oar-ftp.imag.fr/oar/2.5/debian/pool/main/o/oar/oar-node_2.5.7-2~bpo8+1_amd64.deb -O /tmp/oar-node_amd64.deb",
+            command  => "/usr/bin/wget --no-check-certificate -q http://oar-ftp.imag.fr/oar/2.5/debian/pool/main/o/oar/oar-node_2.5.8~rc8-1~bpo8+1_amd64.deb -O /tmp/oar-node_amd64.deb",
             creates  => "/tmp/oar-node_amd64.deb";
           "retrieve_liboar":
-            command  => "/usr/bin/wget --no-check-certificate -q http://oar-ftp.imag.fr/oar/2.5/debian/pool/main/o/oar/liboar-perl_2.5.7-2~bpo8+1_amd64.deb -O /tmp/liboar_amd64.deb"
+            command  => "/usr/bin/wget --no-check-certificate -q http://oar-ftp.imag.fr/oar/2.5/debian/pool/main/o/oar/liboar-perl_2.5.8~rc8-1~bpo8+1_amd64.deb -O /tmp/liboar_amd64.deb"
         }
         package {
           "oar-common":
@@ -36,7 +36,7 @@ class env::std::configure_oar_client {
       }
       'stretch' : {
         # Can specify oar client version below
-        $oar_version       = "2.5.8~rc6-1~bpo9+1";
+        $oar_version       = "2.5.8~rc8-1~bpo9+1";
         $oar_repos         = "2.5/debian/";
         $oar_repos_release = "stretch-backports_beta"
 
