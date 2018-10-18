@@ -156,7 +156,14 @@ class env::std::configure_oar_client {
       owner    => root,
       group    => root,
       mode     => '0644',
-      source   => 'puppet:///modules/env/std/oar/access.conf',
+      source   => 'puppet:///modules/env/std/oar/etc/security/access.conf',
+      require  => Package[$oar_packages];
+    '/var/lib/oar/access.conf':
+      ensure   => present,
+      owner    => root,
+      group    => root,
+      mode     => '0644',
+      source   => 'puppet:///modules/env/std/oar/var/lib/oar/access.conf',
       require  => Package[$oar_packages];
     '/etc/oar/sshd_config':
       ensure   => present,
