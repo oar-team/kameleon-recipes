@@ -22,21 +22,12 @@ class env::big::install_ceph (
         }
 
         # Ceph-deploy is used by dfsg5k to setup easily a ceph fs on g5k nodes.
-        apt::source { 'ceph-deploy':
-          key      => {
-            'id'      => '3C38BDEAA05D4A7BED7815E5B1F34F56797BF2D1',
-            'content' => file('env/min/apt/grid5000-archive-key.asc')
-          },
-          comment  => 'Grid5000 repository for ceph-deploy',
-          location => 'http://packages.grid5000.fr/deb/ceph-deploy/',
-          release  => "/",
-          repos    => '',
-          include  => { 'deb' => true, 'src' => false }
-        }
-        package {
+        env::common::g5kpackages {
           'ceph-deploy':
             ensure  => '1.5.28~bpo70+1',
-            require  => [Class['apt::update'], Package[$ceph_packages_g5k_repository_dep] ];
+            require  => Package[$ceph_packages_g5k_repository_dep]
+        }
+        package {
           $ceph_packages_g5k_repository_dep:
             ensure   => installed;
         }

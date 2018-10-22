@@ -3,24 +3,14 @@ class env::big::install_xeon_phi_requirements ($enable = false) {
   case $operatingsystem {
     'Debian','Ubuntu': {
 
-      apt::source { 'mpss':
-        key      => {
-          'id'      => '3C38BDEAA05D4A7BED7815E5B1F34F56797BF2D1',
-          'content' => file('env/min/apt/grid5000-archive-key.asc')
-        },
-        comment  => 'Grid5000 repository for mpss',
-        location => 'http://packages.grid5000.fr/deb/mpss/',
-        release  => "/",
-        repos    => '',
-        include  => { 'deb' => true, 'src' => false }
-      }
-
       $installed_packages = [ 'mpss-micmgmt', 'mpss-miccheck', 'mpss-coi', 'mpss-mpm', 'mpss-miccheck-bin', 'glibc2.12.2pkg-libsettings0', 'glibc2.12.2pkg-libmicmgmt0', 'libscif0', 'mpss-daemon', 'mpss-boot-files', 'mpss-sdk-k1om', 'intel-composerxe-compat-k1om' ]
 
-      package { $installed_packages:
-        ensure => present,
-        require  => [File['/usr/lib64'], Class['apt::update']];
+      env::common::g5kpackages {
+        'mpss':
+          packages => $installed_packages,
+          require  => File['/usr/lib64'];
       }
+
       if "${::lsbdistcodename}" == "stretch" {
         file{ '/usr/lib64':
           ensure => directory;

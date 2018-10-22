@@ -11,22 +11,10 @@ class env::std::install_g5kchecks {
       require env::commonpackages::rubyrspec
 
       if "${::lsbdistcodename}" != "jessie" {
-        apt::source { 'g5k-checks':
-          key      => {
-            'id'      => '3C38BDEAA05D4A7BED7815E5B1F34F56797BF2D1',
-            'content' => file('env/min/apt/grid5000-archive-key.asc')
-          },
-          comment  => 'Grid5000 repository for g5k-checks',
-          location => 'http://packages.grid5000.fr/deb/g5k-checks/',
-          release  => "/",
-          repos    => '',
-          include  => { 'deb' => true, 'src' => false }
-        }
 
-        package {
-          "g5k-checks":
-            ensure   => '0.8.5',
-            require  =>  Class['apt::update'];
+        env::common::g5kpackages {
+          'g5k-checks':
+            ensure => $::env::common::software_versions::g5k_checks;
         }
 
         file {
