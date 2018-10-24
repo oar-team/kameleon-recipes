@@ -1,6 +1,6 @@
 .defaults: &defaults
   tags:
-   - shell
+   - grid5000-shell
   artifacts:
      paths:
       - apt-history.log
