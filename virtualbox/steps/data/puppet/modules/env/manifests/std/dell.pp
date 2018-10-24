@@ -87,8 +87,11 @@ class env::std::dell {
             'src' => false,
             'deb' => true,
           },
-        } -> package { $packToInstall:
+        }
+
+        package { $packToInstall:
           ensure => installed,
+          require => Class['apt::update']
         }
 
         service { 'dataeng':
