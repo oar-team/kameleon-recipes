@@ -15,6 +15,7 @@ class env::big::beegfs::params {
         },
         require => Package['apt-transport-https'],
     }
+    ~> exec { "apt-get update beegfs": command => "/usr/bin/apt-get update" }
 
     package { # for manual inspection, mostly.
     'beegfs-utils':
