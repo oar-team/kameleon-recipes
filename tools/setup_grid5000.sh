@@ -22,3 +22,6 @@ gem install --no-ri --no-rdoc kameleon-builder
 mv /bin/gzip /bin/gzip.OLD
 ln -s /usr/bin/pigz /bin/gzip
 cd /tmp
+
+# workaround for gnupg bug when importing keys
+apt-get install -y gnupg/stretch-backports gnupg-agent/stretch-backports
