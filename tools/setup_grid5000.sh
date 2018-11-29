@@ -23,5 +23,5 @@ mv /bin/gzip /bin/gzip.OLD
 ln -s /usr/bin/pigz /bin/gzip
 cd /tmp
 
-# workaround for gnupg bug when importing keys
+# workaround for gnupg bug when importing keys (http://bugs.debian.org/914944)
 apt-get install -y gnupg/stretch-backports gnupg-agent/stretch-backports
