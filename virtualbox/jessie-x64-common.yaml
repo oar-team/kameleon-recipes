@@ -32,7 +32,7 @@ global:
   os_family: debian
   os_release: jessie
   os_codename: jessie
-  image_version: 2018111312
+  image_version: 2018112908
   output: "$${kameleon_cwd}/$${kameleon_recipe_name}" # output files basename
   g5k_tgz_path: server:///path/to/your/image
   g5k_postinst_path: server:///grid5000/postinstalls/g5k-postinstall.tgz

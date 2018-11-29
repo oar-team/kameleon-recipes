@@ -17,7 +17,7 @@ global:
   os_release: debian9
   release_number: 9
   os_codename: stretch
-  image_version: 2018111312
+  image_version: 2018112908
   variant: min
   rootfs_archive_url: http://kameleon.imag.fr/builds/$${distrib}$${release_suffix}_$${bootstrap_image_version}.tar.xz
   output: "$${kameleon_cwd}/$${kameleon_recipe_name}" # output files basename
