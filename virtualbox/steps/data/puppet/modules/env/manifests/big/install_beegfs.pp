@@ -1,5 +1,6 @@
-class env::big::beegfs::params {
+class env::big::install_beegfs {
   if "${::lsbdistcodename}" == "stretch" {
+
     package { 'apt-transport-https':
         ensure => installed,
     }
@@ -17,35 +18,12 @@ class env::big::beegfs::params {
     }
     ~> exec { "apt-get update beegfs": command => "/usr/bin/apt-get update" }
 
-    package { # for manual inspection, mostly.
-    'beegfs-utils':
+    package { # client
+        ['beegfs-utils', 'beegfs-helperd', 'beegfs-client']:
         require => Apt::Source['beegfs'],
         ensure => installed;
     }
 
-    file { "/etc/beegfs":
-        ensure => directory,
-        owner  => root,
-        group  => root,
-        mode   => '0755';
-    }
-
-    file {
-        "/etc/modules-load.d/rdma_ucm.conf":
-            require => Package['beegfs-utils'],
-            ensure  => file,
-            mode    => '0644',
-            owner   => root,
-            group   => root,
-            content => "rdma_ucm\n",
-    }
-    ~> exec { "modprobe rdma_ucm": command => "/sbin/modprobe rdma_ucm" }
-    ~> exec { "beegfs-setup-rdma": command => "/usr/sbin/beegfs-setup-rdma" }
-  }
-}
-
-class env::big::install_beegfs inherits env::big::beegfs::params {
-  if "${::lsbdistcodename}" == "stretch" {
     package {
         ['linux-headers-amd64', 'beegfs-opentk-lib']:
         require => Apt::Source['beegfs'],
@@ -57,20 +35,28 @@ class env::big::install_beegfs inherits env::big::beegfs::params {
     }
     ~> exec {
     '/etc/init.d/beegfs-client rebuild':
+        timeout => 1200,
         refreshonly => true
     }
 
-
-    package { # client
-    'beegfs-helperd':
-        require => Apt::Source['beegfs'],
-        ensure => installed;
+    file { "/etc/beegfs":
+        ensure => directory,
+        owner  => root,
+        group  => root,
+        mode   => '0755';
     }
 
-    package { # client
-    'beegfs-client':
-        require => Apt::Source['beegfs'],
-        ensure => installed;
+    file {
+        "/etc/modules-load.d/beegfs.conf":
+            require => Package['beegfs-utils'],
+            ensure  => file,
+            mode    => '0644',
+            owner   => root,
+            group   => root,
+            content => "rdma_ucm\n",
     }
+    ~> exec { "modprobe rdma_ucm": command => "/sbin/modprobe rdma_ucm" }
+    ~> exec { "beegfs-setup-rdma": command => "/usr/sbin/beegfs-setup-rdma" }
   }
+
 }
