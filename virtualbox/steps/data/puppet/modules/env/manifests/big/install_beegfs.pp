@@ -16,27 +16,21 @@ class env::big::install_beegfs {
         },
         require => Package['apt-transport-https'],
     }
-    ~> exec { "apt-get update beegfs": command => "/usr/bin/apt-get update" }
-
-    package { # client
-        ['beegfs-utils', 'beegfs-helperd', 'beegfs-client']:
-        require => Apt::Source['beegfs'],
+    -> package { # client
+        [ 'beegfs-utils', 'beegfs-helperd', 'beegfs-client', 'linux-headers-amd64', 'beegfs-opentk-lib' ]:
+        require => Class['apt::update'], 
         ensure => installed;
     }
-    ~> service { "beegfs-client": 
+    -> service { [ 'beegfs-helperd', 'beegfs-client'] :
+      provider => systemd,
       enable => false,
     }
 
-    package {
-        ['linux-headers-amd64', 'beegfs-opentk-lib']:
-        require => Apt::Source['beegfs'],
-        ensure => installed;
-    } ~>
     file { '/etc/beegfs/beegfs-client-autobuild.conf':
         content => "buildEnabled=true\nbuildArgs=-j8 BEEGFS_OPENTK_IBVERBS=1\n",
         require => Package['beegfs-client']
     }
-    ~> exec {
+    -> exec {
     '/etc/init.d/beegfs-client rebuild':
         timeout => 1200,
         refreshonly => true
@@ -51,7 +45,7 @@ class env::big::install_beegfs {
             group   => root,
             content => "rdma_ucm\n",
     }
-    ~> exec { "beegfs-setup-rdma": command => "/usr/sbin/beegfs-setup-rdma" }
+    -> exec { "beegfs-setup-rdma": command => "/usr/sbin/beegfs-setup-rdma" }
   }
 
 }
