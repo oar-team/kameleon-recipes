@@ -23,6 +23,9 @@ class env::big::install_beegfs {
         require => Apt::Source['beegfs'],
         ensure => installed;
     }
+    ~> service { "beegfs-client": 
+      enable => false,
+    }
 
     package {
         ['linux-headers-amd64', 'beegfs-opentk-lib']:
@@ -39,13 +42,6 @@ class env::big::install_beegfs {
         refreshonly => true
     }
 
-    file { "/etc/beegfs":
-        ensure => directory,
-        owner  => root,
-        group  => root,
-        mode   => '0755';
-    }
-
     file {
         "/etc/modules-load.d/beegfs.conf":
             require => Package['beegfs-utils'],
@@ -55,7 +51,6 @@ class env::big::install_beegfs {
             group   => root,
             content => "rdma_ucm\n",
     }
-    ~> exec { "modprobe rdma_ucm": command => "/sbin/modprobe rdma_ucm" }
     ~> exec { "beegfs-setup-rdma": command => "/usr/sbin/beegfs-setup-rdma" }
   }
 
