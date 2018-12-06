@@ -1,0 +1,44 @@
+#==============================================================================
+# vim: softtabstop=2 shiftwidth=2 expandtab fenc=utf-8 cc=81 tw=80
+#==============================================================================
+#
+# DESCRIPTION: Ubuntu generic recipe using the netinstall mechanism
+#
+#==============================================================================
+---
+extend: debian-base.yaml
+# Global variables use by Kameleon engine and the steps
+global:
+  # Distribution
+  distrib: ubuntu
+  release: xenial
+
+  ## System variables. Required by kameleon engine
+  # Include specific steps
+  include_steps:
+    - $${distrib}/$${release}
+    - $${distrib}
+    - debian
+
+  deb_mirror_hostname: archive.ubuntu.com
+  # For old non-LTS release, use:
+  # deb_mirror_hostname: old-releases.ubuntu.com
+  deb_mirror_uri: http://$${deb_mirror_hostname}/ubuntu/
+
+  #iso_location: $${release}-updates
+  #iso_url: $${deb_mirror_uri}/dists/$${iso_location}/main/installer-$${deb_arch}/current/images/netboot/mini.iso
+  iso_finder_helper: $${kameleon_data_dir}/helpers/netinstall_iso_finder.py
+  iso_finder_args: $${distrib} $${release} $${deb_arch}
+
+  bootstrap_packages: locales openssh-server linux-image-generic
+  additional_packages: ""
+
+  apt_enable_restricted: true
+bootstrap:
+  - "@base"
+
+setup:
+  - "@base"
+
+export:
+  - "@base"

@@ -1,0 +1,13 @@
+- remove_old_kernels:
+  - exec_in: rpm -q kernel | head -n -1 | xargs -I {} rpm -e {}
+
+- clean_yum_cache:
+  - exec_in: echo "Cleaning old dnf repodata."
+  - exec_in: dnf clean all -y
+
+- clean_rescue_initramfs:
+  - exec_in: rm -f /boot/initramfs*rescue*
+  - exec_in: rm -f /boot/vmlinuz*rescue*
+
+- clean_default_loader:
+  - exec_in: find /boot -type d ! -path /boot ! -path /boot/extlinux -print0 | xargs -0 rm -rf --

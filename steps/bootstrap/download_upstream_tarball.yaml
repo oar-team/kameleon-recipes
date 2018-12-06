@@ -1,0 +1,43 @@
+- upstream_store_dir: "$${kameleon_cwd}/upstream_build/"
+- upstream_tarball: ""
+- upstream_recipe: ""
+- upstream_version: ""
+- upstream_checksum: ""
+- upstream_checksign: ""
+- upstream_cache: ""
+- upstream_url: ""
+- kadeploy_environment_import_name: ""
+- kadeploy_environment_import_user: ""
+- kadeploy_environment_import_version: ""
+- kadeploy_frontend: ""
+
+- download:
+  - on_bootstrap_clean:
+    - exec_local: rm -rf $${upstream_store_dir}
+  - test:
+    - exec_local: test -n "$${upstream_tarball}"
+    - group:
+      - exec_local: echo "Download tarball..."
+      - download_file_local:
+        - $${upstream_url}/$${upstream_tarball}
+        - $${upstream_store_dir}/$${upstream_tarball}
+      - exec_local: export UPSTREAM_TARBALL="$${upstream_store_dir}/$${upstream_tarball}"
+    - test:
+      - exec_local: test -n "$${upstream_recipe}"
+      - download_recipe_build_local:
+        - $${upstream_recipe}
+        - $${upstream_version}
+        - $${upstream_checksum}
+        - $${upstream_checksign}
+        - $${upstream_cache}
+        - $${upstream_url}
+        - $${upstream_store_dir}
+      - test:
+        - exec_local: test -n "$${kadeploy_environment_import_name}"
+        - download_kadeploy_environment_image_local:
+          - $${kadeploy_environment_import_name}
+          - $${kadeploy_environment_import_user}
+          - $${kadeploy_environment_import_version}
+          - $${kadeploy_frontend}
+          - $${upstream_store_dir}
+        - exec_local: fail "Nothing to download ???"

@@ -1,0 +1,60 @@
+- puppet_deb_url: "http://apt.puppetlabs.com/puppet-release-$${release}.deb"
+
+- install_requirements:
+  - exec_in: apt-get install -y rsync curl virtualbox-guest-utils linux-headers-amd64
+
+- enable_passwordless_sudo:
+  - exec_in: |
+      sed -i.bkp -e \
+      's/%sudo\s\+ALL=(ALL\(:ALL\)\?)\s\+ALL/%sudo ALL=NOPASSWD:ALL/g' \
+      /etc/sudoers
+
+- install_puppet:
+  - download_file_in:
+    - $${puppet_deb_url}
+    - $KAMELEON_WORKDIR/puppet.deb
+  - exec_in: |
+      dpkg -i $KAMELEON_WORKDIR/puppet.deb
+      apt-get update
+      apt-get install puppet -y --force-yes
+      rm -f $KAMELEON_WORKDIR/puppet.deb
+
+- copy_insecure_sshkey:
+  - exec_in: mkdir -pm 700 /home/$${user_name}/.ssh/
+  - download_file_in:
+    - "https://raw.github.com/mitchellh/vagrant/master/keys/vagrant"
+    - /home/$${user_name}/.ssh/id_rsa
+  - download_file_in:
+    - "https://raw.github.com/mitchellh/vagrant/master/keys/vagrant.pub"
+    - /home/$${user_name}/.ssh/id_rsa.pub
+  - exec_in: cp /home/$${user_name}/.ssh/id_rsa.pub /home/$${user_name}/.ssh/authorized_keys
+  - exec_in: chmod 0600 /home/$${user_name}/.ssh/*
+
+- config_ssh:
+  - exec_in: echo "UseDNS no" >> /etc/ssh/sshd_config
+  - write_in:
+    - /home/$${user_name}/.ssh/config
+    - |
+      Host *
+      ForwardX11 no
+      StrictHostKeyChecking no
+      PasswordAuthentication no
+      AddressFamily inet
+  - exec_in: chmod 0600 /home/$${user_name}/.ssh/config
+  - exec_in: rsync -ah /home/$${user_name}/.ssh/ /root/.ssh
+  - exec_in: |
+      if [ -e /root/.ssh/.kameleon_authorized_keys ]; then
+        cat /root/.ssh/.kameleon_authorized_keys >> /root/.ssh/authorized_keys
+      fi
+  - exec_in: chown "$${user_name}:$${user_name}" -R /home/$${user_name}
+
+- customize_motd:
+  - exec_in: echo 'Welcome to your Vagrant-built virtual machine.' > /etc/motd
+
+- fix_network_interface_for_vbox:
+  - exec_in: sed -i -e 's/ens3/enp0s3/g' /etc/network/interfaces
+
+- cleanup:
+  - exec_in: |
+      echo "Adding a 2 sec delay to the interface up, to make the dhclient happy"
+      echo "pre-up sleep 2" >> /etc/network/interfaces

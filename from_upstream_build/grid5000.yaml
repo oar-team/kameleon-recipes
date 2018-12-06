@@ -1,0 +1,104 @@
+
+#==============================================================================
+# vim: softtabstop=2 shiftwidth=2 expandtab fenc=utf-8 cc=81 tw=80
+#==============================================================================
+#
+# DESCRIPTION: To extend grid 5000 images
+#
+#==============================================================================
+
+---
+extend: from_tarball.yaml
+
+global:
+
+  # Users parameters
+
+  # Select the image you want to extend
+  rootfs_archive_url: file:///grid5000/images/jessie-x64-nfs-2016060814.tgz
+
+  # Give informations about the image
+  distrib: debian
+  release: 8
+  g5k_image_variant: nfs
+  g5k_image_arch: x64
+  g5k_images_path: /home/${g5k_user}/my_g5k_images
+  g5k_image_version: 1
+
+
+  # Other parameters
+
+  # only export in tar Gzipped format
+  appliance_formats: tar.gz
+  # disable zerofree (no necessary for tar.gz format)
+  zerofree: false
+
+bootstrap:
+  - "@base"
+
+setup:
+  - configure_tz:
+    - timezone: Europe/Paris
+    - set_timezone:
+      - exec_in: echo "$${timezone}" > /etc/timezone
+      - exec_in: "dpkg-reconfigure -f noninteractive tzdata 2>&1"
+
+  - common_config:
+    - ssh:
+      - exec_in: echo "Enable non interactive SSH"
+      - append_in:
+        - /etc/ssh/ssh_config
+        - |
+          Host *
+              ForwardX11 no
+              StrictHostKeyChecking no
+              PasswordAuthentication no
+              AddressFamily inet
+    - bash_is_default_sh:
+      - exec_in: |
+          # make /bin/sh symlink to bash instead of dash:
+          echo "dash dash/sh boolean false" | debconf-set-selections
+          DEBIAN_FRONTEND=noninteractive dpkg-reconfigure dash
+
+  - install_my_experiment_environment:
+    - install_experiment_mandatory:
+      - exec_in: apt install -y sudo
+
+export:
+  - "@base"
+  - create_kaenv:
+    - create_env_file:
+      - exec_local: mkdir -p $${g5k_images_path}
+      - write_local:
+        - $${g5k_images_path}/$${kameleon_recipe_name}_$${kameleon_short_uuid}.yaml
+        - |
+            ---
+            name: $${kameleon_recipe_name}
+            version: $${g5k_image_version}
+            description: $${kameleon_recipe_name} image uuid=$${kameleon_short_uuid}
+            author: ${g5k_user}
+            visibility: shared
+            destructive: false
+            os: linux
+            image:
+              file: $${g5k_images_path}/$${kameleon_recipe_name}_$${kameleon_short_uuid}.tar.gz
+              kind: tar
+              compression: gzip
+            postinstalls:
+            - archive: server:///grid5000/postinstalls/${distrib}-${g5k_image_arch}-${g5k_image_variant}-post.tgz
+              compression: gzip
+              script: traitement.ash /rambin
+            boot:
+              kernel: "/vmlinuz"
+              initrd: "/initrd.img"
+            filesystem: ext4
+            partition_type: 131
+            multipart: false
+    - copy_applicance:
+      - exec_local: cp -av $${appliance_filename}.tar.gz $${g5k_images_path}/$${kameleon_recipe_name}_$${kameleon_short_uuid}.tar.gz
+      - exec_local: |
+          echo -e "To import the environment to Kadeploy:\n\
+                   kaenv3 -a $${g5k_images_path}/$${kameleon_recipe_name}_$${kameleon_short_uuid}.yaml"
+      - exec_local: |
+          echo -e "To backup the build cache in the same environment:\n\
+                   cp -av $${kameleon_cwd}/$${kameleon_recipe_name}-cache.tar.gz $${g5k_images_path}/$${kameleon_recipe_name}-cache_$${kameleon_short_uuid}.tar.gz"

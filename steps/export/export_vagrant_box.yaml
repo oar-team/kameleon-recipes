@@ -1,0 +1,42 @@
+- virtualbox_vmid: $${kameleon_recipe_name}_$${kameleon_short_uuid}
+- virtualbox_disk_filename: $${appliance_filename}.$${appliance_formats}
+- virtualbox_os_type: "Debian_64"
+- vagrant_box_filename: $${kameleon_cwd}/$${kameleon_recipe_name}.box
+
+- create_vbox_machine:
+  - on_export_clean:
+    - exec_local: |
+        if VBoxManage list vms | grep -q $${virtualbox_vmid}; then
+          echo "Deleting VBox machine $${virtualbox_vmid}"
+          VBoxManage unregistervm $${virtualbox_vmid} --delete
+        fi
+    - exec_local: |
+        if [ -e $${virtualbox_disk_filename} ]; then
+        echo "Deleting disk file $${virtualbox_disk_filename}"
+          rm $${virtualbox_disk_filename}
+        fi
+  - exec_local: echo "Creating VBox machine $${virtualbox_vmid}"
+  - exec_local: VBoxManage createvm --name $${virtualbox_vmid} --register
+  - exec_local: VBoxManage modifyvm $${virtualbox_vmid} --ostype $${virtualbox_os_type}
+  - exec_local: VBoxManage modifyvm $${virtualbox_vmid} --boot1 disk
+  - exec_local: VBoxManage modifyvm $${virtualbox_vmid} --memory 256
+  - exec_local: VBoxManage modifyvm $${virtualbox_vmid} --acpi on
+  - exec_local: VBoxManage modifyvm $${virtualbox_vmid} --nictype1 82540EM
+  - exec_local: VBoxManage modifyvm $${virtualbox_vmid} --nictype2 82540EM
+  - exec_local: VBoxManage modifyvm $${virtualbox_vmid} --nictype3 82540EM
+  - exec_local: VBoxManage modifyvm $${virtualbox_vmid} --nictype4 82540EM
+  - exec_local: VBoxManage modifyvm $${virtualbox_vmid} --nic1 nat --cableconnected1 on
+  - exec_local: VBoxManage storagectl $${virtualbox_vmid} --name "SATA Controller" --add sata --controller IntelAHCI --hostiocache on
+  - exec_local: |
+      VBoxManage storageattach $${virtualbox_vmid} \
+        --storagectl "SATA Controller" \
+        --port 0 \
+        --device 0 \
+        --type hdd \
+        --medium $${virtualbox_disk_filename}
+
+- save_box:
+  - check_cmd_local: vagrant
+  - exec_local: echo "Create vagrant box $${vagrant_box_filename}..."
+  - exec_local: rm -f $${vagrant_box_filename}
+  - exec_local: vagrant package --base $${virtualbox_vmid} --output $${vagrant_box_filename}

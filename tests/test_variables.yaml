@@ -1,0 +1,23 @@
+#==============================================================================
+# vim: softtabstop=2 shiftwidth=2 expandtab fenc=utf-8 cc=81 tw=80
+#==============================================================================
+#
+# DESCRIPTION: test recipe for variables
+#
+#==============================================================================
+---
+global:
+  testvar: global
+
+bootstrap:
+  - macrostep:
+    - test: toto
+    - microstep:
+      - exec_local: echo $${test}
+  - test_variables
+  - test_variables:
+    - testvar: set_in_bootstrap
+
+setup:
+
+export:
