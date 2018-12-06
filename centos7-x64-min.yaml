@@ -6,9 +6,21 @@
 #
 #==============================================================================
 ---
-extend: from_scratch/centos-base.yaml
+extend: from_scratch/centos-7.yaml
 
 global:
+  appliance_formats: qcow2 tar.gz
+  output: "$${kameleon_cwd}/$${kameleon_recipe_name}" # output files basename
+  variant: min # default value for variant. Can be overwritten by --global=variant:<my_variant> when calling kameleon
+  image_version: 2018120622
+  os_family: $${distrib}
+  os_release: $${release}
+  os_codename: $${distrib}$${release}
+  release_number: $${release}
+  g5k_tgz_path: server:///path/to/your/image
+  g5k_postinst_path: server:///grid5000/postinstalls/g5k-postinstall.tgz
+  g5k_postinst_script: g5k-postinstall --net redhat --net traditional-names
+  g5k_kernel_params: ""
 
 bootstrap:
   - "@base"
@@ -18,3 +30,5 @@ setup:
 
 export:
   - "@base"
+  - cloud_init_qcow2
+  - export_g5k
