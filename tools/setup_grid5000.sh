@@ -16,7 +16,7 @@ apt-get install -y systemtap linux-image-$(uname -r)-dbg=$VERSION linux-headers-
 /tmp/environments-recipes/tools/nofsync.stp </dev/null >/dev/null 2>&1 &
 
 # install other dependencies
-apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends git virtualbox linux-headers-amd64 socat qemu-utils ruby-dev ruby-childprocess polipo pigz netcat eatmydata libguestfs-tools dirmngr
+apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends git virtualbox linux-headers-amd64 socat qemu-utils ruby-dev ruby-childprocess polipo pigz netcat eatmydata libguestfs-tools dirmngr python-future
 
 gem install --no-ri --no-rdoc kameleon-builder
 mv /bin/gzip /bin/gzip.OLD
