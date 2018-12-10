@@ -27,6 +27,7 @@ bootstrap:
 
 setup:
   - "@base"
+  - set_grid5000_release
 
 export:
   - "@base"
