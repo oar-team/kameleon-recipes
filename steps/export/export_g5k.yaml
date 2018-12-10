@@ -20,8 +20,8 @@
       cat << EOF > $${output}.dsc
       $${dashes}
       name: $${kameleon_recipe_name}
-      version: $${image_version}
-      description: $(echo $${os_family}|cut -c1|tr [a-z] [A-Z])$(echo $${os_family}|cut -c2-) $(echo $${release_number}) $(echo $${os_codename}|cut -c1|tr [a-z] [A-Z])$(echo $${os_codename}|cut -c2-) ($${variant})
+      version: $${version}
+      description: $${distrib} $${release_number} ($${release}) - $${variant}
       author: support-staff@lists.grid5000.fr
       visibility: public
       destructive: false
@@ -46,8 +46,8 @@
       cat << EOF > $${output}.dsc
       $${dashes}
       name: $${kameleon_recipe_name}
-      version: $${image_version}
-      description: $(echo $${os_family}|cut -c1|tr [a-z] [A-Z])$(echo $${os_family}|cut -c2-) $(echo $${release_number}) $(echo $${os_codename}|cut -c1|tr [a-z] [A-Z])$(echo $${os_codename}|cut -c2-) ($${variant})
+      version: $${version}
+      description: $${distrib} $${release_number} ($${release}) - $${variant}
       author: support-staff@lists.grid5000.fr
       visibility: public
       destructive: false
