@@ -22,6 +22,9 @@ global:
   g5k_postinst_script: g5k-postinstall --net debian
   g5k_kernel_params: ""
   kernel_modules_blacklist: "usb_storage usbhid ohci_hcd ehci_hcd usbcore nouveau myri10ge"
+  g5k_meta_package: "g5k-meta-packages-$${distrib}$${release_number}-$${variant}"
+  g5k_deb_repositories: "g5k-meta-package tgz-g5k"
+  extra_packages: "$${g5k_meta_package} tgz-g5k"
 
   # disable backports: they are not available for now
   deb_backports: false
@@ -31,9 +34,16 @@ bootstrap:
 
 setup:
   - "@base"
-  - configure_apt
-  - set_grid5000_release
+  - configure_apt_sources
+  - configure_g5k_apt_sources
+  - install_packages:
+    - packages: $${extra_packages}
   - set_kernel_modules_blacklist
+  - set_g5k_release
+  - set_g5k_dhclient_hook
+  - set_g5k_motd
+  - set_locale
+  - configure_ssh_server
   - clean_system
 
 export:
