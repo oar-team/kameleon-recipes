@@ -1,7 +1,7 @@
 - puppet_deb_url: "http://apt.puppetlabs.com/puppet-release-$${release}.deb"
 
 - install_requirements:
-  - exec_in: apt-get install -y rsync curl virtualbox-guest-utils linux-headers-amd64
+  - apt-get_in: install rsync curl virtualbox-guest-utils linux-headers-amd64
 
 - enable_passwordless_sudo:
   - exec_in: |
@@ -13,11 +13,10 @@
   - download_file_in:
     - $${puppet_deb_url}
     - $KAMELEON_WORKDIR/puppet.deb
-  - exec_in: |
-      dpkg -i $KAMELEON_WORKDIR/puppet.deb
-      apt-get update
-      apt-get install puppet -y --force-yes
-      rm -f $KAMELEON_WORKDIR/puppet.deb
+  - exec_in: dpkg -i $KAMELEON_WORKDIR/puppet.deb
+  - apt-get_in: update
+  - apt-get_in: install puppet
+  - exec_in: rm -f $KAMELEON_WORKDIR/puppet.deb
 
 - copy_insecure_sshkey:
   - exec_in: mkdir -pm 700 /home/$${user_name}/.ssh/

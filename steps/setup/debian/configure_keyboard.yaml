@@ -7,4 +7,4 @@
       XKBLAYOUT="$${layout}"
       XKBVARIANT=""
       XKBOPTIONS=""
-  - exec_in: apt-get -y --force-yes install console-setup console-data 2>&1
+  - apt-get_in: install console-setup console-data

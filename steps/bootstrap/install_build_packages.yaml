@@ -2,5 +2,5 @@
   - append_out:
     - /etc/apt/sources.list
     - deb http://ftp.fr.debian.org/debian/ jessie-backports main
-  - exec_out: apt-get update
-  - exec_out: apt-get -y --force-yes -t jessie-backports install $${build_packages} 2>&1
+  - apt-get_out: update
+  - apt-get_out: -t jessie-backports install $${build_packages}

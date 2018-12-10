@@ -8,24 +8,26 @@
     - |
       deb $${deb_mirror_uri} $${release} $${deb_components}
       deb-src $${deb_mirror_uri} $${release} $${deb_components}
-  - exec_in: |
-      if [ "$${release}" != "sid" ]; then
-        echo
-        echo "deb $${deb_mirror_uri}  $${release}-updates $${deb_components}" >> /etc/apt/sources.list
-        echo "deb-src $${deb_mirror_uri} $${release}-updates $${deb_components}" >> /etc/apt/sources.list
-        echo 
-        echo "deb http://security.debian.org/ $${release}/updates $${deb_components}" >> /etc/apt/sources.list
-        echo "deb-src http://security.debian.org/ $${release}/updates $${deb_components}" >> /etc/apt/sources.list
-      fi
+  - test:
+    - exec_in: test "$${release}" != "sid"
+    - append_in:
+      - /etc/apt/sources.list
+      - |
+        deb $${deb_mirror_uri}  $${release}-updates $${deb_components}
+        deb-src $${deb_mirror_uri} $${release}-updates $${deb_components}
+        
+        deb http://security.debian.org/ $${release}/updates $${deb_components}
+        deb-src http://security.debian.org/ $${release}/updates $${deb_components}
 
 - add_backports:
-  - exec_in: |
-      if [ "$${deb_backports}" == "true" -a "$${release}" != "testing" -a "$${release}" != "sid" ]; then
-        echo
-        echo "deb $${deb_mirror_uri} $${release}-backports $${deb_components}" >> /etc/apt/sources.list
-        echo "deb-src $${deb_mirror_uri} $${release}-backports $${deb_components}" >> /etc/apt/sources.list
-      fi
+  - test:
+    - exec_in: test "$${deb_backports}" == "true" -a "$${release}" != "testing" -a "$${release}" != "sid"
+    - append_in:
+      - /etc/apt/sources.list
+      - |
+        deb $${deb_mirror_uri} $${release}-backports $${deb_components}
+        deb-src $${deb_mirror_uri} $${release}-backports $${deb_components}
 
 - update_repositories:
   # Deactivate the check to make the cache system works after a while...
-  - exec_in: apt-get -o Acquire::Check-Valid-Until=false -y --force-yes update
+  - apt-get_in: -o Acquire::Check-Valid-Until=false update

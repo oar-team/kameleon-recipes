@@ -1,2 +1,2 @@
 do_install:
-  - exec_in: apt-get install -y linux-headers-$(uname -r) dkms
+  - apt-get_in: install linux-headers-$(uname -r) dkms
