@@ -32,12 +32,17 @@ global:
   packages: "tgz-g5k=1.0.12"
   # disable backports: they are not available for now
   deb_backports: false
+  # locales
+  locales: POSIX C en_US.UTF8
+  lang: en_US.UTF8
+  timezone: UTC
 
 bootstrap:
   - "@base"
 
 setup:
   - "@base"
+  - configure_system
   - configure_apt_sources
   - configure_g5k_apt_sources
   - install_packages
@@ -45,7 +50,6 @@ setup:
   - set_g5k_release
   - set_g5k_dhclient_hook
   - set_g5k_motd
-  - set_locale
   - configure_ssh_server
   - clean_system
   - breakpoint
