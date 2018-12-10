@@ -1,0 +1,10 @@
+- kernel_modules_blacklist: "usb_storage usbhid ohci_hcd ehci_hcd usbcore"
+
+- create_blacklist_files:
+  - exec_in: mkdir -p /etc/modprobe.d
+  - exec_in: |
+      for m in $${kernel_modules_blacklist}; do
+        grep -q -e "^blacklist $m$" /etc/modprobe.d/blacklist.conf || echo "blacklist $m" >> /etc/modprobe.d/blacklist.conf
+      done
+- update_initramfs:
+  - exec_in: update-initramfs -u
