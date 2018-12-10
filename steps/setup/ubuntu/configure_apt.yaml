@@ -7,4 +7,4 @@
 
 - update_repositories:
   # Deactivate the check to make the cache system works after a while...
-  - exec_in: apt-get -o Acquire::Check-Valid-Until=false -y --force-yes update
+  - exec_in: echo "No update needed"

@@ -10,10 +10,10 @@
 
 - clean_apt:
   - on_setup_clean:
-    - exec_in: apt-get -y --force-yes autoremove
-    - exec_in: apt-get -y --force-yes autoclean
-    - exec_in: apt-get -y --force-yes purge
-    - exec_in: apt-get -y --force-yes clean
+    - apt-get_in: autoremove
+    - apt-get_in: autoclean
+    - apt-get_in: purge
+    - apt-get_in: clean
     - exec_in: rm -rf /var/lib/apt/lists/*
     - exec_in: |
         if [ $${enable_lighten} = true ]; then

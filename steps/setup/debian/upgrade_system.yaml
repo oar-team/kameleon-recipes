@@ -1,10 +1,14 @@
-
-
-- dist_upgrade: true
+- apt_install_recommends: true
+- apt_dist_upgrade: true
 
 - upgrade_system:
-  - exec_in: apt-get -y --force-yes $INSTALL_RECOMMENDS upgrade 2>&1
-  - exec_in: |
-      if [ $${dist_upgrade} = false ]; then
-          apt-get -y --force-yes dist-upgrade 2>&1
-      fi
+  - test:
+    - exec_in: test "$${apt_dist_upgrade}" == "yes"
+    - test:
+      - exec_in: test "$${apt_install_recommends}" == "yes"
+      - apt-get_in: dist-upgrade
+      - apt-get_in: --no-install-recommends upgrade
+    - test:
+      - exec_in: test "$${apt_install_recommends}" == "yes"
+      - apt-get_in: upgrade
+      - apt-get_in: --no-install-recommends dist-upgrade

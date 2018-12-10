@@ -78,7 +78,7 @@ bootstrap:
 setup:
   # Install
   - upgrade_system
-  - install_software:
+  - install_packages:
     - packages: $${setup_packages}
   # Configuration
   - configure_system:
