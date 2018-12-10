@@ -21,6 +21,7 @@ global:
   g5k_postinst_path: server:///grid5000/postinstalls/g5k-postinstall.tgz
   g5k_postinst_script: g5k-postinstall --net debian
   g5k_kernel_params: ""
+  kernel_modules_blacklist: "usb_storage usbhid ohci_hcd ehci_hcd usbcore nouveau myri10ge"
 
   # disable backports: they are not available for now
   deb_backports: false
@@ -32,6 +33,7 @@ setup:
   - "@base"
   - configure_apt
   - set_grid5000_release
+  - set_kernel_modules_blacklist
   - clean_system
 
 export:
