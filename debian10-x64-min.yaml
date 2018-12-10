@@ -9,20 +9,23 @@
 extend: from_scratch/debian-buster.yaml
 
 global:
+  # Export format to generate
   appliance_formats: qcow2 tar.gz
-  output: "$${kameleon_cwd}/$${kameleon_recipe_name}" # output files basename
-  variant: min # default value for variant. Can be overwritten by --global=variant:<my_variant> when calling kameleon
-  image_version: 2018120622
-  os_family: $${distrib}
-  os_release: $${release}
-  os_codename: $${distrib}$${release}
-  release_number: $${release}
+  # Output base filename
+  output: "$${kameleon_cwd}/$${kameleon_recipe_name}"
+  # Grid'5000 environment variant
+  variant: min
+  # Grid'5000 environment version
+  version: 2018121022
+  # Grid'5000 kadeploy environment parameters
   g5k_tgz_path: server:///path/to/your/image
   g5k_postinst_path: server:///grid5000/postinstalls/g5k-postinstall.tgz
   g5k_postinst_script: g5k-postinstall --net debian
   g5k_kernel_params: ""
+  # kernel modules to blacklist
   kernel_modules_blacklist: "usb_storage usbhid ohci_hcd ehci_hcd usbcore nouveau myri10ge"
   g5k_meta_package: "g5k-meta-packages-$${distrib}$${release_number}-$${variant}"
+  # Grid'5000 deb repository to add to sources
   g5k_deb_repositories: "g5k-meta-package tgz-g5k"
   extra_packages: "$${g5k_meta_package} tgz-g5k"
 
