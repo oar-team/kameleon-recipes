@@ -1,0 +1,12 @@
+- set_locale
+  - write_in:
+    - /etc/locale.gen
+    - |
+      en_US.UTF-8 UTF-8
+  - write_in:
+    - /etc/default/locale
+    - |
+      LANGUAGE=en_US:en
+      LANG=en_US.UTF-8
+      LC_ALL=en_US.UTF-8
+  - exec_in: /usr/sbin/locale-gen
