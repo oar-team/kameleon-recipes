@@ -45,6 +45,7 @@ setup:
   - set_locale
   - configure_ssh_server
   - clean_system
+  - breakpoint
 
 export:
   - "@base"
