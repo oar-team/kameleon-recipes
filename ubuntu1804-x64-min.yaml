@@ -27,7 +27,7 @@ bootstrap:
 
 setup:
   - "@base"
-  - set_grid5000_release
+  - set_g5k_release
 
 export:
   - "@base"
