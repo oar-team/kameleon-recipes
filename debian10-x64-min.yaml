@@ -22,6 +22,9 @@ global:
   g5k_postinst_script: g5k-postinstall --net debian
   g5k_kernel_params: ""
 
+  # disable backports: they are not available for now
+  deb_backports: false
+
 bootstrap:
   - "@base"
 
