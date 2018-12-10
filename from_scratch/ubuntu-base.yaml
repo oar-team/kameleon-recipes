@@ -24,6 +24,7 @@ global:
   # For old non-LTS release, use:
   # deb_mirror_hostname: old-releases.ubuntu.com
   deb_mirror_uri: http://$${deb_mirror_hostname}/ubuntu/
+  dev_components: "main restricted"
 
   #iso_location: $${release}-updates
   #iso_url: $${deb_mirror_uri}/dists/$${iso_location}/main/installer-$${deb_arch}/current/images/netboot/mini.iso
@@ -33,7 +34,6 @@ global:
   bootstrap_packages: locales openssh-server linux-image-generic
   additional_packages: ""
 
-  apt_enable_restricted: true
 bootstrap:
   - "@base"
 

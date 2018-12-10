@@ -1,4 +1,6 @@
 # Software Install
+- deb_components: "main"
+- deb_backports: true
 
 - configure_source_list:
   - exec_in: echo "Not changing Ubuntu apt sources"
