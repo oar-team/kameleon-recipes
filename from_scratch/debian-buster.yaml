@@ -13,6 +13,7 @@ global:
   distrib: debian
   release: buster
   release_number: 10
+  iso_url: http://cdimage.debian.org/cdimage/buster_di_alpha4/amd64/iso-cd/debian-buster-DI-alpha4-amd64-netinst.iso
 
 bootstrap:
   - "@base"
