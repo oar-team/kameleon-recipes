@@ -24,11 +24,12 @@ global:
   g5k_kernel_params: ""
   # kernel modules to blacklist
   kernel_modules_blacklist: "usb_storage usbhid ohci_hcd ehci_hcd usbcore nouveau myri10ge"
-  g5k_meta_package: "g5k-meta-packages-$${distrib}$${release_number}-$${variant}"
   # Grid'5000 deb repository to add to sources
   g5k_deb_repositories: "g5k-meta-package tgz-g5k"
-  extra_packages: "$${g5k_meta_package} tgz-g5k"
-
+  # Grid'5000 metapackage name for the recipe
+  g5k_meta_package: "g5k-meta-packages-$${distrib}$${release_number}-$${variant}"
+  # packages to install, with version
+  packages: "tgz-g5k=1.0.12"
   # disable backports: they are not available for now
   deb_backports: false
 
@@ -39,8 +40,7 @@ setup:
   - "@base"
   - configure_apt_sources
   - configure_g5k_apt_sources
-  - install_packages:
-    - packages: $${extra_packages}
+  - install_packages
   - set_kernel_modules_blacklist
   - set_g5k_release
   - set_g5k_dhclient_hook
