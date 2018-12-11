@@ -22,7 +22,7 @@ bootstrap:
 setup:
   - "@base"
   - install_packages:
-    - recommends: false
+    - apt_install_recommends: false
     - packages: git make ruby ruby-dev qemu virtualbox polipo debootstrap docker.io socat ruby-childprocess libguestfs-tools
   - customize_image:
       - install_kameleon:
