@@ -25,6 +25,9 @@ class env::big::install_beegfs {
       provider => systemd,
       enable => false,
     }
+    -> exec { "beegfs-setup-rdma":
+       command => "/usr/sbin/beegfs-setup-rdma -i on"
+    }
 
     file { '/etc/beegfs/beegfs-client-autobuild.conf':
         content => "buildEnabled=true\nbuildArgs=-j8 BEEGFS_OPENTK_IBVERBS=1\n",
@@ -35,17 +38,6 @@ class env::big::install_beegfs {
         timeout => 1200,
         refreshonly => true
     }
-
-    file {
-        "/etc/modules-load.d/beegfs.conf":
-            require => Package['beegfs-utils'],
-            ensure  => file,
-            mode    => '0644',
-            owner   => root,
-            group   => root,
-            content => "rdma_ucm\n",
-    }
-    -> exec { "beegfs-setup-rdma": command => "/usr/sbin/beegfs-setup-rdma" }
   }
 
 }
