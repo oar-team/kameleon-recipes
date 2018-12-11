@@ -1,6 +1,6 @@
 # Software Install
 - deb_components: "main contrib non-free"
-- deb_backports: true
+- deb_backports: false
 
 - configure_source_list:
   - write_in:

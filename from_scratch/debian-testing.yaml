@@ -2,7 +2,7 @@
 # vim: softtabstop=2 shiftwidth=2 expandtab fenc=utf-8 cc=81 tw=80
 #==============================================================================
 #
-# DESCRIPTION: Debian 10 (Buster) recipe using the netinstall mechanism
+# DESCRIPTION: Debian testing recipe using the netinstall mechanism
 #
 #==============================================================================
 ---
@@ -11,10 +11,13 @@ extend: debian-base.yaml
 global:
   # Distribution
   distrib: debian
-  release: buster
-  release_number: 10
-  # hardcoded alpha iso for now
-  iso_url: http://cdimage.debian.org/cdimage/buster_di_alpha4/amd64/iso-cd/debian-buster-DI-alpha4-amd64-netinst.iso
+  release: testing
+  release_number: X
+  # This URL may be invalid when the testing distribution is in its early stage,
+  # i.e after a recent release of a new Debian stable.
+  # In this case, it is expected for this recipe to NOT work.
+  # The debian-debootstrap-testing recipe may be prefered.
+  iso_url: https://cdimage.debian.org/cdimage/weekly-builds/amd64/iso-cd/debian-testing-amd64-netinst.iso
 
 bootstrap:
   - "@base"
