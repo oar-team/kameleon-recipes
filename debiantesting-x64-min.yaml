@@ -25,7 +25,7 @@ global:
   # kernel modules to blacklist
   kernel_modules_blacklist: "usb_storage usbhid ohci_hcd ehci_hcd usbcore nouveau myri10ge"
   # Grid'5000 deb repository to add to sources
-  g5k_deb_repositories: "g5k-meta-package tgz-g5k"
+  g5k_deb_repositories: "g5k-meta-packages tgz-g5k"
   # Grid'5000 metapackage name for the recipe
   g5k_meta_package: "g5k-meta-packages-$${distrib}$${release_number}-$${variant}"
   # packages to install, with version
