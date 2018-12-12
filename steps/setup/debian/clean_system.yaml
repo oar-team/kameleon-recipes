@@ -3,7 +3,7 @@
 - clean_user:
   - on_setup_clean:
     - exec_in: |
-        if id kameleon > /dev/null; then
+        if id kameleon > /dev/null 2>&1; then
           echo "Removing the kameleon user"
           userdel -r kameleon 2> >(grep -v "userdel: kameleon mail spool (/var/mail/kameleon) not found" )
         fi
