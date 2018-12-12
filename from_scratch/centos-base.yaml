@@ -11,12 +11,13 @@
 extend: base.yaml
 global:
   distrib: centos
-  release_major: 7
+  release_number: 7
   # release_minor and release_date are not required if using the iso_finder
   # helper script
+  #release_major: $${release_number}
   #release_minor: 4
   #release_date: 1708
-  release: $${release_major}
+  release: $${release_number}
 
   mirror_base_url: http://mirror.in2p3.fr/linux/CentOS/
   mirror_url: $${mirror_base_url}$${release}/os/$${arch}/
@@ -27,11 +28,11 @@ global:
   #iso_url: $${mirror_base_url}/$${release_major}.$${release_minor}.$${release_date}/isos/$${arch}/$${iso_filename}
   iso_url:
   iso_finder_helper: $${kameleon_data_dir}/helpers/netinstall_iso_finder.py
-  iso_finder_args: $${distrib} $${release_major} $${arch} $${mirror_base_url}
+  iso_finder_args: $${distrib} $${release_number} $${arch} $${mirror_base_url}
   iso_path: $${kameleon_cwd}/$${distrib}.iso
 
 
-  base_kickstart_path: $${kameleon_data_dir}/kickstart/$${distrib}$${release_major}-ks.cfg
+  base_kickstart_path: $${kameleon_data_dir}/kickstart/$${distrib}$${release_number}-ks.cfg
 
   qemu_sendkeys_commands: $${kameleon_data_dir}/qemu-sendkeys/netinst-$${distrib}
 
