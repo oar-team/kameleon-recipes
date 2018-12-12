@@ -50,9 +50,8 @@ setup:
   - set_g5k_release
   - set_g5k_dhclient_hook
   - set_g5k_motd
-  - configure_ssh_server
+  #- configure_ssh_server
   - clean_system
-  - breakpoint
 
 export:
   - "@base"
