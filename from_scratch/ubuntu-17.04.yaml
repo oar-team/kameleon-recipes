@@ -11,6 +11,7 @@ extend: ubuntu-base.yaml
 global:
   # Distribution
   release: zesty
+  release_number: 17.04
   deb_mirror_hostname: old-releases.ubuntu.com
 
 bootstrap:
