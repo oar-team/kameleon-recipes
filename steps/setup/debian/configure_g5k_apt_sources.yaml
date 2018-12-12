@@ -9,7 +9,7 @@
       for r in $${g5k_deb_repositories}; do
         cat <<EOF > /etc/apt/sources.list.d/$r.list
       #Grid5000 repository for $r
-      http://packages.grid5000.fr/deb/$r/ /
+      deb http://packages.grid5000.fr/deb/$r/ /
       EOF
       done
 - update_repositories:
