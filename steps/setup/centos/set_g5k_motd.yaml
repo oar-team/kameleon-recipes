@@ -1,0 +1,19 @@
+- create_dhclient_hook_for_g5k_hostname:
+  - write_in:
+    - /etc/motd
+    - |
+      %%RECIPE_NAME%%-%%VERSION%%
+      (Image based on %%DISTRIB%% %%RELEASE%% for %%ARCH%%)
+      Maintained by support-staff <support-staff@lists.grid5000.fr>
+      
+      Doc: https://www.grid5000.fr/w/Getting_Started#Deploying_nodes_with_Kadeploy
+      
+  - exec_in: |
+      sed -i \
+        -e 's/%%RECIPE_NAME%%/$${kameleon_recipe_name}/g' \
+        -e 's/%%DISTRIB%%/$${distrib}/g' \
+        -e 's/%%RELEASE%%/$${release}/g' \
+        -e 's/%%ARCH%%/$${arch}/g' \
+        -e 's/%%VERSION%%/$${version}/g' \
+        /etc/motd
+        
