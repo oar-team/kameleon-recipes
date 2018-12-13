@@ -3,7 +3,7 @@
 #==============================================================================
 #
 # DESCRIPTION: Kadeploy3 ramdisk OS (used in the deployment phase) with the OOT
-# megaraid-sas driver
+# i40e driver
 #
 #==============================================================================
 ---
@@ -17,9 +17,9 @@ bootstrap:
 setup:
   - "@base"
   - configure_g5k_apt_sources:
-    - g5k_deb_repositories: megaraid-sas
+    - g5k_deb_repositories: i40e
   - install_oot_kernel_drivers:
-    - oot_kernel_driver_names: megaraid-sas
+    - oot_kernel_driver_names: i40e
 
 export:
   - "@base"
