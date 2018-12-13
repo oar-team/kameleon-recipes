@@ -1,9 +1,10 @@
-- g5k_deb_repositories: ""
-- g5k_apt_key: 3C38BDEAA05D4A7BED7815E5B1F34F56797BF2D1
+- g5k_deb_repositories:
+- g5k_apt_key: B1F34F56797BF2D1
+- gpg_keyserver:
 
 - add_g5k_key:
   - apt-get_in: install gnupg
-  - exec_in: apt-key adv --recv-key $${g5k_apt_key}
+  - exec_in: apt-key adv --keyserver $${gpg_keyserver} --recv-key $${g5k_apt_key}
 - add_g5k_apt_sources:
   - exec_in: |
       for r in $${g5k_deb_repositories}; do
