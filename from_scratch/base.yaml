@@ -37,6 +37,9 @@ global:
   iso_finder_helper:
   iso_finder_args:
 
+  ## GPG keyserver (Waring: not all servers are reliable)
+  gpg_keyserver: keyserver.ubuntu.com
+
   ## QEMU options
   qemu_enable_kvm: "$(egrep '(vmx|svm)' /proc/cpuinfo > /dev/null && echo true)"
   qemu_cpu: 2
