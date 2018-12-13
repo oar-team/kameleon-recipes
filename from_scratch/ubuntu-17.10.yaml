@@ -11,8 +11,7 @@ extend: ubuntu-base.yaml
 global:
   # Distribution
   release: artful
-
-  iso_location: $${release}
+  release_number: 17.10
 
 bootstrap:
   - "@base"

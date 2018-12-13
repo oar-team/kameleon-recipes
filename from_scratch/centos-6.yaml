@@ -8,8 +8,7 @@
 ---
 extend: centos-base.yaml
 global:
-  release_major: 6
-  release: $${release_major}
+  release_number: 6
 
 bootstrap:
   - "@base"

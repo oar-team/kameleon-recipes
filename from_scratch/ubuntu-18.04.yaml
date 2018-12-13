@@ -2,7 +2,7 @@
 # vim: softtabstop=2 shiftwidth=2 expandtab fenc=utf-8 cc=81 tw=80
 #==============================================================================
 #
-# DESCRIPTION: Ubuntu 17.10 (Artful) recipe using the netinstall mechanism
+# DESCRIPTION: Ubuntu 18.04 (Bionic) recipe using the netinstall mechanism
 #
 #==============================================================================
 ---
@@ -11,8 +11,7 @@ extend: ubuntu-base.yaml
 global:
   # Distribution
   release: bionic
-
-  iso_location: $${release}
+  release_number: 18.04
 
 bootstrap:
   - "@base"
