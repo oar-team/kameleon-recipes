@@ -1,0 +1,33 @@
+#==============================================================================
+# vim: softtabstop=2 shiftwidth=2 expandtab fenc=utf-8 cc=81 tw=80
+#==============================================================================
+#
+# DESCRIPTION: Kadeploy3 ramdisk OS (used in the deployment phase) with the OOT
+# megaraid-sas driver
+#
+#==============================================================================
+---
+extend: kadeploy3-deploy-kernel-jessie.yaml
+
+global:
+
+bootstrap:
+  - "@base"
+
+setup:
+  - "@base"
+  - install_oot_megaraid-sas_driver:
+    - add_oot_megaraid-sas_repo:
+      - write_in:
+        - /etc/apt/sources.list.d/i40e.list
+        - |
+          deb http://apt.grid5000.fr/i40e/ /
+      - exec_in: apt-get update
+    - install_driver:
+      - exec_in: |
+          KERNEL_PKG=$(dpkg -l linux-image-*-amd64 | tail -n+6 | sort -h | cut -f3 -d\ )
+          apt-get install --force-yes --allow-unauthenticated i40e-modules-${KERNEL_PKG#linux-image-}
+          wget http://cdn-fastly.deb.debian.org/debian/pool/main/l/linux/linux-image-4.9.0-7-amd64_4.9.110-2_amd64.deb
+          dpkg -i linux-image-4.9.0-7-amd64_4.9.110-2_amd64.deb
+export:
+  - "@base"
