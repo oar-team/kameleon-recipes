@@ -64,6 +64,9 @@ global:
     ./var/tmp/* ./tmp/* ./var/log/* ./dev/* ./proc/* ./run/*
     ./sys/*
 
+  ## GPG keyserver (Waring: not all servers are reliable)
+  gpg_keyserver: keyserver.ubuntu.com
+
   ssh_config_file: $${kameleon_cwd}/ssh_config
   local_ip: 10.0.2.2
 

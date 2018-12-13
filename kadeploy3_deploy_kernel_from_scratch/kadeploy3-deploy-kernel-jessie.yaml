@@ -16,7 +16,6 @@ global:
   enable_lighten: true
   #root_authorized_keys: $${kameleon_data_dir}/kadeploy_root_authorized_keys
   # -> set on command line using "-g root_authorized_keys:$PWD/steps/data/kadeploy_root_authorized_keys"
-  gpg_keyserver: keyserver.ubuntu.com
   arch_specific_packages: kexec-tools grub-pc
   #deb_kernel: default
   # -> other option: bpo - e.g. set on command line using "-g deb_kernel:bpo"
