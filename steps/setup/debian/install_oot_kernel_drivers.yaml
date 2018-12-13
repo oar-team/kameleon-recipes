@@ -1,0 +1,8 @@
+- oot_kernel_driver_names: 
+
+- install_OOT_packages:
+  - exec_in: |
+      KERNEL_PKG=$(dpkg -l linux-image-*-$${deb_arch} | tail -n+6 | sort -h | cut -f3 -d\ )
+      for d in $${oot_kernel_driver_names}; do
+        apt-get install --force-yes $d-modules-${KERNEL_PKG#linux-image-}
+      done
