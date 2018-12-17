@@ -20,8 +20,8 @@ global:
   g5k_tgz_path: server:///path/to/your/image
   g5k_postinst_path: server:///grid5000/postinstalls/g5k-postinstall.tgz
   g5k_postinst_script: g5k-postinstall --net redhat --net traditional-names
-  g5k_kernel_params: ""
-  g5k_kernel_path: "/vmlinuz.img"
+  g5k_kernel_params: "biosdevname=0 crashkernel=auto"
+  g5k_kernel_path: "/vmlinuz"
   g5k_initrd_path: "/initramfs.img"
   # kernel modules to blacklist
   kernel_modules_blacklist: "usb_storage usbhid ohci_hcd ehci_hcd usbcore nouveau myri10ge"
