@@ -13,14 +13,16 @@ global:
   # Output base filename
   output: "$${kameleon_cwd}/$${kameleon_recipe_name}"
   # Grid'5000 environment variant
-  variant: min
+  g5k_variant: min
   # Grid'5000 environment version
-  version: 2018121022
+  g5k_version: 2018121022
   # Grid'5000 kadeploy environment parameters
   g5k_tgz_path: server:///path/to/your/image
   g5k_postinst_path: server:///grid5000/postinstalls/g5k-postinstall.tgz
   g5k_postinst_script: g5k-postinstall --net redhat --net traditional-names
   g5k_kernel_params: ""
+  g5k_kernel_path: "/vmlinuz.img"
+  g5k_initrd_path: "/initramfs.img"
   # kernel modules to blacklist
   kernel_modules_blacklist: "usb_storage usbhid ohci_hcd ehci_hcd usbcore nouveau myri10ge"
   # locales

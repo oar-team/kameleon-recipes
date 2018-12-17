@@ -14,10 +14,10 @@
         -e 's/%%DISTRIB%%/$${distrib}/g' \
         -e 's/%%RELEASE%%/$${release}/g' \
         -e 's/%%ARCH%%/$${deb_arch}\/$${arch}/g' \
-        -e 's/%%VERSION%%/$${version}/g' \
+        -e 's/%%VERSION%%/$${g5k_version}/g' \
         /etc/motd
   - test:
-    - exec_in: test "$${variant}" == "xen"
+    - exec_in: test "$${g5k_variant}" == "xen"
     - append_in:
       - /etc/motd
       - |

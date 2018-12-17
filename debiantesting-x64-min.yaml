@@ -14,9 +14,9 @@ global:
   # Output base filename
   output: "$${kameleon_cwd}/$${kameleon_recipe_name}"
   # Grid'5000 environment variant
-  variant: min
+  g5k_variant: min
   # Grid'5000 environment version
-  version: 2018121022
+  g5k_version: 2018121022
   # Grid'5000 kadeploy environment parameters
   g5k_tgz_path: server:///path/to/your/image
   g5k_postinst_path: server:///grid5000/postinstalls/g5k-postinstall.tgz
@@ -27,7 +27,7 @@ global:
   # Grid'5000 deb repositories to add to sources
   g5k_deb_repositories: "g5k-meta-packages tgz-g5k"
   # Grid'5000 metapackage name for the recipe
-  g5k_meta_package: "g5k-meta-packages-$${distrib}$${release_number}-$${variant}"
+  g5k_meta_package: "g5k-meta-packages-$${distrib}$${release_number}-$${g5k_variant}"
   # packages to install, with version
   packages: "tgz-g5k=1.0.12"
   # disable backports: they are not available for now

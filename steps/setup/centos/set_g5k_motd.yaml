@@ -1,3 +1,5 @@
+- g5k_version: "unknown"
+
 - create_dhclient_hook_for_g5k_hostname:
   - write_in:
     - /etc/motd
@@ -14,6 +16,6 @@
         -e 's/%%DISTRIB%%/$${distrib}/g' \
         -e 's/%%RELEASE%%/$${release}/g' \
         -e 's/%%ARCH%%/$${arch}/g' \
-        -e 's/%%VERSION%%/$${version}/g' \
+        -e 's/%%VERSION%%/$${g5k_version}/g' \
         /etc/motd
         

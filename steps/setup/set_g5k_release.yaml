@@ -1,14 +1,14 @@
-- release_file: /etc/grid5000/release
-- version: 1
+- g5k_release_file: /etc/grid5000/release
+- g5k_version: 1
 
 - set_release:
-  - exec_in: mkdir -p $(dirname $${release_file})
+  - exec_in: mkdir -p $(dirname $${g5k_release_file})
   - write_in:
-    - $${release_file}
+    - $${g5k_release_file}
     - |
-      $${kameleon_recipe_name}-$${version}
+      $${kameleon_recipe_name}-$${g5k_version}
   # this extracts last git commit hash from local repo
   - pipe:
     - exec_local: |
         (cd ../.. && git rev-parse HEAD 2>/dev/null) || echo "Error: could not retrieve git sha1"
-    - exec_in: cat - >> $${release_file}
+    - exec_in: cat - >> $${g5k_release_file}
