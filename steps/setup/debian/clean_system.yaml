@@ -29,7 +29,3 @@
   - on_setup_clean:
     - exec_in: rm -rf /etc/udev/rules.d/70-persistent-net.rules
     - exec_in: rm -rf /dev/.udev/
-
-- clean_initramfs:
-  - on_setup_clean:
-    - exec_in: rm -rf /etc/initramfs-tools/conf.d/resume

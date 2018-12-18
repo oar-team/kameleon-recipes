@@ -13,3 +13,8 @@
 
 - set_root_password:
   - exec_in: echo -n 'root:$${root_password}' | chpasswd
+
+- configure_initramfs:
+  - write_in:
+    - /etc/initramfs-tools/conf.d/resume
+    - RESUME=none
