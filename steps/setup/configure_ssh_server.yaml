@@ -3,11 +3,7 @@
     - /etc/ssh/sshd_config
     - |
       HostKey /etc/ssh/ssh_host_rsa_key
-      HostKey /etc/ssh/ssh_host_dsa_key
-      UsePrivilegeSeparation no
-      ServerKeyBits 768
       PermitRootLogin without-password
       PermitUserEnvironment yes
 - restart_sshd:
-  - exec_in:
-    - systemctl restart sshd
+  - exec_in: systemctl restart sshd
