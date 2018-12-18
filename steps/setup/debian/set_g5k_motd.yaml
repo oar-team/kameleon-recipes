@@ -1,4 +1,4 @@
-- create_dhclient_hook_for_g5k_hostname:
+- create_motd:
   - write_in:
     - /etc/motd
     - |
