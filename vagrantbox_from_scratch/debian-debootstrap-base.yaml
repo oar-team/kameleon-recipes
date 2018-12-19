@@ -20,9 +20,9 @@ bootstrap:
 
 setup:
   - "@base"
-  - configure_apt
-  - install_software:
-    - packages: >
+  - configure_apt_sources
+  - install_packages:
+    - packages: >-
         linux-headers-amd64 nfs-common rsync wget
   - create_user:
     - name: $${user_name}
