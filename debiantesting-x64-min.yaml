@@ -16,7 +16,7 @@ global:
   # Grid'5000 environment variant
   g5k_variant: min
   # Grid'5000 environment version
-  g5k_version: 2018121022
+  g5k_version: 2018121910
   # Grid'5000 kadeploy environment parameters
   g5k_tgz_path: server:///path/to/your/image
   g5k_postinst_path: server:///grid5000/postinstalls/g5k-postinstall.tgz
@@ -29,7 +29,7 @@ global:
   # Grid'5000 metapackage name for the recipe
   g5k_meta_package: "g5k-meta-packages-$${distrib}$${release_number}-$${g5k_variant}"
   # packages to install, with version
-  packages: "tgz-g5k=1.0.12 firmware-bnx2 firmware-bnx2x"
+  packages: "tgz-g5k=1.0.12 firmware-bnx2 firmware-bnx2x firmware-linux"
   # disable backports: they are not available for now
   deb_backports: false
   # locales
