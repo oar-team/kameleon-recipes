@@ -1,7 +1,22 @@
+- puppet_deb_source: "distib" #or "puppetlabs"
 - puppet_deb_url: "http://apt.puppetlabs.com/puppet-release-$${release}.deb"
+- virtualbox_deb_source: "distrib" #or "backports"
 
 - install_requirements:
-  - apt-get_in: install rsync curl virtualbox-guest-utils linux-headers-amd64
+  - apt-get_in: install rsync curl linux-headers-amd64
+
+- install_virtualbox:
+  - test:
+    - exec_in: test "$${virtualbox_deb_source}" = "backports"
+    - group:
+      - write_in:
+        - /etc/apt/sources.list.d/virtualbox.list 
+        - deb $${deb_mirror_uri} $${release}-backports $${deb_components}
+      - apt-get_in: update
+      - apt-get_in: install virtualbox-guest-utils 
+      - exec_in: rm -f /etc/apt/sources.list.d/virtualbox.list 
+      - apt-get_in: update
+    - apt-get_in: install virtualbox-guest-utils 
 
 - enable_passwordless_sudo:
   - exec_in: |
@@ -10,11 +25,14 @@
       /etc/sudoers
 
 - install_puppet:
-  - download_file_in:
-    - $${puppet_deb_url}
-    - $KAMELEON_WORKDIR/puppet.deb
-  - exec_in: dpkg -i $KAMELEON_WORKDIR/puppet.deb
-  - apt-get_in: update
+  - test:
+    - exec_in: test "$${puppet_deb_source}" = "puppetlabs"
+    - group:
+      - download_file_in:
+        - $${puppet_deb_url}
+        - $KAMELEON_WORKDIR/puppet.deb
+      - exec_in: dpkg -i $KAMELEON_WORKDIR/puppet.deb
+      - apt-get_in: update
   - apt-get_in: install puppet
   - exec_in: rm -f $KAMELEON_WORKDIR/puppet.deb
 
