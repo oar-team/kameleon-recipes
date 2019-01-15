@@ -1,9 +1,0 @@
-[Unit]
-Description=Service that disable C-States C2 and upper. It forces C-States to C0, C1 and C1E.
-
-[Service]
-ExecStart=/usr/local/sbin/force_cstates_c0-c1e.rb
-
-[Install]
-WantedBy=multi-user.target
-
