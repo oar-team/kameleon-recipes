@@ -29,11 +29,9 @@ class env::min::install_and_configure_ssh {
     'sshd_config_min':
       changes => [
         'set /files/etc/ssh/sshd_config/HostKey[1] /etc/ssh/ssh_host_rsa_key',
-        'set /files/etc/ssh/sshd_config/HostKey[2] /etc/ssh/ssh_host_dsa_key',
+        'rm /files/etc/ssh/sshd_config/HostKey[2]',
         'rm /files/etc/ssh/sshd_config/HostKey[3]',
-        'rm /files/etc/ssh/sshd_config/HostKey[4]',
         'set /files/etc/ssh/sshd_config/UsePrivilegeSeparation no',
-        'set /files/etc/ssh/sshd_config/ServerKeyBits 768',
         'set /files/etc/ssh/sshd_config/PermitRootLogin without-password',
         'set /files/etc/ssh/sshd_config/PermitUserEnvironment yes'
       ],
