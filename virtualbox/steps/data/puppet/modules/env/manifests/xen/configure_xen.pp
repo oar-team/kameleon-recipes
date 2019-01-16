@@ -4,9 +4,37 @@ class env::xen::configure_xen () {
     case "${::lsbdistcodename}" {
       'jessie' : {
         $hypervisor = '/boot/xen-4.4-amd64.gz'
+        $xentoolsconf = 'env/xen/xen/xen-tools.jessie.erb'
+        file {
+          '/etc/xen/xend-config.sxp':
+            ensure   => file,
+            owner    => root,
+            group    => root,
+            mode     => '0644',
+            backup   => ".puppet-bak",
+            source   => 'puppet:///modules/env/xen/xen/xend-config.sxp',
+            require  => Package['xen-utils'];
+        }
       }
       'stretch' : {
         $hypervisor = '/boot/xen-4.8-amd64.gz'
+        $xentoolsconf = 'env/xen/xen/xen-tools.stretch.erb'
+        file {
+          '/etc/xen/xend-config.sxp.puppet-bak':
+            ensure   => file,
+            owner    => root,
+            group    => root,
+            mode     => '0644',
+            source   => '/etc/xen/xend-config.sxp',
+            require  => Package['xen-utils'];
+        }
+        file_line {
+          'enable network bridge':
+            path     => '/etc/xen/xend-config.sxp',
+            line     => '(network-script network-bridge)',
+            match    => '^#\ \(network-script\ network-bridge\)',
+            require  => [ Package['xen-utils'], File['/etc/xen/xend-config.sxp.puppet-bak'] ],
+        }
       }
     }
   }
@@ -21,13 +49,6 @@ class env::xen::configure_xen () {
     '/hypervisor':  # Given in dsc file to kadeploy to configure /boot/grub/grub.cfg correctly.
       ensure   => link,
       target   => "$hypervisor";
-    '/etc/xen/xend-config.sxp':
-      ensure   => file,
-      owner    => root,
-      group    => root,
-      mode     => '0644',
-      source   => 'puppet:///modules/env/xen/xen/xend-config.sxp',
-      require  => Package['xen-utils'];
     '/root/.ssh/id_rsa':
       ensure   => file,
       owner    => root,
@@ -63,7 +84,8 @@ class env::xen::configure_xen () {
       owner    => root,
       group    => root,
       mode     => '0644',
-      content  => template('env/xen/xen/xen-tools.erb'),
+      backup   => '.puppet-bak',
+      content  => template("$xentoolsconf"),
       require  => Package['xen-tools'];
     '/usr/local/bin/random_mac':
       ensure   => file,
