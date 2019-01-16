@@ -33,7 +33,8 @@ class env::min::install_and_configure_ssh {
         'rm /files/etc/ssh/sshd_config/HostKey[3]',
         'set /files/etc/ssh/sshd_config/UsePrivilegeSeparation no',
         'set /files/etc/ssh/sshd_config/PermitRootLogin without-password',
-        'set /files/etc/ssh/sshd_config/PermitUserEnvironment yes'
+        'set /files/etc/ssh/sshd_config/PermitUserEnvironment yes',
+        'set /files/etc/ssh/sshd_config/MaxStartups 500'
       ],
       require  => Package['ssh server'];
   }
