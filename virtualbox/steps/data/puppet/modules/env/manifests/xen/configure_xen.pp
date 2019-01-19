@@ -4,7 +4,6 @@ class env::xen::configure_xen () {
     case "${::lsbdistcodename}" {
       'jessie' : {
         $hypervisor = '/boot/xen-4.4-amd64.gz'
-        $xentoolsconf = 'env/xen/xen/xen-tools.jessie.erb'
         file {
           '/etc/xen/xend-config.sxp':
             ensure   => file,
@@ -14,11 +13,18 @@ class env::xen::configure_xen () {
             backup   => ".puppet-bak",
             source   => 'puppet:///modules/env/xen/xen/xend-config.sxp',
             require  => Package['xen-utils'];
+         '/etc/xen-tools/xen-tools.conf':
+            ensure   => file,
+            owner    => root,
+            group    => root,
+            mode     => '0644',
+            content  => template("env/xen/xen/xen-tools.jessie.erb"),
+            require  => File['/etc/xen-tools/xen-tools.conf.puppet-bak'],
+            before   => Exec['create_example_domU'];
         }
       }
       'stretch' : {
         $hypervisor = '/boot/xen-4.8-amd64.gz'
-        $xentoolsconf = 'env/xen/xen/xen-tools.stretch.erb'
         file {
           '/etc/xen/xend-config.sxp.puppet-bak':
             ensure   => file,
@@ -29,11 +35,66 @@ class env::xen::configure_xen () {
             require  => Package['xen-utils'];
         }
         file_line {
-          'enable network bridge':
+          '/etc/xen/xend-config.sxp: enable network bridge':
             path     => '/etc/xen/xend-config.sxp',
             line     => '(network-script network-bridge)',
             match    => '^#\ \(network-script\ network-bridge\)',
             require  => [ Package['xen-utils'], File['/etc/xen/xend-config.sxp.puppet-bak'] ],
+            before   => Exec['create_example_domU'];
+          '/etc/xen-tools/xen-tools.conf: change dir':
+            path     => '/etc/xen-tools/xen-tools.conf',
+            line     => 'dir = /opt/xen',
+            match    => '^ *dir *=',
+            require  => File['/etc/xen-tools/xen-tools.conf.puppet-bak'],
+            before   => Exec['create_example_domU'];
+          '/etc/xen-tools/xen-tools.conf: change size':
+            path     => '/etc/xen-tools/xen-tools.conf',
+            line     => 'size = 600M',
+            match    => '^ *size *=',
+            require  => File['/etc/xen-tools/xen-tools.conf.puppet-bak'],
+            before   => Exec['create_example_domU'];
+          '/etc/xen-tools/xen-tools.conf: change memory':
+            path     => '/etc/xen-tools/xen-tools.conf',
+            line     => 'memory = 128M',
+            match    => '^ *memory *=',
+            require  => File['/etc/xen-tools/xen-tools.conf.puppet-bak'],
+            before   => Exec['create_example_domU'];
+          '/etc/xen-tools/xen-tools.conf: change swap':
+            path     => '/etc/xen-tools/xen-tools.conf',
+            line     => 'swap = 128M',
+            match    => '^ *swap *=',
+            require  => File['/etc/xen-tools/xen-tools.conf.puppet-bak'],
+            before   => Exec['create_example_domU'];
+          '/etc/xen-tools/xen-tools.conf: change distribution':
+            path     => '/etc/xen-tools/xen-tools.conf',
+            line     => "dist = ${::lsbdistcodename}",
+            match    => '^ *dist *=',
+            require  => File['/etc/xen-tools/xen-tools.conf.puppet-bak'],
+            before   => Exec['create_example_domU'];
+          '/etc/xen-tools/xen-tools.conf: change arch':
+            path     => '/etc/xen-tools/xen-tools.conf',
+            line     => 'arch = amd64',
+            match    => '^ *arch *=',
+            require  => File['/etc/xen-tools/xen-tools.conf.puppet-bak'],
+            before   => Exec['create_example_domU'];
+          '/etc/xen-tools/xen-tools.conf: change mirror':
+            path     => '/etc/xen-tools/xen-tools.conf',
+            line     => 'mirror = http://ftp.fr.debian.org/debian/',
+            match    => '^ *mirror *=',
+            require  => File['/etc/xen-tools/xen-tools.conf.puppet-bak'],
+            before   => Exec['create_example_domU'];
+          '/etc/xen-tools/xen-tools.conf: change vmlinuz in xen-tools.conf':
+            path     => '/etc/xen-tools/xen-tools.conf',
+            line     => 'kernel = /vmlinuz',
+            match    => '^kernel = /boot/vmlinuz',
+            require  => File['/etc/xen-tools/xen-tools.conf.puppet-bak'],
+            before   => Exec['create_example_domU'];
+          '/etc/xen-tools/xen-tools.conf: chnage initrd.img path in xen-tools.conf':
+            path     => '/etc/xen-tools/xen-tools.conf',
+            line     => 'initrd = /initrd.img',
+            match    => '^initrd = /boot/initrd.img',
+            require  => File['/etc/xen-tools/xen-tools.conf.puppet-bak'],
+            before   => Exec['create_example_domU'];
         }
       }
     }
@@ -79,13 +140,12 @@ class env::xen::configure_xen () {
       group    => root,
       mode     => '0600',
       require  => File['/etc/xen-tools/skel/root/.ssh'];
-    '/etc/xen-tools/xen-tools.conf':
+    '/etc/xen-tools/xen-tools.conf.puppet-bak':
       ensure   => file,
       owner    => root,
       group    => root,
       mode     => '0644',
-      backup   => '.puppet-bak',
-      content  => template("$xentoolsconf"),
+      source   => '/etc/xen-tools/xen-tools.conf',
       require  => Package['xen-tools'];
     '/usr/local/bin/random_mac':
       ensure   => file,
@@ -177,7 +237,7 @@ class env::xen::configure_xen () {
       require => [
         Package['xen-tools', 'xen-utils'],
         File_line['/etc/xen-tools/skel/root/.ssh/authorized_keys dom0_key'],
-        File['/etc/xen-tools/xen-tools.conf', '/usr/local/bin/random_mac']
+        File['/etc/xen-tools/xen-tools.conf.puppet-bak', '/usr/local/bin/random_mac']
       ];
   }
 }
