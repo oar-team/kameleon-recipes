@@ -20,9 +20,8 @@ filegen clockstats file clockstats type day enable
 # pool.ntp.org maps to about 1000 low-stratum NTP servers.  Your server will
 # pick a different set every time it starts up.  Please consider joining the
 # pool: <http://www.pool.ntp.org/join.html>
-server ntp              iburst
-server ntp1.grid5000.fr iburst
-server ntp2.grid5000.fr iburst
+
+pool ntp.grid5000.fr iburst
 
 # Access control configuration; see /usr/share/doc/ntp-doc/html/accopt.html for
 # details.  The web page <http://support.ntp.org/bin/view/Support/AccessRestrictions>
@@ -39,6 +38,12 @@ restrict -6 default kod notrap nomodify nopeer noquery
 # Local users may interrogate the ntp server more closely.
 restrict 127.0.0.1
 restrict ::1
+
+
+
+# Needed for adding pool entries
+restrict source notrap nomodify noquery
+
 
 # Clients from this (example!) subnet have unlimited access, but only if
 # cryptographically authenticated.
