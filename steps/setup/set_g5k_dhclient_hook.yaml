@@ -1,8 +1,7 @@
 - create_dhclient_hook_for_g5k_hostname:
-  - exec_in: mkdir -p /etc/modprobe.d
-  - write_in:
-    - /etc/dhcp/dhclient-exit-hooks.d/g5k-update-host-name
-    - |
+  - exec_in: |
+      mkdir -p /etc/dhcp/dhclient-exit-hooks.d
+      cat <<'EOF' > /etc/dhcp/dhclient-exit-hooks.d/g5k-update-host-name
       #!/bin/sh
       if [ -n "$new_host_name" ]; then
         if ! echo "$new_host_name" | egrep -q '^.*-eth.*$'; then
@@ -17,3 +16,4 @@
         fi
       fi
       exit 0
+      EOF
