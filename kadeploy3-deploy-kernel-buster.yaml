@@ -9,11 +9,11 @@
 extend: kadeploy3-deploy-kernel-debian-base.yaml
 # Global variables use by Kameleon engine and the steps
 global:
-  release: stretch
+  release: buster
   bootstrap_packages: initramfs-tools busybox gnupg dirmngr
   ruby_packages: ruby ruby-net-ssh ruby-net-ssh-multi ruby-daemons ruby-psych
   to_remove_packages: wget libpsl5
-
+  use_backports: no
 bootstrap:
   - "@base"
 
