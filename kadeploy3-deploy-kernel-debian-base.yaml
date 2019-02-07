@@ -53,6 +53,9 @@ bootstrap:
   - start_chroot
 
 setup:
+  - force_exit_on_errors:
+    - bash_set_-e:
+      - exec_in: set -e
   - configure_system:
     - hosts:
       - write_in:
@@ -149,7 +152,6 @@ setup:
       - exec_in: |
           echo "Installing $${system_packages} $${net_packages} $${disk_packages} $${ruby_packages}"
           apt-get install -y --force-yes $${firmware_packages} $${system_packages} $${net_packages} $${disk_packages} $${ruby_packages}
-          echo "Done"
     - fix_ntp:
       - exec_in: sed -i -e 's/\(NTPSERVERS=\).*/\1="ntp1.grid5000.fr ntp2.grid5000.fr"/;s/\(NTPDATE_USE_NTP_CONF=\).*/\1=no/' /etc/default/ntpdate
     - remove_some_packages:
