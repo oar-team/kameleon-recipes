@@ -3,7 +3,7 @@
 - gpg_keyserver:
 
 - add_g5k_key:
-  - apt-get_in: install gnupg
+  - apt-get_in: install gnupg dirmngr
   - exec_in: apt-key adv --keyserver $${gpg_keyserver} --recv-key $${g5k_apt_key}
 - add_g5k_apt_sources:
   - exec_in: |
