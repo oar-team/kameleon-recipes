@@ -244,6 +244,7 @@ setup:
           chmod 755 /etc/rc.local
     - add_dhcp_hostname_script:
       - exec_in: |
+          mkdir -p /etc/dhcp/dhclient-enter-hooks.d
           cat <<'EOF' > /etc/dhcp/dhclient-enter-hooks.d/hostname
           if [ -n $new_host_name ] && [ -n $new_domain_name ]; then
             echo "$new_host_name.$new_domain_name" > /etc/hostname
