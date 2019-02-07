@@ -17,6 +17,7 @@ global:
   #root_authorized_keys: $${kameleon_data_dir}/kadeploy_root_authorized_keys
   # -> set on command line using "-g root_authorized_keys:$PWD/steps/data/kadeploy_root_authorized_keys"
   arch_specific_packages: kexec-tools grub-pc
+  use_backports: yes
   #deb_kernel: default
   # -> other option: bpo - e.g. set on command line using "-g deb_kernel:bpo"
   deb_kernel: bpo
@@ -105,10 +106,10 @@ setup:
           deb $${deb_mirror_uri} $${release} main contrib non-free
           deb $${deb_mirror_uri} $${release}-updates main contrib non-free
           deb http://security.debian.org/ $${release}/updates main contrib non-free
-      - write_in:
-        - /etc/apt/sources.list.d/$${release}-backports.list
-        - |
-          deb $${deb_mirror_uri} $${release}-backports main contrib non-free
+      - exec_in: |
+          if [ "$${use_backports}" == "yes" ]; then
+            echo "deb $${deb_mirror_uri} $${release}-backports main contrib non-free" > /etc/apt/sources.list.d/$${release}-backports.list
+          fi
       - exec_in: |
           if [ "$${deb_arch}" == "amd64" ]; then
             cat <<EOF >/etc/apt/sources.list.d/hwraid.list
@@ -137,7 +138,7 @@ setup:
   - install_packages:
     - install_kernel_packages:
       - exec_in: |
-          if [ "$${deb_kernel}" == "bpo" ]; then
+          if [ "$${use_backports}" == "yes" -a "$${deb_kernel}" == "bpo" ]; then
             KERNEL_BPO=$(apt-cache search "^linux-image.[[:digit:].-]+bpo[[:digit:].]+-$${deb_kernel_arch}$" | sort -h | tail -n1 | cut -f1 -d\ )
             apt-get install -y --force-yes -t $${release}-backports $KERNEL_BPO $${firmware_packages}
           else
