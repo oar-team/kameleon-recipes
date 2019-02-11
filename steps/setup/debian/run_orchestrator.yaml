@@ -2,8 +2,8 @@
 - puppet_build_path: "/tmp/puppet_recipes"
 - hiera_path: "/tmp/hiera"
 - puppet_path: "/opt/puppetlabs/bin"
-- puppet_local_path: $${kameleon_data_dir}/puppet
-- hiera_local_path: $${kameleon_data_dir}/hiera
+- puppet_local_path: $${kameleon_data_dir}/setup/puppet
+- hiera_local_path: $${kameleon_data_dir}/setup/hiera
 - version_file: modules/env/files/version
 - release_file: modules/env/files/min/image_versioning/release
 - kameleon_repo_name : "default"
@@ -24,7 +24,7 @@
 
 # Store G5K environment release information
 - set_release:
-  - exec_in: echo "$${os_release}-x64-$${variant}-$${image_version}" >> $${puppet_build_path}/$${release_file}
+  - exec_in: echo "$${distrib}$${release_number}-x64-$${g5k_variant}-$${g5k_version}" >> $${puppet_build_path}/$${release_file}
   - exec_in: echo "$${g5k_postinst_path}" >> $${puppet_build_path}/$${release_file}
   - exec_in: echo "$${g5k_postinst_script}" >> $${puppet_build_path}/$${release_file}
   # this extracts last git commit hash from local repo
@@ -34,15 +34,15 @@
     - exec_in: cat - >> $${puppet_build_path}/$${release_file}
 # Also store version
 - set_version:
-  - exec_in: echo "$${image_version}" > $${puppet_build_path}/$${version_file}
+  - exec_in: echo "$${g5k_version}" > $${puppet_build_path}/$${version_file}
 
 - run_puppet:
   - exec_in: |
       set +e
-      if [ -z "$${variant}" ]; then
+      if [ -z "$${g5k_variant}" ]; then
         VARIANT=std
       else
-        VARIANT=$${variant}
+        VARIANT=$${g5k_variant}
       fi
       $${puppet_path}/puppet apply --detailed-exitcodes -d --modulepath=$${puppet_build_path}/modules:/etc/puppetlabs/code/environments/production/modules $${puppet_build_path}/manifests/$VARIANT.pp | tee /tmp/puppet_exec.log
       ret=$?
