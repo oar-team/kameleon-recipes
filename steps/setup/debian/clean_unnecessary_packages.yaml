@@ -1,0 +1,5 @@
+- clean_unnecessary_packages:
+    - on_setup_clean:
+        - exec_in: apt-get update && apt-get install -y debfoster
+        - exec_in: yes | debfoster --quiet --force -o MaxPriority=standard -oUseRecommends=yes g5k-meta-packages-$${distrib}$${release_number}-$${g5k_variant} grub-pc gnupg linux-image-amd64 console-setup rsync locales tgz-g5k firmware-bnx2 firmware-bnx2x puppet-agent puppetlabs-release-pc1 || true
+
