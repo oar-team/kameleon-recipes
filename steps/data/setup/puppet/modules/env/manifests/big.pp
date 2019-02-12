@@ -40,5 +40,9 @@ class env::big ( $variant = "big", $parent_parameters = {} ){
   class { 'env::big::install_ceph': }
   # Snmp tools
   class { 'env::big::install_snmp_tools': }
+  # beegfs install
+  class { 'env::big::install_beegfs': }
+  # remove RESUME device from initramfs
+  class { 'env::big::configure_initramfs': }
 
 }

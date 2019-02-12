@@ -32,8 +32,6 @@ class env::base ( $variant = "base", $parent_parameters = {} ){
     'env::base::install_and_disable_ganglia':
       enable => $parameters['ganglia_enable']
   }
-  # Force cstates configuration
-  class { 'env::base::configure_cstates': }
   #IbOverIP
   class { 'env::base::configure_ip_over_infiniband': }
   # memlock tuning for infiniband

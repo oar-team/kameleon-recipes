@@ -51,7 +51,7 @@ class env::nfs::configure_ldap () {
       owner    => root,
       group    => root,
       mode     => '0644',
-      source   => 'puppet:///modules/env/nfs/ldap/common-account';
+      content   => template('env/nfs/ldap/common-account.erb');
     '/etc/pam.d/common-auth':
       ensure   => file,
       owner    => root,
