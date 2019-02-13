@@ -2,7 +2,7 @@
 # vim: softtabstop=2 shiftwidth=2 expandtab fenc=utf-8 cc=81 tw=80
 #==============================================================================
 #
-# DESCRIPTION: Debian stretch (9) x64 min Grid'5000 environment
+# DESCRIPTION: Debian stretch (9) x64 base Grid'5000 environment
 #
 #==============================================================================
 ---
@@ -10,14 +10,13 @@ extend: ./debian9-x64-common.yaml
 
 global:
   # Grid'5000 environment variant
-  g5k_variant: min
+  g5k_variant: base
 
 bootstrap:
   - "@base"
 
 setup:
   - "@base"
-  - clean_unnecessary_packages
 
 export:
   - "@base"

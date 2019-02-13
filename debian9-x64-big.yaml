@@ -2,7 +2,7 @@
 # vim: softtabstop=2 shiftwidth=2 expandtab fenc=utf-8 cc=81 tw=80
 #==============================================================================
 #
-# DESCRIPTION: Debian stretch (9) x64 min Grid'5000 environment
+# DESCRIPTION: Debian stretch (9) x64 big Grid'5000 environment
 #
 #==============================================================================
 ---
@@ -10,14 +10,16 @@ extend: ./debian9-x64-common.yaml
 
 global:
   # Grid'5000 environment variant
-  g5k_variant: min
-
+  g5k_variant: big
+  # Grid'5000 Kadeploy environment parameters
+  g5k_postinst_script: g5k-postinstall --net debian --net hpc --fstab nfs --fstab-specific --restrict-user current
+  # QEMU options
+  qemu_image_size: 16G
 bootstrap:
   - "@base"
 
 setup:
   - "@base"
-  - clean_unnecessary_packages
 
 export:
   - "@base"
