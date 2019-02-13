@@ -1,6 +1,9 @@
 #! /usr/bin/env ruby
 # coding: utf-8
 
+# INSTALLED BY PUPPET
+# Location : puppet/modules/env/files/std/g5kdiskmanager/g5k-disk-manager
+
 require 'open-uri'
 require 'json'
 require 'optparse'
