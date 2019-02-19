@@ -34,9 +34,7 @@ bootstrap:
 setup:
   - "@base"
   - configure_system
-  - remove_empty_udev
   - configure_apt_sources
-  - set_capabilities
   - clean_udev_dir
   - setup_orchestrator
   - run_orchestrator
