@@ -10,7 +10,7 @@ echo "mdadm   mdadm/initrdstart       string  none" | debconf-set-selections
 # finding the correct date is not easy. Usually you need to use http://snapshot.debian.org and trial and error.
 KERNEL=linux-image-$(uname -r)
 VERSION=$(apt-cache policy $KERNEL | grep Installed: | awk '{print $2}')
-echo 'deb [check-valid-until=no] http://snapshot.debian.org/archive/debian-security/20180822T195212Z/ stretch/updates main' > /etc/apt/sources.list.d/snapshot-kernel.list
+echo 'deb [check-valid-until=no] http://snapshot.debian.org/archive/debian/20181028T093335Z/ stretch-proposed-updates main' > /etc/apt/sources.list.d/snapshot-kernel.list
 apt-get update
 apt-get install -y systemtap linux-image-$(uname -r)-dbg=$VERSION linux-headers-$(uname -r)=$VERSION
 /tmp/environments-recipes/tools/nofsync.stp </dev/null >/dev/null 2>&1 &
@@ -18,6 +18,7 @@ apt-get install -y systemtap linux-image-$(uname -r)-dbg=$VERSION linux-headers-
 # install other dependencies
 apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends git virtualbox linux-headers-amd64 socat qemu-utils ruby-dev ruby-childprocess polipo pigz netcat eatmydata libguestfs-tools dirmngr
 
+rm /etc/gemrc
 gem install --no-ri --no-rdoc kameleon-builder
 mv /bin/gzip /bin/gzip.OLD
 ln -s /usr/bin/pigz /bin/gzip

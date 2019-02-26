@@ -13,12 +13,6 @@ class env::big ( $variant = "big", $parent_parameters = {} ){
       variant => $variant,
       parent_parameters => $parameters;
   }
-  # gem
-  if $env::target_g5k {
-    class { 'env::big::configure_gemrc':
-      stage  => 'g5k_adjustment';
-    }
-  }
   # mail
   class { 'env::big::configure_postfix': }
   # kvm
