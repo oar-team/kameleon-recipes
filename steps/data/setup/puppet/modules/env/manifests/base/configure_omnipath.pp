@@ -7,7 +7,7 @@ class env::base::configure_omnipath(){
                     'opa-fastfabric', 'opa-scripts', 'qperf' ]
 
     env::common::g5kpackages {
-        'scibian9-opa10.6':
+        'scibian9-opa10.7':
            packages => $opapackages;
     }
 
