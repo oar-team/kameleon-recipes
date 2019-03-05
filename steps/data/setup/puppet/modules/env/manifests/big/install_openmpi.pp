@@ -3,7 +3,7 @@ class env::big::install_openmpi () {
   if "${::lsbdistcodename}" == "stretch" {
     $openmpi_deps_packages = [ 'librdmacm1', 'libgfortran3', 'libnuma1', 'blcr-util', 'libibverbs1-dbg', 'libibverbs-dev', 'libpsm2-dev', 'libhfi1-dev', 'libopamgt-dev' ]
     $openmpi_packages = [ 'libopenmpi-dev', 'openmpi-bin' ]
-    $openmpi_scibian_version = '2.0.2-2sci9+opa10.6u1'
+    $openmpi_scibian_version = '2.0.2-2sci9+opa10.7u4'
 
     package{
       $openmpi_deps_packages:
