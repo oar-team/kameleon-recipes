@@ -5,7 +5,7 @@ Before=oar-node.service
 
 [Service]
 Type=oneshot
-ExecStart=/usr/local/sbin/g5k-disk-manager --on-boot
+ExecStart=/usr/local/libexec/g5k-disk-manager --on-boot
 
 [Install]
 WantedBy=multi-user.target
