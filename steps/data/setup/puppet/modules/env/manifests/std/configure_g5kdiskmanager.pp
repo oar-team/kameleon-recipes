@@ -4,24 +4,29 @@ class env::std::configure_g5kdiskmanager {
 
   case $operatingsystem {
     'Debian': {
-      if ("${::lsbdistcodename}" == "jessie") or ("${::lsbdistcodename}" == "stretch") { 
+      if ("${::lsbdistcodename}" == "jessie") or ("${::lsbdistcodename}" == "stretch") {
         file {
           '/etc/systemd/system/g5k-disk-manager.service':
             source => 'puppet:///modules/env/std/g5kdiskmanager/g5k-disk-manager.service',
             ensure => file;
-          '/usr/local/sbin/g5k-disk-manager':
+          '/usr/local/libexec/':
+            ensure   => directory,
+            mode     => '0755',
+            owner    => 'root',
+            group    => 'root';
+          '/usr/local/libexec/g5k-disk-manager':
             source => 'puppet:///modules/env/std/g5kdiskmanager/g5k-disk-manager',
             mode => '0755',
-            ensure => file; 
+            ensure => file;
           '/etc/systemd/system/multi-user.target.wants/g5k-disk-manager.service':
             ensure => link,
             target => '/etc/systemd/system/g5k-disk-manager.service';
         }
-	package {
-	  'megactl':
-	  ensure => installed,
+    package {
+     'megactl':
+      ensure => installed,
           require  => [Apt::Source['hwraid.le-vert.net'], Exec['apt_update']]
-	}
+    }
       }
       else {
         err "${operatingsystem} not supported."
