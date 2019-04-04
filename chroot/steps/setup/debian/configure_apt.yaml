@@ -18,6 +18,16 @@
       deb $${apt_repository} $${release}-updates main
       deb-src $${apt_repository} $${release}-updates main
 
+- workaround-jessie-update-repo:
+  - exec_in: |
+      if [ $${release} = "jessie" ]; then
+        sed -i '/jessie-updates/d' /etc/apt/sources.list;
+        sed -i '/jessie-backports/d' /etc/apt/sources.list;
+        echo "deb http://archive.debian.org/debian jessie-backports main" > /etc/apt/sources.list.d/backports.list;
+        echo "deb http://archive.debian.org/debian jessie-backports-sloppy main" > /etc/apt/sources.list.d/backports-sloppy.list;
+        echo 'Acquire::Check-Valid-Until "false";' > /etc/apt/apt.conf.d/no_valid_check;
+      fi
+
 - add_contribs_and_nonfree_sources:
   - exec_in: |
       if [ $${enable_contrib} = true ]; then
@@ -28,6 +38,11 @@
         REPO_NONFREE="non-free"
       fi
   - exec_in: perl -pi -e "s/main$/main $REPO_CONTRIB $REPO_NONFREE/" /etc/apt/sources.list
+  - exec_in: |
+      if [ $${release} = "jessie" ]; then
+        perl -pi -e "s/main$/main $REPO_CONTRIB $REPO_NONFREE/" /etc/apt/sources.list.d/backports.list;
+        perl -pi -e "s/main$/main $REPO_CONTRIB $REPO_NONFREE/" /etc/apt/sources.list.d/backports-sloppy.list;
+      fi
 
 - update_repositories:
   # Deactivate the check to make the cache system works after a while...
