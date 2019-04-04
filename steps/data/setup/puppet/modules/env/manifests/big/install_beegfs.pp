@@ -1,9 +1,7 @@
 class env::big::install_beegfs {
   if "${::lsbdistcodename}" == "stretch" {
 
-    package { 'apt-transport-https':
-        ensure => installed,
-    }
+    include apt
 
     apt::source { 'beegfs':
         location     => 'http://www.beegfs.com/release/beegfs_7/',
