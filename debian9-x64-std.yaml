@@ -2,21 +2,20 @@
 # vim: softtabstop=2 shiftwidth=2 expandtab fenc=utf-8 cc=81 tw=80
 #==============================================================================
 #
-# DESCRIPTION: Debian 9 (Stretch) std built with virtualbox.
+# DESCRIPTION: Debian stretch (9) x64 std Grid'5000 environment
 #
 #==============================================================================
 ---
-extend: debian9-x64-common.yaml # Cf 'jessie-x64-common' for a real content. This recipe only overwrite variant.
+extend: ./debian9-x64-common.yaml
+
 global:
-  image_size: 16G
-  variant: std
+  # Grid'5000 environment variant
+  g5k_variant: std
+  # Grid'5000 Kadeploy environment parameters
   g5k_postinst_script: g5k-postinstall --net debian-bridged --net hpc --fstab nfs --fstab site-specific --restrict-user std
   g5k_kernel_params: "cgroup_enable=memory"
-  appliance_tar_excludes: >-
-    ./etc/fstab ./root/.bash_history ./root/kameleon_workdir
-    ./var/tmp/* ./tmp/* ./dev/* ./proc/* ./run/*
-    ./sys/*
-
+  # QEMU options
+  qemu_image_size: 16G
 
 bootstrap:
   - "@base"
@@ -26,5 +25,4 @@ setup:
   - set_and_clear_var_log
 
 export:
-  - clear_systemd_logs
   - "@base"

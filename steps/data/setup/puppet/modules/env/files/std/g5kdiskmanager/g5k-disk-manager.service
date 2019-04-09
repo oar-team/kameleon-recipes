@@ -1,0 +1,11 @@
+[Unit]
+Description=activation of all disks before g5k-checks is launched
+After=network-online.target
+Before=oar-node.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/libexec/g5k-disk-manager --on-boot
+
+[Install]
+WantedBy=multi-user.target
