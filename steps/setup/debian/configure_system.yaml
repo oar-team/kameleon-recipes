@@ -11,6 +11,7 @@
 
 - set_timezone:
   - exec_in: echo "$${timezone}" > /etc/timezone
+  - exec_in: ln -sf /usr/share/zoneinfo/$${timezone} /etc/localtime
   - exec_in: "dpkg-reconfigure -f noninteractive tzdata 2>&1"
 
 - set_root_password:
