@@ -40,6 +40,24 @@ dryrun_ubuntu1804-x64-min:
 dryrun_debiantesting-x64-min:
   <<: *defaults-dryrun
 
+dryrun_debian9-x64-min:
+  <<: *defaults-dryrun
+
+dryrun_debian9-x64-base:
+  <<: *defaults-dryrun
+
+dryrun_debian9-x64-nfs:
+  <<: *defaults-dryrun
+
+dryrun_debian9-x64-xe,:
+  <<: *defaults-dryrun
+
+dryrun_debian9-x64-big:
+  <<: *defaults-dryrun
+
+dryrun_debian9-x64-std:
+  <<: *defaults-dryrun
+
 
 build_centos7-x64-min:
   <<: *defaults-build
@@ -48,4 +66,7 @@ build_ubuntu1804-x64-min:
   <<: *defaults-build
 
 build_debiantesting-x64-min:
+  <<: *defaults-build
+
+build_debian9-x64-std:
   <<: *defaults-build
