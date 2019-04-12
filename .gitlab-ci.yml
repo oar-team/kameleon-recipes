@@ -49,7 +49,7 @@ dryrun_debian9-x64-base:
 dryrun_debian9-x64-nfs:
   <<: *defaults-dryrun
 
-dryrun_debian9-x64-xe,:
+dryrun_debian9-x64-xen:
   <<: *defaults-dryrun
 
 dryrun_debian9-x64-big:
