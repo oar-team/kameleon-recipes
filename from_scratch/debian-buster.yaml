@@ -1,0 +1,26 @@
+#==============================================================================
+# vim: softtabstop=2 shiftwidth=2 expandtab fenc=utf-8 cc=81 tw=80
+#==============================================================================
+#
+# DESCRIPTION: Debian 10 (Buster) recipe using the netinstall mechanism
+#
+#==============================================================================
+---
+extend: debian-base.yaml
+# Global variables use by Kameleon engine and the steps
+global:
+  # Distribution
+  distrib: debian
+  release: buster
+  release_number: 10
+  # hardcoded alpha iso for now
+  iso_url: http://cdimage.debian.org/cdimage/buster_di_alpha4/amd64/iso-cd/debian-buster-DI-alpha4-amd64-netinst.iso
+
+bootstrap:
+  - "@base"
+
+setup:
+  - "@base"
+
+export:
+  - "@base"

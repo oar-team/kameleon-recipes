@@ -1,0 +1,6 @@
+
+- set_root_password:
+  - exec_in: echo -n 'root:$${root_password}' | chpasswd
+
+- upgrade_system:
+  - apt-get_in: dist-upgrade

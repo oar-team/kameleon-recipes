@@ -1,0 +1,21 @@
+# # System Config
+- configure_locales:
+  # set locales programtically, based on http://linux.livejournal.com/1880366.html
+  - exec_in: |
+      test ! -f /etc/locale.gen || \
+        (echo $${locales} | tr ' ' '\n' | xargs -I {} sed -i 's/^# {}/{}/' /etc/locale.gen)
+  - exec_in: locale-gen
+  - exec_in: update-locale LANG=$${lang}
+
+- set_timezone:
+  - exec_in: echo "$${timezone}" > /etc/timezone
+  - exec_in: ln -sf /usr/share/zoneinfo/$${timezone} /etc/localtime
+  - exec_in: "dpkg-reconfigure -f noninteractive tzdata 2>&1"
+
+- set_root_password:
+  - exec_in: echo -n 'root:$${root_password}' | chpasswd
+
+- configure_initramfs:
+  - write_in:
+    - /etc/initramfs-tools/conf.d/resume
+    - RESUME=none

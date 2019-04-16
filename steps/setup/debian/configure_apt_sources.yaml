@@ -1,0 +1,33 @@
+# Software Install
+- deb_components: "main contrib non-free"
+- deb_backports: false
+
+- configure_source_list:
+  - write_in:
+    - /etc/apt/sources.list
+    - |
+      deb $${deb_mirror_uri} $${release} $${deb_components}
+      deb-src $${deb_mirror_uri} $${release} $${deb_components}
+  - test:
+    - exec_in: test "$${release}" != "sid"
+    - append_in:
+      - /etc/apt/sources.list
+      - |
+        deb $${deb_mirror_uri}  $${release}-updates $${deb_components}
+        deb-src $${deb_mirror_uri} $${release}-updates $${deb_components}
+        
+        deb http://security.debian.org/ $${release}/updates $${deb_components}
+        deb-src http://security.debian.org/ $${release}/updates $${deb_components}
+
+- add_backports:
+  - test:
+    - exec_in: test "$${deb_backports}" == "true" -a "$${release}" != "testing" -a "$${release}" != "sid"
+    - append_in:
+      - /etc/apt/sources.list
+      - |
+        deb $${deb_mirror_uri} $${release}-backports $${deb_components}
+        deb-src $${deb_mirror_uri} $${release}-backports $${deb_components}
+
+- update_repositories:
+  # Deactivate the check to make the cache system works after a while...
+  - apt-get_in: -o Acquire::Check-Valid-Until=false update

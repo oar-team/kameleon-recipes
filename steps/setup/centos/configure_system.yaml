@@ -1,0 +1,70 @@
+# System configuration
+#
+# This will set the locals and the timezone
+- set_locales:
+  # uncomment the locales
+  - exec_in: |
+      echo $${locales} | tr ' ' '\n' | xargs -I {} localedef -v -c -i {} -i {} -f UTF-8 $${lang} 2>&1 || :
+
+- set_timezone:
+  - exec_in: ln -sf /usr/share/zoneinfo/$${timezone} /etc/localtime
+
+- set_wheel_sudo:
+  - exec_in: echo "%wheel      ALL=(ALL) ALL" >> /etc/sudoers
+
+- set_root_password:
+  - exec_in: echo -n 'root:$${root_password}' | chpasswd
+
+- disable_tmpfs_for_tmp:
+  - exec_in: echo "Disabling tmpfs for /tmp."
+  - exec_in: systemctl mask tmp.mount
+
+- remove_random_seed:
+  - exec_in: echo "Removing random-seed so it's not the same in every image."
+  - exec_in: rm -f /var/lib/random-seed
+
+- cracklib_path: /usr/share/cracklib/pw_dict.pwd
+
+- compress_cracklib:
+  - exec_in: test ! -f $${cracklib_path} || gzip -9 $${cracklib_path}
+
+- selinux: disabled
+- selinuxtype: targeted
+
+- configure_selinux:
+  - write_in:
+    - /etc/selinux/config
+    - |
+      # This file controls the state of SELinux on the system.
+      # SELINUX= can take one of these three values:
+      #       enforcing - SELinux security policy is enforced.
+      #       permissive - SELinux prints warnings instead of enforcing.
+      #       disabled - SELinux is fully disabled.
+      SELINUX=$${selinux}
+      # SELINUXTYPE= type of policy in use. Possible values are:
+      #       targeted - Only targeted network daemons are protected.
+      #       strict - Full SELinux protection.
+      SELINUXTYPE=$${selinuxtype}
+- make_new_kernels_the_default:
+  - write_in:
+    - /etc/sysconfig/kernel
+    - |
+      # UPDATEDEFAULT specifies if new-kernel-pkg should make
+      # new kernels the default
+      UPDATEDEFAULT=yes
+      # DEFAULTKERNEL specifies the default kernel package type
+      DEFAULTKERNEL=kernel
+- create_kernel_symlinks_hook:
+  - exec_in: |
+      mkdir -p /etc/kernel/postinst.d/
+      cat <<'EOF' > /etc/kernel/postinst.d/01-create-symlinks
+      #!/bin/bash
+      KERNEL_VERSION="${1:-$(uname -r)}"
+      KERNEL_IMAGE="${2:-/boot/vmlinuz-${KERNEL_VERSION}}"
+      INITRAMFS_IMAGE="/boot/initramfs-${KERNEL_VERSION}.img"
+      ln -sfv $KERNEL_IMAGE /vmlinuz
+      ln -sfv $INITRAMFS_IMAGE /initramfs.img
+      EOF
+      chmod 755 /etc/kernel/postinst.d/01-create-symlinks
+- force_create_kernel_symlinks:
+  - exec_in: /etc/kernel/postinst.d/01-create-symlinks

@@ -1,0 +1,82 @@
+# Generate a dsc file as used on grid'5000 by kaenv
+
+- dashes: "---" # kameleon eats my dash if I don't use this dirty hack :-(
+- g5k_version: "unknown"
+- g5k_kernel_path: "/vmlinuz"
+- g5k_initrd_path: "/initrd.img"
+- g5k_filesystem: "ext4"
+- g5k_author: "support-staff@list.grid5000.fr"
+- g5k_visibility: "public"
+- g5k_destructive: "false"
+
+# - save_as_tgz:
+#   - check_cmd_local: guestfish
+#   - check_cmd_local: gzip
+#   - exec_local: echo "Exporting appliance to $${output}.tgz"
+#   - exec_local: mkdir -p $${kameleon_cwd}/.mnt
+#   - exec_local: LIBGUESTFS_CACHEDIR=$${kameleon_cwd} guestmount --ro -i -a $${input} $${kameleon_cwd}/.mnt
+#   - exec_local: LIBGUESTFS_CACHEDIR=$${kameleon_cwd} tar -cf $${output}.tgz --gzip --numeric-owner --selinux --acls --xattrs -C $${kameleon_cwd}/.mnt .
+#   - exec_local: LIBGUESTFS_CACHEDIR=$${kameleon_cwd} guestunmount $${kameleon_cwd}/.mnt
+#   - exec_local: rmdir $${kameleon_cwd}/.mnt
+
+- generate_dsc:
+  - exec_local: echo "Creating description file for kaenv in $${output}.dsc"
+  - exec_local: |
+      # Remove c-states from non min environmnents
+      if [[ "x$${g5k_variant}" != "xxen" ]]; then
+      cat << EOF > $${output}.dsc
+      $${dashes}
+      name: $${kameleon_recipe_name}
+      version: $${g5k_version}
+      description: $${distrib} $${release_number} ($${release}) - $${g5k_variant}
+      author: $${g5k_author}
+      visibility: $${g5k_visibility}
+      destructive: $${g5k_destructive}
+      os: linux
+      image:
+        file: $${g5k_tgz_path}
+        kind: tar
+        compression: gzip
+      postinstalls:
+      - archive: $${g5k_postinst_path}
+        compression: gzip
+        script: $${g5k_postinst_script}
+      boot:
+        kernel_params: "$${g5k_kernel_params}"
+        kernel: $${g5k_kernel_path}
+        initrd: $${g5k_initrd_path}
+      filesystem: $${g5k_filesystem}
+      partition_type: 131
+      multipart: false
+      EOF
+      else
+      cat << EOF > $${output}.dsc
+      $${dashes}
+      name: $${kameleon_recipe_name}
+      version: $${g5k_version}
+      description: $${distrib} $${release_number} ($${release}) - $${g5k_variant}
+      author: $${g5k_author}
+      visibility: $${g5k_visibility}
+      destructive: $${g5k_destructive}
+      os: xen
+      image:
+        file: $${g5k_tgz_path}
+        kind: tar
+        compression: gzip
+      postinstalls:
+      - archive: $${g5k_postinst_path}
+        compression: gzip
+        script: $${g5k_postinst_script}
+      boot:
+        kernel_params: "$${g5k_kernel_params}"
+        kernel: $${g5k_kernel_path}
+        initrd: $${g5k_initrd_path}
+        hypervisor: /hypervisor
+        hypervisor_params: dom0_mem=4096M
+      filesystem: $${g5k_filesystem}
+      partition_type: 131
+      multipart: false
+      EOF
+      fi
+- generate_md5:
+  - exec_local: md5sum $${kameleon_recipe_name}.* > $${kameleon_recipe_name}.md5

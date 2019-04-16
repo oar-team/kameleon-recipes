@@ -1,0 +1,6 @@
+# Software install for archlinux
+#
+# It use pacman tool to install given packages
+
+- do_install:
+  - exec_in: pacman --noconfirm --arch $${arch} -Suy --force $${packages}

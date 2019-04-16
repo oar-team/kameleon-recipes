@@ -1,0 +1,2 @@
+do_install:
+  - apt-get_in: install linux-headers-$(uname -r) dkms

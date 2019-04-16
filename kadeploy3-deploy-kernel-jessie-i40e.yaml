@@ -1,0 +1,25 @@
+#==============================================================================
+# vim: softtabstop=2 shiftwidth=2 expandtab fenc=utf-8 cc=81 tw=80
+#==============================================================================
+#
+# DESCRIPTION: Kadeploy3 ramdisk OS (used in the deployment phase) with the OOT
+# i40e driver
+#
+#==============================================================================
+---
+extend: kadeploy3-deploy-kernel-jessie.yaml
+
+global:
+
+bootstrap:
+  - "@base"
+
+setup:
+  - "@base"
+  - configure_g5k_apt_sources:
+    - g5k_deb_repositories: i40e
+  - install_oot_kernel_drivers:
+    - oot_kernel_driver_names: i40e
+
+export:
+  - "@base"

@@ -1,0 +1,68 @@
+# Arch-bootstrap
+- mirror: $${mirror_base_url}/\$repo/os/\$arch
+
+- fetch_bootstrap_image_url:
+  - check_cmd_out: lynx
+  - exec_out: BOOTSTRAP_IMAGE_URL="$(lynx $${mirror_base_url}/iso/latest/ -dump -listonly -nonumbers | grep bootstrap | grep tar.gz | grep $${iso_arch} | head -1)"
+  - exec_out: |
+      if [ -z "${BOOTSTRAP_IMAGE_URL-unset}" ]; then
+          fail "bootstrap archive not found! Please check $${mirror_base_url}/iso/latest/"
+      fi
+
+- download_base_image:
+  - exec_out: echo "Download and untar image..."
+  - exec_out: wget -qO- $BOOTSTRAP_IMAGE_URL | tar xz --strip-components 1 -C $${rootfs}
+  - exec_out: echo "" >> $${rootfs}/etc/pacman.d/mirrorlist
+  - exec_out: echo "Server = $${mirror}" >> $${rootfs}/etc/pacman.d/mirrorlist
+
+- mount_chroot:
+  - exec_out: mount -o bind /dev  $${rootfs}/dev
+  - exec_out: mount -o bind /dev/pts $${rootfs}/dev/pts
+  - exec_out: mount -t proc /proc  $${rootfs}/proc
+  - exec_out: mount -t sysfs /sys  $${rootfs}/sys
+  - exec_out: cp /etc/resolv.conf $${rootfs}/etc/resolv.conf
+
+- configure_pacman:
+  # init pacman keyring
+  - exec_out: echo "Initializing the pacman keyring"
+  - exec_out: chroot $${rootfs} cp /etc/pacman.conf /etc/pacman.conf.orig
+  - exec_out: sed -i s'/SigLevel.*/SigLevel = Never/'g $${rootfs}/etc/pacman.conf
+  - exec_out: chroot $${rootfs} pacman -Sy
+  - exec_out: chroot $${rootfs} pacman --noconfirm --arch $${arch} -S haveged procps-ng sed
+  - exec_out: chroot $${rootfs} mv /etc/pacman.conf.orig /etc/pacman.conf
+  - exec_out: chroot $${rootfs} haveged -w 1024
+  - exec_out: chroot $${rootfs} pacman-key --init
+  - exec_out: chroot $${rootfs} pacman-key --populate archlinux
+  - exec_out: chroot $${rootfs} pkill haveged
+  - exec_out: chroot $${rootfs} pacman -Rs --noconfirm haveged procps-ng
+
+- install_extra_packages:
+  - exec_out: chroot $${rootfs} pacman --noconfirm --arch $${arch} -Suy --force $${include_pkgs}
+
+- enable_network:
+  - exec_out: chroot $${rootfs} ln -s /usr/lib/systemd/system/dhcpcd.service /etc/systemd/system/multi-user.target.wants/dhcpcd.service
+  - exec_out: chroot $${rootfs} ln -s /usr/lib/systemd/system/systemd-resolved.service /etc/systemd/system/multi-user.target.wants/systemd-resolved.service
+  - exec_out: chroot $${rootfs} ln -s /usr/lib/systemd/system/systemd-networkd.service /etc/systemd/system/multi-user.target.wants/systemd-networkd.service
+  - exec_out: chroot $${rootfs} ln -s /usr/lib/systemd/system/sshd.service /etc/systemd/system/multi-user.target.wants/sshd.service
+
+- minimal_initrd:
+  - write_out:
+    - /etc/mkinitcpio.conf
+    - |
+      #
+      # Minimal /etc/mkinitcpio.conf
+      #
+      MODULES="ahci sd_mod $${filesystem_type}"
+      BINARIES="fsck fsck.$${filesystem_type}"
+      HOOKS="systemd modconf block keymap filesystems keyboard"
+  - exec_out: rm -f $${rootfs}/boot/initramfs*
+  - exec_out: chroot $${rootfs} mkinitcpio -g /boot/initramfs-linux-tiny.img -k $(ls $${rootfs}/usr/lib/modules | head -n 1)
+
+- umount_chroot:
+  - on_clean:
+    - exec_out: echo "sync..."; sync
+    - umount_out: $${rootfs}/sys
+    - umount_out: $${rootfs}/proc
+    - umount_out: $${rootfs}/dev/pts
+    - umount_out: $${rootfs}/dev
+    - exec_out: rm -f $${rootfs}/etc/resolv.conf

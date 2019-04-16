@@ -1,0 +1,23 @@
+#==============================================================================
+# vim: softtabstop=2 shiftwidth=2 expandtab fenc=utf-8 cc=81 tw=80
+#==============================================================================
+#
+# DESCRIPTION: Ubuntu 18.10 (Cosmic) recipe using the netinstall mechanism
+#
+#==============================================================================
+---
+extend: ubuntu-base.yaml
+# Global variables use by Kameleon engine and the steps
+global:
+  # Distribution
+  release: cosmic
+  release_number: 18.10
+
+bootstrap:
+  - "@base"
+
+setup:
+  - "@base"
+
+export:
+  - "@base"

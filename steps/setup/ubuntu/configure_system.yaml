@@ -1,0 +1,4 @@
+# System configuration
+
+- set_timezone:
+  - exec_in: ln -sf /usr/share/zoneinfo/$${timezone} /etc/localtime

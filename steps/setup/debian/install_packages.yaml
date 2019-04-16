@@ -1,0 +1,7 @@
+- apt_install_recommends: true
+
+- install_packages:
+  - test:
+    - exec_in: test "$${apt_install_recommends}" == "true"
+    - apt-get_in: install $${packages}
+    - apt-get_in: install --no-install-recommends $${packages}

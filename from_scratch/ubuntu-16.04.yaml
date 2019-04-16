@@ -1,0 +1,24 @@
+#==============================================================================
+# vim: softtabstop=2 shiftwidth=2 expandtab fenc=utf-8 cc=81 tw=80
+#==============================================================================
+#
+# DESCRIPTION: Ubuntu 16.04 (Xenial) recipe using the netinstall mechanism
+#
+#==============================================================================
+---
+extend: ubuntu-base.yaml
+# Global variables use by Kameleon engine and the steps
+global:
+  # Distribution
+  release: xenial
+  release_number: 16.04
+  qemu_sendkeys_commands: $${kameleon_data_dir}/qemu-sendkeys/netinst-iso-ubuntu-xenial
+
+bootstrap:
+  - "@base"
+
+setup:
+  - "@base"
+
+export:
+  - "@base"

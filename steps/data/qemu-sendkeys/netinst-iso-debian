@@ -1,0 +1,1 @@
+<esc><wait>auto preseed/url=http://%LOCAL_IP%:%HTTP_PORT%/preseed.cfg<kp_enter>

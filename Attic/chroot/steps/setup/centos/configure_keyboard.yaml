@@ -1,0 +1,11 @@
+# Keyboard configuration
+
+- set_keyboard_layout:
+  - write_in:
+    - /etc/vconsole.conf
+    - |
+      KEYMAP=$${layout}
+  - write_in:
+    - /etc/sysconfig/keyboard
+    - |
+      KEYTABLE=$${layout}

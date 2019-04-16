@@ -1,0 +1,9 @@
+- install_virtualbox_guest_additions:
+  - exec_in: pacman -S --noconfirm virtualbox-guest-utils virtualbox-guest-dkms 2>&1
+  - exec_in: echo -e 'vboxguest\nvboxsf\nvboxvideo' > /etc/modules-load.d/virtualbox.conf
+  - exec_in: |
+      guest_version=$(pacman -Q virtualbox-guest-dkms | awk '{ print $2 }' | cut -d'-' -f1)
+      kernel_version="$(pacman -Q linux | awk '{ print $2 }')-ARCH"
+  - exec_in: dkms install "vboxguest/$guest_version" -k "$kernel_version/x86_64"
+  - exec_in: systemctl enable dkms.service
+  - exec_in: systemctl enable vboxservice.service

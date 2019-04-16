@@ -1,0 +1,7 @@
+# This disables kdump
+# To enabled, it needs:
+# - crashkernel=auto or a memory size in the kernel command line (grub)
+# - /boot/initramfs-XXX.x86_64kdump.img to be generated (does not work in kameloen qemu VM.
+# https://access.redhat.com/documentation/fr-fr/red_hat_enterprise_linux/7/html/kernel_crash_dump_guide/sect-memory-requirements
+- disable_kdump_service:
+  - exec_in: systemctl disable kdump

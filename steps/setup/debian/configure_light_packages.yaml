@@ -1,0 +1,12 @@
+- enable_lighten: false
+
+- lighten_packages:
+  - exec_in: |
+      if [ $${enable_lighten} = true ]; then
+        mkdir -p /etc/dpkg/dpkg.conf.d
+        echo 'path-exclude=/usr/share/locale/*' >> /etc/dpkg/dpkg.conf.d/01_lighten
+        echo 'path-exclude=/usr/share/man/*' >> /etc/dpkg/dpkg.conf.d/01_lighten
+        echo 'path-exclude=/usr/share/doc/*' >> /etc/dpkg/dpkg.conf.d/01_lighten
+        mkdir -p /etc/apt/apt.conf.d
+        echo 'APT::Install-Recommends "0" ; APT::Install-Suggests "0" ; ' > /etc/apt/apt.conf.d/01_lighten
+      fi

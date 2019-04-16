@@ -1,0 +1,34 @@
+#==============================================================================
+# vim: softtabstop=2 shiftwidth=2 expandtab fenc=utf-8 cc=81 tw=80
+#==============================================================================
+#
+# DESCRIPTION: Archlinux generic recipe from scratch
+#
+#==============================================================================
+---
+extend: base.yaml
+
+# Global variables use by Kameleon engine and the steps
+global:
+  distrib: archlinux
+
+  include_steps:
+    - $${distrib}
+
+  mirror_url: http://archlinux.polymorf.fr
+  iso_filename: debian-jessie-$${iso_arch}-live.iso
+  iso_url: http://kameleon.imag.fr/iso/$${iso_filename}
+  iso_path: $${kameleon_cwd}/$${iso_filename}
+
+  autoinstall_script_path: $${kameleon_data_dir}/$${distrib}-autoinstall.sh
+  bootstrap_packages: base mkinitcpio dhcpcd linux systemd-sysvcompat iputils net-tools syslinux openssh vim
+  boot_timeout: 15
+
+bootstrap:
+  - "@base"
+
+setup:
+  - "@base"
+
+export:
+  - "@base"

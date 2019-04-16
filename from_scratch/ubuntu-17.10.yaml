@@ -1,0 +1,23 @@
+#==============================================================================
+# vim: softtabstop=2 shiftwidth=2 expandtab fenc=utf-8 cc=81 tw=80
+#==============================================================================
+#
+# DESCRIPTION: Ubuntu 17.10 (Artful) recipe using the netinstall mechanism
+#
+#==============================================================================
+---
+extend: ubuntu-base.yaml
+# Global variables use by Kameleon engine and the steps
+global:
+  # Distribution
+  release: artful
+  release_number: 17.10
+
+bootstrap:
+  - "@base"
+
+setup:
+  - "@base"
+
+export:
+  - "@base"
