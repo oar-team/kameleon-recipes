@@ -13,8 +13,6 @@ global:
   distrib: debian
   release: buster
   release_number: 10
-  # hardcoded alpha iso for now
-  iso_url: http://cdimage.debian.org/cdimage/buster_di_alpha5/amd64/iso-cd/debian-buster-DI-alpha5-amd64-netinst.iso
 
 bootstrap:
   - "@base"
