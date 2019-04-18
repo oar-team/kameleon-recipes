@@ -1,6 +1,0 @@
-- update_apt_keys:
-  - exec_in: apt-get update --allow-unauthenticated
-  - exec_in: apt-get -y --allow-unauthenticated install debian-archive-keyring
-  - exec_in: apt-get update --allow-unauthenticated
-  - exec_in: apt-key net-update || true
-  - exec_in: apt-get update --allow-unauthenticated

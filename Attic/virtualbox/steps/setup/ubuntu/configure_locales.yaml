@@ -1,3 +1,0 @@
-- conf_locales:
-    - exec_in: locale-gen en_US en_US.UTF-8
-    - exec_in: dpkg-reconfigure locales

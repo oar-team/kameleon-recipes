@@ -1,7 +1,0 @@
-# Software Install
-- enable_updates:
-  - append_in:
-    - /etc/apt/sources.list
-    - |
-      deb $${repository} $${release}-updates main universe multiverse
-

@@ -1,2 +1,0 @@
-- fix_lvm2_backup:
-  - exec_in: rm -rf /etc/lvm/ && update-initramfs -u

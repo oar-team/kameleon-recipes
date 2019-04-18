@@ -1,4 +1,0 @@
-
-- do_upgrade:
-  - exec_in: pacman -Syy --noconfirm --force
-  - exec_in: pacman -Su --noconfirm --force
