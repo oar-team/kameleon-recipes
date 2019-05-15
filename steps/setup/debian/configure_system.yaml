@@ -19,3 +19,8 @@
   - write_in:
     - /etc/initramfs-tools/conf.d/resume
     - RESUME=none
+
+- configure_GRUB:
+  - exec_in: sed -i 's|^\(GRUB_CMDLINE_LINUX=\).*|\1"console=tty0 console=ttyS0,115200"|' /etc/default/grub
+  - exec_in: update-grub
+
