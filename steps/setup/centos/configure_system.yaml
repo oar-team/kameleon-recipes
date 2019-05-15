@@ -1,5 +1,6 @@
 # System configuration
-#
+- GRUB_CMDLINE_LINUX: ""
+
 # This will set the locals and the timezone
 - set_locales:
   # uncomment the locales
@@ -68,3 +69,7 @@
       chmod 755 /etc/kernel/postinst.d/01-create-symlinks
 - force_create_kernel_symlinks:
   - exec_in: /etc/kernel/postinst.d/01-create-symlinks
+
+- configure_GRUB:
+  - exec_in: sed -i 's|^\(GRUB_CMDLINE_LINUX=\).*|\1"$${GRUB_CMDLINE_LINUX}"|' /etc/default/grub
+  - exec_in: grub2-mkconfig -o "$(readlink -e /etc/grub2.cfg)"
