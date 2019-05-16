@@ -1,4 +1,6 @@
-# # System Config
+# System Config
+- GRUB_CMDLINE_LINUX: ""
+
 - configure_locales:
   # set locales programtically, based on http://linux.livejournal.com/1880366.html
   - exec_in: |
@@ -21,6 +23,6 @@
     - RESUME=none
 
 - configure_GRUB:
-  - exec_in: sed -i 's|^\(GRUB_CMDLINE_LINUX=\).*|\1"console=tty0 console=ttyS0,115200"|' /etc/default/grub
+  - exec_in: sed -i 's|^\(GRUB_CMDLINE_LINUX=\).*|\1"$${GRUB_CMDLINE_LINUX}"|' /etc/default/grub
   - exec_in: update-grub
 

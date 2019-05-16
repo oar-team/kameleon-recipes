@@ -23,7 +23,3 @@
   - on_setup_clean:
     - exec_in: rm -f /boot/initramfs*rescue*
     - exec_in: rm -f /boot/vmlinuz*rescue*
-
-- clean_default_loader:
-  - on_setup_clean:
-    - exec_in: find /boot -type d ! -path /boot ! -path /boot/extlinux -print0 | xargs -0 rm -rf --
