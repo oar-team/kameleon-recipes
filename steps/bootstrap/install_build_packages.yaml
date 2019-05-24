@@ -1,6 +1,10 @@
 - apt_install:
+  # Add jessie backports, see workaround explanation: https://unix.stackexchange.com/questions/508724/failed-to-fetch-jessie-backports-repository/508840#508840
   - append_out:
     - /etc/apt/sources.list
-    - deb http://ftp.fr.debian.org/debian/ jessie-backports main
+    - deb http://archive.debian.org/debian jessie-backports main
+  - write_out:
+    - /etc/apt/apt.conf.d/100disablechecks
+    - Acquire::Check-Valid-Until "false";
   - apt-get_out: update
   - apt-get_out: -t jessie-backports install $${build_packages}
