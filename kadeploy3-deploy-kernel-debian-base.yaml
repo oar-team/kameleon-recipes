@@ -26,6 +26,7 @@ global:
   net_packages: ifupdown ntpdate isc-dhcp-client openssh-client openssh-server taktuk netcat
   disk_packages: tar bzip2 xz-utils hdparm parted dosfstools ntfs-3g aufs-tools
   ruby_packages: ruby ruby-net-ssh ruby-net-ssh-multi ruby-daemons
+  ruby_packages_bpo:
   to_remove_packages:
   target_directory: /grid5000/kadeploy-kernels
   # xz is greedy in memory
@@ -153,6 +154,9 @@ setup:
       - exec_in: |
           echo "Installing $${system_packages} $${net_packages} $${disk_packages} $${ruby_packages}"
           apt-get install -y --force-yes $${firmware_packages} $${system_packages} $${net_packages} $${disk_packages} $${ruby_packages}
+          if [ "$${use_backports}" == "yes" -a -n "$${ruby_packages_bpo}" ]; then
+            apt-get install -y --force-yes -t $${release}-backports $${ruby_packages_bpo}
+          fi
     - fix_ntp:
       - exec_in: sed -i -e 's/\(NTPSERVERS=\).*/\1="ntp1.grid5000.fr ntp2.grid5000.fr"/;s/\(NTPDATE_USE_NTP_CONF=\).*/\1=no/' /etc/default/ntpdate
     - remove_some_packages:
