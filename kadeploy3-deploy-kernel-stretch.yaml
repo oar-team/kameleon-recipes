@@ -11,7 +11,7 @@ extend: kadeploy3-deploy-kernel-debian-base.yaml
 global:
   release: stretch
   bootstrap_packages: initramfs-tools busybox gnupg dirmngr
-  ruby_packages_bpo: ruby-psych
+  ruby_packages_bpo:
   to_remove_packages: wget libpsl5
 
 bootstrap:
