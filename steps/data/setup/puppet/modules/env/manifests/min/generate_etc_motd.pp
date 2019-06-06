@@ -1,9 +1,15 @@
 class env::min::generate_etc_motd {
 
-  if "${::lsbdistcodename}" == "stretch" {
-    $userdistribname = "debian9"
-  } else {
-    $userdistribname = "${::lsbdistcodename}"
+  case "${::lsbdistcodename}" {
+    'buster': {
+      $userdistribname = "debian10"
+    }
+    'stretch': {
+      $userdistribname = "debian9"
+    }
+    default: {
+      $userdistribname = "${::lsbdistcodename}"
+    }
   }
 
   file {
