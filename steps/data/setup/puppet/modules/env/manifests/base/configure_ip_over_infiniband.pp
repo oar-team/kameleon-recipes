@@ -31,13 +31,6 @@ class env::base::configure_ip_over_infiniband (){
       mode     => '0644',
       source   => 'puppet:///modules/env/base/infiniband/openibd.service',
       require  => Package[$infiniband_packages];
-    '/etc/infiniband/ifcfg-ib0':
-      ensure   => file,
-      owner    => root,
-      group    => root,
-      mode     => '0644',
-      source   => 'puppet:///modules/env/base/infiniband/ifcfg-ib0',
-      require  => Package[$infiniband_packages];
    '/lib/udev/rules.d/90-ib.rules':
       ensure  => present,
       owner   => root,
