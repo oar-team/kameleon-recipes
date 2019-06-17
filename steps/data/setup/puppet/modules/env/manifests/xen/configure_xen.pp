@@ -23,24 +23,39 @@ class env::xen::configure_xen () {
             before   => Exec['create_example_domU'];
         }
       }
-      'stretch' : {
-        $hypervisor = '/boot/xen-4.8-amd64.gz'
-        file {
-          '/etc/xen/xend-config.sxp.puppet-bak':
-            ensure   => file,
-            owner    => root,
-            group    => root,
-            mode     => '0644',
-            source   => '/etc/xen/xend-config.sxp',
-            require  => Package['xen-utils'];
+      default : {
+
+        case "${::lsbdistcodename}" {
+          'stretch' : {
+            $hypervisor = '/boot/xen-4.8-amd64.gz'
+            $xen_packages = [ 'xen-utils', 'debootstrap', 'xen-tools', 'sysfsutils', 'xen-linux-system-amd64' ]
+            file {
+              '/etc/xen/xend-config.sxp.puppet-bak':
+                ensure   => file,
+                owner    => root,
+                group    => root,
+                mode     => '0644',
+                source   => '/etc/xen/xend-config.sxp',
+                require  => Package['xen-utils'];
+            }
+
+            file_line {
+              '/etc/xen/xend-config.sxp: enable network bridge':
+                path     => '/etc/xen/xend-config.sxp',
+                line     => '(network-script network-bridge)',
+                match    => '^#\ \(network-script\ network-bridge\)',
+                require  => [ Package['xen-utils'], File['/etc/xen/xend-config.sxp.puppet-bak'] ],
+                before   => Exec['create_example_domU'];
+            }
+          }
+
+          'buster' : {
+            $hypervisor = '/boot/xen-4.11-amd64.gz'
+            $xen_packages = [ 'xen-utils', 'debootstrap', 'xen-tools', 'sysfsutils', 'xen-system-amd64' ]
+          }
         }
+        
         file_line {
-          '/etc/xen/xend-config.sxp: enable network bridge':
-            path     => '/etc/xen/xend-config.sxp',
-            line     => '(network-script network-bridge)',
-            match    => '^#\ \(network-script\ network-bridge\)',
-            require  => [ Package['xen-utils'], File['/etc/xen/xend-config.sxp.puppet-bak'] ],
-            before   => Exec['create_example_domU'];
           '/etc/xen-tools/xen-tools.conf: change dir':
             path     => '/etc/xen-tools/xen-tools.conf',
             line     => 'dir = /opt/xen',
@@ -100,7 +115,6 @@ class env::xen::configure_xen () {
     }
   }
 
-  $xen_packages = [ 'xen-utils', 'debootstrap', 'xen-tools', 'sysfsutils', 'xen-linux-system-amd64' ]
   package {
     $xen_packages :
       ensure   => installed;
