@@ -1,28 +1,43 @@
 class env::min::install_and_configure_ssh {
 
-  package {
-    'ssh server':
-      name => $operatingsystem ? {
-        'debian'           => 'openssh-server',
-        'ubuntu'           => 'openssh-server',
-        'centos'           => 'sshd'
-      },
-      ensure => installed;
-    'ssh client':
-      name => $operatingsystem ? {
-        'debian'           => 'openssh-client',
-        'ubuntu'           => 'openssh-client',
-        'centos'           => 'openssh-client'
+  case $operatingsystem {
+    'Debian','Ubuntu': {
+
+      package {
+        'ssh server':
+          name => 'openssh-server',
+          ensure => present;
       }
+
+      service {
+        'ssh':
+          name   => 'ssh',
+          ensure => running;
+      }
+
+    }
+
+    'Centos': {
+
+      package {
+        'ssh server':
+          name => 'sshd',
+          ensure => present;
+      }
+
+      service {
+        'ssh':
+          name => 'sshd',
+          ensure => running;
+      }
+
+    }
   }
-  service {
-    'ssh':
-      name => $operatingsystem ? {
-        'debian'           => 'ssh',
-        'ubuntu'           => 'ssh',
-        'centos'           => 'sshd'
-      },
-      ensure => running;
+
+  package {
+    'ssh client':
+      name => 'openssh-client',
+      ensure => present;
   }
 
   augeas {
