@@ -11,20 +11,23 @@ class env::big::install_xeon_phi_requirements ($enable = false) {
           require  => File['/usr/lib64'];
       }
 
-      if "${::lsbdistcodename}" == "stretch" {
-        file{ '/usr/lib64':
-          ensure => directory;
-        '/etc/systemd/system/mpss.service':
-          mode => "644",
-          require => Package[$installed_packages];
+      case "${::lsbdistcodename}" {
+        "stretch", "buster" {
+          file{ '/usr/lib64':
+            ensure => directory;
+          '/etc/systemd/system/mpss.service':
+            mode => "644",
+            require => Package[$installed_packages];
+          }
         }
-      } else {
-        file{ '/usr/lib64':
-          ensure => link,
-          target => '/usr/lib';
-        '/etc/systemd/system/mpss.service':
-          mode => "644",
-          require => Package[$installed_packages];
+        "jessie" {
+          file{ '/usr/lib64':
+            ensure => link,
+            target => '/usr/lib';
+          '/etc/systemd/system/mpss.service':
+            mode => "644",
+            require => Package[$installed_packages];
+          }
         }
       }
     }

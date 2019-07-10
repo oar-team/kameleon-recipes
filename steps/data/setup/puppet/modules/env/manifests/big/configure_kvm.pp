@@ -1,11 +1,17 @@
 class env::big::configure_kvm () {
 
-  if "${::lsbdistcodename}" == "stretch" {
-    $packages = [ 'kvm', 'uml-utilities', 'virtinst',  'genisoimage', 'libvirt-daemon-system', 'libvirt-dev', 'libvirt-clients', 'python-libvirt' ]
-  } else {
-    # If sudo is used somewhere else, he shoud be placed in 'packages' instead of 'kvm' class.
-    $packages = [ 'kvm', 'uml-utilities', 'virtinst',  'genisoimage', 'libvirt-bin', 'python-libvirt' ]
-    # WARNING! Due to bug #5257, this should NOT work on wheezy environments. Cf old chef recipe setup/recipes/kvm to see a workaround
+  case "${::lsbdistcodename}" {
+    "stretch" : {
+      $packages = [ 'kvm', 'uml-utilities', 'virtinst',  'genisoimage', 'libvirt-daemon-system', 'libvirt-dev', 'libvirt-clients', 'python-libvirt' ]
+    }
+    "buster" : {
+      $packages = [ 'qemu-kvm', 'uml-utilities', 'virtinst',  'genisoimage', 'libvirt-daemon-system', 'libvirt-dev', 'libvirt-clients', 'python-libvirt' ]
+    }
+    default : {
+      # If sudo is used somewhere else, he shoud be placed in 'packages' instead of 'kvm' class.
+      $packages = [ 'kvm', 'uml-utilities', 'virtinst',  'genisoimage', 'libvirt-bin', 'python-libvirt' ]
+      # WARNING! Due to bug #5257, this should NOT work on wheezy environments. Cf old chef recipe setup/recipes/kvm to see a workaround
+    }
   }
 
   package {
@@ -37,7 +43,8 @@ class env::big::configure_kvm () {
       ensure    => present,
       owner     => root,
       group     => root,
-      mode      => '4755';
+      mode      => '4755',
+      require   => Env::Common::G5kpackages['g5k-meta-packages'];
     '/etc/qemu':
       ensure    => directory,
       owner     => root,
@@ -59,9 +66,9 @@ class env::big::configure_kvm () {
   }
 
   Exec{
-  'disable uml-utilities service':
-  command => "/usr/sbin/update-rc.d uml-utilities disable",
-  require => Package['uml-utilities'];
+    'disable uml-utilities service':
+      command => "/usr/sbin/update-rc.d uml-utilities disable",
+      require => Package['uml-utilities'];
   }
 
   package {
@@ -70,8 +77,8 @@ class env::big::configure_kvm () {
   }
 
   file_line { 'kvm_etc_profile_createpath':
-     path => '/etc/profile',
-     line => 'mkdir -p /tmp/$USER-runtime-dir';
+    path => '/etc/profile',
+    line => 'mkdir -p /tmp/$USER-runtime-dir';
   }
 
   file_line { 'kvm_etc_profile_path':
