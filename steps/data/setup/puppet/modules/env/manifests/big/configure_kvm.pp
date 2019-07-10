@@ -1,21 +1,7 @@
 class env::big::configure_kvm () {
 
-  case "${::lsbdistcodename}" {
-    "stretch" : {
-      $packages = [ 'kvm', 'uml-utilities', 'virtinst',  'genisoimage', 'libvirt-daemon-system', 'libvirt-dev', 'libvirt-clients', 'python-libvirt' ]
-    }
-    "buster" : {
-      $packages = [ 'qemu-kvm', 'uml-utilities', 'virtinst',  'genisoimage', 'libvirt-daemon-system', 'libvirt-dev', 'libvirt-clients', 'python-libvirt' ]
-    }
-    default : {
-      # If sudo is used somewhere else, he shoud be placed in 'packages' instead of 'kvm' class.
-      $packages = [ 'kvm', 'uml-utilities', 'virtinst',  'genisoimage', 'libvirt-bin', 'python-libvirt' ]
-      # WARNING! Due to bug #5257, this should NOT work on wheezy environments. Cf old chef recipe setup/recipes/kvm to see a workaround
-    }
-  }
-
   package {
-    $packages:
+    'uml-utilities':
       ensure    => installed;
   }
 

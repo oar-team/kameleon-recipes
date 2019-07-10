@@ -10,10 +10,4 @@ class env::big::configure_sshfs {
       group   => root,
       source  => "puppet:///modules/env/base/sshfs/40-fuse.rules";
   }
-
-
-  package {
-    'sshfs':
-      ensure    => installed;
-  }
 }
