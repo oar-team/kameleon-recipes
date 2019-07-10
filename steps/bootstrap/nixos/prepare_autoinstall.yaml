@@ -2,6 +2,7 @@
   - exec_local: mkdir -p $${http_directory}
   - exec_local: cp $${autoinstall_script_path} $${http_directory}/autoinstall.sh
   - exec_local: cp $${nix_configuration} $${http_directory}/configuration.nix
+  - exec_local: cp $${nix_hardware_configuration} $${http_directory}/hardware-configuration.nix
 
 - configure_proxy:
   - exec_local: |
@@ -13,9 +14,13 @@
   - exec_local: |
         sed -i s'|export PASSWD=\(.*\)|export PASSWD=$${root_password}|'g $${http_directory}/autoinstall.sh
 
-- write_boot_command:
-  - write_local:
-    - $${kameleon_cwd}/boot_command
-    - >
-      curl -sSL http://$${local_ip}:$${http_port}/configuration.nix <gt> /tmp/configuration.nix<kp_enter>
-      curl -sSL http://$${local_ip}:$${http_port}/autoinstall.sh | bash<kp_enter>
+#- write_boot_command:
+#  - write_local:
+#    - $${kameleon_cwd}/boot_command
+#    - >
+#      curl -sSL http://$${local_ip}:$HTTP_PORT/configuration.nix <gt> /tmp/configuration.nix<kp_enter>
+#      curl -sSL http://$${local_ip}:$HTTP_PORT/configuration.nix <gt> /tmp/hardware-configuration.nix<kp_enter>
+#      curl -sSL http://$${local_ip}:$HTTP_PORT/autoinstall.sh | bash<kp_enter>      
+#      curl -sSL http://$${local_ip}:$${http_port}/configuration.nix <gt> /tmp/configuration.nix<kp_enter>
+#      curl -sSL http://$${local_ip}:$${http_port}/autoinstall.sh | bash<kp_enter>
+

@@ -1,0 +1,2 @@
+curl -sSL http://%LOCAL_IP%:%HTTP_PORT%/configuration.nix <gt> /tmp/configuration.nix<kp_enter>curl -sSL http://%LOCAL_IP%:%HTTP_PORT%/hardware-configuration.nix <gt> /tmp/hardware-configuration.nix <kp_enter>curl -sSL http://%LOCAL_IP%:%HTTP_PORT%/autoinstall.sh | bash<kp_enter>
+
