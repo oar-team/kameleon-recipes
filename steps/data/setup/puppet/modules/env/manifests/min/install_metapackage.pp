@@ -4,11 +4,17 @@ class env::min::install_metapackage ( $variant ) {
 
   case $operatingsystem {
     'Debian','Ubuntu': {
-      if "${::lsbdistcodename}" == "stretch" {
-        $g5kmetapackages = "g5k-meta-packages-debian9-$variant"
-        } else {
-          $g5kmetapackages = "g5k-meta-packages-${::lsbdistcodename}-$variant"
+      case "${::lsbdistcodename}" {
+        'buster': {
+          $g5kmetapackages = "g5k-meta-packages-debian10-${variant}"
         }
+        'stretch': {
+          $g5kmetapackages = "g5k-meta-packages-debian9-${variant}"
+        }
+        default: {
+          $g5kmetapackages = "g5k-meta-packages-${::lsbdistcodename}-${variant}"
+        }
+      }
     }
     default: {
       err "${operatingsystem} not supported."

@@ -2,17 +2,15 @@
 # vim: softtabstop=2 shiftwidth=2 expandtab fenc=utf-8 cc=81 tw=80
 #==============================================================================
 #
-# DESCRIPTION: Debian 10 (Buster) recipe using the netinstall mechanism
+# DESCRIPTION: Debian buster (10) x64 base Grid'5000 environment
 #
 #==============================================================================
 ---
-extend: debian-base.yaml
-# Global variables use by Kameleon engine and the steps
+extend: ./debian10-x64-common.yaml
+
 global:
-  # Distribution
-  distrib: debian
-  release: buster
-  release_number: 10
+  # Grid'5000 environment variant
+  g5k_variant: base
 
 bootstrap:
   - "@base"

@@ -1,0 +1,49 @@
+#==============================================================================
+# vim: softtabstop=2 shiftwidth=2 expandtab fenc=utf-8 cc=81 tw=80
+#==============================================================================
+#
+# DESCRIPTION: Debian buster (10) x64 common Grid'5000 environment
+#
+#==============================================================================
+---
+extend: from_scratch/debian-buster.yaml
+
+global:
+  # Export format to generate
+  appliance_formats: qcow2 tar.gz
+  # Output base filename
+  output: "$${kameleon_cwd}/$${kameleon_recipe_name}"
+  # Grid'5000 environment variant
+  g5k_variant: common
+  # Grid'5000 environment version
+  g5k_version: 2019041217
+  # Grid'5000 kadeploy environment parameters
+  g5k_tgz_path: server:///path/to/your/image
+  g5k_postinst_path: server:///grid5000/postinstalls/g5k-postinstall.tgz
+  g5k_postinst_script: g5k-postinstall --net debian
+  g5k_kernel_params: ""
+  deb_backports: true
+  # locales
+  locales: POSIX C en_US.UTF8
+  lang: en_US.UTF8
+  timezone: Europe/Paris
+  # FIXME : Use stretch version of puppet while waiting the buster one
+  force_puppet_debian_version: stretch
+
+
+bootstrap:
+  - "@base"
+
+setup:
+  - "@base"
+  - configure_system
+  - configure_apt_sources
+  - clean_udev_dir
+  - setup_orchestrator
+  - run_orchestrator
+  - clean_system
+
+export:
+  - "@base"
+  - cloud_init_qcow2
+  - export_g5k
