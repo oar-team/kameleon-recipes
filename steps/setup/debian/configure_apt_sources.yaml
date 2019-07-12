@@ -10,14 +10,25 @@
       deb-src $${deb_mirror_uri} $${release} $${deb_components}
   - test:
     - exec_in: test "$${release}" != "sid"
-    - append_in:
-      - /etc/apt/sources.list
-      - |
-        deb $${deb_mirror_uri}  $${release}-updates $${deb_components}
-        deb-src $${deb_mirror_uri} $${release}-updates $${deb_components}
-        
-        deb http://security.debian.org/ $${release}/updates $${deb_components}
-        deb-src http://security.debian.org/ $${release}/updates $${deb_components}
+    - group:
+      - append_in:
+        - /etc/apt/sources.list
+        - |
+          deb $${deb_mirror_uri}  $${release}-updates $${deb_components}
+          deb-src $${deb_mirror_uri} $${release}-updates $${deb_components}
+      - test:
+        # cf. https://lists.debian.org/debian-devel-announce/2019/07/msg00004.html
+        - exec_in: test "$${release}" != "testing"
+        - append_in:
+          - /etc/apt/sources.list
+          - |
+            deb http://security.debian.org/ $${release}/updates $${deb_components}
+            deb-src http://security.debian.org/ $${release}/updates $${deb_components}
+        - append_in:
+          - /etc/apt/sources.list
+          - |
+            deb http://security.debian.org/ $${release}-security $${deb_components}
+            deb-src http://security.debian.org/ $${release}-security $${deb_components}
 
 - add_backports:
   - test:
