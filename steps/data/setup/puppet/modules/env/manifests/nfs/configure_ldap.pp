@@ -21,12 +21,12 @@ class env::nfs::configure_ldap () {
       owner    => root,
       group    => root,
       mode     => '0755';
-    '/etc/ldap/certificates/ca.grid5000.fr.cert':
+    '/etc/ldap/certificates/ca2019.grid5000.fr.cert':
       ensure   => file,
       owner    => root,
       group    => root,
       mode     => '0644',
-      source   => 'puppet:///modules/env/nfs/ldap/ca.grid5000.fr.cert',
+      source   => 'puppet:///modules/env/nfs/ldap/ca2019.grid5000.fr.cert',
       require  => File['/etc/ldap/certificates'];
     '/etc/nsswitch.conf':
       ensure   => file,
