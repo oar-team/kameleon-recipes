@@ -18,7 +18,8 @@ class env::min ( $variant = "min", $parent_parameters = {} ) {
       err "${operatingsystem} not suported."
     }
   }
-
+  # Install intel microcode
+  class { 'env::min::install_intel_microcode': }
   # ssh
   class { 'env::min::install_and_configure_ssh': }
   # setup
