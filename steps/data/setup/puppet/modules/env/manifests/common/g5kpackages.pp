@@ -7,7 +7,8 @@
 
 define env::common::g5kpackages (
   Variant[Array, String] $packages = $name,
-  String $ensure = installed
+  String $ensure = installed,
+  String $release = ''
 ) {
   include apt
 
@@ -17,8 +18,8 @@ define env::common::g5kpackages (
       'content' => file('env/min/apt/grid5000-archive-key.asc')
     },
     comment  => "Grid5000 repository for ${name}",
-    location => "http://packages.grid5000.fr/deb/${name}/",
-    release  => "/",
+    location => "http://packages.grid5000.fr/deb/${name}/${release}",
+    release  => '/',
     repos    => '',
     include  => { 'deb' => true, 'src' => false }
   }

@@ -14,7 +14,8 @@ class env::std::install_g5kchecks {
 
         env::common::g5kpackages {
           'g5k-checks':
-            ensure => $::env::common::software_versions::g5k_checks;
+            ensure  => $::env::common::software_versions::g5k_checks,
+            release => "${::lsbdistcodename}";
         }
 
         file {
