@@ -38,6 +38,6 @@ class env::base ( $variant = "base", $parent_parameters = {} ){
   class { 'env::base::unlimited_memlock_for_infiniband': }
   # Omni-Path
   class { 'env::base::configure_omnipath': }
-  #Add ca.grid5000.fr certificate
+  #Add ca2019.grid5000.fr certificate
   class { 'env::base::add_ca_grid5000': }
 }
