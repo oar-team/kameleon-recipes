@@ -34,7 +34,7 @@ class env::std::configure_oar_client {
             require  => Exec["retrieve_liboar"];
         }
       }
-      'stretch' : {
+      'stretch', 'buster' : {
         # Can specify oar client version below
         $oar_version       = "2.5.8~rc8-1~bpo9+1";
         $oar_repos         = "2.5/debian/";
