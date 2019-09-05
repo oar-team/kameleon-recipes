@@ -40,4 +40,6 @@ class env::base ( $variant = "base", $parent_parameters = {} ){
   class { 'env::base::configure_omnipath': }
   #Add ca2019.grid5000.fr certificate
   class { 'env::base::add_ca_grid5000': }
+  #Dhclient conf
+  class { 'env::base::configure_dhclient': }
 }
