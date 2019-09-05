@@ -1,10 +1,6 @@
-# Install OpenManage Server Administrator tools (OMSA)
+# Recipe from grid5000-puppet
+# Don't forget to update both repositories when modifying something
 #
-# Those tools are used by g5k-checks
-#
-# See also:
-# * Bug #7218
-# * https://www.grid5000.fr/mediawiki/index.php/TechTeam:BIOS_Configuration
 
 class { 'apt':
   update => {
@@ -13,78 +9,75 @@ class { 'apt':
 }
 
 class env::std::dell (
-  String $key = $env::std::dell::params::key,
-  String $src_location = $env::std::dell::params::src_location,
-  String $src_repos = $env::std::dell::params::src_repos,
-  Array $packages = $env::std::dell::params::packages,
+  Array $packages_names = $env::std::dell::params::packages_names,
+  String $service_name = $env::std::dell::params::service_name,
+  String $service_status = $env::std::dell::params::service_status
 ) inherits env::std::dell::params {
 
   include apt
 
-    case "${::lsbdistcodename}" {
-    "buster" : {
+  $_key = '1285491434D8786F'
 
-      apt::source {
-        'dell':
-          comment  => 'Dell repository for OpenManage Server Administrator tools',
-          location => $src_location,
-          release  => "stretch", # FIXME : mettre release sur buster quand ce sera supporté
-          repos    => $src_repos,
-          key      => {
-            'id'      => $key,
-            'content' => template('env/std/dell/linux.dell.com.key.erb'),
-          },
-          include  => {
-            'deb' => true,
-            'src' => false
-          },
-          notify => Exec['apt_update']
-      }
-
-      # Using enable => false doesn't seem to work, maybe because openipmi use systemd-sysv-generator
-      exec {
-        "disable openipmi service":
-          command => "/lib/systemd/systemd-sysv-install disable openipmi",
-          require => Package[$packages, 'ipmitool'];
-      }
+  case $::lsbdistcodename {
+    'jessie': {
+      $_location = "https://linux.dell.com/repo/community/debian/"
+      $_release = "${::lsbdistcodename}"
+      $_repos = "openmanage"
     }
-
-    default : {
-
-      apt::source {
-        'dell':
-          comment  => 'Dell repository for OpenManage Server Administrator tools',
-          location => $src_location,
-          release  => "${::lsbdistcodename}",
-          repos    => $src_repos,
-          key      => {
-            'id'      => $key,
-            'content' => template('env/std/dell/linux.dell.com.key.erb'),
-          },
-          include  => {
-            'deb' => true,
-            'src' => false
-          },
-          notify => Exec['apt_update']
-      }
+    'stretch': {
+      $_location = "https://linux.dell.com/repo/community/openmanage/910/${::lsbdistcodename}"
+      $_release = "${::lsbdistcodename}"
+      $_repos = "main"
     }
+    'buster': {
+      # FIXME : mettre release sur buster quand ce sera supporté
+      $_location = "https://linux.dell.com/repo/community/openmanage/910/stretch"
+      $_release = "stretch"
+      $_repos = "main"
+    }
+  }
+
+  apt::source {
+    'dell':
+      comment  => 'Dell repository for OpenManage Server Administrator tools',
+      location => $_location,
+      release  => $_release,
+      repos    => $_repos,
+      key      => {
+        'id'      => $_key,
+        'content' => template('env/std/dell/linux.dell.com.key.erb'),
+      },
+      include  => {
+        'deb' => true,
+        'src' => false
+      },
+      notify  => Exec['apt_update'];
   }
 
   package {
-    $packages:
-      ensure => present,
+    $packages_names:
+      ensure  => present,
       require => [
         Apt::Source['dell'],
-        Exec['apt_update']
-      ]
+        Exec['apt_update'],
+      ];
   }
 
   service {
-    'dataeng':
-      enable => true,
-      require => Package[$packages]
+    'dell OMSA':
+      enable  => true,
+      name    => $service_name,
+      require => Package[$packages_names];
   }
 
+  if $::lsbdistcodename == ['buster'] {
+    # Using enable => false doesn't seem to work, maybe because openipmi use systemd-sysv-generator
+    exec {
+      "disable openipmi service":
+        command => "/lib/systemd/systemd-sysv-install disable openipmi",
+        require => Package[$packages, 'ipmitool'];
+    }
+  }
   # Fix bug 8048 and 8975
   file {
     '/etc/systemd/system/dataeng.service.d':
