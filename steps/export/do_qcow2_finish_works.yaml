@@ -1,5 +1,4 @@
-# Install cloud_init only in qcow2 output file
-
+# Install cloud_init in qcow2 output file (tarball must be exported beforehand, in order to not include cloud_init 
 - install_cloud_init:
   - exec_local: |
       echo "Install cloud_init in qcow2"
@@ -8,3 +7,9 @@
       echo "Configure datasource and timeout for cloud_init"
       virt-customize -a $${output}.qcow2 --run-command 'printf "datasource_list: [  NoCloud, Ec2, None ]\n" > /etc/cloud/cloud.cfg.d/91-set-datasources.cfg'
       virt-customize -a $${output}.qcow2 --run-command 'printf "datasource:\n  Ec2:\n    timeout: 3\n    max_wait: 5\n" > /etc/cloud/cloud.cfg.d/92-set-ec2-timeout.cfg'
+
+- sparsify_qcow2_image:
+  - exec_local: |
+      echo "Compress and reduce qcow2 size"
+      virt-sparsify --compress $${output}.qcow2 $${output}.qcow2.sparsed
+      mv -f $${output}.qcow2.sparsed $${output}.qcow2

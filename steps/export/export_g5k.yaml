@@ -79,11 +79,5 @@
       EOF
       fi
 
-- sparsify_qcow2_image:
-  - exec_local: |
-      echo "Compress and reduce qcow2 size"
-      virt-sparsify --compress $${output}.qcow2 $${output}.qcow2.sparsed
-      mv -f $${output}.qcow2.sparsed $${output}.qcow2
-
 - generate_md5:
   - exec_local: md5sum $${kameleon_recipe_name}.* > $${kameleon_recipe_name}.md5
