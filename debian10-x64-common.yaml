@@ -45,5 +45,5 @@ setup:
 
 export:
   - "@base"
-  - cloud_init_qcow2
+  - do_qcow2_finish_works
   - export_g5k
