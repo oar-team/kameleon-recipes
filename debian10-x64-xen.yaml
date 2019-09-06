@@ -11,6 +11,8 @@ extend: ./debian10-x64-common.yaml
 global:
   # Grid'5000 environment variant
   g5k_variant: xen
+  # No qcow2 for the xen variant
+  appliance_formats: tar.gz
   # Override excluded folder in the final tar.gz (keep dom0 ssh key)
   appliance_tar_excludes: >-
     ./etc/fstab ./root/.bash_history ./root/kameleon_workdir
