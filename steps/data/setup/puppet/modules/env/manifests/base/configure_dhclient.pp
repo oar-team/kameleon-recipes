@@ -11,6 +11,6 @@ class env::base::configure_dhclient () {
     ensure => present,
     path   => '/etc/dhcp/dhclient.conf',
     line   => 'timeout 90; # slow clusters can take more than 60s (bug #10716, grisou)',
-    match  => '.*timeout .*',
+    match  => '^(#)?timeout .*',
   }
 }
