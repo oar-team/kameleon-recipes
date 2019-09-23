@@ -70,7 +70,7 @@ class env::std::dell (
       require => Package[$packages_names];
   }
 
-  if $::lsbdistcodename == ['buster'] {
+  if $::lsbdistcodename == 'buster' {
     # Using enable => false doesn't seem to work, maybe because openipmi use systemd-sysv-generator
     exec {
       "disable openipmi service":
