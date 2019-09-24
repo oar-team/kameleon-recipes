@@ -18,6 +18,8 @@ global:
   # -> set on command line using "-g root_authorized_keys:$PWD/steps/data/kadeploy_root_authorized_keys"
   arch_specific_packages: kexec-tools grub-pc
   use_backports: yes
+  security_release: $${release}
+  hwraid_release: $${release}
   #deb_kernel: default
   # -> other option: bpo - e.g. set on command line using "-g deb_kernel:bpo"
   deb_kernel: bpo
@@ -106,7 +108,7 @@ setup:
         - |
           deb $${deb_mirror_uri} $${release} main contrib non-free
           deb $${deb_mirror_uri} $${release}-updates main contrib non-free
-          deb http://security.debian.org/ $${release}/updates main contrib non-free
+          deb http://security.debian.org/ $${security_release}/updates main contrib non-free
       - exec_in: |
           if [ "$${use_backports}" == "yes" ]; then
             echo "deb $${deb_mirror_uri} $${release}-backports main contrib non-free" > /etc/apt/sources.list.d/$${release}-backports.list
@@ -114,7 +116,7 @@ setup:
       - exec_in: |
           if [ "$${deb_arch}" == "amd64" ]; then
             cat <<EOF >/etc/apt/sources.list.d/hwraid.list
-          deb http://hwraid.le-vert.net/debian $${release} main
+          deb http://hwraid.le-vert.net/debian $${hwraid_release} main
           EOF
             apt-key adv --keyserver $${gpg_keyserver} --recv-key 6005210E23B3D3B4
           fi
