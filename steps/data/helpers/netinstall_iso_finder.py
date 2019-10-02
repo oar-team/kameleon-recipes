@@ -63,6 +63,15 @@ def url_find(to_visit_url_set,visited_url_set,found_url_set):
             to_visit_url_set.update(new_url_set)
             return url_find(to_visit_url_set, visited_url_set, found_url_set)
 
+def key_normalize(version_string):
+    """"
+    In order to perform a natural sorting, we normalize the version (X.Y.Z) as a unique integer with the following formula: X*100 + Y*10 + Z
+    For instance, it solves situations where "9.9.0" is greater than "9.9.11"
+    """
+    splitted_string = version_string.split('.')
+    assert(len(splitted_string) == 3)
+    return int(splitted_string[0])*100+int(splitted_string[1])*10+int(splitted_string[2])
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=sys.modules[__name__].__doc__, formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument("distrib", metavar="DISTRIB", help="distribution")
@@ -132,7 +141,7 @@ if __name__ == '__main__':
             logger.info(url)
         if len(found) > 0:
             if (args.distrib.lower() == "debian"):
-                print(sorted(found,key=lambda x:re.sub(r".*/debian-(\d+).(\d+).(\d+)-amd64-netinst\.iso$",r"\1.\2.\3",x),reverse=True)[0])
+                print(sorted(found,key=lambda x:key_normalize(re.sub(r".*/debian-(\d+).(\d+).(\d+)-amd64-netinst\.iso$",r"\1.\2.\3",x)),reverse=True)[0])
             else:
                 print(sorted(found, reverse=False)[0])
         else:
