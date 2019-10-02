@@ -18,7 +18,7 @@ logger = logging.getLogger(__name__)
 
 tar_options = ["--selinux",
                "--xattrs",
-               "--xattrs-include='*'",
+               "--xattrs-include=*",
                "--numeric-owner",
                "--one-file-system"]
 
