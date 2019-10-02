@@ -12,14 +12,10 @@
 
 - import_puppet_recipes:
   - exec_in: mkdir -p $${puppet_build_path}
-  - pipe:
-    - exec_local: tar -cf - -C $${puppet_local_path} .
-    - exec_in: tar xfp - -C $${puppet_build_path}
+  - exec_local: rsync -e "ssh -F $${ssh_config_file}" -r $${puppet_local_path}/ $${kameleon_recipe_name}:$${puppet_build_path}
 - import_hiera:
   - exec_in: mkdir -p $${hiera_path}
-  - pipe:
-    - exec_local: tar -cf - -C $${hiera_local_path} .
-    - exec_in: tar xfp - -C $${hiera_path}
+  - exec_local: rsync -e "ssh -F $${ssh_config_file}" -r $${hiera_local_path}/ $${kameleon_recipe_name}:$${hiera_path}
   - exec_in: $${puppet_path}/puppet config set hiera_config $${hiera_path}/hiera.yaml
 
 # Store G5K environment release information

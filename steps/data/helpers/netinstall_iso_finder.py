@@ -64,6 +64,10 @@ def url_find(to_visit_url_set,visited_url_set,found_url_set):
             return url_find(to_visit_url_set, visited_url_set, found_url_set)
 
 def key_normalize(version_string):
+    """"
+    In order to perform a natural sorting, we normalize the version (X.Y.Z) as a unique integer with the following formula: X*100 + Y*10 + Z
+    For instance, it solves situations where "9.9.0" is greater than "9.9.11"
+    """
     splitted_string = version_string.split('.')
     assert(len(splitted_string) == 3)
     return int(splitted_string[0])*100+int(splitted_string[1])*10+int(splitted_string[2])

@@ -17,7 +17,7 @@ logger = logging.getLogger(__name__)
 tar_formats = ('tar', 'tar.gz', 'tgz', 'tar.bz2', 'tbz', 'tar.xz', 'txz',
                'tar.lzo', 'tzo')
 
-tar_options = ["--selinux", "--xattrs", "--xattrs-include='*'", "--numeric-owner", "--one-file-system"] 
+tar_options = ["--selinux", "--xattrs", "--xattrs-include=*", "--numeric-owner", "--one-file-system"] 
 
 disk_formats = ('qcow', 'qcow2', 'qed', 'vdi', 'raw', 'vmdk')
 
