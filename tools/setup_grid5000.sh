@@ -8,9 +8,11 @@ echo "mdadm   mdadm/initrdstart       string  none" | debconf-set-selections
 # systemtap needs exactly the same kernel version for linux-headers and linux-image-dbg as currently installed.
 # sometimes this requires adding a snapshot.d.o repository to get that version.
 # finding the correct date is not easy. Usually you need to use http://snapshot.debian.org and trial and error.
+
+# echo 'deb [check-valid-until=no] http://snapshot.debian.org/archive/debian-security/20190813T053201Z/ buster/updates main' > /etc/apt/sources.list.d/snapshot-kernel.list
+
 KERNEL=linux-image-$(uname -r)
 VERSION=$(apt-cache policy $KERNEL | grep Installed: | awk '{print $2}')
-echo 'deb [check-valid-until=no] http://snapshot.debian.org/archive/debian-security/20190813T053201Z/ stretch/updates main' > /etc/apt/sources.list.d/snapshot-kernel.list
 apt-get update
 apt-get install -y systemtap linux-image-$(uname -r)-dbg=$VERSION linux-headers-$(uname -r)=$VERSION
 /tmp/environments-recipes/tools/nofsync.stp </dev/null >/dev/null 2>&1 &
