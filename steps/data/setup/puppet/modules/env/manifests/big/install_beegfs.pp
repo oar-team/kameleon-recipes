@@ -41,7 +41,7 @@ class env::big::install_beegfs {
 
       apt::source { 'beegfs':
           location     => 'https://www.beegfs.com/release/beegfs_7_1/',
-          release      => 'deb9', #FIXME : change release to buster when beegfs release it
+          release      => 'stretch', #FIXME : change release to buster when beegfs release it
           repos        => 'non-free',
           architecture => 'amd64',
           key          => {
