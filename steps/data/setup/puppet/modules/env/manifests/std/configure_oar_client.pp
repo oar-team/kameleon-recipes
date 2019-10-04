@@ -3,95 +3,71 @@ class env::std::configure_oar_client {
   $oar_packages = ['oar-common', 'oar-node']
 
   if "$operatingsystem" == "Debian" {
+    # Can specify oar client version below
     case "${::lsbdistcodename}" {
-      'jessie' : {
-        # Installed oar packages from g5k 'mirror'.
-        exec {
-          "retrieve_oar-common":
-            command  => "/usr/bin/wget --no-check-certificate -q http://oar-ftp.imag.fr/oar/2.5/debian/pool/main/o/oar/oar-common_2.5.8~rc8-1~bpo8+1_amd64.deb -O /tmp/oar-common_amd64.deb",
-            creates  => "/tmp/oar-common_amd64.deb";
-          "retrieve_oar-node":
-            command  => "/usr/bin/wget --no-check-certificate -q http://oar-ftp.imag.fr/oar/2.5/debian/pool/main/o/oar/oar-node_2.5.8~rc8-1~bpo8+1_amd64.deb -O /tmp/oar-node_amd64.deb",
-            creates  => "/tmp/oar-node_amd64.deb";
-          "retrieve_liboar":
-            command  => "/usr/bin/wget --no-check-certificate -q http://oar-ftp.imag.fr/oar/2.5/debian/pool/main/o/oar/liboar-perl_2.5.8~rc8-1~bpo8+1_amd64.deb -O /tmp/liboar_amd64.deb"
-        }
-        package {
-          "oar-common":
-            ensure   => installed,
-            provider => dpkg,
-            source   => "/tmp/oar-common_amd64.deb",
-            require  => [Exec["retrieve_oar-common"], Package["liboar"]];
-          "oar-node":
-            ensure   => installed,
-            provider => dpkg,
-            source   => "/tmp/oar-node_amd64.deb",
-            require  => [Exec["retrieve_oar-node"], Package["liboar"]];
-          "liboar":
-            ensure   => installed,
-            provider => dpkg,
-            source   => "/tmp/liboar_amd64.deb",
-            require  => Exec["retrieve_liboar"];
-        }
-      }
-      'stretch', 'buster' : {
-        # Can specify oar client version below
+      'stretch' : {
         $oar_version       = "2.5.8~rc8-1~bpo9+1";
         $oar_repos         = "2.5/debian/";
         $oar_repos_release = "stretch-backports_beta"
-
-        if ($oar_repos == "default") {
-          package {
-            'oar-common':
-              ensure   => $oar_version,
-              require  => Package["liboar-perl"];
-            'oar-node':
-              ensure   => $oar_version,
-              require  => Package["liboar-perl"];
-            'liboar-perl':
-              ensure   => $oar_version;
-          }
-        } else {
-          apt::source {
-            'oar-repo':
-              location => "http://oar-ftp.imag.fr/oar/$oar_repos",
-              release  => "$oar_repos_release",
-              repos    => 'main',
-              notify   => Exec['oar apt update'],
-              require  => Exec["import oar gpg key"],
-          }
-          exec {
-            "import oar gpg key":
-              command => "/usr/bin/wget -q http://oar-ftp.imag.fr/oar/oarmaster.asc -O- | /usr/bin/apt-key add -",
-              unless  => "/usr/bin/apt-key list | /bin/grep oar",
-          }
-          exec {
-            "oar apt update":
-              command => "/usr/bin/apt-get update",
-          }
-          package {
-            'oar-common':
-              ensure          => $oar_version,
-              install_options => ['-t', "$oar_repos_release"],
-              require         => [ Package["liboar-perl"], Apt::Source['oar-repo'] ];
-            'oar-node':
-              ensure          => $oar_version,
-              install_options => ['-t', "$oar_repos_release"],
-              require         => [ Package["liboar-perl"], Apt::Source['oar-repo'] ];
-            'liboar-perl':
-              ensure          => $oar_version,
-              install_options => ['-t', "$oar_repos_release"],
-              require         => Apt::Source['oar-repo'];
-          }
-        }
-        if ($oar_version != "installed") {
-          apt::pin { 'oar client pin':
-            packages => [ 'oar-common', 'oar-node', 'liboar-perl' ],
-            version  => $oar_version,
-            priority => 1001,
-          }
-        }
       }
+      'buster' : {
+        $oar_version       = "2.5.9~g5k2-1~bpo10+1";
+        $oar_repos         = "2.5/debian/";
+        $oar_repos_release = "buster-backports_beta"
+      }
+    }
+  }
+
+  if ($oar_repos == "default") {
+    package {
+      'oar-common':
+        ensure   => $oar_version,
+        require  => Package["liboar-perl"];
+      'oar-node':
+        ensure   => $oar_version,
+        require  => Package["liboar-perl"];
+      'liboar-perl':
+        ensure   => $oar_version;
+    }
+  } else {
+    apt::source {
+      'oar-repo':
+        location => "http://oar-ftp.imag.fr/oar/$oar_repos",
+        release  => "$oar_repos_release",
+        repos    => 'main',
+        notify   => Exec['oar apt update'],
+        require  => Exec["import oar gpg key"],
+    }
+    exec {
+      "import oar gpg key":
+        command => "/usr/bin/wget -q http://oar-ftp.imag.fr/oar/oarmaster.asc -O- | /usr/bin/apt-key add -",
+        unless  => "/usr/bin/apt-key list | /bin/grep oar",
+    }
+    exec {
+      "oar apt update":
+        command => "/usr/bin/apt-get update",
+    }
+    package {
+      'oar-common':
+        ensure          => $oar_version,
+        install_options => ['-t', "$oar_repos_release"],
+        require         => [ Package["liboar-perl"], Apt::Source['oar-repo'] ];
+      'oar-node':
+        ensure          => $oar_version,
+        install_options => ['-t', "$oar_repos_release"],
+        require         => [ Package["liboar-perl"], Apt::Source['oar-repo'] ];
+      'liboar-perl':
+        ensure          => $oar_version,
+        install_options => ['-t', "$oar_repos_release"],
+        require         => Apt::Source['oar-repo'];
+    }
+  }
+
+  if ($oar_version != "installed") {
+    apt::pin { 'oar client pin':
+      packages => [ 'oar-common', 'oar-node', 'liboar-perl' ],
+      version  => $oar_version,
+      priority => 1001,
     }
   }
 
