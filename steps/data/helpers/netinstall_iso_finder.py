@@ -125,9 +125,12 @@ if __name__ == '__main__':
             if args.version == '6':
                 url_regex = re.compile("^"+args.mirror+"(?:"+args.version+"/(?:isos/(?:"+args.arch+"/(?:CentOS-"+args.version+"(?:\.\d+)?-"+args.arch+"-netinstall\.iso)?)?)?)?$")
                 target_regex = re.compile("^.*CentOS-\d+(?:\.\d+)?-\w+-netinstall\.iso$") 
-            else:
+            elif args.version == '7':
                 url_regex = re.compile("^"+args.mirror+"(?:"+args.version+"/(?:isos/(?:"+args.arch+"/(?:CentOS-"+args.version+"-"+args.arch+"-NetInstall-\d+\.iso)?)?)?)?$")
                 target_regex = re.compile("^.*CentOS-\d+-\w+-NetInstall-\d+\.iso$") 
+            else:
+                url_regex = re.compile("^"+args.mirror+"(?:"+args.version+"/(?:isos/(?:"+args.arch+"/(?:CentOS-"+args.version+"-"+args.arch+"-\d+-boot\.iso)?)?)?)?$")
+                target_regex = re.compile("^.*CentOS-\d+-\w+-\d+-boot\.iso$") 
             [visited,found] = url_find(set([args.mirror]), set(), set())
         else:
             raise Exception("this distribution is not supported")
