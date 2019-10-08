@@ -31,6 +31,9 @@ stages:
 #   expire_in: '1 week'
 
 
+dryrun_centos8-x64-min:
+  <<: *defaults-dryrun
+
 dryrun_centos7-x64-min:
   <<: *defaults-dryrun
 
@@ -61,6 +64,9 @@ dryrun_debian10-x64-big:
 dryrun_debian10-x64-std:
   <<: *defaults-dryrun
 
+
+build_centos8-x64-min:
+  <<: *defaults-build
 
 build_centos7-x64-min:
   <<: *defaults-build
