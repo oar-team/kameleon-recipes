@@ -1,0 +1,50 @@
+#==============================================================================
+# vim: softtabstop=2 shiftwidth=2 expandtab fenc=utf-8 cc=81 tw=80
+#==============================================================================
+#
+# DESCRIPTION: Centos8 x64 min Grid'5000 environment
+#
+#==============================================================================
+---
+extend: from_scratch/centos-8.yaml
+
+global:
+  appliance_formats: qcow2 tar.gz
+  # Output base filename
+  output: "$${kameleon_cwd}/$${kameleon_recipe_name}"
+  # Grid'5000 environment variant
+  g5k_variant: min
+  # Grid'5000 environment version
+  g5k_version: 2019100815
+  # Grid'5000 kadeploy environment parameters
+  g5k_tgz_path: server:///path/to/your/image
+  g5k_postinst_path: server:///grid5000/postinstalls/g5k-postinstall.tgz
+  g5k_postinst_script: g5k-postinstall --net redhat
+  g5k_kernel_params: "crashkernel=no"
+  g5k_kernel_path: "/vmlinuz"
+  g5k_initrd_path: "/initramfs.img"
+  # kernel modules to blacklist
+  kernel_modules_blacklist: "usb_storage usbhid ohci_hcd ehci_hcd usbcore nouveau myri10ge"
+  # locales
+  locales: POSIX C en_US.UTF8
+  lang: en_US.UTF8
+  timezone: Europe/Paris
+  # password
+  root_password: grid5000
+
+bootstrap:
+  - "@base"
+
+setup:
+  - "@base"
+  - configure_system
+  - disable_kdump
+  - set_kernel_modules_blacklist
+  - set_g5k_release
+  - set_g5k_motd
+  - clean_system
+
+export:
+  - "@base"
+  - do_qcow2_finish_works
+  - export_g5k
