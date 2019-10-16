@@ -63,7 +63,7 @@ global:
   appliance_filename: "$${kameleon_cwd}/$${kameleon_recipe_name}"
   appliance_tar_excludes: >-
     ./etc/fstab ./root/.bash_history ./root/kameleon_workdir ./root/.ssh
-    ./var/tmp/* ./tmp/* ./var/log/* ./dev/* ./proc/* ./run/*
+    ./var/tmp/* ./tmp/* ./dev/* ./proc/* ./run/*
     ./sys/* ./root/.rpmdb ./boot/extlinux ./boot/grub ./boot/grub2
   zerofree: false
 
