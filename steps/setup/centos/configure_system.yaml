@@ -16,10 +16,6 @@
 - set_root_password:
   - exec_in: echo -n 'root:$${root_password}' | chpasswd
 
-- disable_tmpfs_for_tmp:
-  - exec_in: echo "Disabling tmpfs for /tmp."
-  - exec_in: systemctl mask tmp.mount
-
 - remove_random_seed:
   - exec_in: echo "Removing random-seed so it's not the same in every image."
   - exec_in: rm -f /var/lib/random-seed
