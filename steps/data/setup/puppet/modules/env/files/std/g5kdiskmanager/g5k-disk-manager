@@ -274,7 +274,7 @@ end
 # Clusters with reservable disks are clusters whose
 # reference-repository storage_devices property contains property
 # reservation: true
-CLUSTERS_WITH_RESERVABLE_DISKS = ['grimoire', 'chiclet', 'chifflet', 'chifflot', 'parasilo', 'yeti', 'gros'].freeze
+CLUSTERS_WITH_RESERVABLE_DISKS = ['grimoire', 'chiclet', 'chifflet', 'chifflot', 'parasilo', 'yeti', 'gros', 'gemini'].freeze
 
 MEGACLI = '/usr/sbin/megacli'.freeze
 MEGASASCTL = '/usr/sbin/megasasctl'.freeze
