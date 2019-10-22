@@ -23,8 +23,6 @@ class env::big ( $variant = "big", $parent_parameters = {} ){
   class { 'env::big::configure_sshfs': }
   # Config OpenMPI
   class { 'env::big::install_openmpi': }
-  # Ceph
-  class { 'env::big::install_ceph': }
   # Snmp tools
   class { 'env::big::install_snmp_tools': }
   # beegfs install
