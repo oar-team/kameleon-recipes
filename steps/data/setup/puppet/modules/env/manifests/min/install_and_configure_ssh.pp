@@ -42,12 +42,9 @@ class env::min::install_and_configure_ssh {
 
   augeas {
     'sshd_config_min':
+      incl    => '/etc/ssh/sshd_config',
+      lens    => 'Sshd.lns',
       changes => [
-        'set /files/etc/ssh/sshd_config/HostKey[1] /etc/ssh/ssh_host_rsa_key',
-        'set /files/etc/ssh/sshd_config/HostKey[2] /etc/ssh/ssh_host_ecdsa_key',
-        'set /files/etc/ssh/sshd_config/HostKey[3] /etc/ssh/ssh_host_ed25519_key',
-        'set /files/etc/ssh/sshd_config/UsePrivilegeSeparation no',
-        'set /files/etc/ssh/sshd_config/PermitRootLogin without-password',
         'set /files/etc/ssh/sshd_config/PermitUserEnvironment yes',
         'set /files/etc/ssh/sshd_config/MaxStartups 500'
       ],
