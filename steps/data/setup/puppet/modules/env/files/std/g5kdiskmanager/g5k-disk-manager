@@ -93,7 +93,7 @@ end
 def startup_service
   _status, hostname = sh('hostname')
 
-  unless CLUSTERS_WITH_RESERVABLE_DISKS.include?(cluster(hostname))
+  unless has_reservable_disks?
     notice "This cluster doesn't have reservable disks: exit service"
     close
   end
@@ -161,6 +161,14 @@ def disks_locations(physical_disks, ids)
     disks.push(physical_disks[id])
   end
   return disks
+end
+
+# Clusters with reservable disks are clusters whose
+# reference-repository storage_devices property contains property
+# reservation: true
+def has_reservable_disks?
+  ref_api = File.read('/etc/grid5000/ref-api.json')
+  return JSON.parse(ref_api)['storage_devices'].select{|sd| sd['reservation']}.any?
 end
 
 # If property 'soft'='free', the standard environment is being
@@ -270,11 +278,6 @@ def disable(physical_disks)
 end
 
 # Main program
-
-# Clusters with reservable disks are clusters whose
-# reference-repository storage_devices property contains property
-# reservation: true
-CLUSTERS_WITH_RESERVABLE_DISKS = ['grimoire', 'chiclet', 'chifflet', 'chifflot', 'parasilo', 'yeti', 'gros', 'gemini'].freeze
 
 MEGACLI = '/usr/sbin/megacli'.freeze
 MEGASASCTL = '/usr/sbin/megasasctl'.freeze
