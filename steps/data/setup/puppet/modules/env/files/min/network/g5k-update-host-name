@@ -11,5 +11,6 @@ if [ -n "$new_host_name" ]; then
     hostname "$hostname"
     echo "$hostname" > /etc/mailname 2> /dev/null
   fi
+  systemctl restart syslog
 fi
 
