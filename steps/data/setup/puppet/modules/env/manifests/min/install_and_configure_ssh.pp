@@ -50,7 +50,7 @@ class env::min::install_and_configure_ssh {
       ],
       require  => Package['ssh server'];
   }
-  # Todo: check that key files are overwritten by postinstall
+  # Todo: 'check that key files are overwritten by postinstall'
 
   Augeas['sshd_config_min'] ~> Service['ssh']
 
