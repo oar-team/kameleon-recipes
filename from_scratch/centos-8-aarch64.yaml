@@ -1,0 +1,21 @@
+#==============================================================================
+# vim: softtabstop=2 shiftwidth=2 expandtab fenc=utf-8 cc=81 tw=80
+#==============================================================================
+#
+# DESCRIPTION: Centos 8 aarch64 recipe using the netinstall mechanism
+#
+#==============================================================================
+---
+extend: centos-8.yaml
+
+global:
+  arch: aarch64
+
+bootstrap:
+  - "@base"
+
+setup:
+  - "@base"
+
+export:
+  - "@base"
