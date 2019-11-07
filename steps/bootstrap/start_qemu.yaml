@@ -17,7 +17,7 @@
 - shutdown_vm_immediately: false
 - force_vm_shutdown: true
 - qemu_enable_kvm: "$(egrep '(vmx|svm)' /proc/cpuinfo > /dev/null && echo true)"
-- qemu_cpu: 2
+- qemu_cpus: 2
 - qemu_memory_size: 768
 - qemu_monitor_socket: $${kameleon_cwd}/qemu_monitor.socket
 - qemu_arch: $${arch}
@@ -138,7 +138,7 @@
       if [ -n "${SSH_FWD_PORT}" ]; then
         HOSTFWD=",hostfwd=tcp::${SSH_FWD_PORT}-:22"
       fi
-      qemu-system-$${qemu_arch} $ENABLE_KVM -smp $${qemu_cpu} -m $${qemu_memory_size} -rtc base=localtime \
+      qemu-system-$${qemu_arch} $ENABLE_KVM -smp $${qemu_cpus} -m $${qemu_memory_size} -rtc base=localtime \
         -net nic,model=virtio -net user${HOSTFWD} \
         $QEMU_DRIVES \
         -monitor unix:$${qemu_monitor_socket},server,nowait -pidfile $${qemu_pidfile} -daemonize \
