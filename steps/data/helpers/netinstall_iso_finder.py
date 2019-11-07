@@ -144,7 +144,7 @@ if __name__ == '__main__':
             logger.info(url)
         if len(found) > 0:
             if (args.distrib.lower() == "debian"):
-                print(sorted(found,key=lambda x:key_normalize(re.sub(r".*/debian-(\d+).(\d+).(\d+)-amd64-netinst\.iso$",r"\1.\2.\3",x)),reverse=True)[0])
+                print(sorted(found,key=lambda x:key_normalize(re.sub(r".*/debian-(\d+).(\d+).(\d+)-"+args.arch+"-netinst\.iso$",r"\1.\2.\3",x)),reverse=True)[0])
             else:
                 print(sorted(found, reverse=False)[0])
         else:
