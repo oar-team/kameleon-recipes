@@ -101,7 +101,7 @@
   - exec_local: |
       echo "Starting qemu..."
       if [ "$${qemu_enable_kvm}" == "true" ]; then
-        ENABLE_KVM="-enable-kvm -cpu host"
+        ENABLE_KVM="-enable-kvm -machine virt -cpu host -accel kvm -enable-kvm"
         BOOT_TIMEOUT=$${boot_timeout}
       else
         BOOT_TIMEOUT=$(($${boot_timeout}*2))
