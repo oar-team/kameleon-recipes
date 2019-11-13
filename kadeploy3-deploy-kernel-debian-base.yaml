@@ -16,7 +16,7 @@ global:
   enable_lighten: true
   #root_authorized_keys: $${kameleon_data_dir}/kadeploy_root_authorized_keys
   # -> set on command line using "-g root_authorized_keys:$PWD/steps/data/kadeploy_root_authorized_keys"
-  arch_specific_packages: kexec-tools grub-pc
+  arch_specific_packages: kexec-tools grub-pc grub-efi-amd64-bin
   use_backports: true
   security_release: $${release}
   hwraid_release: $${release}
