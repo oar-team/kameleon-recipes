@@ -205,36 +205,79 @@ def megacli_compliant?
 end
 
 # This function retrieves the physical and virtual disk identifiers from
-# the output of the megasasctl command.
+# the output of the megacli command.
+# For both type of drives, the adapter is printed once on a single line
+# and then are printed out the drives who belong to this adapter.
 #
-# If a virtual drive is present, the output of megasasctl looks like:
-# a0       PERC H330 Mini           encl:1 ldrv:1  batt:FAULT, low voltage
-# a0d0       557GiB RAID 0   1x2  optimal
-# a0e32s0     279GiB  a0d0  online
-# a0e32s1     279GiB  a0d0  online
+# A physical drive output looks like:
 #
-# If no virtual drive is present, the output of megasasctl looks like:
-# a0       PERC H330 Mini           encl:1 ldrv:0  batt:FAULT, module missing, pack missing, charge failed
-# unconfigured:  a0e32s0   a0e32s1
-# a0e32s0     279GiB        ready
-# a0e32s1     279GiB        ready
+# Enclosure Device ID: 8
+# Slot Number: 0
+# Enclosure position: 1
+# Device Id: 14
+# WWN: 5002538c40be7492
+# Sequence Number: 2
+# Media Error Count: 0
+# ... other lines
+#
+# A virtual one:
+#
+# Virtual Drive: 0 (Target Id: 0)
+# Name                :SYSTEM
+# RAID Level          : Primary-1, Secondary-0, RAID Level Qualifier-0
+# Size                : 558.375 GB
+# Sector Size         : 512
+# ... other lines
+#
+# The physical drives have to be sorted by the Device ID to match the way
+# Linux create the /dev/ devices special files (pci-scsi path order)
 def get_disks
-  status, output = sh(MEGASASCTL)
+  status, output_pdlist = sh("#{MEGACLI} -PDList -aALL")
   unless status.zero?
-    notice 'The command megasasctl failed'
+    notice 'The command megacli failed to list physical drives'
+    close
+  end
+
+  status, output_vdlist = sh("#{MEGACLI} -LDInfo -Lall -aall")
+  unless status.zero?
+    notice 'The command megacli failed to list virtual drives'
     close
   end
 
   physical_disks = []
   virtual_disks = []
-  physical_disks_regexp = /^a(\d+)e(\d+)s(\d+)\s+.+$/
-  virtual_disks_regexp = /^a(\d+)d(\d+)\s+.+$/
 
-  output.each_line do |line|
-    if m = physical_disks_regexp.match(line)
-      physical_disks << { adapter: m[1].to_i, enclosure: m[2].to_i, slot: m[3].to_i }
-    elsif m = virtual_disks_regexp.match(line)
-      virtual_disks << { adapter: m[1].to_i, drive: m[2].to_i }
+  adapter_regexp = /^Adapter\s#?(\d+).*$/
+  enclosure_regexp = /^Enclosure\sDevice\sID:\s+(\d+)$/
+  slot_regexp = /^Slot\sNumber:\s+(\d+)$/
+  device_id_regexp = /^Device\sId:\s+(\d+)$/
+  virtual_drive_regexp = /^Virtual\sDrive:\s+(\d+).+$/
+
+  adapter = ""
+  enclosure = ""
+  slot = ""
+
+  output_pdlist.each_line do |line|
+    if m = adapter_regexp.match(line)
+      adapter = m[1].to_i
+    elsif m = enclosure_regexp.match(line)
+      enclosure = m[1].to_i
+    elsif m = slot_regexp.match(line)
+      slot = m[1].to_i
+    elsif m = device_id_regexp.match(line)
+      physical_disks << { adapter: adapter, enclosure: enclosure, slot: slot, device_id: m[1].to_i }
+    end
+
+    physical_disks.sort_by!{ |p_disk| p_disk[:device_id] }
+  end
+
+  adapter = ""
+
+  output_vdlist.each_line do |line|
+    if m = adapter_regexp.match(line)
+      adapter = m[1].to_i
+    elsif m = virtual_drive_regexp.match(line)
+      virtual_disks << { adapter: adapter, drive: m[1].to_i }
     end
   end
 
@@ -283,7 +326,6 @@ end
 # Main program
 
 MEGACLI = '/usr/sbin/megacli'.freeze
-MEGASASCTL = '/usr/sbin/megasasctl'.freeze
 
 G5K_API = 'https://api.grid5000.fr/stable'
 _status, TMPDIR = sh('mktemp -d /tmp/tmp.g5k-disk-manager.XXXXXX')
