@@ -16,7 +16,7 @@ def main
   options = parse_cmdline
   start
   if options[:on_boot]
-    startup_service
+    startup_service(options[:force])
   else
     manage_disks(options)
   end
@@ -70,6 +70,9 @@ def parse_cmdline
     opts.on('--on-boot', 'Enable all disks at boot time') do |v|
       options[:on_boot] = v
     end
+    opts.on('--force', 'Force usage of --on-boot even if the node has been deployed by user') do |f|
+      options[:force] = f
+    end
     opts.on('--enable DISK_IDS', 'Enable disks') do |disks|
       options[:enable] = disks
     end
@@ -90,7 +93,7 @@ end
 # It must be done just before g5k-checks is launched on the node, to avoid
 # g5k-checks errors.
 # See also /etc/systemd/system/g5k-disk-manager.service.
-def startup_service
+def startup_service(force)
   _status, hostname = sh('hostname')
 
   unless has_reservable_disks?
@@ -98,7 +101,7 @@ def startup_service
     close
   end
 
-  if user_deploy?(hostname)
+  if user_deploy?(hostname) and not force
     notice 'The environment is deployed manually by a user: the disks have not been activated'
     close
   end
