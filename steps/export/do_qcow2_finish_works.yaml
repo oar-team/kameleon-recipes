@@ -8,6 +8,8 @@
         echo "Configure datasource and timeout for cloud_init"
         virt-customize -a $${output}.qcow2 --run-command 'printf "datasource_list: [  NoCloud, Ec2, None ]\n" > /etc/cloud/cloud.cfg.d/91-set-datasources.cfg'
         virt-customize -a $${output}.qcow2 --run-command 'printf "datasource:\n  Ec2:\n    timeout: 3\n    max_wait: 5\n" > /etc/cloud/cloud.cfg.d/92-set-ec2-timeout.cfg'
+        # Remove DHCP hook to let cloud-init handle hostname
+        virt-customize -a $${output}.qcow2 --run-command 'rm -f /etc/dhcp/dhclient-exit-hooks.d/g5k-update-host-name'
       fi
 
 - sparsify_qcow2_image:
