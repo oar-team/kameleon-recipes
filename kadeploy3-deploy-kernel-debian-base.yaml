@@ -107,8 +107,11 @@ setup:
         - /etc/apt/sources.list.d/$${release}.list
         - |
           deb $${deb_mirror_uri} $${release} main contrib non-free
-          deb $${deb_mirror_uri} $${release}-updates main contrib non-free
-          deb http://security.debian.org/ $${security_release}/updates main contrib non-free
+      - exec_in: |
+          if [ "$${release}" != "sid" ]; then
+            echo "deb $${deb_mirror_uri} $${release}-updates main contrib non-free" >> /etc/apt/sources.list.d/$${release}.list
+            echo "deb http://security.debian.org/ $${security_release}/updates main contrib non-free" >> /etc/apt/sources.list.d/$${release}.list
+          fi
       - exec_in: |
           if [ "$${use_backports}" == "yes" ]; then
             echo "deb $${deb_mirror_uri} $${release}-backports main contrib non-free" > /etc/apt/sources.list.d/$${release}-backports.list
