@@ -1,0 +1,2 @@
+- clean_dhcp_leases:
+  - exec_local: virt-customize -a $${image_disk}.$${image_format} --run-command "rm -rf /var/lib/NetworkManager/*"
