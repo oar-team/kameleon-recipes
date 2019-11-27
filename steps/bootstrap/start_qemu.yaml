@@ -16,7 +16,7 @@
 - vm_cleanup_section: setup
 - shutdown_vm_immediately: false
 - force_vm_shutdown: true
-- qemu_enable_kvm: "$(egrep '(vmx|svm)' /proc/cpuinfo > /dev/null && echo true)"
+- qemu_enable_kvm: "true"
 - qemu_cpus: 2
 - qemu_memory_size: 768
 - qemu_monitor_socket: $${kameleon_cwd}/qemu_monitor.socket
@@ -100,10 +100,15 @@
       fi
   - exec_local: |
       echo "Starting qemu..."
-      if [ "$${qemu_enable_kvm}" == "true" ]; then
-        ENABLE_KVM="-enable-kvm -cpu host"
+      if [ "$${qemu_enable_kvm}" == "true" ] && (/usr/sbin/kvm-ok > /dev/null || egrep '(vmx|svm)' /proc/cpuinfo > /dev/null) ; then # print warning if /usr/sbin/kvm-ok is not installed
+        if [ "$${qemu_arch}" == "aarch64" ]; then
+          ENABLE_KVM="-enable-kvm -accel kvm -machine virt -cpu host -bios /usr/share/qemu-efi-aarch64/QEMU_EFI.fd"
+        else #X86_64
+          ENABLE_KVM="-enable-kvm -cpu host"
+        fi
         BOOT_TIMEOUT=$${boot_timeout}
       else
+        echo "No KVM acceleration used"
         BOOT_TIMEOUT=$(($${boot_timeout}*2))
       fi
       if [ -f "vm_state_to_load.txt" ]
