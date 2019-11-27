@@ -146,8 +146,8 @@ class env::std::configure_oar_client {
       owner    => root,
       group    => root,
       mode     => '0644',
-      source   => 'puppet:///modules/env/std/oar/sshd_config',
-      require  => Package[$oar_packages];
+      source   => '/etc/ssh/sshd_config',
+      require  => Package[$oar_packages, 'ssh server'];
     '/var/lib/oar/.ssh/authorized_keys':
       ensure   => present,
       owner    => oar,
@@ -162,6 +162,32 @@ class env::std::configure_oar_client {
       mode     => '0644',
       source   => 'puppet:///modules/env/std/oar/default_oar-node',
       require  => Package[$oar_packages];
+  }
+
+  augeas {
+    'sshd_config_oar':
+      incl    => '/etc/oar/sshd_config',
+      lens    => 'Sshd.lns',
+      changes => [
+        'set /files/etc/oar/sshd_config/Port 6667',
+        'set /files/etc/oar/sshd_config/HostKey /etc/oar/oar_ssh_host_rsa_key',
+        'set /files/etc/oar/sshd_config/LoginGraceTime 10m',
+        'set /files/etc/oar/sshd_config/PermitRootLogin no',
+        'set /files/etc/oar/sshd_config/PasswordAuthentication no',
+        'set /files/etc/oar/sshd_config/ChallengeResponseAuthentication no',
+        'set /files/etc/oar/sshd_config/UsePAM yes',
+        'set /files/etc/oar/sshd_config/X11Forwarding yes',
+        'set /files/etc/oar/sshd_config/PrintMotd no',
+        'set /files/etc/oar/sshd_config/PermitUserEnvironment yes',
+        'set /files/etc/oar/sshd_config/MaxStartups 500',
+        'set /files/etc/oar/sshd_config/AcceptEnv/1 LANG',
+        'set /files/etc/oar/sshd_config/AcceptEnv/2 LC_*',
+        'set /files/etc/oar/sshd_config/AcceptEnv/3 OAR_CPUSET',
+        'set /files/etc/oar/sshd_config/AcceptEnv/4 OAR_JOB_USER',
+        'set /files/etc/oar/sshd_config/Subsystem/sftp /usr/lib/openssh/sftp-server',
+        'set /files/etc/oar/sshd_config/AllowUsers/1 oar'
+      ],
+      require  => File['/etc/oar/sshd_config'];
   }
 
   if $env::target_g5k {
