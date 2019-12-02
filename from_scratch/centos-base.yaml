@@ -26,7 +26,6 @@ global:
   # can be set manually or guessed using a url finder helper script
   #iso_filename: CentOS-$${release_major}-$${arch}-NetInstall-$${release_date}.iso
   #iso_url: $${mirror_base_url}/$${release_major}.$${release_minor}.$${release_date}/isos/$${arch}/$${iso_filename}
-  iso_url:
   iso_finder_helper: $${kameleon_data_dir}/helpers/netinstall_iso_finder.py
   iso_finder_args: $${distrib} $${release_number} $${arch} $${mirror_base_url}
   iso_path: $${kameleon_cwd}/$${distrib}.iso

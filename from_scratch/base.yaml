@@ -33,9 +33,17 @@ global:
     - $${distrib}/$${release}
     - $${distrib}
 
-  ## iso finder
+  # If iso_path is set, boot from an iso, retrieved from the following URL:
+  iso_url:
+  # or give an helper script to find out the iso URL:
   iso_finder_helper:
   iso_finder_args:
+
+  # Otherwise, if qemu_kernel_path is set, boot from an kernel, initrd and
+  # cmdline fetched from the URL defined below, and used directly in qemu:
+  installer_kernel_url:
+  installer_initrd_url:
+  installer_cmdline:
 
   ## GPG keyserver (Waring: not all servers are reliable)
   gpg_keyserver: keyserver.ubuntu.com
@@ -48,6 +56,10 @@ global:
   qemu_arch: $${arch}
   qemu_image_size: 10G
   qemu_pidfile: $${kameleon_cwd}/qemu.pid
+  qemu_kernel_path: $${kameleon_cwd}/qemu_kernel
+  qemu_initrd_path: $${kameleon_cwd}/qemu_initrd
+  qemu_append_cmdline: $${installer_cmdline}
+  iso_path: $${kamelon_cwd}/qemu_iso
 
   # rootfs options
   disk_device: /dev/vda
@@ -89,7 +101,7 @@ global:
 # Bootstrap the new system and create the 'in_context'
 bootstrap:
   - enable_checkpoint
-  - download_iso
+  - download_installer
   - prepare_disk
   - prepare_autoinstall
   - start_http_server
@@ -107,6 +119,7 @@ bootstrap:
     - vm_cleanup_section: setup
     - vm_expected_server: ssh
     - boot_timeout: 100
+    - qemu_kernel_path: ""
     - iso_path: ""
     - qemu_sendkeys_commands: ""
 

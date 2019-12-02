@@ -1,8 +1,14 @@
 # Require SSH_FWD_PORT bash environment variable to be set
-- disk_cache: unsafe
-# This must be set if you want to boot an ISO image instead of a disk
+
+# This must be set if you want to boot an ISO image:
 - iso_path: ""
 - iso_boot: "yes"
+# Else that can be set to boot from a kernel, initrd and cmdline:
+- qemu_kernel_path: ""
+- qemu_initrd_path: ""
+- qemy_append_cmdline: ""
+# Else boot from disk.
+
 - vm_expected_service: ssh
 - boot_timeout: 100
 - shutdown_timeout: 100
@@ -23,6 +29,7 @@
 - qemu_arch: $${arch}
 - qemu_image_size: 10G
 - qemu_pidfile: $${kameleon_cwd}/qemu.pid
+- disk_cache: unsafe
 
 - start_vm:
   - on_checkpoint: redo
@@ -135,6 +142,17 @@
         QEMU_DRIVES="-drive file=$${iso_path},readonly,media=cdrom $QEMU_DRIVES"
         if [ "$${iso_boot}" == "yes" ]; then
           QEMU_BOOT="-boot order=d"
+        fi
+      elif [ -n "$${qemu_kernel_path}" ]; then
+        QEMU_BOOT="-kernel $${qemu_kernel_path}"
+        if [ -n "$${qemu_initrd_path}" ]; then
+          QEMU_BOOT="$QEMU_BOOT -initrd $${qemu_initrd_path}"
+        fi
+        if [ -n "$${qemu_append_cmdline}" ]; then
+          QEMU_APPEND_CMDLINE="$${qemu_append_cmdline}"
+          QEMU_APPEND_CMDLINE=${QEMU_APPEND_CMDLINE//%LOCAL_IP%/$${local_ip}}
+          QEMU_APPEND_CMDLINE=${QEMU_APPEND_CMDLINE//%HTTP_PORT%/$HTTP_PORT}
+          QEMU_BOOT="$QEMU_BOOT -append $QEMU_APPEND_CMDLINE"
         fi
       fi
       if [ "$${no_reboot}" == "true" ]; then

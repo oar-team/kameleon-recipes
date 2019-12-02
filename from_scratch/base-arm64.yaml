@@ -2,13 +2,17 @@
 # vim: softtabstop=2 shiftwidth=2 expandtab fenc=utf-8 cc=81 tw=80
 #==============================================================================
 #
-# DESCRIPTION: Debian 10 (Buster) for arm64 recipe using the netinstall mechanism
+# DESCRIPTION: arm64 base recipe
 #
 #==============================================================================
 ---
-extend: debian-base-arm64.yaml
+extend: base.yaml
 # Global variables use by Kameleon engine and the steps
 global:
+  arch: aarch64
+  iso_arch: aarch64
+  qemu_arch: aarch64
+  qemu_enable_kvm: true
 
 bootstrap:
   - "@base"

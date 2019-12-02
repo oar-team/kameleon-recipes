@@ -50,7 +50,7 @@ global:
 
 bootstrap:
   - enable_checkpoint
-  - download_iso
+  - download_installer
   - prepare_disk
   - prepare_ssh_to_out_context
   - start_qemu
