@@ -6,7 +6,7 @@
 #
 #==============================================================================
 ---
-extend: debian-debootstrap-base.yaml
+extend: ../debian-debootstrap-base.yaml
 global:
   release: stable
 

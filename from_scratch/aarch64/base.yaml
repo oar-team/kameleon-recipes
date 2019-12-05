@@ -2,14 +2,18 @@
 # vim: softtabstop=2 shiftwidth=2 expandtab fenc=utf-8 cc=81 tw=80
 #==============================================================================
 #
-# DESCRIPTION: Centos 8 aarch64 recipe using the netinstall mechanism
+# DESCRIPTION: arm64 base recipe
 #
 #==============================================================================
 ---
-extend: centos-8.yaml
-
+extend: ../base.yaml
+# Global variables use by Kameleon engine and the steps
 global:
   arch: aarch64
+  installer_iso_arch: aarch64
+  qemu_arch: aarch64
+  qemu_enable_kvm: true
+  qemu_uefi: true
 
 bootstrap:
   - "@base"

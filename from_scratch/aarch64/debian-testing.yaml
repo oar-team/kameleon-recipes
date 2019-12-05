@@ -2,18 +2,17 @@
 # vim: softtabstop=2 shiftwidth=2 expandtab fenc=utf-8 cc=81 tw=80
 #==============================================================================
 #
-# DESCRIPTION: arm64 base recipe
+# DESCRIPTION: Debian testing recipe using the netinstall mechanism
 #
 #==============================================================================
 ---
-extend: base.yaml
+extend: debian-base.yaml
 # Global variables use by Kameleon engine and the steps
 global:
-  arch: aarch64
-  installer_iso_arch: aarch64
-  qemu_arch: aarch64
-  qemu_enable_kvm: true
-  qemu_uefi: true
+  # Distribution
+  distrib: debian
+  release: testing
+  release_number: X
 
 bootstrap:
   - "@base"

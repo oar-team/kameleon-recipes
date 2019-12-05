@@ -16,7 +16,7 @@
 #
 #==============================================================================
 ---
-extend: base-arm64.yaml
+extend: base.yaml
 
 global:
   # Boilerplate values, so that `kameleon info' works with the recipe.
