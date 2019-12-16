@@ -1,0 +1,56 @@
+#==============================================================================
+# vim: softtabstop=2 shiftwidth=2 expandtab fenc=utf-8 cc=81 tw=80
+#==============================================================================
+#
+# DESCRIPTION: NIXOS
+#
+#==============================================================================
+---
+extend: base.yaml
+
+global:
+  distrib: nixos
+  release: 19.09
+  release_minor_and_hash: 1590.d85e435b7bd
+  iso_location: releases
+
+  iso_filename: nixos-minimal-$${release}.$${release_minor_and_hash}-$${arch}-linux.iso
+  iso_url: http://nixos.org/$${iso_location}/nixos/$${release}-small/nixos-$${release}.$${release_minor_and_hash}/$${iso_filename}
+  iso_path: $${kameleon_cwd}/$${distrib}.iso
+
+  image_format: raw
+  qemu_sendkeys_commands: $${kameleon_data_dir}/qemu-sendkeys/netinst-iso-$${distrib}
+    
+  autoinstall_script_path: $${kameleon_data_dir}/$${distrib}-autoinstall.sh
+  root_password: root
+  # wait for a full boot before run autoinstall script
+  boot_timeout: 20
+
+  # override this configuration by adding yours to this folder
+  # ./step/data/configuration.nix
+  nix_hardware_configuration: $${kameleon_data_dir}/hardware-configuration.nix
+  nix_configuration: $${kameleon_data_dir}/configuration.nix
+
+bootstrap:
+  - enable_checkpoint
+  - download_iso
+  - prepare_disk
+  - prepare_autoinstall
+  - start_http_server
+  - start_qemu:
+    - force_vm_shutdown: false
+    - shutdown_vm_immediately: false
+    - vm_cleanup_section: bootstrap
+    - vm_expected_service:
+    - boot_timeout: 60
+
+export:
+  - export:
+    - export_as_tgz:
+        - exec_local: |
+            MNT=$(mktemp -d) 
+            sudo mount -o loop,offset=32768 $${image_disk}.$${image_format} $MNT
+            sudo tar -czf $${appliance_filename}.tgz -C $MNT .
+            sudo chmod 666 $${appliance_filename}.tgz 
+            sudo umount $MNT
+            rm -r $MNT

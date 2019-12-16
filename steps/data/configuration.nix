@@ -19,7 +19,6 @@
   # boot.loader.grub.device = "/dev/sda"; # or "nodev" for efi only
 
   networking.hostName = ""; # Define your hostname.
-  # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
 
   # Select internationalisation properties.
   # i18n = {
@@ -45,31 +44,28 @@
   #   uid = 1000;
   # };
 
-  # This value determines the NixOS release with which your system is to be
-  # compatible, in order to avoid breaking some software such as database
-  # servers. You should change this only after NixOS release notes say you
-  # should.
-  #
-  users.extraUsers.root.openssh.authorizedKeys.keys = [ "ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAIEA11hK5N+moQadYFcW/Cf1OqoQPdsm+ABRII1TEWgji4ZqzXbX36vIksvmGmibIvRiZ0J6yJ5/M6GLbZqcMengPBIaCmd/3OrdYpgjAAfIhhh7GN3jRRcq5K0SHnaIU4JjyBcNxEdv1krii8cr1HPRv0x8eHPdOc4JGA3FmH97L+8= auguste@abenaki"];
-    services.openssh = {
-       enable = true;
-       startWhenNeeded = true;
-    };
+  services.openssh = {
+    enable = true;
+    startWhenNeeded = true;
+  };
 
-systemd.services."serial-getty@ttyS0".enable = true;
-boot.loader.grub.device = "/dev/sda3";
-boot.loader.grub.forceInstall = true;
+  systemd.services."serial-getty@ttyS0".enable = true;
+  boot.loader.grub.device = "/dev/sda3";
+  boot.loader.grub.forceInstall = true;
 
-boot.kernelParams = ["console=tty0 console=ttyS0,38400n8 modprobe.blacklist=myri10ge"];
-boot.loader.grub.extraConfig = ''
+  boot.kernelParams = ["console=tty0 console=ttyS0,38400n8 modprobe.blacklist=myri10ge"];
+  boot.loader.grub.extraConfig = ''
     serial --speed=38400 --unit=0 --word=8 --parity=no --stop=1;
     terminal_input serial;
     terminal_output serial
   '';
 
-# To satify Kadeploy's port scanning 
-networking.firewall.enable = false;
-#boot.postBootCommands="(while true; do /nix/var/nix/profiles/system/sw/bin/nc -l 25300; done) &";
-
+  networking.firewall.enable = false;
+  
+  # This value determines the NixOS release with which your system is to be
+  # compatible, in order to avoid breaking some software such as database
+  # servers. You should change this only after NixOS release notes say you
+  # should.
+  #
   system.stateVersion = "19.09"; # Did you read the comment?
 }
