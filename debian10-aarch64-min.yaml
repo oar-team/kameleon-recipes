@@ -11,6 +11,7 @@ extend: ./debian10-aarch64-common.yaml
 global:
   # Grid'5000 environment variant
   g5k_variant: min
+  arch_packages_no_clean: "grub-efi-arm64-bin grub-common"
 
 bootstrap:
   - "@base"

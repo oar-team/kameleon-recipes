@@ -1,7 +1,6 @@
 # Provision a VM by launching a puppet agent (standalone)
 - puppet_build_path: "/tmp/puppet_recipes"
 - hiera_path: "/tmp/hiera"
-- puppet_path: "/opt/puppetlabs/bin"
 - puppet_local_path: $${kameleon_data_dir}/setup/puppet
 - hiera_local_path: $${kameleon_data_dir}/setup/hiera
 - version_file: modules/env/files/version
@@ -16,7 +15,7 @@
 - import_hiera:
   - exec_in: mkdir -p $${hiera_path}
   - exec_local: rsync -e "ssh -F $${ssh_config_file}" -r $${hiera_local_path}/ $${kameleon_recipe_name}:$${hiera_path}
-  - exec_in: $${puppet_path}/puppet config set hiera_config $${hiera_path}/hiera.yaml
+  - exec_in: puppet config set hiera_config $${hiera_path}/hiera.yaml
 
 # Store G5K environment release information
 - set_release:
@@ -38,7 +37,7 @@
       else
         VARIANT=$${g5k_variant}
       fi
-      $${puppet_path}/puppet apply --detailed-exitcodes -d --modulepath=$${puppet_build_path}/modules:/etc/puppetlabs/code/environments/production/modules $${puppet_build_path}/manifests/$VARIANT.pp | tee /tmp/puppet_exec.log
+      puppet apply --detailed-exitcodes -d --modulepath=$${puppet_build_path}/modules:/etc/puppet/code/modules $${puppet_build_path}/manifests/$VARIANT.pp | tee /tmp/puppet_exec.log
       ret=$?
       echo $ret
       if [ $ret -eq 2 -o $ret -eq 0 ] ; then true ; else false ; fi # Set exit code to 0

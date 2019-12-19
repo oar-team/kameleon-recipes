@@ -16,6 +16,13 @@ class env ($given_variant){
     require => Stage['main'];
   }
 
+  ## Define the Debian architecture name
+  if $architecture == 'aarch64' {
+    $deb_arch = 'arm64'
+  } else {
+    $deb_arch = $architecture
+  }
+
   ## Call the actual recipe
   case $variant {
     'min' :  { include env::min }

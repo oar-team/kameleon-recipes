@@ -5,29 +5,20 @@
 
 - script_name: puppet_install.sh
 - script_path: /tmp
-- puppet-agent_version: 1.10.14-1 
-- puppet_path: /opt/puppetlabs/bin
-- force_puppet_debian_version:
 
 - get_standalone_puppet_script:
-  - exec_in: apt-get install -y wget lsb-release
-  - exec_in: echo "if [ -z $${force_puppet_debian_version} ] ; then version=$(lsb_release -cs) ; else version=$${force_puppet_debian_version} ; fi && chmod 777 /tmp; wget -q http://release-archives.puppet.com/apt/pool/\$version/PC1/p/puppet-agent/puppet-agent_$${puppet-agent_version}\${version}_amd64.deb -O /tmp/puppet-agent_$${puppet-agent_version}\${version}_amd64.deb && dpkg -i /tmp/puppet-agent_$${puppet-agent_version}\${version}_amd64.deb ; apt-get update && rc=$? || rc=$? ; apt-get install -y --no-install-recommends --allow-unauthenticated puppet-agent=$${puppet-agent_version}\$version" > $${script_path}/$${script_name}
-  - exec_in: chmod +x $${script_path}/$${script_name}
-  - exec_in: $${script_path}/$${script_name}
+  - exec_in: apt-get install -y wget lsb-release puppet
   # We also install stdlib module that contains some useful functions
   # We force the version of puppetlabs-stdlib and puppetlabs-apt so that we use a version that works on our old version of puppet
-  - exec_in: apt-get install -y ca-certificates ; $${puppet_path}/puppet module install puppetlabs-stdlib --version 5.2.0
-  - exec_in: $${puppet_path}/puppet module install puppetlabs-apt --version 6.3.0
+  - exec_in: apt-get install -y ca-certificates ; puppet module install puppetlabs-stdlib --version 5.2.0
+  - exec_in: puppet module install puppetlabs-apt --version 6.3.0
   - on_setup_clean:
     # module apt must be uninstalled BEFORE stdlib for dependency reasons
-    - exec_in: $${puppet_path}/puppet module uninstall puppetlabs-apt
-    - exec_in: $${puppet_path}/puppet module uninstall puppetlabs-stdlib
+    - exec_in: puppet module uninstall puppetlabs-apt
+    - exec_in: puppet module uninstall puppetlabs-stdlib
     # We tagged packet as "automatically installed" to auto-remove them at the end of the orchestration step
-    - exec_in: apt-mark auto puppet-agent lsb-release
+    - exec_in: apt-mark auto puppet lsb-release
     - exec_in: apt-get --yes autoremove --purge | tee /tmp/temp_purge
     # This is a bit of cleanup that SHOULD NOT OCCURS. But puppet is messy, and let this behind itself. So we clean it for him
-    - exec_in: grep -q "Removing puppet-agent" /tmp/temp_purge && rm -rvf /opt/puppetlabs/puppet
-    - exec_in: grep -q "Removing puppet-agent" /tmp/temp_purge && (rm -rf /opt/puppetlabs && rc=$? || rc=$?)
-    - exec_in: grep -q "Removing puppet-agent" /tmp/temp_purge && rm -rvf /etc/puppetlabs/puppet
-    - exec_in: grep -q "Removing puppet-agent" /tmp/temp_purge && (rm -rf /etc/puppetlabs && rc=$? || rc=$?)
+    - exec_in: grep -q "Removing puppet" /tmp/temp_purge && (rm -rf /etc/puppet && rc=$? || rc=$?)
     - exec_in: apt-get autoremove -y

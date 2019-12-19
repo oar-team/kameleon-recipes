@@ -19,7 +19,9 @@ class env::min ( $variant = "min", $parent_parameters = {} ) {
     }
   }
   # Install cpu microcode
-  class { 'env::min::install_cpu_microcode': }
+  if $env::deb_arch == 'amd64' {
+    class { 'env::min::install_cpu_microcode': }
+  }
   # ssh
   class { 'env::min::install_and_configure_ssh': }
   # setup
