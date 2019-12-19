@@ -9,47 +9,17 @@
     [ # Include the results of the hardware scan.
       ./hardware-configuration.nix
     ];
-  # Use the GRUB 2 boot loader.
-  boot.loader.grub.enable = true;
-  boot.loader.grub.version = 2;
-  # boot.loader.grub.efiSupport = true;
-  # boot.loader.grub.efiInstallAsRemovable = true;
-  # boot.loader.efi.efiSysMountPoint = "/boot/efi";
-  # Define on which hard drive you want to install Grub.
-  # boot.loader.grub.device = "/dev/sda"; # or "nodev" for efi only
-
-  networking.hostName = ""; # Define your hostname.
-
-  # Select internationalisation properties.
-  # i18n = {
-  #   consoleFont = "Lat2-Terminus16";
-  #   consoleKeyMap = "us";
-  #   defaultLocale = "en_US.UTF-8";
-  # };
-
-  # Set your time zone.
-  # time.timeZone = "Europe/Amsterdam";
-
+  
   # List packages installed in system profile. To search, run:
   # $ nix search wget
   environment.systemPackages = with pkgs; [
-     netcat-gnu
-     wget 
-     vim
-   ];
+    wget 
+    vim
+  ];
 
-  # Define a user account. Don't forget to set a password with ‘passwd’.
-  # users.extraUsers.guest = {
-  #   isNormalUser = true;
-  #   uid = 1000;
-  # };
-
-  services.openssh = {
-    enable = true;
-    startWhenNeeded = true;
-  };
-
-  systemd.services."serial-getty@ttyS0".enable = true;
+  # Use the GRUB 2 boot loader.
+  boot.loader.grub.enable = true;
+  boot.loader.grub.version = 2;
   boot.loader.grub.device = "/dev/sda3";
   boot.loader.grub.forceInstall = true;
 
@@ -59,8 +29,19 @@
     terminal_input serial;
     terminal_output serial
   '';
+  systemd.services."serial-getty@ttyS0".enable = true;
 
+  networking.hostName = ""; # Dhcp will set hostname
   networking.firewall.enable = false;
+
+  # Set your time zone.
+  time.timeZone = "Europe/Paris";
+
+  services.openssh = {
+    enable = true;
+    startWhenNeeded = true;
+  };
+
   
   # This value determines the NixOS release with which your system is to be
   # compatible, in order to avoid breaking some software such as database
