@@ -1,11 +1,10 @@
 ---
-:backends:
-  - yaml
-  - json
-:yaml:
-  :datadir: /tmp/hiera/hieradata
-:json:
-  :datadir: /tmp/hiera/hieradata
-:hierarchy:
-  - common
-  - defaults
+version: 5
+defaults:
+  datadir: /tmp/hiera/hieradata
+  data_hash: yaml_data
+hierarchy:
+  - name: common
+    path: common.yaml
+  - name: defaults
+    path: defaults.yaml

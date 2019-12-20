@@ -3,7 +3,7 @@
 class env::std ( $variant = "big", $parent_parameters = {} ){
 
   if $env::target_g5k {
-    $root_pwd = hiera("env::std::misc::rootpwd")
+    $root_pwd = lookup("env::std::misc::rootpwd")
   }
   else {
     $root_pwd = '$1$qzZwnZXQ$Ak1xs7Oma6HUHw/xDJ8q91' # grid5000
