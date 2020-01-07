@@ -37,11 +37,11 @@ class env::std ( $variant = "big", $parent_parameters = {} ){
   class { 'env::std::configure_rsyslog_remote': }
   # sudo-g5k
   class { 'env::std::install_sudog5k': }
-  # g5k systemd generator
-  class { 'env::std::g5k_generator': }
-  # megacli (RAID controler)
   if $env::deb_arch == 'amd64' {
+    # megacli (RAID controler)
     class { 'env::std::install_megacli': }
+    # g5k systemd generator
+    class { 'env::std::g5k_generator': }
   }
   # g5k-disk-manager
   class { 'env::std::configure_g5kdiskmanager': }
