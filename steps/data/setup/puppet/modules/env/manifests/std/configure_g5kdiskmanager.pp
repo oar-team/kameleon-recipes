@@ -23,11 +23,6 @@ class env::std::configure_g5kdiskmanager {
               ensure => link,
               target => '/etc/systemd/system/g5k-disk-manager.service';
           }
-          package {
-            'megactl':
-              ensure => installed,
-              require  => [Apt::Source['hwraid.le-vert.net'], Exec['apt_update']]
-          }
         }
         default : {
           err "${operatingsystem} not supported."
