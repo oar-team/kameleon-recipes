@@ -17,18 +17,18 @@ class env::big ( $variant = "big", $parent_parameters = {} ){
   class { 'env::big::configure_postfix': }
   # kvm
   class { 'env::big::configure_kvm': }
-  # nvidia
-  class { 'env::big::configure_nvidia_gpu': }
+  if $env::deb_arch == 'amd64' {
+    # nvidia
+    class { 'env::big::configure_nvidia_gpu': }
+    # beegfs install
+    class { 'env::big::install_beegfs': }
+  }
   #Allow sshfs
   class { 'env::big::configure_sshfs': }
   # Config OpenMPI
   class { 'env::big::install_openmpi': }
   # Snmp tools
   class { 'env::big::install_snmp_tools': }
-  # beegfs install
-  if $env::deb_arch == 'amd64' {
-    class { 'env::big::install_beegfs': }
-  }
   # remove RESUME device from initramfs
   class { 'env::big::configure_initramfs': }
 

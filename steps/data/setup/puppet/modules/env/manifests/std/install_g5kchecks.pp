@@ -1,7 +1,9 @@
 class env::std::install_g5kchecks {
 
   include 'env::std::ipmitool' # ipmitool is required by g5k-checks
-  include 'env::std::dell'     # dell tools are required by g5k-checks
+  if $env::deb_arch == 'amd64' {
+    include 'env::std::dell'     # dell tools are required by g5k-checks
+  }
 
   case $operatingsystem {
 

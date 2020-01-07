@@ -40,7 +40,9 @@ class env::std ( $variant = "big", $parent_parameters = {} ){
   # g5k systemd generator
   class { 'env::std::g5k_generator': }
   # megacli (RAID controler)
-  class { 'env::std::install_megacli': }
+  if $env::deb_arch == 'amd64' {
+    class { 'env::std::install_megacli': }
+  }
   # g5k-disk-manager
   class { 'env::std::configure_g5kdiskmanager': }
   # g5k-pmem-manager

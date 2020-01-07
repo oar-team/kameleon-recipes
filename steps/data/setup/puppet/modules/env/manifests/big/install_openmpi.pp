@@ -13,7 +13,7 @@ class env::big::install_openmpi () {
           require    => Package['libibverbs-dev']
       }
     }
-    
+
     "stretch" : {
       $openmpi_packages = [ 'libopenmpi-dev', 'openmpi-bin' ]
       $openmpi_deps_packages = [ 'librdmacm1', 'libgfortran3', 'libnuma1', 'blcr-util', 'libibverbs1-dbg', 'libibverbs-dev', 'libpsm2-dev', 'libhfi1-dev', 'libopamgt-dev' ]
@@ -32,12 +32,20 @@ class env::big::install_openmpi () {
 
     "buster" : {
       $openmpi_packages = [ 'libopenmpi-dev', 'openmpi-bin' ]
-      $openmpi_deps_packages = [ 'libnuma1', 'libibverbs-dev', 'libpsm2-dev', 'libopamgt-dev' ]
+      $openmpi_deps_packages = [ 'libnuma1', 'libibverbs-dev' ]
+      $openmpi_opa_packages = [ 'libpsm2-dev', 'libopamgt-dev' ]
 
       ensure_packages($openmpi_deps_packages, {
         ensure => present,
         require => Class['apt::update']
       })
+
+      if $env::deb_arch == 'amd64' {
+        ensure_packages($openmpi_opa_packages, {
+          ensure => present,
+          require => Class['apt::update']
+        })
+      }
 
       ensure_packages($openmpi_packages, {
         ensure => present,
