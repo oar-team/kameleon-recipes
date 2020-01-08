@@ -37,7 +37,6 @@ setup:
   - configure_system
   - configure_apt_sources
   - install_packages
-  - clean_udev_dir
   - setup_orchestrator
   - run_orchestrator
   - clean_system
