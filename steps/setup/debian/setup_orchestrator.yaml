@@ -7,7 +7,7 @@
 - script_path: /tmp
 
 - get_standalone_puppet_script:
-  - exec_in: apt-get install -y wget lsb-release puppet
+  - exec_in: apt-get install -y wget lsb-release puppet gnupg
   # We also install stdlib module that contains some useful functions
   # We force the version of puppetlabs-stdlib and puppetlabs-apt so that we use a version that works on our old version of puppet
   - exec_in: apt-get install -y ca-certificates ; puppet module install puppetlabs-stdlib --version 5.2.0
