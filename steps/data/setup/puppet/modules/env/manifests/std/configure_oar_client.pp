@@ -6,12 +6,12 @@ class env::std::configure_oar_client {
     # Can specify oar client version below
     case "${::lsbdistcodename}" {
       'stretch' : {
-        $oar_version       = "2.5.8~rc8-1~bpo9+1";
+        $oar_version       = "2.5.9~g5k3-1~bpo10+1";
         $oar_repos         = "2.5/debian/";
         $oar_repos_release = "stretch-backports_beta"
       }
       'buster' : {
-        $oar_version       = "2.5.9~g5k2-1~bpo10+1";
+        $oar_version       = "2.5.9~g5k3-1~bpo10+1";
         $oar_repos         = "2.5/debian/";
         $oar_repos_release = "buster-backports_beta"
       }
