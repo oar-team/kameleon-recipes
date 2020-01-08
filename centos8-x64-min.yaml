@@ -42,7 +42,6 @@ setup:
   - set_kernel_modules_blacklist
   - set_g5k_release
   - set_g5k_motd
-  - clean_system
 
 export:
   - clean_dhcp_leases

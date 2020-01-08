@@ -45,7 +45,6 @@ setup:
   - install_packages
   - setup_orchestrator
   - run_orchestrator
-  - clean_system
 
 export:
   - clean_dhcp_leases
