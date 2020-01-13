@@ -57,9 +57,9 @@ setup:
   - set_g5k_dhclient_hook
   - set_g5k_motd
   - configure_ssh_server
-  - clean_system
 
 export:
+  - clean_dhcp_leases
   - "@base"
   - do_qcow2_finish_works
   - export_g5k

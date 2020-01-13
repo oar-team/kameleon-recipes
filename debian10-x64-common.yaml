@@ -43,12 +43,11 @@ setup:
   - configure_system
   - configure_apt_sources
   - install_packages
-  - clean_udev_dir
   - setup_orchestrator
   - run_orchestrator
-  - clean_system
 
 export:
+  - clean_dhcp_leases
   - "@base"
   - do_qcow2_finish_works
   - export_g5k

@@ -23,9 +23,12 @@
         fi
 
 - clean_network:
+  - on_setup_clean:
     - exec_in: rm -rf /var/lib/dhcp/*
 
 - clean_udev:
   - on_setup_clean:
     - exec_in: rm -rf /etc/udev/rules.d/70-persistent-net.rules
     - exec_in: rm -rf /dev/.udev/
+    - exec_in: touch /etc/udev/rules.d/70-persistent-net.rules
+    - exec_in: rm -rf /lib/udev/rules.d/75-persistent-net-generator.rules
