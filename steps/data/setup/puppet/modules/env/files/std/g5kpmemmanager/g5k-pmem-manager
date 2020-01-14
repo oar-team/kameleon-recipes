@@ -1,0 +1,98 @@
+#!/usr/bin/env ruby
+# coding: utf-8
+
+# INSTALLED BY PUPPET
+# Location : puppet/modules/env/files/std/g5kpmemmanager/g5k-pmem-manager
+
+require 'open-uri'
+require 'json'
+require 'optparse'
+
+def main
+  hostname = `hostname`.chomp
+
+  if user_deploy?(hostname)
+    notice 'The environment is deployed manually by a user: we do not touch pmem configuration'
+    exit
+  end
+
+  if !defined_regions?
+    notice "The environment doesn't have defined regions: nothing to do"
+    exit
+  else
+    notice 'Region(s) found, removing and going to memory mode'
+    memory_mode
+  end
+end
+
+def notice(msg)
+  log_notice = 5 # normal, but significant, condition
+  puts "<#{log_notice}> #{msg}"
+end
+
+def debug(msg)
+  log_debug = 7 # debug-level message
+  puts "<#{log_debug}> #{msg}" if DEBUG
+end
+
+def sh(cmd)
+  output = `#{cmd}`.chomp
+  status = $?.exitstatus
+  return [status, output]
+end
+
+# If property 'soft'='free', the standard environment is being
+# deployed by an admin (outside a job) or phoenix.
+# Else, it is a user that is deploying the standard environment
+# For the different states, see:
+# https://github.com/grid5000/g5k-api/blob/master/lib/oar/resource.rb#L45
+def user_deploy?(hostname)
+  url = G5K_API + '/sites/' + hostname.split('.')[1] + '/status?job_details=no&waiting=no&network_address=' + hostname
+  hash = JSON::parse(open(url).read)
+  status = hash['nodes'][hostname]
+  user_deploy = (status['hard'] == 'alive' and status['soft'] != 'free')
+  return user_deploy
+end
+
+def defined_regions?
+  status, stdout = sh('ipmctl show -region')
+  unless status.zero?
+    notice 'impctl failed to list regions'
+    return false
+  end
+
+  stdout.match(/There are no Regions defined/) ? false : true
+end
+
+def defined_namespaces?
+  status, stdout = sh('ndctl list')
+  unless status.zero?
+    notice 'ndctl failed to list namespaces'
+  end
+
+  stdout.empty? ? false : true
+end
+
+def memory_mode
+  # ndctl destroy-namespace return code isn't 0 when there's no namespace,
+  # even with the --force-all argument
+  if defined_namespaces?
+    status, _stdout = sh('ndctl destroy-namespace --force all')
+    unless status.zero?
+      notice 'ndctl failed to destroy namespaces'
+    end
+  end
+
+  status, _stdout = sh('ipmctl create -force -goal MemoryMode=100')
+  unless status.zero?
+    notice 'ipmctl failed to provision memory mode'
+  end
+
+  status, _stdout = sh('reboot')
+  unless status.zero?
+    notice 'system failed to reboot'
+  end
+end
+
+G5K_API = 'https://api.grid5000.fr/stable'
+main
