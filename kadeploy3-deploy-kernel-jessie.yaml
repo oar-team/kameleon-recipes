@@ -9,6 +9,7 @@
 extend: kadeploy3-deploy-kernel-debian-base.yaml
 # Global variables use by Kameleon engine and the steps
 global:
+  deb_mirror_hostname: archive.debian.org
 
 bootstrap:
   - "@base"
