@@ -10,6 +10,7 @@ extend: debian-debootstrap-base.yaml
 
 global:
   release: jessie
+  deb_mirror_hostname: archive.debian.org
 
 bootstrap:
   - "@base"

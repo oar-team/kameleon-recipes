@@ -13,6 +13,7 @@ global:
   distrib: debian
   release: jessie
   release_number: 8
+  deb_mirror_hostname: archive.debian.org
 
 bootstrap:
   - "@base"
