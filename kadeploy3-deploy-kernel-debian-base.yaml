@@ -24,7 +24,8 @@ global:
   # -> other option: bpo - e.g. set on command line using "-g deb_kernel:bpo"
   deb_kernel: bpo
   firmware_packages: firmware-linux firmware-bnx2 firmware-bnx2x firmware-qlogic
-  system_packages: ash systemd systemd-sysv
+  # haveged is used to provide more entropy during boot
+  system_packages: ash systemd systemd-sysv haveged
   net_packages: ifupdown ntpdate isc-dhcp-client openssh-client openssh-server taktuk netcat
   disk_packages: tar bzip2 xz-utils hdparm parted dosfstools ntfs-3g aufs-tools
   ruby_packages: ruby ruby-net-ssh ruby-net-ssh-multi ruby-daemons
