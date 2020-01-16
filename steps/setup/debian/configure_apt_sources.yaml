@@ -22,11 +22,19 @@
 - add_backports:
   - test:
     - exec_in: test "$${deb_backports}" == "true" -a "$${release}" != "testing" -a "$${release}" != "sid"
-    - append_in:
-      - /etc/apt/sources.list
-      - |
-        deb $${deb_mirror_uri} $${release}-backports $${deb_components}
-        deb-src $${deb_mirror_uri} $${release}-backports $${deb_components}
+    - group:
+      - append_in:
+        - /etc/apt/sources.list
+        - |
+          deb $${deb_mirror_uri} $${release}-backports $${deb_components}
+          deb-src $${deb_mirror_uri} $${release}-backports $${deb_components}
+      - test:
+        # cf: https://www.lucas-nussbaum.net/blog/?p=947
+        - exec_in: test "$${release}" != "jessie"
+        - append_in:
+          - /etc/apt/apt.conf.d/99no-check-valid-until
+          - |
+            Acquire::Check-Valid-Until no;
 
 - update_repositories:
   # Deactivate the check to make the cache system works after a while...
