@@ -52,6 +52,7 @@ setup:
   - configure_g5k_apt_sources
   - install_packages
   - set_kernel_modules_blacklist
+  - fix_kernel_initrd_symlinks
   - set_g5k_release
   - set_g5k_dhclient_hook
   - set_g5k_motd
