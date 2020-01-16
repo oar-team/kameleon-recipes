@@ -108,13 +108,20 @@ setup:
         - |
           deb $${deb_mirror_uri} $${release} main contrib non-free
       - exec_in: |
-          if [ "$${release}" != "sid" ]; then
+          if [ "$${release}" != "sid" ] && [ "$${release}" != "jessie" ]; then
             echo "deb $${deb_mirror_uri} $${release}-updates main contrib non-free" >> /etc/apt/sources.list.d/$${release}.list
+          fi
+          if [ "$${release}" != "sid" ] && [ "$${release}" != "jessie" -o "$${deb_arch}" == "amd64" ]; then
+            # https://www.lucas-nussbaum.net/blog/?p=947 -> not available for jessie on arm64, ppc64*...
             echo "deb http://security.debian.org/ $${security_release}/updates main contrib non-free" >> /etc/apt/sources.list.d/$${release}.list
           fi
       - exec_in: |
           if [ "$${use_backports}" == "true" ]; then
             echo "deb $${deb_mirror_uri} $${release}-backports main contrib non-free" > /etc/apt/sources.list.d/$${release}-backports.list
+            if [ "$${release}" == "jessie" ]; then
+              # https://www.lucas-nussbaum.net/blog/?p=947
+              echo 'Acquire::Check-Valid-Until no;' > /etc/apt/apt.conf.d/99no-check-valid-until
+            fi
           fi
       - exec_in: |
           if [ "$${deb_arch}" == "amd64" ]; then
