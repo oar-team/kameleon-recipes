@@ -17,6 +17,8 @@ global:
   deb_kernel_arch: $${deb_arch}
   qemu_arch: x86_64
   arch_specific_packages:
+  # cannot use the bpo kernel, because of an unresolved dep: linux-base (>= 4.3~)
+  deb_kernel:
 
   in_context:
     cmd: ssh -F $${ssh_config_file} $${kameleon_recipe_name} -t chroot $${rootfs} /usr/bin/qemu-$${arch}-static /bin/bash
