@@ -32,7 +32,7 @@ global:
   # Grid'5000 metapackage name for the recipe
   g5k_meta_package: "g5k-meta-packages-$${distrib}$${release_number}-$${g5k_variant}"
   # packages to install, with version
-  packages: "tgz-g5k=2.0.6 firmware-bnx2 firmware-bnx2x firmware-linux"
+  packages: "tgz-g5k=2.0.6 firmware-qlogic firmware-bnx2 firmware-bnx2x firmware-linux"
   # disable backports: they are not available for now
   deb_backports: false
   # locales
