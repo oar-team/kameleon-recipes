@@ -2,11 +2,11 @@
 # vim: softtabstop=2 shiftwidth=2 expandtab fenc=utf-8 cc=81 tw=80
 #==============================================================================
 #
-# DESCRIPTION: Debian buster (10) aarch64 xen Grid'5000 environment
+# DESCRIPTION: Debian buster (10) arm64 xen Grid'5000 environment
 #
 #==============================================================================
 ---
-extend: ./debian10-aarch64-common.yaml
+extend: ./debian10-arm64-common.yaml
 
 global:
   # Grid'5000 environment variant

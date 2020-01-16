@@ -2,26 +2,21 @@
 # vim: softtabstop=2 shiftwidth=2 expandtab fenc=utf-8 cc=81 tw=80
 #==============================================================================
 #
-# DESCRIPTION: Debian buster (10) aarch64 std Grid'5000 environment
+# DESCRIPTION: Debian buster (10) arm64 base Grid'5000 environment
 #
 #==============================================================================
 ---
-extend: ./debian10-aarch64-common.yaml
+extend: ./debian10-arm64-common.yaml
 
 global:
   # Grid'5000 environment variant
-  g5k_variant: std
-  # Grid'5000 Kadeploy environment parameters
-  g5k_postinst_script: g5k-postinstall --net debian-bridged --net hpc --fstab nfs --fstab site-specific --restrict-user std
-  # QEMU options
-  qemu_image_size: 16G
+  g5k_variant: base
 
 bootstrap:
   - "@base"
 
 setup:
   - "@base"
-  - set_and_clear_var_log
 
 export:
   - "@base"
