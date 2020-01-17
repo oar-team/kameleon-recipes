@@ -1,0 +1,69 @@
+#!/usr/bin/env ruby
+# coding: utf-8
+
+# INSTALLED BY PUPPET
+# Location : puppet/modules/env/files/std/g5k-manager/g5k-pmem-manager
+
+require 'open-uri'
+require 'json'
+require 'optparse'
+require_relative '../lib/g5k/g5k-manager.rb'
+
+def main
+  hostname = `hostname`.chomp
+
+  if user_deploy?(hostname)
+    notice 'The environment is deployed manually by a user: we do not touch pmem configuration'
+    exit
+  end
+
+  if !defined_regions?
+    notice "The environment doesn't have defined regions: nothing to do"
+    exit
+  else
+    notice 'Region(s) found, removing and going to memory mode'
+    memory_mode
+  end
+end
+
+def defined_regions?
+  status, stdout = sh('ipmctl show -region')
+  unless status.zero?
+    notice 'impctl failed to list regions'
+    return false
+  end
+
+  stdout.match(/There are no Regions defined/) ? false : true
+end
+
+def defined_namespaces?
+  status, stdout = sh('ndctl list')
+  unless status.zero?
+    notice 'ndctl failed to list namespaces'
+  end
+
+  stdout.empty? ? false : true
+end
+
+def memory_mode
+  # ndctl destroy-namespace return code isn't 0 when there's no namespace,
+  # even with the --force-all argument
+  if defined_namespaces?
+    status, _stdout = sh('ndctl destroy-namespace --force all')
+    unless status.zero?
+      notice 'ndctl failed to destroy namespaces'
+    end
+  end
+
+  status, _stdout = sh('ipmctl create -force -goal MemoryMode=100')
+  unless status.zero?
+    notice 'ipmctl failed to provision memory mode'
+  end
+
+  status, _stdout = sh('reboot')
+  unless status.zero?
+    notice 'system failed to reboot'
+  end
+end
+
+main

@@ -42,4 +42,6 @@ class env::base ( $variant = "base", $parent_parameters = {} ){
   class { 'env::base::add_ca_grid5000': }
   #Dhclient conf
   class { 'env::base::configure_dhclient': }
+  # Disable ndctl monitor service
+  class { 'env::base::disable_ndctl_monitor': }
 }
