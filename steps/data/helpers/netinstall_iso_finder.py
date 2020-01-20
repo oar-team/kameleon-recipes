@@ -30,7 +30,7 @@ class LinkParser(HTMLParser):
                 htmlBytes = response.read()
                 htmlString = htmlBytes.decode(charset.split("=")[1])
                 self.feed(htmlString)
-            
+
     def handle_starttag(self, tag, attrs):
         if tag == 'a':
             for (key, value) in attrs:
@@ -104,7 +104,7 @@ if __name__ == '__main__':
             if not re.match("^\d+$",args.version):
                 raise Exception("please give the Debian release number (e.g. 8 for Jessie)")
             url_regex = re.compile("^"+args.mirror+"cdimage/(?:release|archive)/(?:"+args.version+"\.\d+\.\d+/(?:"+args.arch+"/(?:iso-cd/(?:debian-"+args.version+"\.\d+\.\d+-"+args.arch+"-netinst\.iso)?)?)?)?$")
-            target_regex = re.compile("^.*-netinst\.iso$") 
+            target_regex = re.compile("^.*-netinst\.iso$")
             [visited,found] = url_find(set([args.mirror+"cdimage/"+v+"/" for v in ["release","archive"]]), set(), set())
         elif (args.distrib.lower() == "ubuntu"):
             if args.mirror == None:
@@ -115,7 +115,7 @@ if __name__ == '__main__':
             if not re.match("^\w+$",args.version):
                 raise Exception("please give the Ubuntu release name")
             url_regex = re.compile("^"+args.mirror+"ubuntu/dists/(?:"+args.version+"(?:-updates)?/(?:main/(?:installer-"+args.arch+"/(?:current/(?:images/(?:netboot/(?:mini\.iso)?)?)?)?)?)?)?$")
-            target_regex = re.compile("^.*/mini\.iso$") 
+            target_regex = re.compile("^.*/mini\.iso$")
             [visited,found] = url_find(servers, set(), set())
         elif (args.distrib.lower() == "centos"):
             if args.mirror == None:
@@ -124,13 +124,13 @@ if __name__ == '__main__':
                 raise Exception("please give the CentOS release number (e.g. 7 for CentOS-7)")
             if args.version == '6':
                 url_regex = re.compile("^"+args.mirror+"(?:"+args.version+"/(?:isos/(?:"+args.arch+"/(?:CentOS-"+args.version+"(?:\.\d+)?-"+args.arch+"-netinstall\.iso)?)?)?)?$")
-                target_regex = re.compile("^.*CentOS-\d+(?:\.\d+)?-\w+-netinstall\.iso$") 
+                target_regex = re.compile("^.*CentOS-\d+(?:\.\d+)?-\w+-netinstall\.iso$")
             elif args.version == '7':
                 url_regex = re.compile("^"+args.mirror+"(?:"+args.version+"/(?:isos/(?:"+args.arch+"/(?:CentOS-"+args.version+"-"+args.arch+"-NetInstall-\d+\.iso)?)?)?)?$")
-                target_regex = re.compile("^.*CentOS-\d+-\w+-NetInstall-\d+\.iso$") 
+                target_regex = re.compile("^.*CentOS-\d+-\w+-NetInstall-\d+\.iso$")
             else:
-                url_regex = re.compile("^"+args.mirror+"(?:"+args.version+"/(?:isos/(?:"+args.arch+"/(?:CentOS-"+args.version+"-"+args.arch+"-\d+-boot\.iso)?)?)?)?$")
-                target_regex = re.compile("^.*CentOS-\d+-\w+-\d+-boot\.iso$") 
+                url_regex = re.compile("^"+args.mirror+"(?:"+args.version+"/(?:isos/(?:"+args.arch+"/(?:CentOS-"+args.version+"\.\d+\.\d+-"+args.arch+"-boot\.iso)?)?)?)?$")
+                target_regex = re.compile("^.*CentOS-\d+\.\d+\.\d+-\w+-boot\.iso$")
             [visited,found] = url_find(set([args.mirror]), set(), set())
         else:
             raise Exception("this distribution is not supported")
