@@ -42,11 +42,11 @@ class env::std ( $variant = "big", $parent_parameters = {} ){
     class { 'env::std::install_megacli': }
     # g5k systemd generator
     class { 'env::std::g5k_generator': }
+    # g5k-disk-manager
+    class { 'env::std::configure_g5kdiskmanager': }
+    # g5k-pmem-manager
+    class { 'env::std::configure_g5kpmemmanager': }
   }
-  # g5k-disk-manager
-  class { 'env::std::configure_g5kdiskmanager': }
-  # g5k-pmem-manager
-  class { 'env::std::configure_g5kpmemmanager': }
   # disable lvm pvscan (bug 9453)
   class { 'env::std::disable_lvm_pvscan': }
 }
