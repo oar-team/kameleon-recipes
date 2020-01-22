@@ -5,7 +5,7 @@ class env::nfs::configure_module_path () {
     '/etc/environment-modules/modulespath':
       ensure   => file,
       backup   => '.puppet-bak',
-      content  => '/grid5000/spack/share/spack/modules/linux-debian9-x86_64',
+      content  => "/grid5000/spack/share/spack/modules/linux-debian9-x86_64\n/grid5000/spack/share/spack/modules/linux-debian10-x86_64\n",
       require  => Env::Common::G5kpackages['g5k-meta-packages'];
   }
 }
