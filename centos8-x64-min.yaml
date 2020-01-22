@@ -31,6 +31,7 @@ global:
   timezone: Europe/Paris
   # password
   root_password: grid5000
+  qemu_memory_size: 2G
 
 bootstrap:
   - "@base"
