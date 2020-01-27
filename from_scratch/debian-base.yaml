@@ -43,6 +43,10 @@ global:
   installer_iso_finder_helper: $${kameleon_data_dir}/helpers/netinstall_iso_finder.py
   installer_iso_finder_args: $${distrib} $${release_number} $${deb_arch}
   qemu_iso_path: $${kameleon_cwd}/$${distrib}.iso
+  # Or install from the netboot kernel and initrd directly
+  #installer_kernel_url: http://ftp.debian.org/debian/dists/$${release}/main/installer-$${deb_arch}/current/images/netboot/debian-installer/$${deb_arch}/linux
+  #installer_initrd_url: http://ftp.debian.org/debian/dists/$${release}/main/installer-$${deb_arch}/current/images/netboot/debian-installer/$${deb_arch}/initrd.gz
+  #installer_cmdline: "auto url=http://%LOCAL_IP%:%HTTP_PORT%/preseed.cfg"
 
   base_preseed_path: $${kameleon_data_dir}/preseed/$${distrib}-$${release}-preseed.cfg
   preseed_path: $${kameleon_cwd}/preseed.cfg
