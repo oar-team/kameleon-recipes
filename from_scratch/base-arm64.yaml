@@ -10,7 +10,7 @@ extend: base.yaml
 # Global variables use by Kameleon engine and the steps
 global:
   arch: aarch64
-  iso_arch: aarch64
+  installer_iso_arch: aarch64
   qemu_arch: aarch64
   qemu_enable_kvm: true
   qemu_uefi: true

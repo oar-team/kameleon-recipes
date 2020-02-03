@@ -24,9 +24,9 @@ global:
   # base_url: http://archives.fedoraproject.org/pub/
   base_url: https://dl.fedoraproject.org/pub
   mirror_url: $${base_url}/$${distrib}/linux/releases/$${release}/Everything/$${arch}/os/
-  iso_url:  $${base_url}/$${distrib}/linux/releases/$${release}/Server/$${iso_arch}/iso/$${iso_filename}
+  installer_iso_url:  $${base_url}/$${distrib}/linux/releases/$${release}/Server/$${installer_iso_arch}/iso/$${installer_iso_filename}
 
-  iso_filename: Fedora-Server-netinst-$${iso_arch}-$${release}.iso
+  installer_iso_filename: Fedora-Server-netinst-$${installer_iso_arch}-$${release}.iso
   setup_packages: kernel dracut dracut-kernel
 
   base_kickstart_path: $${kameleon_data_dir}/$${distrib}$${release}-ks.cfg

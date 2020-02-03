@@ -28,9 +28,9 @@ global:
   deb_kernel_arch: $${deb_arch}
 
   # This ISO is use to create the OUT context and not image itself
-  iso_filename: debian-jessie-$${iso_arch}-live.iso
-  iso_url: http://kameleon.imag.fr/iso/$${iso_filename}
-  iso_path: $${kameleon_cwd}/$${iso_filename}
+  installer_iso_filename: debian-jessie-$${installer_iso_arch}-live.iso
+  installer_iso_url: http://kameleon.imag.fr/iso/$${installer_iso_filename}
+  qemu_iso_path: $${kameleon_cwd}/$${installer_iso_filename}
 
   bootstrap_script: $${kameleon_data_dir}/debootstrap.sh
   bootstrap_variant:

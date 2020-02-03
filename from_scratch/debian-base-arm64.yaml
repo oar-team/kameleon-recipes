@@ -32,7 +32,7 @@ global:
   deb_mirror_uri: http://$${deb_mirror_hostname}/debian/
   deb_components: main contrib non-free
 
-  iso_path: ""
+  qemu_iso_path: ""
   installer_kernel_url: http://ftp.debian.org/debian/dists/$${release}/main/installer-arm64/current/images/netboot/debian-installer/arm64/linux
   installer_initrd_url: http://ftp.debian.org/debian/dists/$${release}/main/installer-arm64/current/images/netboot/debian-installer/arm64/initrd.gz
   # Debian arm64 netboot requires to give explicitly auto=true and priority=critical

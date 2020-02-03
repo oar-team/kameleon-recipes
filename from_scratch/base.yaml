@@ -20,8 +20,6 @@ env:
 global:
   # Architecture for the target system
   arch: x86_64
-  # Architecture for the bootstrap iso image
-  iso_arch: x86_64
   # Default hostname
   hostname: kameleon-$${distrib}
   # Default root password
@@ -33,11 +31,12 @@ global:
     - $${distrib}/$${release}
     - $${distrib}
 
-  # If iso_path is set, boot from an iso, retrieved from the following URL:
-  iso_url:
+  # If qemu_iso_path is set, boot from an iso, retrieved from the following URL:
+  installer_iso_arch: x86_64
+  installer_iso_url:
   # or give an helper script to find out the iso URL:
-  iso_finder_helper:
-  iso_finder_args:
+  installer_iso_finder_helper:
+  installer_iso_finder_args:
 
   # Otherwise, if qemu_kernel_path is set, boot from an kernel, initrd and
   # cmdline fetched from the URL defined below, and used directly in qemu:
@@ -60,7 +59,7 @@ global:
   qemu_kernel_path: $${kameleon_cwd}/qemu_kernel
   qemu_initrd_path: $${kameleon_cwd}/qemu_initrd
   qemu_append_cmdline: $${installer_cmdline}
-  iso_path: $${kamelon_cwd}/qemu_iso
+  qemu_iso_path: $${kamelon_cwd}/qemu.iso
 
   # rootfs options
   disk_device: /dev/vda
@@ -120,8 +119,9 @@ bootstrap:
     - vm_cleanup_section: setup
     - vm_expected_server: ssh
     - boot_timeout: 100
+    - qemu_iso_boot: false
+    - qemu_iso_path: ""
     - qemu_kernel_path: ""
-    - iso_path: ""
     - qemu_sendkeys_commands: ""
 
 # Install and configuration steps

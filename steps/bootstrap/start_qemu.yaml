@@ -1,12 +1,12 @@
 # Require SSH_FWD_PORT bash environment variable to be set
 
 # This must be set if you want to boot an ISO image:
-- iso_path: ""
-- iso_boot: "yes"
+- qemu_iso_path: ""
+- qemu_iso_boot: true
 # Else that can be set to boot from a kernel, initrd and cmdline:
 - qemu_kernel_path: ""
 - qemu_initrd_path: ""
-- qemy_append_cmdline: ""
+- qemu_append_cmdline: ""
 # Else boot from disk.
 
 - vm_expected_service: ssh
@@ -149,9 +149,9 @@
         fi
         QEMU_BOOT="-drive if=pflash,format=raw,readonly,file=$${qemu_uefi_code_path} -drive if=pflash,format=raw,file=$${kameleon_cwd}/qemu_uefi_vars.fd"
       fi
-      if [ -n "$${iso_path}" ]; then
-        QEMU_DRIVES="-drive file=$${iso_path},readonly,media=cdrom $QEMU_DRIVES"
-        if [ "$${iso_boot}" == "yes" ]; then
+      if [ -n "$${qemu_iso_path}" ]; then
+        QEMU_DRIVES="-drive file=$${qemu_iso_path},readonly,media=cdrom $QEMU_DRIVES"
+        if [ "$${qemu_iso_boot}" == "true" ]; then
           QEMU_BOOT="$QEMU_BOOT -boot order=d"
         fi
       elif [ -n "$${qemu_kernel_path}" ]; then

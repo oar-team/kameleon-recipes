@@ -12,11 +12,11 @@ global:
   distrib: nixos
   release: 16.03
   release_minor_and_hash: 1313.b8f7f0e
-  iso_location: releases
+  installer_iso_location: releases
 
-  iso_filename: nixos-minimal-$${release}.$${release_minor_and_hash}-$${arch}-linux.iso
-  iso_url: http://nixos.org/$${iso_location}/nixos/$${release}-small/nixos-$${release}.$${release_minor_and_hash}/$${iso_filename}
-  iso_path: $${kameleon_cwd}/$${distrib}.iso
+  installer_iso_filename: nixos-minimal-$${release}.$${release_minor_and_hash}-$${arch}-linux.iso
+  installer_iso_url: http://nixos.org/$${installer_iso_location}/nixos/$${release}-small/nixos-$${release}.$${release_minor_and_hash}/$${installer_iso_filename}
+  qemu_iso_path: $${kameleon_cwd}/$${distrib}.iso
 
   autoinstall_script_path: $${kameleon_data_dir}/$${distrib}-autoinstall.sh
   root_password: root

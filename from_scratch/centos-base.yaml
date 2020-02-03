@@ -12,7 +12,7 @@ extend: base.yaml
 global:
   distrib: centos
   release_number: 7
-  # release_minor and release_date are not required if using the iso_finder
+  # release_minor and release_date are not required if using the installer_iso_finder
   # helper script
   #release_major: $${release_number}
   #release_minor: 4
@@ -24,11 +24,11 @@ global:
 
   # location of the CentOS netinstall iso
   # can be set manually or guessed using a url finder helper script
-  #iso_filename: CentOS-$${release_major}-$${arch}-NetInstall-$${release_date}.iso
-  #iso_url: $${mirror_base_url}/$${release_major}.$${release_minor}.$${release_date}/isos/$${arch}/$${iso_filename}
-  iso_finder_helper: $${kameleon_data_dir}/helpers/netinstall_iso_finder.py
-  iso_finder_args: $${distrib} $${release_number} $${arch} $${mirror_base_url}
-  iso_path: $${kameleon_cwd}/$${distrib}.iso
+  #installer_iso_filename: CentOS-$${release_major}-$${arch}-NetInstall-$${release_date}.iso
+  #installer_iso_url: $${mirror_base_url}/$${release_major}.$${release_minor}.$${release_date}/isos/$${arch}/$${installer_iso_filename}
+  installer_iso_finder_helper: $${kameleon_data_dir}/helpers/netinstall_iso_finder.py
+  installer_iso_finder_args: $${distrib} $${release_number} $${arch} $${mirror_base_url}
+  qemu_iso_path: $${kameleon_cwd}/$${distrib}.iso
 
 
   base_kickstart_path: $${kameleon_data_dir}/kickstart/$${distrib}$${release_number}-ks.cfg
