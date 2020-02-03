@@ -13,6 +13,7 @@ global:
   iso_arch: aarch64
   qemu_arch: aarch64
   qemu_enable_kvm: true
+  qemu_uefi: true
 
 bootstrap:
   - "@base"

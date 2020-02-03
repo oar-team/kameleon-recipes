@@ -22,13 +22,16 @@
 - vm_cleanup_section: setup
 - shutdown_vm_immediately: false
 - force_vm_shutdown: true
-- qemu_enable_kvm: "true"
+- qemu_enable_kvm: true
 - qemu_cpus: 2
 - qemu_memory_size: 768
 - qemu_monitor_socket: $${kameleon_cwd}/qemu_monitor.socket
 - qemu_arch: $${arch}
 - qemu_image_size: 10G
 - qemu_pidfile: $${kameleon_cwd}/qemu.pid
+- qemu_uefi: false
+- qemu_uefi_code_path: /usr/share/AAVMF/AAVMF_CODE.fd
+- qemu_uefi_vars_path: /usr/share/AAVMF/AAVMF_VARS.fd
 - disk_cache: unsafe
 
 - start_vm:
@@ -109,7 +112,8 @@
       echo "Starting qemu..."
       if [ "$${qemu_enable_kvm}" == "true" ] && (/usr/sbin/kvm-ok > /dev/null || egrep '(vmx|svm)' /proc/cpuinfo > /dev/null) ; then # print warning if /usr/sbin/kvm-ok is not installed
         if [ "$${qemu_arch}" == "aarch64" ]; then
-          ENABLE_KVM="-enable-kvm -accel kvm -machine virt -cpu host -bios /usr/share/qemu-efi-aarch64/QEMU_EFI.fd"
+          ENABLE_KVM="-enable-kvm -accel kvm -machine virt -cpu host"
+          #ENABLE_KVM="-global virtio-blk-pci.scsi=off -no-user-config -enable-fips -machine virt,gic-version=host,accel=kvm:tcg -cpu host -rtc driftfix=slew -object rng-random,filename=/dev/urandom,id=rng0 -device virtio-rng-pci,rng=rng0"
         else #X86_64
           ENABLE_KVM="-enable-kvm -cpu host"
         fi
@@ -137,14 +141,21 @@
       fi
       # Select disk
       QEMU_DRIVES="-drive file=$${image_disk}.$${image_format},cache=$${disk_cache},media=disk,if=virtio,id=drive0"
-      QENU_BOOT=
+      QEMU_BOOT=
+      QEMU_APPEND_CMDLINE=
+      if [ "$${qemu_uefi}" == "true" ]; then
+        if [ ! -f $${kameleon_cwd}/qemu_uefi_vars.fd ]; then
+          cp $${qemu_uefi_vars_path} $${kameleon_cwd}/qemu_uefi_vars.fd
+        fi
+        QEMU_BOOT="-drive if=pflash,format=raw,readonly,file=$${qemu_uefi_code_path} -drive if=pflash,format=raw,file=$${kameleon_cwd}/qemu_uefi_vars.fd"
+      fi
       if [ -n "$${iso_path}" ]; then
         QEMU_DRIVES="-drive file=$${iso_path},readonly,media=cdrom $QEMU_DRIVES"
         if [ "$${iso_boot}" == "yes" ]; then
-          QEMU_BOOT="-boot order=d"
+          QEMU_BOOT="$QEMU_BOOT -boot order=d"
         fi
       elif [ -n "$${qemu_kernel_path}" ]; then
-        QEMU_BOOT="-kernel $${qemu_kernel_path}"
+        QEMU_BOOT="$QEMU_BOOT -kernel $${qemu_kernel_path}"
         if [ -n "$${qemu_initrd_path}" ]; then
           QEMU_BOOT="$QEMU_BOOT -initrd $${qemu_initrd_path}"
         fi
@@ -152,7 +163,6 @@
           QEMU_APPEND_CMDLINE="$${qemu_append_cmdline}"
           QEMU_APPEND_CMDLINE=${QEMU_APPEND_CMDLINE//%LOCAL_IP%/$${local_ip}}
           QEMU_APPEND_CMDLINE=${QEMU_APPEND_CMDLINE//%HTTP_PORT%/$HTTP_PORT}
-          QEMU_BOOT="$QEMU_BOOT -append $QEMU_APPEND_CMDLINE"
         fi
       fi
       if [ "$${no_reboot}" == "true" ]; then
@@ -165,7 +175,7 @@
         -net nic,model=virtio -net user${HOSTFWD} \
         $QEMU_DRIVES \
         -monitor unix:$${qemu_monitor_socket},server,nowait -pidfile $${qemu_pidfile} -daemonize \
-        $QEMU_BOOT $NO_REBOOT \
+        $QEMU_BOOT ${QEMU_APPEND_CMDLINE:+-append "$QEMU_APPEND_CMDLINE"} $NO_REBOOT \
         $VNC_OPT $SERIAL_TELNET\
         $LOADVM
   - exec_local: |
