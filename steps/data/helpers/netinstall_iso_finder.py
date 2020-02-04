@@ -103,7 +103,10 @@ if __name__ == '__main__':
                 args.mirror = "http://cdimage.debian.org/"
             if not re.match("^\d+$",args.version):
                 raise Exception("please give the Debian release number (e.g. 8 for Jessie)")
-            url_regex = re.compile("^"+args.mirror+"cdimage/(?:release|archive)/(?:"+args.version+"\.\d+\.\d+/(?:"+args.arch+"/(?:iso-cd/(?:debian-"+args.version+"\.\d+\.\d+-"+args.arch+"-netinst\.iso)?)?)?)?$")
+            if args.version == '10':
+                url_regex = re.compile("^"+args.mirror+"cdimage/release/(?:"+args.version+"\.\d+\.\d+/(?:"+args.arch+"/(?:iso-cd/(?:debian-"+args.version+"\.\d+\.\d+-"+args.arch+"-netinst\.iso)?)?)?)?$")
+            else:
+                url_regex = re.compile("^"+args.mirror+"cdimage/archive/(?:"+args.version+"\.\d+\.\d+/(?:"+args.arch+"/(?:iso-cd/(?:debian-"+args.version+"\.\d+\.\d+-"+args.arch+"-netinst\.iso)?)?)?)?$")
             target_regex = re.compile("^.*-netinst\.iso$")
             [visited,found] = url_find(set([args.mirror+"cdimage/"+v+"/" for v in ["release","archive"]]), set(), set())
         elif (args.distrib.lower() == "ubuntu"):
