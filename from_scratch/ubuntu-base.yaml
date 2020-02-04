@@ -26,10 +26,10 @@ global:
   deb_mirror_uri: http://$${deb_mirror_hostname}/ubuntu/
   dev_components: "main restricted"
 
-  #iso_location: $${release}-updates
-  #iso_url: $${deb_mirror_uri}/dists/$${iso_location}/main/installer-$${deb_arch}/current/images/netboot/mini.iso
-  iso_finder_helper: $${kameleon_data_dir}/helpers/netinstall_iso_finder.py
-  iso_finder_args: $${distrib} $${release} $${deb_arch}
+  #installer_iso_location: $${release}-updates
+  #installer_iso_url: $${deb_mirror_uri}/dists/$${installer_iso_location}/main/installer-$${deb_arch}/current/images/netboot/mini.iso
+  installer_iso_finder_helper: $${kameleon_data_dir}/helpers/netinstall_iso_finder.py
+  installer_iso_finder_args: $${distrib} $${release} $${deb_arch}
 
   bootstrap_packages: locales openssh-server linux-image-generic
   additional_packages: ""

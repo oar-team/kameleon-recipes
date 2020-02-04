@@ -10,8 +10,8 @@ extend: fedora-base.yaml
 
 global:
   release: 20
-  iso_filename: Fedora-$${release}-$${iso_arch}-netinst.iso
-  iso_url: http://archives.fedoraproject.org/pub/archive/$${distrib}/linux/releases/$${release}/Fedora/$${iso_arch}/iso/$${iso_filename}
+  installer_iso_filename: Fedora-$${release}-$${installer_iso_arch}-netinst.iso
+  installer_iso_url: http://archives.fedoraproject.org/pub/archive/$${distrib}/linux/releases/$${release}/Fedora/$${installer_iso_arch}/iso/$${installer_iso_filename}
 
 bootstrap:
   - "@base"
