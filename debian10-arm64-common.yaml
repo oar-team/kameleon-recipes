@@ -17,6 +17,8 @@ global:
   g5k_variant: common
   # Grid'5000 environment version
   g5k_version: 2020012915
+  # Grid'5000 environment arch
+  g5k_image_arch: arm64
   # Grid'5000 kadeploy environment parameters
   g5k_tgz_path: server:///path/to/your/image
   g5k_postinst_path: server:///grid5000/postinstalls/g5k-postinstall.tgz
