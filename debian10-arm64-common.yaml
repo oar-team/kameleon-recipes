@@ -29,9 +29,6 @@ global:
   locales: POSIX C en_US.UTF8
   lang: en_US.UTF8
   timezone: Europe/Paris
-  # FIXME : Use stretch version of puppet while waiting the buster one
-  force_puppet_debian_version: stretch
-
 
 bootstrap:
   - "@base"
