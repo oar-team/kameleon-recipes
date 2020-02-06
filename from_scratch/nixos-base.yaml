@@ -48,12 +48,4 @@ setup:
   - "@base"
 
 export:
-  - export:
-    - export_as_tgz:
-        - exec_local: |
-            MNT=$(mktemp -d) 
-            sudo mount -o loop,offset=32768 $${image_disk}.$${image_format} $MNT
-            sudo tar -czf $${appliance_filename}.tgz -C $MNT .
-            sudo chmod 666 $${appliance_filename}.tgz 
-            sudo umount $MNT
-            rm -r $MNT
+  - "@base"
