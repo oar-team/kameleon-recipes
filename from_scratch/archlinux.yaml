@@ -16,9 +16,9 @@ global:
     - $${distrib}
 
   mirror_url: http://archlinux.polymorf.fr
-  iso_filename: debian-jessie-$${iso_arch}-live.iso
-  iso_url: http://kameleon.imag.fr/iso/$${iso_filename}
-  iso_path: $${kameleon_cwd}/$${iso_filename}
+  installer_iso_filename: debian-jessie-$${installer_iso_arch}-live.iso
+  installer_iso_url: http://kameleon.imag.fr/iso/$${installer_iso_filename}
+  qemu_iso_path: $${kameleon_cwd}/$${installer_iso_filename}
 
   autoinstall_script_path: $${kameleon_data_dir}/$${distrib}-autoinstall.sh
   bootstrap_packages: base mkinitcpio dhcpcd linux systemd-sysvcompat iputils net-tools syslinux openssh vim

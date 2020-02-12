@@ -3,7 +3,7 @@ class env::xen::configure_xen () {
   if "$operatingsystem" == "Debian" {
     case "${::lsbdistcodename}" {
       'jessie' : {
-        $hypervisor = '/boot/xen-4.4-amd64.gz'
+        $hypervisor = "/boot/xen-4.4-${env::deb_arch}.gz"
         file {
           '/etc/xen/xend-config.sxp':
             ensure   => file,
@@ -27,8 +27,8 @@ class env::xen::configure_xen () {
 
         case "${::lsbdistcodename}" {
           'stretch' : {
-            $hypervisor = '/boot/xen-4.8-amd64.gz'
-            $xen_packages = [ 'xen-utils', 'debootstrap', 'xen-tools', 'sysfsutils', 'xen-linux-system-amd64' ]
+            $hypervisor = "/boot/xen-4.8-${env::deb_arch}.gz"
+            $xen_packages = [ 'xen-utils', 'debootstrap', 'xen-tools', 'sysfsutils', "xen-linux-system-${env::deb_arch}" ]
             file {
               '/etc/xen/xend-config.sxp.puppet-bak':
                 ensure   => file,
@@ -50,11 +50,11 @@ class env::xen::configure_xen () {
           }
 
           'buster' : {
-            $hypervisor = '/boot/xen-4.11-amd64.gz'
-            $xen_packages = [ 'xen-utils', 'debootstrap', 'xen-tools', 'sysfsutils', 'xen-system-amd64' ]
+            $hypervisor = "/boot/xen-4.11-${env::deb_arch}.gz"
+            $xen_packages = [ 'xen-utils', 'debootstrap', 'xen-tools', 'sysfsutils', "xen-system-${env::deb_arch}" ]
           }
         }
-        
+
         file_line {
           '/etc/xen-tools/xen-tools.conf: change dir':
             path     => '/etc/xen-tools/xen-tools.conf',
@@ -88,7 +88,7 @@ class env::xen::configure_xen () {
             before   => Exec['create_example_domU'];
           '/etc/xen-tools/xen-tools.conf: change arch':
             path     => '/etc/xen-tools/xen-tools.conf',
-            line     => 'arch = amd64',
+            line     => "arch = ${env::deb_arch}",
             match    => '^ *arch *=',
             require  => File['/etc/xen-tools/xen-tools.conf.puppet-bak'],
             before   => Exec['create_example_domU'];

@@ -14,10 +14,10 @@ class env::min::configure_network_and_install_drivers {
         source => "puppet:///modules/env/min/network/g5k-update-host-name";
   }
 
-  # Network driver for many dell server
+  # Network driver for many dell server and arm pyxi cluster (qlogic)
   case $operatingsystem {
     'Debian': {
-      $drivers = ['firmware-bnx2x', 'firmware-bnx2']
+      $drivers = ['firmware-bnx2x', 'firmware-bnx2', 'firmware-qlogic']
     }
     'Ubuntu': {
       $drivers = ['linux-firmware']

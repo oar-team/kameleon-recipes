@@ -23,36 +23,28 @@ global:
   # For a specific version of Debian, please see the dedicated recipe, as this
   # recipe is mainly meant as being extended.
   distrib: debian
-  deb_arch: amd64
-  release: jessie
-  release_number: 8
+  deb_arch: arm64
+  release: buster
+  release_number: 10
 
   # URL to retrieve packages from (sources.list)
   deb_mirror_hostname: ftp.debian.org
   deb_mirror_uri: http://$${deb_mirror_hostname}/debian/
   deb_components: main contrib non-free
 
-  # Install from the installer's iso
-  # The location of the Debian netinstall iso can be set manually or guessed
-  # using a url finder helper script
-  #installer_iso_filename: debian-$${release_number}-$${deb_arch}-netinst.iso
-  #installer_iso_location: archive
-  #installer_iso_release_version: 8.0.0
-  #installer_iso_url: http://cdimage.debian.org/cdimage/$${installer_iso_location}/$${installer_iso_release_version}/$${deb_arch}/iso-cd/$${installer_iso_filename}
-  installer_iso_url:
-  installer_iso_finder_helper: $${kameleon_data_dir}/helpers/netinstall_iso_finder.py
-  installer_iso_finder_args: $${distrib} $${release_number} $${deb_arch}
-  qemu_iso_path: $${kameleon_cwd}/$${distrib}.iso
-  # Or install from the netboot kernel and initrd directly
-  #installer_kernel_url: http://ftp.debian.org/debian/dists/$${release}/main/installer-$${deb_arch}/current/images/netboot/debian-installer/$${deb_arch}/linux
-  #installer_initrd_url: http://ftp.debian.org/debian/dists/$${release}/main/installer-$${deb_arch}/current/images/netboot/debian-installer/$${deb_arch}/initrd.gz
-  #installer_cmdline: "auto url=http://%LOCAL_IP%:%HTTP_PORT%/preseed.cfg"
-
+  qemu_iso_path:
+  installer_iso_finder_helper:
+  # Debian netinstall iso refuses to get keyborad keys via the qemu sendkey command on ARM64.
+  # Because of that, we cannot set the preseed in the iso image cdrom boot in qemu.
+  # As a consequence, we use the netboot instead and boot kernel and initrd directly
+  installer_kernel_url: http://ftp.debian.org/debian/dists/$${release}/main/installer-$${deb_arch}/current/images/netboot/debian-installer/$${deb_arch}/linux
+  installer_initrd_url: http://ftp.debian.org/debian/dists/$${release}/main/installer-$${deb_arch}/current/images/netboot/debian-installer/$${deb_arch}/initrd.gz
+  # Debian arm64 netboot requires to give explicitly auto=true and priority=critical
+  # (the "auto" alias seems not to only be defined for amd64).
+  # FIXME find the Debian documentation page which explains that.
+  installer_cmdline: "auto=true priority=critical url=http://%LOCAL_IP%:%HTTP_PORT%/preseed.cfg"
   base_preseed_path: $${kameleon_data_dir}/preseed/$${distrib}-$${release}-preseed.cfg
   preseed_path: $${kameleon_cwd}/preseed.cfg
-
-  qemu_sendkeys_commands: $${kameleon_data_dir}/qemu-sendkeys/netinst-iso-$${distrib}
-
 
 bootstrap:
   - "@base"

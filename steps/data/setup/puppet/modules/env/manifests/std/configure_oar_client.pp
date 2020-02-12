@@ -11,7 +11,7 @@ class env::std::configure_oar_client {
         $oar_repos_release = "stretch-backports_beta"
       }
       'buster' : {
-        $oar_version       = "2.5.9~g5k2-1~bpo10+1";
+        $oar_version       = "2.5.9~g5k3-1~bpo10+1";
         $oar_repos         = "2.5/debian/";
         $oar_repos_release = "buster-backports_beta"
       }
@@ -71,7 +71,7 @@ class env::std::configure_oar_client {
     }
   }
 
-  $hiera   = hiera("env::std::oar::ssh")
+  $hiera   = lookup("env::std::oar::ssh")
   file {
     '/var/lib/oar/checklogs/':
       ensure   => directory,
@@ -191,7 +191,7 @@ class env::std::configure_oar_client {
   }
 
   if $env::target_g5k {
-    $key_values   = hiera("env::std::oar::ssh")
+    $key_values   = lookup("env::std::oar::ssh")
 
     file {
       "/var/lib/oar/.ssh/oarnodesetting_ssh.key":

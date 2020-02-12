@@ -20,8 +20,6 @@ env:
 global:
   # Architecture for the target system
   arch: x86_64
-  # Architecture for the bootstrap iso image
-  iso_arch: x86_64
   # Default hostname
   hostname: kameleon-$${distrib}
   # Default root password
@@ -33,21 +31,35 @@ global:
     - $${distrib}/$${release}
     - $${distrib}
 
-  ## iso finder
-  iso_finder_helper:
-  iso_finder_args:
+  # If qemu_iso_path is set, boot from an iso, retrieved from the following URL:
+  installer_iso_arch: x86_64
+  installer_iso_url:
+  # or give an helper script to find out the iso URL:
+  installer_iso_finder_helper:
+  installer_iso_finder_args:
+
+  # Otherwise, if qemu_kernel_path is set, boot from an kernel, initrd and
+  # cmdline fetched from the URL defined below, and used directly in qemu:
+  installer_kernel_url:
+  installer_initrd_url:
+  installer_cmdline:
 
   ## GPG keyserver (Waring: not all servers are reliable)
   gpg_keyserver: keyserver.ubuntu.com
 
   ## QEMU options
-  qemu_enable_kvm: "$(egrep '(vmx|svm)' /proc/cpuinfo > /dev/null && echo true)"
-  qemu_cpu: 2
+  qemu_enable_kvm: true
+  qemu_uefi: false
+  qemu_cpus: 2
   qemu_memory_size: 768
   qemu_monitor_socket: $${kameleon_cwd}/qemu_monitor.socket
   qemu_arch: $${arch}
   qemu_image_size: 10G
   qemu_pidfile: $${kameleon_cwd}/qemu.pid
+  qemu_kernel_path: $${kameleon_cwd}/qemu_kernel
+  qemu_initrd_path: $${kameleon_cwd}/qemu_initrd
+  qemu_append_cmdline: $${installer_cmdline}
+  qemu_iso_path: $${kamelon_cwd}/qemu.iso
 
   # rootfs options
   disk_device: /dev/vda
@@ -89,7 +101,7 @@ global:
 # Bootstrap the new system and create the 'in_context'
 bootstrap:
   - enable_checkpoint
-  - download_iso
+  - download_installer
   - prepare_disk
   - prepare_autoinstall
   - start_http_server
@@ -107,7 +119,9 @@ bootstrap:
     - vm_cleanup_section: setup
     - vm_expected_server: ssh
     - boot_timeout: 100
-    - iso_path: ""
+    - qemu_iso_boot: false
+    - qemu_iso_path: ""
+    - qemu_kernel_path: ""
     - qemu_sendkeys_commands: ""
 
 # Install and configuration steps

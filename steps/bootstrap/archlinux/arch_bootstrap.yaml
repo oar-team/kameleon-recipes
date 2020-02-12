@@ -3,7 +3,7 @@
 
 - fetch_bootstrap_image_url:
   - check_cmd_out: lynx
-  - exec_out: BOOTSTRAP_IMAGE_URL="$(lynx $${mirror_base_url}/iso/latest/ -dump -listonly -nonumbers | grep bootstrap | grep tar.gz | grep $${iso_arch} | head -1)"
+  - exec_out: BOOTSTRAP_IMAGE_URL="$(lynx $${mirror_base_url}/iso/latest/ -dump -listonly -nonumbers | grep bootstrap | grep tar.gz | grep $${installer_iso_arch} | head -1)"
   - exec_out: |
       if [ -z "${BOOTSTRAP_IMAGE_URL-unset}" ]; then
           fail "bootstrap archive not found! Please check $${mirror_base_url}/iso/latest/"

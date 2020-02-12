@@ -1,5 +1,5 @@
 - clean_unnecessary_packages:
     - on_setup_clean:
         - exec_in: apt-get update && apt-get install -y debfoster
-        - exec_in: yes | debfoster --quiet --force -o MaxPriority=standard -oUseRecommends=yes g5k-meta-packages-$${distrib}$${release_number}-$${g5k_variant} grub-pc grub-efi-amd64-bin gnupg linux-image-amd64 console-setup rsync locales tgz-g5k firmware-bnx2 firmware-bnx2x  || true
+        - exec_in: yes | debfoster --quiet --force -o MaxPriority=standard -oUseRecommends=yes g5k-meta-packages-$${distrib}$${release_number}-$${g5k_variant} gnupg linux-image-$${deb_arch} console-setup rsync locales tgz-g5k firmware-bnx2 firmware-bnx2x $${arch_packages_no_clean} || true
         - apt-get_in: clean

@@ -6,7 +6,7 @@
 #
 #==============================================================================
 ---
-extend: from_scratch/debian-buster.yaml
+extend: from_scratch/aarch64/debian-buster.yaml
 
 global:
   # Export format to generate
@@ -16,19 +16,15 @@ global:
   # Grid'5000 environment variant
   g5k_variant: common
   # Grid'5000 environment version
-  g5k_version: 2020012812
+  g5k_version: 2020012915
   # Grid'5000 environment arch
-  g5k_image_arch: x64
+  g5k_image_arch: arm64
   # Grid'5000 kadeploy environment parameters
   g5k_tgz_path: server:///path/to/your/image
   g5k_postinst_path: server:///grid5000/postinstalls/g5k-postinstall.tgz
   g5k_postinst_script: g5k-postinstall --net debian
   g5k_kernel_params: ""
   deb_backports: true
-  # grub-efi-amd64-bin has to be installed if we want to support both mbr and
-  # efi boot methods. This package can be installed in parallel with grub-pc
-  # (in contrary to grub-efi-amd64 which conflit with grub-pc)
-  packages: "grub-efi-amd64-bin"
   # locales
   locales: POSIX C en_US.UTF8
   lang: en_US.UTF8
@@ -43,12 +39,10 @@ setup:
   - "@base"
   - configure_system
   - configure_apt_sources
-  - install_packages
   - setup_orchestrator
   - run_orchestrator
 
 export:
-  - clean_dhcp_leases
   - "@base"
   - do_qcow2_finish_works
   - export_g5k

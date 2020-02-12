@@ -3,7 +3,7 @@
 class env::std ( $variant = "big", $parent_parameters = {} ){
 
   if $env::target_g5k {
-    $root_pwd = hiera("env::std::misc::rootpwd")
+    $root_pwd = lookup("env::std::misc::rootpwd")
   }
   else {
     $root_pwd = '$1$qzZwnZXQ$Ak1xs7Oma6HUHw/xDJ8q91' # grid5000
@@ -37,14 +37,16 @@ class env::std ( $variant = "big", $parent_parameters = {} ){
   class { 'env::std::configure_rsyslog_remote': }
   # sudo-g5k
   class { 'env::std::install_sudog5k': }
-  # g5k systemd generator
-  class { 'env::std::g5k_generator': }
-  # megacli (RAID controler)
-  class { 'env::std::install_megacli': }
-  # g5k-disk-manager
-  class { 'env::std::configure_g5kdiskmanager': }
-  # g5k-pmem-manager
-  class { 'env::std::configure_g5kpmemmanager': }
+  if $env::deb_arch == 'amd64' {
+    # megacli (RAID controler)
+    class { 'env::std::install_megacli': }
+    # g5k systemd generator
+    class { 'env::std::g5k_generator': }
+    # g5k-disk-manager
+    class { 'env::std::configure_g5kdiskmanager': }
+    # g5k-pmem-manager
+    class { 'env::std::configure_g5kpmemmanager': }
+  }
   # disable lvm pvscan (bug 9453)
   class { 'env::std::disable_lvm_pvscan': }
 }
