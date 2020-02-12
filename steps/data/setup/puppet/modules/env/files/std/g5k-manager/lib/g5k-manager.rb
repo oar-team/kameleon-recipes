@@ -33,18 +33,38 @@ def error(status, msg)
   exit status
 end
 
+def rmtmp
+  if defined?(TMPDIR)
+    Dir.chdir('/root')
+    sh("rm -rf #{TMPDIR}")
+  end
+end
+
 # If property 'soft'='free', the standard environment is being
 # deployed by an admin (outside a job) or phoenix.
 # Else, it is a user that is deploying the standard environment
 # For the different states, see:
 # https://github.com/grid5000/g5k-api/blob/master/lib/oar/resource.rb#L45
 def user_deploy?(hostname)
-  url = G5K_API + '/sites/' + site(hostname) + '/status?disks=no&job_details=no&waiting=no&network_address=' + hostname
-  hash = JSON::parse(open(url).read)
-  status = hash['nodes'][hostname]
-  debug("Node status: soft=#{status['soft']}, hard=#{status['hard']}")
-  user_deploy = (status['hard'] == 'alive' and status['soft'] != 'free')
-  return user_deploy
+  tries = 3
+  begin
+    url = G5K_API + '/sites/' + site(hostname) + '/status?disks=no&job_details=no&waiting=no&network_address=' + hostname
+    hash = JSON::parse(open(url).read)
+  rescue
+    tries -= 1
+    if tries > 0
+      debug("Fetching #{url} failed. Sleeping 1s and retry.")
+      sleep(1)
+      retry
+    else
+      error(1, "Fetching #{url} failed too many times")
+    end
+
+    status = hash['nodes'][hostname]
+    debug("Node status: soft=#{status['soft']}, hard=#{status['hard']}")
+    user_deploy = (status['hard'] == 'alive' and status['soft'] != 'free')
+    return user_deploy
+  end
 end
 
 def cluster(hostname)
