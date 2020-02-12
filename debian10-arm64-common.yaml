@@ -39,10 +39,8 @@ setup:
   - "@base"
   - configure_system
   - configure_apt_sources
-  - clean_udev_dir
   - setup_orchestrator
   - run_orchestrator
-  - clean_system
 
 export:
   - "@base"
