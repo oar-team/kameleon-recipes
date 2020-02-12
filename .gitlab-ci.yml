@@ -60,6 +60,24 @@ dryrun_debian10-x64-big:
 dryrun_debian10-x64-std:
   <<: *defaults-dryrun
 
+dryrun_debian10-arm64-min:
+  <<: *defaults-dryrun
+
+dryrun_debian10-arm64-base:
+  <<: *defaults-dryrun
+
+dryrun_debian10-arm64-nfs:
+  <<: *defaults-dryrun
+
+dryrun_debian10-arm64-xen:
+  <<: *defaults-dryrun
+
+dryrun_debian10-arm64-big:
+  <<: *defaults-dryrun
+
+dryrun_debian10-arm64-std:
+  <<: *defaults-dryrun
+
 
 build_centos8-x64-min:
   <<: *defaults-build
