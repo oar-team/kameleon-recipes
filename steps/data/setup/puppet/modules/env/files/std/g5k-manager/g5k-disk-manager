@@ -33,11 +33,6 @@ def close
   exit 0
 end
 
-def rmtmp
-  Dir.chdir('/root')
-  sh("rm -rf #{TMPDIR}")
-end
-
 def parse_cmdline
   options = {}
   OptionParser.new do |opts|
