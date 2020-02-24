@@ -1,4 +1,4 @@
-# Install cloud_init in qcow2 output file (tarball must be exported beforehand, in order to not include cloud_init 
+# Install cloud_init in qcow2 output file (tarball must be exported beforehand, in order to not include cloud_init)
 - install_cloud_init:
   - exec_local: |
       if [[ "$${appliance_formats}" =~ "qcow2" ]]; then
@@ -7,9 +7,15 @@
         (for e in $(env | grep -i _proxy); do unset ${e%%=*}; done; virt-customize -a $${output}.qcow2 --install cloud-init)
         echo "Configure datasource and timeout for cloud_init"
         virt-customize -a $${output}.qcow2 --run-command 'printf "datasource_list: [  NoCloud, Ec2, None ]\n" > /etc/cloud/cloud.cfg.d/91-set-datasources.cfg'
-        virt-customize -a $${output}.qcow2 --run-command 'printf "datasource:\n  Ec2:\n    timeout: 3\n    max_wait: 5\n" > /etc/cloud/cloud.cfg.d/92-set-ec2-timeout.cfg'
+        virt-customize -a $${output}.qcow2 --run-command 'printf "datasource:\n  Ec2:\n    timeout: 3\n    max_wait: -1\n" > /etc/cloud/cloud.cfg.d/92-set-ec2-timeout.cfg'
         # Remove DHCP hook to let cloud-init handle hostname
         virt-customize -a $${output}.qcow2 --run-command 'rm -f /etc/dhcp/dhclient-exit-hooks.d/g5k-update-host-name'
+      fi
+
+- fix_interface_name:
+  - exec_local: |
+      if [[ "$${appliance_formats}" =~ "qcow2" && "$${distrib}" == "debian" ]]; then
+        virt-customize -a $${output}.qcow2 --run-command 'sed -i s/ens3/enp0s2/ /etc/network/interfaces'
       fi
 
 - sparsify_qcow2_image:
