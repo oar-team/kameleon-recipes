@@ -11,8 +11,6 @@ extend: ./debian9-x64-common.yaml
 global:
   # Grid'5000 environment variant
   g5k_variant: nfs
-  # packages to install
-  packages: "libcap2-bin"
   # Grid'5000 Kadeploy environment parameters
   g5k_postinst_script: g5k-postinstall --net debian --fstab nfs --restrict-user current
 
@@ -20,7 +18,6 @@ bootstrap:
   - "@base"
 
 setup:
-  - install_packages
   - "@base"
 
 export:
