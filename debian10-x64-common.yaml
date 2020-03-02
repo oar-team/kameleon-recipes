@@ -16,7 +16,7 @@ global:
   # Grid'5000 environment variant
   g5k_variant: common
   # Grid'5000 environment version
-  g5k_version: 2020022710
+  g5k_version: 2020030214
   # Grid'5000 environment arch
   g5k_image_arch: x64
   # Grid'5000 kadeploy environment parameters
