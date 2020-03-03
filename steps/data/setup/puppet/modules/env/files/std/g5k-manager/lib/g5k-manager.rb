@@ -59,12 +59,12 @@ def user_deploy?(hostname)
     else
       error(1, "Fetching #{url} failed too many times")
     end
-
-    status = hash['nodes'][hostname]
-    debug("Node status: soft=#{status['soft']}, hard=#{status['hard']}")
-    user_deploy = (status['hard'] == 'alive' and status['soft'] != 'free')
-    return user_deploy
   end
+
+  status = hash['nodes'][hostname]
+  debug("Node status: soft=#{status['soft']}, hard=#{status['hard']}")
+  user_deploy = (status['hard'] == 'alive' and status['soft'] != 'free')
+  return user_deploy
 end
 
 def cluster(hostname)
