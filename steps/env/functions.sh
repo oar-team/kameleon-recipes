@@ -145,7 +145,11 @@ function __download_kadeploy_environment_image() {
     if [ "${image[kind]}" == "tar" ]; then
         if [ "${image[protocol]}" == "http" -o "${image[protocol]}" == "https" ]; then
             __download ${image[file]} $dest
-        else # If server:// => see if available locally (NFS) or fail, same as if local:// <=> ""
+        else
+            if  [ "${image[protocol]}" == "server" ]; then
+                # If server:// => see if available locally (NFS) or fail, same as if local:// <=> ""
+                echo "Image is server side, try and fetch it from local file ${image[path]}"
+            fi
             [ -r ${image[path]} ] || fail "Cannot retrieve ${image[file]}"
             cp -v ${image[path]} $dest
         fi
