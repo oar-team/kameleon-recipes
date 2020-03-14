@@ -19,6 +19,11 @@ apt-get install -y systemtap linux-image-$(uname -r)-dbg=$VERSION linux-headers-
 /tmp/environments-recipes/tools/nofsync.stp </dev/null >/dev/null 2>&1 &
 
 # install other dependencies
+
+# if arm64, use backported package for libguestfs-tools. see #11432
+if [ "$ARCH" = "arm64" ]; then
+	echo deb http://packages.grid5000.fr/deb/libguestfs-backport-arm64 / > /etc/apt/sources.list.d/libguestfs-backport.list
+fi
 apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends git linux-headers-${ARCH} socat qemu-utils ruby-dev ruby-childprocess polipo pigz netcat eatmydata libguestfs-tools dirmngr python-future gnupg gnupg-agent
 
 gem install --no-ri --no-rdoc kameleon-builder
