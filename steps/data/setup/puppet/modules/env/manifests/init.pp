@@ -19,8 +19,16 @@ class env ($given_variant){
   ## Define the Debian architecture name
   if $architecture == 'aarch64' {
     $deb_arch = 'arm64'
+    $deb_arch_long = upcase($deb_arch)
+    $g5k_arch = 'arm64'
+  } elsif $architecture == 'amd64' {
+    $deb_arch = $architecture
+    $deb_arch_long = 'AMD64/EM64T'
+    $g5k_arch = 'x64'
   } else {
     $deb_arch = $architecture
+    $deb_arch_long = upcase($deb_arch)
+    $g5k_arch = $architecture
   }
 
   ## Call the actual recipe
