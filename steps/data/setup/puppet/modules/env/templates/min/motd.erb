@@ -1,4 +1,4 @@
-<%= @userdistribname.capitalize %>-x64-<%= scope.lookupvar('env::variant') %>-<%= scope.lookupvar('env::version') %> (Image based on Debian <%= @lsbdistcodename.capitalize %> for AMD64/EM64T)
+<%= @userdistribname.capitalize %>-<%= scope.lookupvar('env::g5k_arch') %>-<%= scope.lookupvar('env::variant') %>-<%= scope.lookupvar('env::version') %> (Image based on Debian <%= @lsbdistcodename.capitalize %> for <%= scope.lookupvar('env::deb_arch_long') %>)
   Maintained by support-staff <support-staff@lists.grid5000.fr>
 
 Doc: https://www.grid5000.fr/w/Getting_Started#Deploying_nodes_with_Kadeploy
