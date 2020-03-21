@@ -20,6 +20,8 @@ env:
 global:
   # Architecture for the target system
   arch: x86_64
+  distrib: unknown
+  release: unknown
   # Default hostname
   hostname: kameleon-$${distrib}
   # Default root password
