@@ -20,6 +20,8 @@ env:
 global:
   # Architecture for the target system
   arch: x86_64
+  distrib: unknown
+  release: unknown
   # Default hostname
   hostname: kameleon-$${distrib}
   # Default root password
@@ -59,7 +61,7 @@ global:
   qemu_kernel_path: $${kameleon_cwd}/qemu_kernel
   qemu_initrd_path: $${kameleon_cwd}/qemu_initrd
   qemu_append_cmdline: $${installer_cmdline}
-  qemu_iso_path: $${kamelon_cwd}/qemu.iso
+  qemu_iso_path: $${kameleon_cwd}/qemu.iso
 
   # rootfs options
   disk_device: /dev/vda
