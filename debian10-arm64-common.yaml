@@ -44,6 +44,7 @@ setup:
   - run_orchestrator
 
 export:
+  - clean_dhcp_leases
   - "@base"
   - do_qcow2_finish_works
   - export_g5k
