@@ -1,10 +1,9 @@
 - insecure_ssh_key: $${kameleon_cwd}/insecure_ssh_key
 - enable_workaround_login_delay: false
 
-- generate_ssh_keys:
-  - check_cmd_local: ssh-keygen
-  - exec_local: echo -e  'y\n' | ssh-keygen -q -t rsa -b 4096 -f $${insecure_ssh_key} -N ''
+- show_ssh_keys:
   - exec_local: cat $${insecure_ssh_key}
+  - exec_local: cat $${insecure_ssh_key}.pub
 
 - inject_ssh_private_key:
   - check_cmd_local: virt-customize

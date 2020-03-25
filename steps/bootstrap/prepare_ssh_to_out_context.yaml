@@ -1,3 +1,5 @@
+- insecure_ssh_key: $${kameleon_cwd}/insecure_ssh_key
+
 - select_empty_port:
   - on_checkpoint: redo
   - exec_local: |
@@ -21,3 +23,9 @@
       ForwardAgent yes
       Compression yes
       Protocol 2
+
+- generate_ssh_keys:
+  - check_cmd_local: ssh-keygen
+  - exec_local: echo -e  'y\n' | ssh-keygen -q -t rsa -b 4096 -f $${insecure_ssh_key} -N ''
+  - exec_local: cat $${insecure_ssh_key}
+
