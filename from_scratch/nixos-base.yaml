@@ -15,26 +15,28 @@ global:
   iso_location: releases
 
   iso_filename: nixos-minimal-$${release}.$${release_minor_and_hash}-$${arch}-linux.iso
-  iso_url: http://nixos.org/$${iso_location}/nixos/$${release}-small/nixos-$${release}.$${release_minor_and_hash}/$${iso_filename}
+  #iso_url: http://nixos.org/$${iso_location}/nixos/$${release}-small/nixos-$${release}.$${release_minor_and_hash}/$${iso_filename}
+  iso_url: file:///home/neyron/scm/OAR/kameleon-recipes/build/$${iso_filename}
   iso_path: $${kameleon_cwd}/$${distrib}.iso
 
-  image_format: raw
   qemu_sendkeys_commands: $${kameleon_data_dir}/qemu-sendkeys/netinst-iso-$${distrib}
+  qemu_memory_size: 2048
     
-  autoinstall_script_path: $${kameleon_data_dir}/$${distrib}-autoinstall.sh
+  autoinstall_script_path: $${kameleon_data_dir}/nixos/$${distrib}-autoinstall.sh
   root_password: root
   # wait for a full boot before run autoinstall script
   boot_timeout: 20
 
   # override this configuration by adding yours to this folder
   # ./step/data/configuration.nix
-  nix_hardware_configuration: $${kameleon_data_dir}/hardware-configuration.nix
-  nix_configuration: $${kameleon_data_dir}/configuration.nix
+  nix_hardware_configuration: $${kameleon_data_dir}/nixos/hardware-configuration.nix
+  nix_configuration: $${kameleon_data_dir}/nixos/configuration.nix
 
 bootstrap:
   - enable_checkpoint
   - download_iso
   - prepare_disk
+  - prepare_ssh_to_out_context
   - prepare_autoinstall
   - start_http_server
   - start_qemu:
@@ -46,6 +48,7 @@ bootstrap:
 
 setup:
   - "@base"
+  - breakpoint
 
 export:
   - "@base"
