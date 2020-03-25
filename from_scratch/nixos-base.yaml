@@ -22,15 +22,15 @@ global:
   qemu_sendkeys_commands: $${kameleon_data_dir}/qemu-sendkeys/netinst-iso-$${distrib}
   qemu_memory_size: 2048
     
-  autoinstall_script_path: $${kameleon_data_dir}/nixos/$${distrib}-autoinstall.sh
+  autoinstall_script_path: $${kameleon_data_dir}/$${distrib}/autoinstall.sh
   root_password: root
   # wait for a full boot before run autoinstall script
   boot_timeout: 20
 
   # override this configuration by adding yours to this folder
   # ./step/data/configuration.nix
-  nix_hardware_configuration: $${kameleon_data_dir}/nixos/hardware-configuration.nix
-  nix_configuration: $${kameleon_data_dir}/nixos/configuration.nix
+  nix_hardware_configuration: $${kameleon_data_dir}/$${distrib}/hardware-configuration.nix
+  nix_configuration: $${kameleon_data_dir}/$${distrib}/configuration.nix
 
 bootstrap:
   - enable_checkpoint
