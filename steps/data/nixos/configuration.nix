@@ -20,7 +20,7 @@
   # Use the GRUB 2 boot loader.
   boot.loader.grub.enable = true;
   boot.loader.grub.version = 2;
-  boot.loader.grub.device = "/dev/sda3";
+  boot.loader.grub.device = "/dev/vda";
   boot.loader.grub.forceInstall = true;
 
   boot.kernelParams = ["console=tty0 console=ttyS0,38400n8 modprobe.blacklist=myri10ge"];
