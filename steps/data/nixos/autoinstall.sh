@@ -27,7 +27,7 @@ mkdir -p $MNT/etc/nixos
 cp /tmp/configuration.nix $MNT/etc/nixos
 cp /tmp/hardware-configuration.nix $MNT/etc/nixos
 
-nixos-install --root $MNT --no-bootloader
+nixos-install --root $MNT
 
 echo "Set root's passwd and populate system directories..."
 #NOTE: nixos-enter implies creation and settlement of system directories if they are missing
