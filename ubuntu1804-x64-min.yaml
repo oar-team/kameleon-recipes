@@ -41,6 +41,7 @@ bootstrap:
 setup:
   - "@base"
   - configure_system
+  - fix_networkd
   - configure_apt_sources
   - configure_g5k_apt_sources
   - install_packages
