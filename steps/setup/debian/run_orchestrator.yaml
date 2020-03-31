@@ -20,8 +20,6 @@
 # Store G5K environment release information
 - set_release:
   - exec_in: echo "$${distrib}$${release_number}-$${g5k_image_arch}-$${g5k_variant}-$${g5k_version}" >> $${puppet_build_path}/$${release_file}
-  - exec_in: echo "$${g5k_postinst_path}" >> $${puppet_build_path}/$${release_file}
-  - exec_in: echo "$${g5k_postinst_script}" >> $${puppet_build_path}/$${release_file}
   # this extracts last git commit hash from local repo
   - pipe:
     - exec_local: |
