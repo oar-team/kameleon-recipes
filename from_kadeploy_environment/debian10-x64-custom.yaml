@@ -49,6 +49,9 @@ global:
   # rootfs options
   rootfs: $${kameleon_cwd}/rootfs
 
+  # enable workaround for the login delay due to ldap and dns
+  enable_workaround_login_delay: true
+
   # kernel boot parameters
   kernel_args: "quiet"
 
