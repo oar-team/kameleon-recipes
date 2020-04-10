@@ -35,6 +35,10 @@ global:
   default_timezone: UTC
   appliance_tar_compression_level: "9"
 
+  distrib:
+  release:
+  setup_packages:
+
   ## System variables. Required by kameleon engine
   # Include specific steps
   include_steps:
