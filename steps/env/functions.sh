@@ -118,7 +118,7 @@ function __download_recipe_build() {
 
 export -f __download_recipe_build
 
-function __download_kadeploy_environment_image() {
+function __download_kadeploy_image() {
     set -e
     local kaenv_name=$1
     local kaenv_user=$2
@@ -126,7 +126,7 @@ function __download_kadeploy_environment_image() {
     local remote=$4
     local dest_dir=${5:-$kaenv_name}
     mkdir -p $dest_dir
-    echo "Retrieve image for Kadeploy environment $kaenv_name"
+    echo "Retrieve image from kadeploy environment $kaenv_name"
     ${remote:+ssh $remote }which kaenv3 > /dev/null || fail "kaenv3 command not found (${remote:-localhost})"
     # retrieve image[file], image[kind] and image[compression] from kaenv3
     declare -A image
@@ -160,7 +160,7 @@ function __download_kadeploy_environment_image() {
     set +e
 }
 
-export -f __download_kadeploy_environment_image
+export -f __download_kadeploy_image
 
 function __find_linux_boot_device() {
     local PDEVICE=`stat -c %04D /boot`

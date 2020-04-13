@@ -1,0 +1,69 @@
+#==============================================================================
+# vim: softtabstop=2 shiftwidth=2 expandtab fenc=utf-8 cc=81 tw=80
+#==============================================================================
+#
+# DESCRIPTION: Customized Grid'5000 environment build on top of an existing
+#              environment
+#
+#==============================================================================
+# This recipe extends another. To look at the step involed, run:
+#   kameleon dryrun <%= recipe_name %>
+# To see the variables that you can override, use the following command:
+#   kameleon info <%= recipe_name %>
+---
+extend: <%= tpl.relative_path_from_recipe(recipe_path) %>
+
+global:
+  ### Grid'5000 environment information
+  ## (Uncomment and change any line if needed)
+
+  ## Frontend to run kaenv3 on
+  #grid5000_frontend: "frontend"
+
+  ## Site used in the build
+  #grid5000_site: "grenoble"
+
+  ## Environment to build from
+  #grid5000_environment_import_name: "debian10-x64-min"
+  #grid5000_environment_import_user: "deploy"
+  #grid5000_environment_import_version: ""
+
+  ## New environment description
+  #grid5000_environment_export_name: "$${kameleon_recipe_name}"
+  #grid5000_environment_export_format: "tar.gz"
+  #grid5000_environment_export_description: "Customized $${grid5000_environment_import_name}"
+
+  ## Set where to store the environment and the assiated kadeploy URL base
+  #grid5000_environment_export_dir: "$HOME/public/"
+  #grid5000_environment_export_baseurl: "local://$HOME/public/"
+
+  ## Optionaly, the environment postinstall script can be changed, e.g. to
+  ## enable NFS homes, LDAP accounts, if not enabled in the imported env.
+  #grid5000_environment_export_postinstall_script: "g5k-postinstall --net debian --fstab nfs --restrict-user current"
+
+  ### You can add below any other global variable definition
+  ## See the variables which can be overloaded, by running:
+  ##   kameleon info <%= recipe_name %>
+  ## Or define any new variable you would need. e.g.:
+  #my_variable: my_value
+
+bootstrap:
+  ### The bootstrap section takes in charge the import of the Grid'5000
+  ## environment to customize. No modification should be needed here.
+  - "@base"
+
+setup:
+  ### The setup section is where to place your customization. Add all steps
+  ## required by your customization.
+  ## The following is given as example only, replace with your steps.
+  - a_customization_step:
+    - microstep1:
+      - exec_in: echo "Hello world!"
+    - microstep1:
+      # This breakpoint will stop the build for inspecting the environment
+      - breakpoint
+
+export:
+  ### The export section takes in charge the export of your customized Grid'5000
+  ## environment. No modification should be needed here.
+  - "@base"

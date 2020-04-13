@@ -1,71 +1,71 @@
-- kadeploy_environment_customizer: "$${kameleon_data_dir}/helpers/kaenv-customize.py"
-- kadeploy_frontend: "frontend"
-- kadeploy_environment_import_name: ""
-- kadeploy_environment_import_user: ""
-- kadeploy_environment_import_version: ""
-- kadeploy_environment_export_name: "$${kameleon_recipe_name}"
-- kadeploy_environment_export_format: "tar.gz"
-- kadeploy_environment_export_image_file: "$${appliance_filename}.$${kadeploy_environment_export_format}"
-- kadeploy_environment_export_description: "Customized $${kadeploy_environment_import_name}"
-- kadeploy_environment_export_version: ""
-- kadeploy_environment_export_author: ""
-- kadeploy_environment_export_baseurl: ""
-- kadeploy_environment_export_dir: ""
+- grid5000_environment_customizer: "$${kameleon_data_dir}/helpers/kaenv-customize.py"
+- grid5000_frontend: "frontend"
+- grid5000_environment_import_name: ""
+- grid5000_environment_import_user: ""
+- grid5000_environment_import_version: ""
+- grid5000_environment_export_name: "$${kameleon_recipe_name}"
+- grid5000_environment_export_format: "tar.gz"
+- grid5000_environment_export_image_file: "$${appliance_filename}.$${grid5000_environment_export_format}"
+- grid5000_environment_export_description: "Customized $${grid5000_environment_import_name}"
+- grid5000_environment_export_version: ""
+- grid5000_environment_export_author: ""
+- grid5000_environment_export_baseurl: ""
+- grid5000_environment_export_dir: ""
 
 - create_kaenv_file:
   - exec_local: |
-      kaenv_import="$${kadeploy_environment_import_name}"
-      if [ -n "$${kadeploy_environment_import_user}" ]; then
-        kaenv_import="$kaenv_import@$${kadeploy_environment_import_user}"
+      kaenv_import="$${grid5000_environment_import_name}"
+      if [ -n "$${grid5000_environment_import_user}" ]; then
+        kaenv_import="$kaenv_import@$${grid5000_environment_import_user}"
       fi
-      if [ -n "$${kadeploy_environment_import_version}" ]; then
-        kaenv_import="$kaenv_import:$${kadeploy_environment_import_version}"
+      if [ -n "$${grid5000_environment_import_version}" ]; then
+        kaenv_import="$kaenv_import:$${grid5000_environment_import_version}"
       fi
-      if [ -n "$${kadeploy_frontend}" ]; then
-        kaenv_frontend="--remote $${kadeploy_frontend}"
+      if [ -n "$${grid5000_frontend}" ]; then
+        kaenv_frontend="--remote $${grid5000_frontend}"
       fi
-      if [ -n "$${kadeploy_environment_export_version}" ]; then
-        kaenv_version="$${kadeploy_environment_export_version}"
+      if [ -n "$${grid5000_environment_export_version}" ]; then
+        kaenv_version="$${grid5000_environment_export_version}"
       else
         kaenv_version=$(date +%Y%m%d%H)
       fi
-      if [ -n "$${kadeploy_environment_export_author}" ]; then
-        kaenv_author="$${kadeploy_environment_export_author}"
+      if [ -n "$${grid5000_environment_export_author}" ]; then
+        kaenv_author="$${grid5000_environment_export_author}"
       else
         kaenv_author=$(getent passwd $USER | cut -d: -f5)
       fi
-      if [ "$${kadeploy_environment_export_format}" == "tar.gz" ]; then
+      if [ "$${grid5000_environment_export_format}" == "tar.gz" ]; then
         kaenv_kind="tar"
         kaenv_compression="gzip"
-      elif [ "$${kadeploy_environment_export_format}" == "tar.bz2" ]; then
+      elif [ "$${grid5000_environment_export_format}" == "tar.bz2" ]; then
         kaenv_kind="tar"
         kaenv_compression="bzip2"
-      elif [ "$${kadeploy_environment_export_format}" == "tar.xz" ]; then
+      elif [ "$${grid5000_environment_export_format}" == "tar.xz" ]; then
         kaenv_kind="tar"
         kaenv_compression="xz"
       else
-        fail "Unknown kadeploy environment format: '$${kadeploy_environment_export_format}'"
+        fail "Unknown grid5000 environment format: '$${grid5000_environment_export_format}'"
       fi
-      if [ -n "$${kadeploy_environment_export_baseurl}" ]; then
-        kaenv_image_file="$${kadeploy_environment_export_baseurl}/$${kameleon_recipe_name}.$${kadeploy_environment_export_format}"
+      if [ -n "$${grid5000_environment_export_baseurl}" ]; then
+        kaenv_image_file="$${grid5000_environment_export_baseurl}/$${kameleon_recipe_name}.$${grid5000_environment_export_format}"
       else
-        kaenv_image_file="$${kadeploy_environment_export_image_file}"
+        kaenv_image_file="$${grid5000_environment_export_image_file}"
       fi
-      python2 $${kadeploy_environment_customizer} \
+      python2 $${grid5000_environment_customizer} \
         $kaenv_import $kaenv_frontend \
-        --modify name=$${kadeploy_environment_export_name} \
+        --modify name=$${grid5000_environment_export_name} \
         --modify author="$kaenv_author" \
         --modify version=$kaenv_version \
         --modify image_file=$kaenv_image_file \
         --modify image_kind=$kaenv_kind \
         --modify image_compression=$kaenv_compression \
-        --modify description="$${kadeploy_environment_export_description}" \
-        > $${kadeploy_environment_export_name}.yaml
+        --modify description="$${grid5000_environment_export_description}" \
+        > $${grid5000_environment_export_name}.yaml
 - copy_files:
   - exec_local: |
-      if [ -n "$${kadeploy_environment_export_dir}" ]; then
-        echo "Copying kadeploy environment files to $${kadeploy_environment_export_dir}"
-        mkdir -p "$${kadeploy_environment_export_dir}"
-        cp -vf $${kadeploy_environment_export_image_file} $${kadeploy_environment_export_dir}/
-        cp -vf $${kadeploy_environment_export_name}.yaml $${kadeploy_environment_export_dir}/
+      if [ -n "$${grid5000_environment_export_dir}" ]; then
+        echo "Copying grid5000 environment files to $${grid5000_environment_export_dir}"
+        mkdir -p "$${grid5000_environment_export_dir}"
+        cp -vf $${grid5000_environment_export_image_file} $${grid5000_environment_export_dir}/
+        cp -vf $${grid5000_environment_export_name}.yaml $${grid5000_environment_export_dir}/
       fi

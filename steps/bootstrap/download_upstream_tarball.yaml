@@ -6,10 +6,10 @@
 - upstream_checksign: ""
 - upstream_cache: ""
 - upstream_url: ""
-- kadeploy_environment_import_name: ""
-- kadeploy_environment_import_user: ""
-- kadeploy_environment_import_version: ""
-- kadeploy_frontend: ""
+- grid5000_environment_import_name: ""
+- grid5000_environment_import_user: ""
+- grid5000_environment_import_version: ""
+- grid5000_frontend: ""
 
 - download:
   - on_bootstrap_clean:
@@ -33,11 +33,11 @@
         - $${upstream_url}
         - $${upstream_store_dir}
       - test:
-        - exec_local: test -n "$${kadeploy_environment_import_name}"
-        - download_kadeploy_environment_image_local:
-          - $${kadeploy_environment_import_name}
-          - $${kadeploy_environment_import_user}
-          - $${kadeploy_environment_import_version}
-          - $${kadeploy_frontend}
+        - exec_local: test -n "$${grid5000_environment_import_name}"
+        - download_kadeploy_image_local:
+          - $${grid5000_environment_import_name}
+          - $${grid5000_environment_import_user}
+          - $${grid5000_environment_import_version}
+          - $${grid5000_frontend}
           - $${upstream_store_dir}
         - exec_local: fail "Nothing to download ???"

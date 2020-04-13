@@ -22,25 +22,30 @@ global:
   arch: x86_64
   # Distribution
   distrib: debian
-  release: 9
-  # Kadeploy environment
-  kadeploy_environment_import_name: "debian9-x64-min"
-  kadeploy_environment_import_user: "deploy"
-  kadeploy_environment_import_version: ""
-  kadeploy_frontend: "frontend"
-  kadeploy_site: "grenoble"
-  kadeploy_environment_export_name: "$${kameleon_recipe_name}"
-  kadeploy_environment_export_format: "tar.gz"
-  kadeploy_environment_export_description: "Customized $${kadeploy_environment_import_name}"
-  kadeploy_environment_export_dir: "$HOME/public/"
-  kadeploy_environment_export_baseurl: "local://$HOME/public/"
+  release: 10
+
+  ## Grid'5000 environment information
+  # Frontend to run kaenv3 on
+  grid5000_frontend: "frontend"
+  # Site used in the build
+  grid5000_site: "grenoble"
+  # Environment to build from
+  grid5000_environment_import_name: "debian10-x64-min"
+  grid5000_environment_import_user: "deploy"
+  grid5000_environment_import_version: ""
+  # New environment description
+  grid5000_environment_export_name: "$${kameleon_recipe_name}"
+  grid5000_environment_export_format: "tar.gz"
+  grid5000_environment_export_description: "Customized $${grid5000_environment_import_name}"
+  grid5000_environment_export_dir: "$HOME/public/"
+  grid5000_environment_export_baseurl: "local://$HOME/public/"
 
   # output appliance options
   filesystem_type: ext4
   image_size: 20G
   image_disk: $${kameleon_cwd}/base_$${kameleon_recipe_name}
   # Allowed formats are: tar.gz, tar.bz2, tar.xz, tar.lzo, qcow, qcow2, qed, vdi, raw, vmdk
-  appliance_formats: "$${kadeploy_environment_export_format}"
+  appliance_formats: "$${grid5000_environment_export_format}"
   appliance_tar_compression_level: "9"
   appliance_filename: "$${kameleon_cwd}/$${kameleon_recipe_name}"
   appliance_tar_excludes: >-
@@ -51,12 +56,10 @@ global:
   rootfs: $${kameleon_cwd}/rootfs
 
   # set the dns search in qemu_netdev_user_options, so that ldap works in nfs and big environments
-  qemu_netdev_user_options: "dnssearch=$${kadeploy_site}.grid5000.fr,dnssearch=grid5000.fr"
-  # enable workaround for the login delay due to ldap and dns
-  enable_workaround_login_delay: true
+  qemu_netdev_user_options: "dnssearch=$${grid5000_site}.grid5000.fr,dnssearch=grid5000.fr"
 
-  # kernel boot parameters: use legacy network interfaces
-  kernel_args: "quiet net.ifnames=0 biosdevname=0"
+  # kernel boot parameters
+  kernel_args: "quiet"
 
   ssh_config_file: $${kameleon_cwd}/ssh_config
   local_ip: 10.0.2.2
@@ -73,7 +76,7 @@ bootstrap:
   - "@base"
 
 setup:
-  # Add steps here
+  # Customization steps will come in this section
 
 export:
   - "@base"
