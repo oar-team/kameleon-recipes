@@ -28,6 +28,7 @@ global:
   kadeploy_environment_import_user: "deploy"
   kadeploy_environment_import_version: ""
   kadeploy_frontend: "frontend"
+  kadeploy_site: "grenoble"
   kadeploy_environment_export_name: "$${kameleon_recipe_name}"
   kadeploy_environment_export_format: "tar.gz"
   kadeploy_environment_export_description: "Customized $${kadeploy_environment_import_name}"
@@ -49,8 +50,8 @@ global:
   # rootfs options
   rootfs: $${kameleon_cwd}/rootfs
 
-  # enable workaround for the login delay due to ldap and dns
-  enable_workaround_login_delay: true
+  # set the dns search in qemu_netdev_user_options, so that ldap works in nfs and big environments
+  qemu_netdev_user_options: "dnssearch=$${kadeploy_site}.grid5000.fr,dnssearch=grid5000.fr"
 
   # kernel boot parameters
   kernel_args: "quiet"
