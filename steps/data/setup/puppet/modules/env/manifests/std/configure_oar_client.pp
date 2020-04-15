@@ -198,6 +198,7 @@ class env::std::configure_oar_client {
     path       => '/etc/oar/oar.conf',
     line       => 'COMPUTE_THREAD_SIBLINGS="yes"',
     replace    => true,
+    require    => Package[$oar_packages];
   }
 
   if $env::target_g5k {
