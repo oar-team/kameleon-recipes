@@ -18,6 +18,16 @@
         virt-customize -a $${output}.qcow2 --run-command 'sed -i s/ens3/enp0s2/ /etc/network/interfaces'
       fi
 
+- setup_uefi_boot:
+   - exec_local: |
+       if [[ "$${qemu_uefi}" == "true" ]] && [[ "$${arch}" == "aarch64" ]] && [[ "$${appliance_formats}" =~ "qcow2" ]]; then
+         echo "Setting up ARM64 UEFI boot for qcow2 image"
+         virt-customize \
+           -a $${output}.qcow2 \
+           --run-command 'mkdir /boot/efi/EFI/BOOT' \
+           --run-command 'cp /boot/efi/EFI/debian/grubaa64.efi /boot/efi/EFI/BOOT/BOOTAA64.EFI'
+       fi
+
 - sparsify_qcow2_image:
   - exec_local: |
       if [[ "$${appliance_formats}" =~ "qcow2" ]]; then
