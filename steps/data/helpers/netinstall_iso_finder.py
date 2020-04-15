@@ -117,7 +117,7 @@ if __name__ == '__main__':
                 servers = set([args.mirror])
             if not re.match("^\w+$",args.version):
                 raise Exception("please give the Ubuntu release name")
-            url_regex = re.compile("^"+args.mirror+"ubuntu/dists/(?:"+args.version+"(?:-updates)?/(?:main/(?:installer-"+args.arch+"/(?:current/(?:images/(?:netboot/(?:mini\.iso)?)?)?)?)?)?)?$")
+            url_regex = re.compile("^"+args.mirror+"ubuntu/dists/(?:"+args.version+"(?:-updates)?/(?:main/(?:installer-"+args.arch+"/(?:current/(?:(?:legacy-)?images/(?:netboot/(?:mini\.iso)?)?)?)?)?)?)?$")
             target_regex = re.compile("^.*/mini\.iso$")
             [visited,found] = url_find(servers, set(), set())
         elif (args.distrib.lower() == "centos"):
