@@ -11,7 +11,7 @@ class env::std::configure_oar_client {
         $oar_repos_release = "stretch-backports_beta"
       }
       'buster' : {
-        $oar_version       = "2.5.9~g5k3-1~bpo10+1";
+        $oar_version       = "2.5.9~g5k6-1~bpo10+1";
         $oar_repos         = "2.5/debian/";
         $oar_repos_release = "buster-backports_beta"
       }
@@ -183,11 +183,22 @@ class env::std::configure_oar_client {
         'set /files/etc/oar/sshd_config/AcceptEnv/1 LANG',
         'set /files/etc/oar/sshd_config/AcceptEnv/2 LC_*',
         'set /files/etc/oar/sshd_config/AcceptEnv/3 OAR_CPUSET',
-        'set /files/etc/oar/sshd_config/AcceptEnv/4 OAR_JOB_USER',
+        'set /files/etc/oar/sshd_config/AcceptEnv/4 OAR_USER_CPUSET',
+        'set /files/etc/oar/sshd_config/AcceptEnv/5 OAR_USER_GPUDEVICE',
+        'set /files/etc/oar/sshd_config/AcceptEnv/6 OAR_JOB_USER',
         'set /files/etc/oar/sshd_config/Subsystem/sftp /usr/lib/openssh/sftp-server',
         'set /files/etc/oar/sshd_config/AllowUsers/1 oar'
       ],
       require  => File['/etc/oar/sshd_config'];
+  }
+  
+  file_line { 'oar_conf':
+    ensure     => present,
+    match      => "^(#)?COMPUTE_THREAD_SIBLINGS=*",
+    path       => '/etc/oar/oar.conf',
+    line       => 'COMPUTE_THREAD_SIBLINGS="yes"',
+    replace    => true,
+    require    => Package[$oar_packages];
   }
 
   if $env::target_g5k {
