@@ -66,6 +66,9 @@
 - force_create_kernel_symlinks:
   - exec_in: /etc/kernel/postinst.d/01-create-symlinks
 
+- fix_NetworkManager_timeout:
+  - exec_in: sed -i "s/--timeout=30/--timeout=50/" /usr/lib/systemd/system/NetworkManager-wait-online.service
+
 - configure_GRUB:
   - exec_in: sed -i 's|^\(GRUB_CMDLINE_LINUX=\).*|\1"$${GRUB_CMDLINE_LINUX}"|' /etc/default/grub
   - exec_in: grub2-mkconfig -o "$(readlink -e /etc/grub2.cfg)"
