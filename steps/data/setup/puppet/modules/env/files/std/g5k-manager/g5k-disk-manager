@@ -1,5 +1,4 @@
 #!/usr/bin/env ruby
-# coding: utf-8
 
 # INSTALLED BY PUPPET
 # Location : puppet/modules/env/files/std/g5k-manager/g5k-disk-manager
@@ -49,12 +48,12 @@ def parse_cmdline
     opts.on('--disable DISK_IDS', 'Disable disks') do |disks|
       options[:disable] = disks
     end
-    opts.on("-h", "--help", "Prints this help") do
+    opts.on('-h', '--help', 'Prints this help') do
       puts opts
       exit
     end
   end.parse!
-  return options
+  options
 end
 
 # The aim of this function is to activate all disks of the node in a predefined
@@ -66,12 +65,12 @@ end
 def startup_service(force)
   _status, hostname = sh('hostname')
 
-  unless has_reservable_disks?
+  unless reservable_disks?
     notice "This cluster doesn't have reservable disks: exit service"
     close
   end
 
-  if user_deploy?(hostname) and not force
+  if user_deploy?(hostname) && !force
     notice 'The environment is deployed manually by a user: the disks have not been activated'
     close
   end
@@ -132,6 +131,7 @@ end
 
 def disks_locations(physical_disks, ids)
   return [] if ids.nil?
+
   ids = ids.split(',').map { |e| e.strip.to_i }
   disks = []
   ids.each do |id|
@@ -139,23 +139,22 @@ def disks_locations(physical_disks, ids)
     error(4, "Wrong disk id: #{id}") if id <= 0 || id >= physical_disks.length
     disks.push(physical_disks[id])
   end
-  return disks
+  disks
 end
 
 # Clusters with reservable disks are clusters whose
 # reference-repository storage_devices property contains property
 # reservation: true
-def has_reservable_disks?
+def reservable_disks?
   ref_api = File.read('/etc/grid5000/ref-api.json')
-  return JSON.parse(ref_api)['storage_devices'].select{|sd| sd['reservation']}.any?
+  JSON.parse(ref_api)['storage_devices'].select { |sd| sd['reservation'] }.any?
 end
 
 def megacli_compliant?
   # Get the number or RAID controllers supported by megacli
   # The return code of the command is the number of controllers supported
   num_controllers, _output = sh("#{MEGACLI} -AdpCount")
-  compliant = (num_controllers != 0)
-  return compliant
+  num_controllers != 0
 end
 
 # This function retrieves the physical and virtual disk identifiers from
@@ -207,35 +206,35 @@ def get_disks
   device_id_regexp = /^Device\sId:\s+(\d+)$/
   virtual_drive_regexp = /^Virtual\sDrive:\s+(\d+).+$/
 
-  adapter = ""
-  enclosure = ""
-  slot = ""
+  adapter = ''
+  enclosure = ''
+  slot = ''
 
   output_pdlist.each_line do |line|
-    if m = adapter_regexp.match(line)
+    if (m = adapter_regexp.match(line))
       adapter = m[1].to_i
-    elsif m = enclosure_regexp.match(line)
+    elsif (m = enclosure_regexp.match(line))
       enclosure = m[1].to_i
-    elsif m = slot_regexp.match(line)
+    elsif (m = slot_regexp.match(line))
       slot = m[1].to_i
-    elsif m = device_id_regexp.match(line)
+    elsif (m = device_id_regexp.match(line))
       physical_disks << { adapter: adapter, enclosure: enclosure, slot: slot, device_id: m[1].to_i }
     end
 
-    physical_disks.sort_by!{ |p_disk| p_disk[:device_id] }
+    physical_disks.sort_by! { |p_disk| p_disk[:device_id] }
   end
 
-  adapter = ""
+  adapter = ''
 
   output_vdlist.each_line do |line|
-    if m = adapter_regexp.match(line)
+    if (m = adapter_regexp.match(line))
       adapter = m[1].to_i
-    elsif m = virtual_drive_regexp.match(line)
+    elsif (m = virtual_drive_regexp.match(line))
       virtual_disks << { adapter: adapter, drive: m[1].to_i }
     end
   end
 
-  return [physical_disks, virtual_disks]
+  [physical_disks, virtual_disks]
 end
 
 # Enable the disks
@@ -258,7 +257,7 @@ def enable(physical_disks)
   end
   # Also sleep after enabling the last disk
   sleep(ENABLE_LAST_DELAY)
-  return num_enable_errors
+  num_enable_errors
 end
 
 # Disable the disks
@@ -274,7 +273,7 @@ def disable(physical_disks)
     num_disable_errors += 1 unless status.zero?
   end
   sleep(DISABLE_DELAY)
-  return num_disable_errors
+  num_disable_errors
 end
 
 # Main program
