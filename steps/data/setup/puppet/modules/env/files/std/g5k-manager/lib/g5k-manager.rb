@@ -49,7 +49,7 @@ def user_deploy?(hostname)
   tries = 3
   begin
     url = G5K_API + '/sites/' + site(hostname) + '/status?disks=no&job_details=no&waiting=no&network_address=' + hostname
-    hash = JSON::parse(open(url).read)
+    hash = JSON::parse(open(url, 'User-Agent' => 'g5k-manager (for disk and pmem)').read)
   rescue
     tries -= 1
     if tries > 0
