@@ -120,8 +120,14 @@ def manage_disks(options)
   end
 
   # First, we disable the disks (we will maybe re-enable them after)
-  disable(disks_to_disable) unless disks_to_disable == []
-  enable(disks_to_enable) unless disks_to_enable == []
+  unless disks_to_disable.empty?
+    num_disable_errors = disable(disks_to_disable)
+    error(1, "#{num_disable_errors} errors occured while disabling the disks") unless num_disable_errors.zero?
+  end
+  unless disks_to_enable.empty?
+    num_enable_errors = enable(disks_to_enable)
+    error(1, "#{num_enable_errors} errors occured while enabling the disks") unless num_enable_errors.zero?
+  end
 end
 
 def disks_locations(physical_disks, ids)
