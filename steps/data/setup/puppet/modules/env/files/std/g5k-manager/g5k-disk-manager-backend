@@ -1,7 +1,7 @@
 #!/usr/bin/env ruby
 
 # INSTALLED BY PUPPET
-# Location : puppet/modules/env/files/std/g5k-manager/g5k-disk-manager
+# Location : puppet/modules/env/files/std/g5k-manager/g5k-disk-manager-backend
 
 require 'open-uri'
 require 'json'
@@ -35,7 +35,7 @@ end
 def parse_cmdline
   options = {}
   OptionParser.new do |opts|
-    opts.banner = 'Usage: g5k-disk-manager [--enable 1,2,3] [--disable 4,5]'
+    opts.banner = 'Usage: g5k-disk-manager-backend [--enable 1,2,3] [--disable 4,5]'
     opts.on('--on-boot', 'Enable all disks at boot time') do |v|
       options[:on_boot] = v
     end
@@ -61,7 +61,7 @@ end
 # physical disks.
 # It must be done just before g5k-checks is launched on the node, to avoid
 # g5k-checks errors.
-# See also /etc/systemd/system/g5k-disk-manager.service.
+# See also /etc/systemd/system/g5k-disk-manager-backend.service.
 def startup_service(force)
   _status, hostname = sh('hostname')
 
@@ -280,5 +280,5 @@ end
 
 MEGACLI = '/usr/sbin/megacli'.freeze
 
-_status, TMPDIR = sh('mktemp -d /tmp/tmp.g5k-disk-manager.XXXXXX')
+_status, TMPDIR = sh('mktemp -d /tmp/tmp.g5k-disk-manager-backend.XXXXXX')
 main
