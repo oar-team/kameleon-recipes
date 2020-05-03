@@ -8,12 +8,10 @@
     [ <nixpkgs/nixos/modules/installer/scan/not-detected.nix>
     ];
 
-  boot.initrd.availableKernelModules = [ "ahci" "ehci_pci" "megaraid_sas" "sd_mod" ];
-  boot.kernelModules = [ "kvm-intel" ];
-  boot.extraModulePackages = [ ];
+  boot.initrd.availableKernelModules = [ "ahci" "ehci_pci" "sd_mod" "virtio_pci" "virtio_blk" "virtio_net" ];
 
   fileSystems."/" =
-    { device = "/dev/disk/by-label/System";
+    { label = "System";
       fsType = "ext4";
     };
 
