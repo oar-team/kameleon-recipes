@@ -1,5 +1,6 @@
 - insecure_ssh_key: $${kameleon_cwd}/insecure_ssh_key
 - enable_workaround_login_delay: false
+- use_virt_customize: true
 
 - show_ssh_keys:
   - exec_local: cat $${insecure_ssh_key}
@@ -7,27 +8,26 @@
 
 - inject_ssh_private_key:
   - check_cmd_local: virt-customize
-  - exec_local: |
-      virt-customize \
-        -a $${image_disk}.$${image_format} \
-        --run-command 'mkdir -p /root/.ssh' \
-        --upload $${insecure_ssh_key}.pub:/root/.ssh/.kameleon_authorized_keys \
-        --run-command 'touch /root/.ssh/authorized_keys' \
-        --run-command 'cp /root/.ssh/authorized_keys /root/.ssh/authorized_keys.bak' \
-        --run-command 'cat /root/.ssh/.kameleon_authorized_keys >> /root/.ssh/authorized_keys' \
-        --run-command 'chmod 700 /root/.ssh' \
-        --run-command 'chmod -R go-rw /root/.ssh' \
-        --run-command 'chown -R root:root /root/.ssh'
-  - on_export_init:
+  - test:
+    - exec_local: test "$${use_virt_customize}" = "true"
     - exec_local: |
-        virt-customize \
-          -a $${image_disk}.$${image_format} \
-          --run-command 'mv /root/.ssh/authorized_keys.bak /root/.ssh/authorized_keys' \
-          --delete /root/.ssh/.kameleon_authorized_keys
-
-- add_insecure_key_to_ssh_config:
-  - on_checkpoint: redo
-  - exec_local: |
-      cat <<EOF >> $${ssh_config_file}
-      IdentityFile $${insecure_ssh_key}
-      EOF
+          virt-customize \
+            -a $${image_disk}.$${image_format} \
+            --run-command 'mkdir -p /root/.ssh' \
+            --upload $${insecure_ssh_key}.pub:/root/.ssh/.kameleon_authorized_keys \
+            --run-command 'touch /root/.ssh/authorized_keys' \
+            --run-command 'cp /root/.ssh/authorized_keys /root/.ssh/authorized_keys.bak' \
+            --run-command 'cat /root/.ssh/.kameleon_authorized_keys >> /root/.ssh/authorized_keys' \
+            --run-command 'chmod 700 /root/.ssh' \
+            --run-command 'chmod -R go-rw /root/.ssh' \
+            --run-command 'chown -R root:root /root/.ssh'
+    - exec_local: echo "Do nothing (do not use virt-customize)"
+  - on_export_init:
+    - test:
+      - exec_local: test "$${use_virt_customize}" = "true"
+      - exec_local: |
+            virt-customize \
+              -a $${image_disk}.$${image_format} \
+              --run-command 'mv /root/.ssh/authorized_keys.bak /root/.ssh/authorized_keys' \
+              --delete /root/.ssh/.kameleon_authorized_keys
+      - exec_local: echo "Do nothing (do not use virt-customize)"
