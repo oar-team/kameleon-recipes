@@ -23,17 +23,18 @@
   boot.loader.grub.device = "/dev/vda";
   boot.loader.grub.forceInstall = true;
 
-  boot.kernelParams = ["console=tty0 console=ttyS0,38400n8 modprobe.blacklist=myri10ge"];
-  boot.loader.grub.extraConfig = ''
-    serial --speed=38400 --unit=0 --word=8 --parity=no --stop=1;
-    terminal_input serial;
-    terminal_output serial
-  '';
-  systemd.services."serial-getty@ttyS0".enable = true;
+  boot.initrd.preFailCommands = "/bin/sh";
+
+  #boot.kernelParams = ["console=tty0 console=ttyS0,38400n8 modprobe.blacklist=myri10ge"];
+  #boot.loader.grub.extraConfig = ''
+  #  serial --speed=38400 --unit=0 --word=8 --parity=no --stop=1;
+  #  terminal_input serial;
+  #  terminal_output serial
+  #'';
+  #systemd.services."serial-getty@ttyS0".enable = true;
 
   networking.hostName = ""; # Dhcp will set hostname
   networking.firewall.enable = false;
-
   # Set your time zone.
   time.timeZone = "Europe/Paris";
 
