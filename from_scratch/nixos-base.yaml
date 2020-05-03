@@ -31,6 +31,16 @@ global:
   nix_hardware_configuration: $${kameleon_data_dir}/$${distrib}/hardware-configuration.nix
   nix_configuration: $${kameleon_data_dir}/$${distrib}/configuration.nix
 
+  out_context:
+    cmd: ssh -F $${ssh_config_file} $${kameleon_recipe_name} -t /run/current-system/sw/bin/bash
+    workdir: /root/kameleon_workdir
+    proxy_cache: $${local_ip}
+
+  in_context:
+    cmd: ssh -F $${ssh_config_file} $${kameleon_recipe_name} -t /run/current-system/sw/bin/bash
+    workdir: /root/kameleon_workdir
+    proxy_cache: $${local_ip}
+
 bootstrap:
   - "@base"
   - breakpoint
