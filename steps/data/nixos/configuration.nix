@@ -40,8 +40,23 @@
   services.openssh = {
     enable = true;
     startWhenNeeded = true;
+    permitRootLogin = "yes";
+    passwordAuthentication = true;
   };
 
+  users.users.root = {
+    password = "%PASSWORD%";
+    openssh.authorizedKeys.keys = [ "%SSH_PUBLIC_KEY%" ];
+  };
+
+  #users.users.kameleon = {
+  #  isNormalUser = true;
+  #  home = "/home/kameleon";
+  #  description = "kameleon builder";
+  #  extraGroups = [ "wheel" ];
+  #  password = "%PASSWORD%";
+  #  openssh.authorizedKeys.keys = [ "%SSH_PUBLIC_KEY%" ];
+  #};
   
   # This value determines the NixOS release with which your system is to be
   # compatible, in order to avoid breaking some software such as database

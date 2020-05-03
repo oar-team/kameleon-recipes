@@ -24,6 +24,7 @@ global:
   qemu_memory_size: 2048
 
   first_vm_boot_timeout: 40
+  use_virt_customize: false
 
   autoinstall_script_path: $${kameleon_data_dir}/$${distrib}/autoinstall.sh
 
