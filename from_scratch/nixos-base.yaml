@@ -26,7 +26,6 @@ global:
   first_vm_boot_timeout: 40
 
   autoinstall_script_path: $${kameleon_data_dir}/$${distrib}/autoinstall.sh
-  root_password: root
 
   nix_hardware_configuration: $${kameleon_data_dir}/$${distrib}/hardware-configuration.nix
   nix_configuration: $${kameleon_data_dir}/$${distrib}/configuration.nix
