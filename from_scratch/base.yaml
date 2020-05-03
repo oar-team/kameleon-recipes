@@ -107,15 +107,15 @@ bootstrap:
   - enable_checkpoint
   - download_installer
   - prepare_disk
-  - prepare_autoinstall
+  - prepare_ssh_to_out_context
   - start_http_server
+  - prepare_autoinstall
   - start_qemu:
     - force_vm_shutdown: false
     - shutdown_vm_immediately: true
     - vm_cleanup_section: bootstrap
     - vm_expected_service:
     - boot_timeout: $${first_vm_boot_timeout}
-  - prepare_ssh_to_out_context
   - prepare_appliance
   - start_qemu:
     - force_vm_shutdown: true

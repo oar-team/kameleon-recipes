@@ -6,6 +6,12 @@
       # Find empty SSH forwarding port
       SSH_FWD_PORT=$(__find_free_port 50000 60000)
       echo "SSH forwarding port: $SSH_FWD_PORT"
+
+- generate_ssh_keys:
+  - check_cmd_local: ssh-keygen
+  - exec_local: echo -e  'y\n' | ssh-keygen -q -t rsa -b 4096 -f $${insecure_ssh_key} -N ''
+  - exec_local: cat $${insecure_ssh_key}
+
 - prepare_ssh_config:
   - on_checkpoint: redo
   - write_local:
@@ -23,9 +29,5 @@
       ForwardAgent yes
       Compression yes
       Protocol 2
-
-- generate_ssh_keys:
-  - check_cmd_local: ssh-keygen
-  - exec_local: echo -e  'y\n' | ssh-keygen -q -t rsa -b 4096 -f $${insecure_ssh_key} -N ''
-  - exec_local: cat $${insecure_ssh_key}
+      IdentityFile $${insecure_ssh_key}
 
