@@ -10,14 +10,15 @@ extend: base.yaml
 
 global:
   distrib: nixos
-  release: 19.03
-  release_minor_and_hash: 173068.9ec7625cee5
-  iso_location: releases
+  release: 19.09
 
-  iso_filename: nixos-minimal-$${release}.$${release_minor_and_hash}-$${arch}-linux.iso
-  #iso_url: http://nixos.org/$${iso_location}/nixos/$${release}-small/nixos-$${release}.$${release_minor_and_hash}/$${iso_filename}
-  iso_url: file:///home/neyron/scm/OAR/kameleon-recipes/build/$${iso_filename}
-  iso_path: $${kameleon_cwd}/$${distrib}.iso
+  installer_iso_url: https://channels.nixos.org/$${distrib}-$${release}/latest-nixos-minimal-$${arch}-linux.iso
+  # To use a special build, comment the previous line and uncomment the build
+  # and installer_iso_url lines below. Builds can be found at http://releases.nixos.org/?prefix=nixos/19.09-small/
+  #build: 2484.322fd893724
+  #installer_iso_url: http://releases.nixos.org/$${distrib}/$${release}-small/$${distrib}-$${release}.$${build}/$${distrib}-minimal-$${release}.$${build}-$${arch}-linux.iso
+
+  qemu_iso_path: $${kameleon_cwd}/$${distrib}.iso
 
   qemu_sendkeys_commands: $${kameleon_data_dir}/qemu-sendkeys/netinst-iso-$${distrib}
   qemu_memory_size: 2048
@@ -27,8 +28,6 @@ global:
   autoinstall_script_path: $${kameleon_data_dir}/$${distrib}/autoinstall.sh
   root_password: root
 
-  # override this configuration by adding yours to this folder
-  # ./step/data/configuration.nix
   nix_hardware_configuration: $${kameleon_data_dir}/$${distrib}/hardware-configuration.nix
   nix_configuration: $${kameleon_data_dir}/$${distrib}/configuration.nix
 

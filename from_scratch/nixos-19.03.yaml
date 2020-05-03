@@ -10,7 +10,6 @@ extend: nixos-base.yaml
 
 global:
   release: 19.03
-  release_minor_and_hash: 173068.9ec7625cee5
 
 bootstrap:
   - "@base"

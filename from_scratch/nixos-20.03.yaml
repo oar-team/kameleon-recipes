@@ -9,7 +9,7 @@
 extend: nixos-base.yaml
 
 global:
-  release: 19.09
+  release: 20.03
 
 bootstrap:
   - "@base"
