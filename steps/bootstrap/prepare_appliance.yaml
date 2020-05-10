@@ -1,5 +1,4 @@
 - insecure_ssh_key: $${kameleon_cwd}/insecure_ssh_key
-- enable_workaround_login_delay: false
 
 - generate_ssh_keys:
   - check_cmd_local: ssh-keygen
@@ -32,22 +31,3 @@
       cat <<EOF >> $${ssh_config_file}
       IdentityFile $${insecure_ssh_key}
       EOF
-
-- workaround_login_delay_due_to_ldap_and_dns:
-  - test:
-    - exec_local: test "$${enable_workaround_login_delay}" = "true"
-    - exec_local: |
-        virt-customize \
-          -a $${image_disk}.$${image_format} \
-          --run-command 'mv /etc/nslcd.conf /etc/nslcd.conf.orig-g5k' \
-          --run-command 'sed -i.orig-g5k "s/ ldap//" /etc/nsswitch.conf' \
-          --run-command 'echo > /etc/resolv.conf'
-    - exec_local: echo "Workaround is not enabled"
-  - on_setup_clean:
-    - test:
-      - exec_local: test "$${enable_workaround_login_delay}" = "true"
-      - exec_local: |
-          virt-customize \
-            -a $${image_disk}.$${image_format} \
-            --run-command 'mv /etc/nslcd.conf.orig-g5k /etc/nslcd.conf' \
-            --run-command 'mv /etc/nsswitch.conf.orig-g5k /etc/nsswitch.conf'
