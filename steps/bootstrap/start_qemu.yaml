@@ -32,6 +32,7 @@
 - qemu_uefi: false
 - qemu_uefi_code_path: /usr/share/AAVMF/AAVMF_CODE.fd
 - qemu_uefi_vars_path: /usr/share/AAVMF/AAVMF_VARS.fd
+- qemu_netdev_user_options:
 - disk_cache: unsafe
 
 - start_vm:
@@ -165,6 +166,9 @@
           QEMU_APPEND_CMDLINE=${QEMU_APPEND_CMDLINE//%HTTP_PORT%/$HTTP_PORT}
         fi
       fi
+      if [ -n "$${qemu_netdev_user_options}" ]; then
+        QEMU_NETDEV_USER_OPTIONS=",$${qemu_netdev_user_options}"
+      fi
       if [ "$${no_reboot}" == "true" ]; then
         NO_REBOOT="-no-reboot"
       fi
@@ -172,7 +176,7 @@
         HOSTFWD=",hostfwd=tcp::${SSH_FWD_PORT}-:22"
       fi
       qemu-system-$${qemu_arch} $ENABLE_KVM -smp $${qemu_cpus} -m $${qemu_memory_size} -rtc base=localtime \
-        -net nic,model=virtio -net user${HOSTFWD} \
+        -net nic,model=virtio -net user${QEMU_NETDEV_USER_OPTIONS}${HOSTFWD} \
         $QEMU_DRIVES \
         -monitor unix:$${qemu_monitor_socket},server,nowait -pidfile $${qemu_pidfile} -daemonize \
         $QEMU_BOOT ${QEMU_APPEND_CMDLINE:+-append "$QEMU_APPEND_CMDLINE"} $NO_REBOOT \

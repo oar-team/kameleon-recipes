@@ -1,0 +1,2 @@
+- configure:
+  - exec_in: true
