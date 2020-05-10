@@ -34,7 +34,7 @@
         - $${upstream_store_dir}
       - test:
         - exec_local: test -n "$${grid5000_environment_import_name}"
-        - download_kadeploy_image_local:
+        - download_grid5000_image_local:
           - $${grid5000_environment_import_name}
           - $${grid5000_environment_import_user}
           - $${grid5000_environment_import_version}
