@@ -7,7 +7,7 @@ import sys
 import argparse
 import logging
 import yaml
-from execo import Process, SshProcess, Host
+import subprocess
 from pprint import pprint
 
 class Environment:
@@ -23,13 +23,14 @@ class Environment:
         if env['version']:
             env['version'] = " --env-version " + env['version']
         kaenv_cmd = "kaenv3{user}{version} -p {name}".format(**env)
-        if remote:
-            remote = re.match(r"^(?:(?P<user>[-_.\w]+)@)?(?P<address>[-_.\w]+)(?::(?P<port>\d{1,5}))?$", remote).groupdict()
-            p = SshProcess(kaenv_cmd, Host(**remote))
-        else:
-            p = Process(kaenv_cmd, shell = True)
-        p.run()
-        self.desc = yaml.load(p.stdout)
+        try:
+            if remote:
+                p = subprocess.Popen(["ssh", remote ] + kaenv_cmd.split(), stdout=subprocess.PIPE)
+            else:
+                p = subprocess.Popen(kaenv_cmd.split(), stdout=subprocess.PIPE)
+            self.desc = yaml.load(p.stdout)
+        except Exception as exc:
+            raise Exception("Failed to import environment description with '{}'".format(kaenv_cmd))
         return self
     
     def modify(self, **kwargs):
