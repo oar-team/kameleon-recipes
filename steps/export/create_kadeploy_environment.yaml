@@ -7,6 +7,9 @@
 - grid5000_environment_export_format: "tar.gz"
 - grid5000_environment_export_image_file: "$${appliance_filename}.$${grid5000_environment_export_format}"
 - grid5000_environment_export_description: "Customized $${grid5000_environment_import_name}"
+- grid5000_environment_export_postinstall_script: ""
+- grid5000_environment_export_postinstall_archive: ""
+- grid5000_environment_export_postinstall_compression: ""
 - grid5000_environment_export_version: ""
 - grid5000_environment_export_author: ""
 - grid5000_environment_export_baseurl: ""
@@ -46,6 +49,15 @@
       else
         fail "Unknown grid5000 environment format: '$${grid5000_environment_export_format}'"
       fi
+      if [ -n "$${grid5000_environment_export_postinstall_script}" ]; then
+        kaenv_postinstall_script=1
+      fi
+      if [ -n "$${grid5000_environment_export_postinstall_archive}" ]; then
+        kaenv_postinstall_archive=1
+      fi
+      if [ -n "$${grid5000_environment_export_postinstall_compression}" ]; then
+        kaenv_postinstall_compression=1
+      fi
       if [ -n "$${grid5000_environment_export_baseurl}" ]; then
         kaenv_image_file="$${grid5000_environment_export_baseurl}/$${kameleon_recipe_name}.$${grid5000_environment_export_format}"
       else
@@ -60,6 +72,9 @@
         --modify image_kind=$kaenv_kind \
         --modify image_compression=$kaenv_compression \
         --modify description="$${grid5000_environment_export_description}" \
+        ${kaenv_postinstall_script:+--modify postinstalls_script0="$${grid5000_environment_export_postinstall_script}"} \
+        ${kaenv_postinstall_archive:+--modify postinstalls_archive0="$${grid5000_environment_export_postinstall_archive}"} \
+        ${kaenv_postinstall_compression:+--modify postinstalls_compression0="$${grid5000_environment_export_postinstall_compression}"} \
         > $${grid5000_environment_export_name}.yaml
 - copy_files:
   - exec_local: |

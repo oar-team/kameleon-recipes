@@ -37,6 +37,7 @@ global:
   grid5000_environment_export_name: "$${kameleon_recipe_name}"
   grid5000_environment_export_format: "tar.gz"
   grid5000_environment_export_description: "Customized $${grid5000_environment_import_name}"
+  #grid5000_environment_export_postinstall_script: "g5k-postinstall --net debian --fstab nfs --restrict-user current"
   grid5000_environment_export_dir: "$HOME/public/"
   grid5000_environment_export_baseurl: "local://$HOME/public/"
 
