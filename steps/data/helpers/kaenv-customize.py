@@ -77,6 +77,7 @@ if __name__ == '__main__':
     parser.add_argument('environment', metavar="ENVIRONMENT", help='Environment to import')
     parser.add_argument('--remote', metavar="REMOTE", help='Remote kadeploy frontend')
     parser.add_argument('--modify', metavar="KEY=VALUE", action='append', type=lambda kv: kv.split("=",1), help='modify description')
+    parser.add_argument('--add-postinstall', metavar="ARCHIVE:COMPRESSION:SCRIPT", help='add an additional postinstall')
     parser.add_argument('--info', action="store_true", default=False, help='print info messages')
     parser.add_argument('--debug', action="store_true", default=False, help='print debug messages')
     args = parser.parse_args()
@@ -96,8 +97,14 @@ if __name__ == '__main__':
 
     try:
         if any(len(kv) < 2 for kv in args.modify):
-            raise ValueError('--modify take an argument in the form "key=value"')
-        Environment().import_from_kaenv(args.environment, args.remote).modify(**dict(args.modify)).export()
+            raise ValueError('--modify takes an argument in the form "key=value"')
+        env = Environment().import_from_kaenv(args.environment, args.remote).modify(**dict(args.modify))
+        if args.add_postinstall:
+            add_postinstall_args = re.match(r'^(.+):([^:]+):([^:]+)$', args.add_postinstall)
+            if not add_postinstall_args:
+                raise ValueError('--add-postinstall takes an argument in the form "path:compression:cmdline", got {}'.format(args.add_postinstall))
+            env.add_postinstall(*add_postinstall_args.groups())
+        env.export()
     except Exception as exc:
-        sys.stderr.write("Error:  {}\n".format(exc))
+        sys.stderr.write("Error: {}\n".format(exc))
         sys.exit(1)
