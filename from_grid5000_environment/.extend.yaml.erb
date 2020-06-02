@@ -41,6 +41,15 @@ global:
   ## enable NFS homes, LDAP accounts, if not enabled in the imported env.
   #grid5000_environment_export_postinstall_script: "g5k-postinstall --net debian --fstab nfs --restrict-user current"
 
+  ## Optionaly, an additional postinstall can be given, e.g. to do some custom
+  ## operations. Use the following variables to set the archive name and script.
+  #grid5000_environment_export_additional_postinstall_archive: "$${kameleon_recipe_name}-additional-postinstall.tar.gz"
+  #grid5000_environment_export_additional_postinstall_script: "additional_postinstall.sh"
+  ## The recipe will have to prepare the additional postinstall content in a
+  ## directory to create in the local context and name "additional_postinstall"
+  ## by default (next line to change it). The archive is created by the export.
+  #grid5000_environment_export_additional_postinstall_dir: "additional_postinstall"
+
   ### You can add below any other global variable definition
   ## See the variables which can be overloaded, by running:
   ##   kameleon info <%= recipe_name %>
