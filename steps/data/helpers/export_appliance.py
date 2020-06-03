@@ -174,7 +174,7 @@ def convert_disk_image(args):
     #        attempts += 1
     #        time.sleep(1)
 
-    if args.zerofree:
+    if args.zerofree and (set(args.formats) & set(disk_formats)):
         guestfish_zerofree(filename)
 
     for fmt in args.formats:
