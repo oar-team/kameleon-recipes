@@ -1,18 +1,30 @@
+- qemu_uefi: false
 - create_appliance_script: $${kameleon_data_dir}/helpers/create_appliance.py
 
 - create_appliance:
   - check_cmd_local: virt-make-fs
+  - check_cmd_local: grub-mkstandalone
   - exec_local: |
       rm -f $${image_disk}.$${image_format}
       [ -n "$UPSTREAM_TARBALL" ] || fail "UPSTREAM_TARBALL is not defined"
       [ -r "$UPSTREAM_TARBALL" ] || fail "UPSTREAM_TARBALL ($UPSTREAM_TARBALL) is not readable"
-      # Create an appliance from rootfs directory
-      python $${create_appliance_script} $UPSTREAM_TARBALL \
-        --size $${image_size} \
-        -o $${image_disk} \
-        --filesystem $${filesystem_type} \
-        --format $${image_format} \
-        --append "$${kernel_args}"
+  - test:
+    - exec_local: test  "$${qemu_uefi}" == "true"
+    - exec_local: |
+        python $${create_appliance_script} $UPSTREAM_TARBALL \
+          --uefi \
+          --size $${image_size} \
+          -o $${image_disk} \
+          --filesystem $${filesystem_type} \
+          --format $${image_format}\
+          --append "$${kernel_args}"
+    - exec_local: |
+        python $${create_appliance_script} $UPSTREAM_TARBALL \
+          --size $${image_size} \
+          -o $${image_disk} \
+          --filesystem $${filesystem_type} \
+          --format $${image_format} \
+          --append "$${kernel_args}"
 
 - delete_initial_image_at_the_end:
   - on_checkpoint: skip
