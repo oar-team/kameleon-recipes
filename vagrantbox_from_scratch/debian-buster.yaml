@@ -1,1 +1,33 @@
-../from_scratch/debian-buster.yaml
+#==============================================================================
+# vim: softtabstop=2 shiftwidth=2 expandtab fenc=utf-8 cc=81 tw=80
+#==============================================================================
+#
+# DESCRIPTION: Debian 10 (Buster) recipe using the netinstall mechanism
+#
+#==============================================================================
+---
+extend: debian-base.yaml
+# Global variables use by Kameleon engine and the steps
+global:
+  # Distribution
+  distrib: debian
+  release: buster
+  release_number: 10
+
+bootstrap:
+  - "@base"
+
+setup:
+  # Virtualbox backport for Debian 10
+  # https://people.debian.org/~lucas/virtualbox-buster/
+  - add_virtualbox_unofficial_repo:
+    - install_gnupg:
+      - exec_in: DEBIAN_FRONTEND=noninteractive apt-get -y --force-yes install gnupg wget
+    - add_repo_key:
+      - exec_in: wget -O - https://db.debian.org/fetchkey.cgi?fingerprint=FEDEC1CB337BCF509F43C2243914B532F4DFBE99 | apt-key add
+    - add_repo_file:
+      - exec_in: echo 'deb https://people.debian.org/~lucas/virtualbox-buster/ ./' > /etc/apt/sources.list.d/virtualbox-unofficial.list
+  - "@base"
+
+export:
+  - "@base"
