@@ -2,7 +2,13 @@
 # vim: softtabstop=2 shiftwidth=2 expandtab fenc=utf-8 cc=81 tw=80
 #==============================================================================
 #
-# DESCRIPTION: base recipe for a customization of a Grid'5000 environment
+# DESCRIPTION: Base recipe to build a custom Grid'5000 environment on top of an
+# existing pre-built one (such as one supported by the technical team).
+# The recipe takes a environment name, and first extracts its image tarball
+# before letting define some customizations in the setup section. It then
+# export the new environment. This recipe does not rebuild the Grid'5000
+# environment from scratch: neither the distribution installer nor Puppet is
+# involved. The recipe must be built on a Grid'5000 node.
 #
 #==============================================================================
 ---
