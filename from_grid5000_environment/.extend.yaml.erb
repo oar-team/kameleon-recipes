@@ -50,6 +50,14 @@ global:
   ## by default (next line to change it). The archive is created by the export.
   #grid5000_environment_export_additional_postinstall_dir: "additional_postinstall"
 
+  ### Target machine/CPU architecture
+  ## If building an environment for another architecture than x86_64, uncomment
+  ## and adapt the next lines.
+  ## The following works for ARM64 machines, just uncomment for such machines.
+  #arch: aarch64
+  #qemu_arch: aarch64
+  #qemu_uefi: true
+
   ### You can add below any other global variable definition
   ## See the variables which can be overloaded, by running:
   ##   kameleon info <%= recipe_name %>
