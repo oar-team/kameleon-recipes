@@ -6,6 +6,7 @@ import os
 import os.path as op
 import sys
 import subprocess
+import platform
 import argparse
 import logging
 import tempfile
@@ -121,6 +122,7 @@ def find_mbr():
     )
     for path in search_paths:
         if op.exists(path):
+            logger.info("MBR file found at: %s" % path)
             return path
     raise Exception("syslinux MBR not found")
 
@@ -160,15 +162,58 @@ write-append /etc/fstab "UUID=%s\\t/\\t%s\\tdefaults\\t0\\t1\\n"
     run_guestfish_script(disk, script)
 
 
-def install_bootloader(disk, mbr, append):
+def install_bootloader(disk, mbr, append, uefi):
     """Install a bootloader"""
-    mbr_path = mbr or find_mbr()
-    mbr_path = op.abspath(mbr_path)
     uuid, vmlinuz, initrd = get_boot_information(disk)
     logger.info("Root partition UUID: %s" % uuid)
     logger.info("Kernel image: /boot/%s" % vmlinuz)
     logger.info("Initrd image: /boot/%s" % initrd)
-    script = """
+    if uefi:
+       logger.info("Install UEFI bootloader")
+       logger.info("Generate grub.cfg")
+       grub_cfg_file = open("./grub.cfg", "w")
+       grub_cfg_file.write("""
+set default=1
+set timeout=0
+insmod part_gpt
+insmod ext2
+set root=(hd0,gpt1)
+menuentry 'Boot Linux' {
+linux /boot/%s ro root=UUID=%s %s
+initrd /boot/%s
+}
+""" % (vmlinuz, uuid, append, initrd))
+       grub_cfg_file.close()
+
+       logger.info("Generate grubaa64.efi")
+       if platform.machine() == "aarch64":
+           grub_arch = "arm64-efi"
+           boot_efi = "bootaa64.efi"
+       elif platform.machine() == "x86_64":
+           grub_arch = "x86_64-efi"
+           boot_efi = "bootx64.efi"
+       else:
+           # dumb guess
+           grub_arch = platform.machine() + "-efi"
+           grub_efi = "grub" + platform.machine() + ".efi"
+       cmd = ["grub-mkstandalone", "-o", "./" + boot_efi, "-O", grub_arch, "/boot/grub/grub.cfg=./grub.cfg"]
+       proc = subprocess.Popen(cmd, env=os.environ.copy(), shell=False)
+       proc.communicate()
+       if proc.returncode:
+           raise subprocess.CalledProcessError(proc.returncode, ' '.join(cmd))
+       logger.info("Install UEFI bootloader")
+       script = """
+echo "[guestfish] Mount EFI partition"
+mount /dev/sda2 /boot/efi/
+mkdir-p /boot/efi/EFI/BOOT
+echo "[guestfish] Copy grub to the EFI partition"
+upload ./%s /boot/efi/EFI/BOOT/%s
+""" % (boot_efi, boot_efi.upper())
+    else:
+       logger.info("Install MBR bootloader")
+       mbr_path = mbr or find_mbr()
+       mbr_path = op.abspath(mbr_path)
+       script = """
 echo "[guestfish] Upload the master boot record"
 upload %s /boot/mbr.bin
 
@@ -188,18 +233,17 @@ extlinux /boot
 
 echo "[guestfish] Set the first partition as bootable"
 part-set-bootable /dev/sda 1 true
-
-echo "[guestfish] Generate empty fstab"
-write /etc/fstab "# UNCONFIGURED FSTAB FOR BASE SYSTEM\\n"
-
-echo "[guestfish] Set / permissions to '0755'"
-chmod 0755 /
 """ % (mbr_path, vmlinuz, initrd, uuid, append)
+    logger.info("Generate empty fstab")
+    script += """
+write /etc/fstab "# UNCONFIGURED FSTAB FOR BASE SYSTEM\\n"
+chmod 0755 /
+"""
     run_guestfish_script(disk, script)
     return uuid, vmlinuz, initrd
 
 
-def create_disk(input_, output_filename, fmt, size, filesystem, verbose):
+def create_disk(input_, output_filename, fmt, size, filesystem, uefi, verbose):
     """Make a disk image from a tar archive or files."""
     # create empty disk
     logger.info("Creating an empty disk image")
@@ -210,19 +254,39 @@ def create_disk(input_, output_filename, fmt, size, filesystem, verbose):
     if proc.returncode:
         raise subprocess.CalledProcessError(proc.returncode, ' '.join(cmd))
 
-    mkfs_options = ""
-    # Fix syslinux 6.03 compat for ext4 64bit, see:
-    # http://www.syslinux.org/wiki/index.php?title=Filesystem#ext
-    if "ext4" in filesystem:
-        mkfs_options = "features:^64bit"
-    # parition disk and create the filesystem
-    script = """
+    additional_mount_option = ""
+    if uefi:
+        # partition disk with UEFI and create the filesystem
+        script = """
+echo "[guestfish] Create new UEFI partition table on /dev/sda"
+part-init /dev/sda efi
+echo "[guestfish] Create system partition /dev/sda1"
+part-add /dev/sda p 1050624 -64
+echo "[guestfish] Create {filesystem} filesystem on /dev/sda1"
+mkfs {filesystem} /dev/sda1
+echo "[guestfish] Create EFI partition /dev/sda2"
+part-add /dev/sda p 2048 1050623
+echo "[guestfish] Set the EFI partition type to /dev/sda2"
+part-set-gpt-type /dev/sda 2 C12A7328-F81F-11D2-BA4B-00A0C93EC93B
+echo "[guestfish] Create FAT filesystem on /dev/sda2"
+mkfs vfat /dev/sda2
+mount /dev/sda1 /
+mkdir-p /boot/efi
+""".format(filesystem=filesystem)
+        additional_mount_option = "-m /dev/sda2:/boot/efi/"
+    else:
+        # Fix syslinux 6.03 compat for ext4 64bit, see:
+        # http://www.syslinux.org/wiki/index.php?title=Filesystem#ext
+        mkfs_options = ""
+        if "ext4" in filesystem:
+            mkfs_options = "features:^64bit"
+        # partition disk with MBR and create the filesystem
+        script = """
 echo "[guestfish] Create new MBR partition table on /dev/sda"
 part-disk /dev/sda mbr
 echo "[guestfish] Create {filesystem} filesystem on /dev/sda1"
 mkfs {filesystem} /dev/sda1 {mkfs_options}
-""".format(filesystem=filesystem,
-           mkfs_options=mkfs_options)
+""".format(filesystem=filesystem, mkfs_options=mkfs_options)
     run_guestfish_script(output_filename, script, mount=False)
 
     # Fill disk with our data
@@ -245,11 +309,12 @@ mkfs {filesystem} /dev/sda1 {mkfs_options}
             (which("tar"), tar_options_str, input_, input_)
 
     if make_tar_cmd:
-        cmd = "%s | %s -a %s -m /dev/sda1:/ tar-in - /" % \
-            (make_tar_cmd, which("guestfish"), output_filename)
+        cmd = "%s | %s -a %s -m /dev/sda1:/ %s tar-in - /" % \
+            (make_tar_cmd, which("guestfish"), output_filename, additional_mount_option)
     else:
-        cmd = "%s -a %s -m /dev/sda1:/ tar-in %s /" % \
-            (which("guestfish"), output_filename, input_)
+        cmd = "%s -a %s -m /dev/sda1:/ %s tar-in %s /" % \
+            (which("guestfish"), output_filename, additional_mount_option, input_)
+    logger.info(cmd)
     proc = subprocess.Popen(cmd, env=os.environ.copy(), shell=True)
     proc.communicate()
     if proc.returncode:
@@ -274,11 +339,13 @@ def create_appliance(args):
                 args.format,
                 args.size,
                 args.filesystem,
+                args.uefi,
                 args.verbose)
     logger.info("Installing bootloader")
     uuid, _, _ = install_bootloader(temp_file,
                                     args.extlinux_mbr,
-                                    args.append)
+                                    args.append,
+                                    args.uefi)
     generate_fstab(temp_file, uuid, args.filesystem)
 
     logger.info("Exporting appliance to %s" % output_filename)
@@ -315,6 +382,8 @@ if __name__ == '__main__':
     parser.add_argument('-o', '--output', action="store", type=str,
                         help='Output filename (without file extension)',
                         required=True, metavar='filename')
+    parser.add_argument('--uefi', action="store_true", default=False,
+                        help='Create an UEFI partition table')
     parser.add_argument('--extlinux-mbr', action="store", type=str,
                         help='Extlinux MBR', metavar='')
     parser.add_argument('--append', action="store", type=str,
