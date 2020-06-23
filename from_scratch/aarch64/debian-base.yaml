@@ -29,7 +29,10 @@ global:
 
   # URL to retrieve packages from (sources.list)
   deb_mirror_hostname: ftp.debian.org
-  deb_mirror_uri: http://$${deb_mirror_hostname}/debian/
+  deb_mirror_directory: /debian
+  deb_mirror_uri: http://$${deb_mirror_hostname}$${deb_mirror_directory}
+  deb_security_hostname: security.debian.org
+  deb_security_directory: /debian
   deb_components: main contrib non-free
 
   qemu_iso_path:

@@ -21,7 +21,10 @@ global:
     - debian
 
   deb_mirror_hostname: ports.ubuntu.com
-  deb_mirror_uri: http://$${deb_mirror_hostname}/ubuntu-ports
+  deb_mirror_directory: /ubuntu-ports
+  deb_mirror_uri: http://$${deb_mirror_hostname}$${deb_mirror_directory}
+  deb_security_hostname: $${deb_mirror_hostname}
+  deb_security_directory: $${deb_mirror_directory}
   dev_components: "main restricted"
 
   installer_kernel_url: $${deb_mirror_uri}/dists/$${release}-updates/main/installer-$${deb_arch}/current/images/netboot/ubuntu-installer/$${deb_arch}/linux

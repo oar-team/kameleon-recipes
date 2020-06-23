@@ -23,7 +23,10 @@ global:
   deb_mirror_hostname: archive.ubuntu.com
   # For old non-LTS release, use:
   # deb_mirror_hostname: old-releases.ubuntu.com
-  deb_mirror_uri: http://$${deb_mirror_hostname}/ubuntu/
+  deb_mirror_directory: /ubuntu
+  deb_mirror_uri: http://$${deb_mirror_hostname}$${deb_mirror_directory}
+  deb_security_hostname: security.ubuntu.com
+  deb_security_directory: $${deb_mirror_directory}
   dev_components: "main restricted"
 
   #installer_iso_location: $${release}-updates

@@ -6,3 +6,6 @@
   - exec_local: sed -i -e 's|\(d-i passwd/root-password password \).*|\1$${root_password}|g' $${http_directory}/preseed.cfg
   - exec_local: sed -i -e 's|\(d-i passwd/root-password-again password \).*|\1$${root_password}|g' $${http_directory}/preseed.cfg
   - exec_local: sed -i -e 's|\(d-i mirror/http/hostname string \).*|\1$${deb_mirror_hostname}|g' $${http_directory}/preseed.cfg
+  - exec_local: sed -i -e 's|\(d-i mirror/http/directory string \).*|\1$${deb_mirror_directory}|g' $${http_directory}/preseed.cfg
+  - exec_local: sed -i -e 's|\(d-i apt-setup/security_host string \).*|\1$${deb_security_hostname}|g' $${http_directory}/preseed.cfg
+  - exec_local: sed -i -e 's|\(d-i apt-setup/security_path string \).*|\1$${deb_security_directory}|g' $${http_directory}/preseed.cfg
