@@ -37,8 +37,8 @@ global:
   # Debian netinstall iso refuses to get keyborad keys via the qemu sendkey command on ARM64.
   # Because of that, we cannot set the preseed in the iso image cdrom boot in qemu.
   # As a consequence, we use the netboot instead and boot kernel and initrd directly
-  installer_kernel_url: http://ftp.debian.org/debian/dists/$${release}/main/installer-$${deb_arch}/current/images/netboot/debian-installer/$${deb_arch}/linux
-  installer_initrd_url: http://ftp.debian.org/debian/dists/$${release}/main/installer-$${deb_arch}/current/images/netboot/debian-installer/$${deb_arch}/initrd.gz
+  installer_kernel_url: $${deb_mirror_uri}/dists/$${release}/main/installer-$${deb_arch}/current/images/netboot/debian-installer/$${deb_arch}/linux
+  installer_initrd_url: $${deb_mirror_uri}/dists/$${release}/main/installer-$${deb_arch}/current/images/netboot/debian-installer/$${deb_arch}/initrd.gz
   # Debian arm64 netboot requires to give explicitly auto=true and priority=critical
   # (the "auto" alias seems not to only be defined for amd64).
   # FIXME find the Debian documentation page which explains that.
