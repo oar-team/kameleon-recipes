@@ -100,20 +100,29 @@ dryrun_ubuntu1804-arm64-min:
 
 ### Build
 ## x64
-build_centos8-x64-min:
-  <<: *defaults-build
-
-build_centos7-x64-min:
-  <<: *defaults-build
-
-build_ubuntu1804-x64-min:
-  <<: *defaults-build
-
-build_debiantesting-x64-min:
-  <<: *defaults-build
-
+# Debian 9
 build_debian9-x64-min:
   <<: *defaults-build
 
+# Debian 10
 build_debian10-x64-std:
   <<: *defaults-build
+
+# Debian testing
+build_debiantesting-x64-min:
+  <<: *defaults-build
+
+# Ubuntu
+build_ubuntu1804-x64-min:
+  <<: *defaults-build
+
+build_ubuntu2004-x64-min:
+  <<: *defaults-build
+
+# Centos
+build_centos7-x64-min:
+  <<: *defaults-build
+
+build_centos8-x64-min:
+  <<: *defaults-build
+
