@@ -6,7 +6,7 @@
           - exec_local: test -z "$${installer_iso_url}"
           - exec_local: |
               echo "Looking for the netinstall iso URL for $${installer_iso_finder_args}"
-              DOWNLOAD_SRC_URL=$($${installer_iso_finder_helper} $${installer_iso_finder_args})
+              DOWNLOAD_SRC_URL=$(python2 $${installer_iso_finder_helper} $${installer_iso_finder_args})
        - download_file_local:
          - $${installer_iso_url}
          - $${qemu_iso_path}

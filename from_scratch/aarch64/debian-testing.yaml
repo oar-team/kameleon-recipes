@@ -13,6 +13,10 @@ global:
   distrib: debian
   release: testing
   release_number: X
+  # Overload default url (ftp.debian.org) because of version mismatch between
+  # the kernel version and the version of the modules fetched as udeb packages
+  installer_kernel_url: https://d-i.debian.org/daily-images/$${deb_arch}/daily/netboot/debian-installer/$${deb_arch}/linux
+  installer_initrd_url: https://d-i.debian.org/daily-images/$${deb_arch}/daily/netboot/debian-installer/$${deb_arch}/initrd.gz
 
 bootstrap:
   - "@base"
