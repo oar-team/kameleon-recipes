@@ -24,8 +24,7 @@
          echo "Setting up ARM64 UEFI boot for qcow2 image"
          virt-customize \
            -a $${output}.qcow2 \
-           --run-command 'mkdir /boot/efi/EFI/BOOT' \
-           --run-command 'cp /boot/efi/EFI/debian/grubaa64.efi /boot/efi/EFI/BOOT/BOOTAA64.EFI'
+           --run-command 'if ! [ -e /boot/efi/EFI/BOOT/BOOTAA64.EFI ]; then mkdir -p /boot/efi/EFI/BOOT ; cp /boot/efi/EFI/$${distrib}/grubaa64.efi /boot/efi/EFI/BOOT/BOOTAA64.EFI; fi'
        fi
 
 - sparsify_qcow2_image:
