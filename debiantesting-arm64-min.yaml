@@ -61,17 +61,6 @@ setup:
   - set_g5k_dhclient_hook
   - set_g5k_motd
   - configure_ssh_server
-  # FIX QED FIRMWARE (to remove when the debian bug is fixed)
-  # we manually install the latest firmware for the qede driver (10Gbps NIC)
-  # qed/qed_init_values_zipped-8.42.2.0.bin
-  # because the firmware-qlogic Debian package does not provide it currently
-  # (see https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=963558)
-  - install_qede_firmware_files:
-    - fetch_and_install:
-      - exec_in: |
-          mkdir -p /lib/firmware/qed
-          wget -q -O- "https://kernel.googlesource.com/pub/scm/linux/kernel/git/firmware/linux-firmware/+archive/379551b14e9f34236d0746c46f89935dc2e237b1/qed.tar.gz" | tar -zxv -C /lib/firmware/qed
-          update-initramfs -u
 
 export:
   - clean_dhcp_leases
