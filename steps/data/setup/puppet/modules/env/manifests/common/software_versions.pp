@@ -6,4 +6,5 @@ class env::common::software_versions {
    $tgz_g5k = '2.0.9'
    $g5k_checks = '0.9.2'
    $sudo_g5k = '1.7'
+   $libguestfs_backport_arm64 = '1:1.40.2-7~bpog5k10+1'
 }
