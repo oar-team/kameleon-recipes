@@ -9,18 +9,26 @@ class env::base::configure_omnipath(){
       $rdmapackages = ['qperf', 'libibverbs1', 'librdmacm1', 'libibmad5', 'libibumad3', 'ibverbs-providers',
                       'rdmacm-utils', 'rdmacm-utils', 'infiniband-diags', 'libfabric1', 'ibverbs-utils']
 
-      ensure_packages([$opapackages, $rdmapackages], {
-        ensure => present
-      })
+      if $env::deb_arch == 'amd64' {
+        ensure_packages([$opapackages, $rdmapackages], {
+          ensure => present
+        })
 
-      # rdma-load-modules@opa.service would fail with opa_vnic (not available)
-      # opa_vnic isn't required to make OPA working
-      exec {
-        'disable opa_vnic':
-          command => "/bin/sed -i 's/opa_vnic/# opa_vnic/g' /etc/rdma/modules/opa.conf",
-          require => Package[$rdmapackages]
+        # rdma-load-modules@opa.service would fail with opa_vnic (not available)
+        # opa_vnic isn't required to make OPA working
+        exec {
+          'disable opa_vnic':
+            command => "/bin/sed -i 's/opa_vnic/# opa_vnic/g' /etc/rdma/modules/opa.conf",
+            require => Package[$rdmapackages]
+        }
       }
 
+      if $env::deb_arch == 'arm64' {
+        # opapackages and libfabric1 not available on arm64
+        ensure_packages([$rdmapackages - ['libfabric1']], {
+          ensure => present
+        })
+      }
     }
     'stretch': {
       $opapackages = ['opa-address-resolution', 'hfi1-diagtools-sw',

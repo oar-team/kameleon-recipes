@@ -37,9 +37,7 @@ class env::base ( $variant = "base", $parent_parameters = {} ){
   # memlock tuning for infiniband
   class { 'env::base::unlimited_memlock_for_infiniband': }
   # Omni-Path
-  if $env::deb_arch == 'amd64' {
-    class { 'env::base::configure_omnipath': }
-  }
+  class { 'env::base::configure_omnipath': }
   #Add ca2019.grid5000.fr certificate
   class { 'env::base::add_ca_grid5000': }
   #Dhclient conf
