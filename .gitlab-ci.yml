@@ -126,3 +126,7 @@ build_centos7-x64-min:
 build_centos8-x64-min:
   <<: *defaults-build
 
+## arm64
+# Debian testing
+build_debiantesting-arm64-min:
+  <<: *defaults-build
