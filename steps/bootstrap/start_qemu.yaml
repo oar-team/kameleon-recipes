@@ -17,6 +17,7 @@
 - no_reboot: true
 - socat_monitor: socat - UNIX-CONNECT:$${qemu_monitor_socket}
 - qemu_sendkeys_script: $${kameleon_data_dir}/qemu-sendkeys.rb
+- qemu_sendkeys_opts: 
 - qemu_sendkeys_commands: 
 - vm_expected_service: ssh
 - vm_cleanup_section: setup
@@ -211,7 +212,7 @@
     - exec_local: |
         echo "Sending keyboard commands to the VM: $${qemu_sendkeys_commands}"
         echo "(Local httpd server url: http://$${local_ip}:$HTTP_PORT)"
-        ruby $${qemu_sendkeys_script} -d 0.05 "$(sed -e s/%LOCAL_IP%/$${local_ip}/g -e s/%HTTP_PORT%/$HTTP_PORT/g $${qemu_sendkeys_commands})" | $${socat_monitor} > /dev/null
+        ruby $${qemu_sendkeys_script} $${qemu_sendkeys_opts} "$(sed -e s/%LOCAL_IP%/$${local_ip}/g -e s/%HTTP_PORT%/$HTTP_PORT/g $${qemu_sendkeys_commands})" | $${socat_monitor} > /dev/null
     - exec_local: echo "No keyboard commands to send"
 
 - shutdown_vm:

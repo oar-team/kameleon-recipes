@@ -1,21 +1,24 @@
+- insecure_ssh_key: $${kameleon_cwd}/insecure_ssh_key
+
 - copy_autoinstall_script_to_http_directory:
   - exec_local: mkdir -p $${http_directory}
   - exec_local: cp $${autoinstall_script_path} $${http_directory}/autoinstall.sh
   - exec_local: cp $${nix_configuration} $${http_directory}/configuration.nix
+  - exec_local: cp $${nix_hardware_configuration} $${http_directory}/hardware-configuration.nix
 
 - configure_proxy:
   - exec_local: |
-      if [ ! "$${proxy_out}" = "" ]; then
-        sed -i s'|export http_proxy=\(.*\)|export http_proxy=http://$${proxy_out}|'g $${http_directory}/autoinstall.sh
+      if [ -n "$${proxy_out}" ]; then
+        sed -i -e "s|%HTTP_PROXY%|http://$${proxy_out}|g" $${http_directory}/autoinstall.sh
+      else
+        sed -i -e "s|%HTTP_PROXY%||g" $${http_directory}/autoinstall.sh
       fi
 
 - set_root_password:
   - exec_local: |
-        sed -i s'|export PASSWD=\(.*\)|export PASSWD=$${root_password}|'g $${http_directory}/autoinstall.sh
-
-- write_boot_command:
-  - write_local:
-    - $${kameleon_cwd}/boot_command
-    - >
-      curl -sSL http://$${local_ip}:$${http_port}/configuration.nix <gt> /tmp/configuration.nix<kp_enter>
-      curl -sSL http://$${local_ip}:$${http_port}/autoinstall.sh | bash<kp_enter>
+        INSECURE_SSH_KEY_PUB=$(< $${insecure_ssh_key}.pub)
+        sed -i -e "s|%PASSWORD%|$${root_password}|g" $${http_directory}/autoinstall.sh
+        sed -i -e "s|%LOCAL_IP%|$${local_ip}|g" $${http_directory}/autoinstall.sh
+        sed -i -e "s|%HTTP_PORT%|$HTTP_PORT|g" $${http_directory}/autoinstall.sh
+        sed -i -e "s|%PASSWORD%|$${root_password}|g" $${http_directory}/configuration.nix
+        sed -i -e "s|%SSH_PUBLIC_KEY%|$INSECURE_SSH_KEY_PUB|g" $${http_directory}/configuration.nix

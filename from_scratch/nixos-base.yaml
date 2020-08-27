@@ -1,0 +1,52 @@
+#==============================================================================
+# vim: softtabstop=2 shiftwidth=2 expandtab fenc=utf-8 cc=81 tw=80
+#==============================================================================
+#
+# DESCRIPTION: NIXOS
+#
+#==============================================================================
+---
+extend: base.yaml
+
+global:
+  distrib: nixos
+  release: 19.09
+
+  installer_iso_url: https://channels.nixos.org/$${distrib}-$${release}/latest-nixos-minimal-$${arch}-linux.iso
+  # To use a special build, comment the previous line and uncomment the build
+  # and installer_iso_url lines below. Builds can be found at http://releases.nixos.org/?prefix=nixos/19.09-small/
+  #build: 2484.322fd893724
+  #installer_iso_url: http://releases.nixos.org/$${distrib}/$${release}-small/$${distrib}-$${release}.$${build}/$${distrib}-minimal-$${release}.$${build}-$${arch}-linux.iso
+
+  qemu_iso_path: $${kameleon_cwd}/$${distrib}.iso
+
+  qemu_sendkeys_commands: $${kameleon_data_dir}/qemu-sendkeys/netinst-iso-$${distrib}
+  qemu_memory_size: 2048
+
+  first_vm_boot_timeout: 40
+  use_virt_customize: false
+
+  autoinstall_script_path: $${kameleon_data_dir}/$${distrib}/autoinstall.sh
+
+  nix_hardware_configuration: $${kameleon_data_dir}/$${distrib}/hardware-configuration.nix
+  nix_configuration: $${kameleon_data_dir}/$${distrib}/configuration.nix
+
+  out_context:
+    cmd: ssh -F $${ssh_config_file} $${kameleon_recipe_name} -t /run/current-system/sw/bin/bash
+    workdir: /root/kameleon_workdir
+    proxy_cache: $${local_ip}
+
+  in_context:
+    cmd: ssh -F $${ssh_config_file} $${kameleon_recipe_name} -t /run/current-system/sw/bin/bash
+    workdir: /root/kameleon_workdir
+    proxy_cache: $${local_ip}
+
+bootstrap:
+  - "@base"
+  - breakpoint
+setup:
+  - "@base"
+  - breakpoint
+
+export:
+  - "@base"
