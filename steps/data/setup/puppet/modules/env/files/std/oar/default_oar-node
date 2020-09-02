@@ -1,5 +1,5 @@
 # OARSERVER: machine where we remotely run oarnodesetting
-OARREMOTE="frontend"
+OARREMOTE="oar"
 
 # The paths to oarnodecheckquery and oarnodecheckrun (check your installation)
 OARNODECHECKQUERY=/usr/bin/oarnodecheckquery
@@ -25,7 +25,7 @@ start_oar_node() {
       status=$?
       [ $status -eq 0 ] && {
         echo "oar-node: set the ressources of this node to Alive"
-        ssh -t -oStrictHostKeyChecking=no -oPasswordAuthentication=no -i $OARHOME/.ssh/oarnodesetting_ssh.key oar@$OARREMOTE -p 6667
+        ssh -t -oStrictHostKeyChecking=no -oPasswordAuthentication=no -i $OARHOME/.ssh/oarnodesetting_ssh.key oar@$OARREMOTE
         status=$?
       }
       [ $status -ne 0 ] && {
