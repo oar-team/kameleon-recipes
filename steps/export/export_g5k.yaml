@@ -54,7 +54,7 @@
       $${dashes}
       name: $${kameleon_recipe_name}
       version: $${g5k_version}
-      description: $${distrib} $${release_number} ($${release}) - $${g5k_variant}
+      description: $${distrib} $${release_number} ($${release}) for $${g5k_image_arch} - $${g5k_variant}
       author: $${g5k_author}
       visibility: $${g5k_visibility}
       destructive: $${g5k_destructive}
