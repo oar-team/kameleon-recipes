@@ -23,6 +23,7 @@ global:
   #deb_kernel: default
   # -> other option: bpo - e.g. set on command line using "-g deb_kernel:bpo"
   deb_kernel: bpo
+  kernel_filename: vmlinuz
   firmware_packages: firmware-linux firmware-bnx2 firmware-bnx2x firmware-qlogic
   # haveged is used to provide more entropy during boot
   system_packages: ash systemd systemd-sysv haveged
@@ -297,7 +298,7 @@ export:
               -o -path './var/lib/dhcp/*' -prune \
               -o -path './tmp/*' -prune \
               -o -path './root/kameleon_workdir' -prune \
-              -o -path './vmlinuz' -prune \
+              -o -path './$${kernel_filename}' -prune \
               -o -path './initrd.img' -prune \
               -o -xdev -print | cpio -o -H newc  | xz -9 > $${rootfs}/boot/root.cxz
     - add_initramfs_hook:
@@ -394,15 +395,15 @@ export:
     - copy_files:
       - exec_out: |
           mkdir -p /tmp
-          cp $${rootfs}/boot/vmlinuz* /tmp/vmlinuz
+          cp $${rootfs}/boot/$${kernel_filename}* /tmp/$${kernel_filename}
           cp $${rootfs}/boot/initrd.img* /tmp/initrd.img
-  - export_vmlinuz_initrd:
+  - export_kernel_initrd:
     - create_directory:
       - exec_local: mkdir -p $${kameleon_recipe_name}
-    - vmlinuz:
+    - kernel:
       - out2local:
-        - /tmp/vmlinuz
-        - $${kameleon_recipe_name}/$${kameleon_recipe_name}.vmlinuz
+        - /tmp/$${kernel_filename}
+        - $${kameleon_recipe_name}/$${kameleon_recipe_name}.$${kernel_filename}
     - initrd:
       - out2local:
         - /tmp/initrd.img
@@ -454,7 +455,7 @@ export:
           echo "3.0 (native)" > $${kameleon_recipe_name}/debian/source/format
       - exec_local: |
           cat > $${kameleon_recipe_name}/debian/install <<EOF
-          $${kameleon_recipe_name}.vmlinuz $${target_directory}
+          $${kameleon_recipe_name}.$${kernel_filename} $${target_directory}
           $${kameleon_recipe_name}.initrd.img $${target_directory}
           EOF
     - generate_deb_package:
