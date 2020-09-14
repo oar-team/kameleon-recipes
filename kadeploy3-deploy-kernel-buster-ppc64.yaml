@@ -16,6 +16,7 @@ global:
   deb_arch: ppc64el
   deb_kernel_arch: powerpc64le
   kernel_filename: vmlinux
+  tmpfs_size: 4G
   qemu_arch: x86_64
   arch_specific_packages:
 

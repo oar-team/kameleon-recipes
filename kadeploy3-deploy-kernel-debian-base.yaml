@@ -24,6 +24,7 @@ global:
   # -> other option: bpo - e.g. set on command line using "-g deb_kernel:bpo"
   deb_kernel: bpo
   kernel_filename: vmlinuz
+  tmpfs_size: 1G
   firmware_packages: firmware-linux firmware-bnx2 firmware-bnx2x firmware-qlogic
   # haveged is used to provide more entropy during boot
   system_packages: ash systemd systemd-sysv haveged
@@ -343,7 +344,7 @@ export:
           ${rootmnt}.tmp ${rootmnt} root-tmpfs bind 0 0
           EOF
           mkdir -p ${rootmnt}.tmp
-          mount -t tmpfs -o size=1G root-tmpfs ${rootmnt}.tmp
+          mount -t tmpfs -o size=$${tmpfs_size} root-tmpfs ${rootmnt}.tmp
           if [ $? -ne 0 ]; then
              panic "Failed to create tmpfs"
           fi
@@ -375,7 +376,7 @@ export:
           # Begin real processing below this line
           log_begin_msg "Umount temporary rootfs"
           cat <<EOF > ${rootmnt}.tmp/etc/fstab
-          rootfs / tmpfs size=1G 0 0
+          rootfs / tmpfs size=$${tmpfs_size} 0 0
           EOF
           umount ${rootmnt}.tmp 
           if [ $? -ne 0 ]; then
