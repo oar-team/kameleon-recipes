@@ -1,0 +1,25 @@
+#==============================================================================
+# vim: softtabstop=2 shiftwidth=2 expandtab fenc=utf-8 cc=81 tw=80
+#==============================================================================
+#
+# DESCRIPTION: arm64 base recipe
+#
+#==============================================================================
+---
+extend: ../base.yaml
+# Global variables use by Kameleon engine and the steps
+global:
+  arch: ppc64le
+  installer_iso_arch: ppc64le
+  qemu_arch: ppc64
+  qemu_enable_kvm: true
+  qemu_uefi: false
+
+bootstrap:
+  - "@base"
+
+setup:
+  - "@base"
+
+export:
+  - "@base"
