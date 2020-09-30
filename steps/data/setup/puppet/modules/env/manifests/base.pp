@@ -44,4 +44,6 @@ class env::base ( $variant = "base", $parent_parameters = {} ){
   class { 'env::base::configure_dhclient': }
   # Disable ndctl monitor service
   class { 'env::base::disable_ndctl_monitor': }
+  # Enable userns for Nix
+  class { 'env::base::enable_userns': }
 }
