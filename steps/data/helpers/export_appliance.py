@@ -78,6 +78,8 @@ def tar_convert(disk, output, excludes, compression_level):
     #    raise subprocess.CalledProcessError(proc.returncode, cmd)
 
     tar_options_str = ' '.join(tar_options + ['--exclude="%s"' % s for s in excludes])
+    # Necessary to have quick access to /etc (bug 12240) and also good for reproducibility
+    tar_options_str += ' --sort=name'
     directory = dir_path = os.path.dirname(os.path.realpath(disk))
     cmds = [
         which("mkdir") + " %s/.mnt" % directory,
