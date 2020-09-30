@@ -7,29 +7,56 @@
 require 'open-uri'
 require 'json'
 require 'optparse'
+require 'fileutils'
 require_relative '../lib/g5k/g5k-manager.rb'
+
+$reboot_lock_dir  = '/var/lib/g5k-pmem-manager'
+$reboot_lock_file = File.join($reboot_lock_dir, 'run.lock')
 
 def main
   hostname = `hostname`.chomp
 
-  if user_deploy?(hostname)
-    notice 'The environment is deployed manually by a user: we do not touch pmem configuration'
+  unless have_pmem?
+    notice('No PMEM in this system, nothing to do')
     exit
   end
 
-  if !defined_regions?
-    notice "The environment doesn't have defined regions: nothing to do"
+  if user_deploy?(hostname)
+    notice('The environment is deployed by a user: PMEM configuration left unchanged')
     exit
-  else
-    notice 'Region(s) found, removing and going to memory mode'
-    memory_mode
   end
+
+  if rebooted?
+    if !defined_regions? && !defined_namespaces? && !defined_goals?
+      notice('PMEM switch to Memory Mode is effective after reboot')
+      FileUtils.rm_f($reboot_lock_file)
+      exit
+    else
+      error(1, 'PMEM was not changed to Memory Mode after reboot, something went wrong')
+    end
+  end
+
+  if defined_goals?
+    error(1, 'Some PMEM configuration goals are defined. This is unexpected')
+  elsif defined_regions? || defined_namespaces?
+    notice('PMEM App Direct configuration found, removing and switching to full Memory Mode')
+    memory_mode
+  else
+    notice('The PMEM is in Memory Mode as expected')
+    exit
+  end
+end
+
+def have_pmem?
+  _status, stdout = sh('ipmctl show -goal')
+
+  stdout.match(/No functional PMem modules in the system/) ? false : true
 end
 
 def defined_regions?
   status, stdout = sh('ipmctl show -region')
   unless status.zero?
-    notice 'impctl failed to list regions'
+    error(1, 'impctl failed to list regions')
     return false
   end
 
@@ -39,10 +66,23 @@ end
 def defined_namespaces?
   status, stdout = sh('ndctl list')
   unless status.zero?
-    notice 'ndctl failed to list namespaces'
+    error(1, 'ndctl failed to list namespaces')
   end
 
   stdout.empty? ? false : true
+end
+
+def defined_goals?
+  status, stdout = sh('ipmctl show -goal')
+  unless status.zero?
+    error(1, 'ipmctl failed to list goals')
+  end
+
+  stdout.match(/no goal configs defined in the system/) ? false : true
+end
+
+def rebooted?
+  File.exist?($reboot_lock_file)
 end
 
 def memory_mode
@@ -51,18 +91,25 @@ def memory_mode
   if defined_namespaces?
     status, _stdout = sh('ndctl destroy-namespace --force all')
     unless status.zero?
-      notice 'ndctl failed to destroy namespaces'
+      error(1, 'ndctl failed to destroy namespaces')
     end
   end
 
   status, _stdout = sh('ipmctl create -force -goal MemoryMode=100')
   unless status.zero?
-    notice 'ipmctl failed to provision memory mode'
+    error(1, 'ipmctl failed to provision Memory Mode')
+  end
+
+  begin
+    FileUtils.mkdir_p($reboot_lock_dir)
+    FileUtils.touch($reboot_lock_file)
+  rescue => e
+    error(1, "Unable to create #{$reboot_lock_file}, error: #{e}")
   end
 
   status, _stdout = sh('reboot')
   unless status.zero?
-    notice 'system failed to reboot'
+    error(1, 'System failed to reboot')
   end
 end
 
