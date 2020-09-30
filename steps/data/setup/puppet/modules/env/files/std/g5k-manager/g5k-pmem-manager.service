@@ -6,6 +6,7 @@ Before=oar-node.service
 [Service]
 Type=oneshot
 ExecStart=/usr/local/libexec/g5k-pmem-manager
+StandardOutput=journal+console
 
 [Install]
 WantedBy=multi-user.target
