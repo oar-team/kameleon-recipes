@@ -1,8 +1,13 @@
 class env::base::install_and_disable_ganglia ($enable = false){
 
-  package {
-    'ganglia-monitor':
-      ensure  => installed;
+  include env::common::software_versions
+
+  if "$operatingsystem" == 'Debian' {
+    env::common::g5kpackages {
+      'ganglia-monitor':
+        ensure  => $::env::common::software_versions::ganglia_monitor,
+        release => "${::lsbdistcodename}";
+    }
   }
 
   file {

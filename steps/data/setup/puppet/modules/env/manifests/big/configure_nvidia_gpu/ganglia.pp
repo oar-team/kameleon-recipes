@@ -6,9 +6,10 @@ class env::big::configure_nvidia_gpu::ganglia () {
       env::common::g5kpackages {
         'ganglia-monitor-nvidia':
           packages => 'ganglia-monitor-python-nvidia',
-          ensure => installed,
-          require  =>  Package['ganglia-monitor']
+          ensure => installed;
       }
+
+      Package['ganglia-monitor'] -> Package['ganglia-monitor-python-nvidia']
 
       file{
         '/etc/ganglia/conf.d/modpython-nvidia.conf':
