@@ -19,8 +19,6 @@ class env::base ( $variant = "base", $parent_parameters = {} ){
      keep_tmp => $parameters['misc_keep_tmp'];
   }
 
-  # Force ipmctl version for proper PMEM support
-  class { 'env::base::install_ipmctl': }
   # Include kexec-tools
   class { 'env::base::configure_kexec': }
   # SSH modification
