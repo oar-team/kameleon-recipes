@@ -1,3 +1,2 @@
-# Allow members of group users to create a tap interface and add it to the bridge
-%users ALL=NOPASSWD: /usr/local/bin/create_tap, /usr/local/bin/mic-setup-my-user
+# Allow members of group g5k-users to create a tap interface and add it to the bridge
 %g5k-users ALL=NOPASSWD: /usr/local/bin/create_tap, /usr/local/bin/mic-setup-my-user
