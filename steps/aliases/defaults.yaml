@@ -40,6 +40,48 @@ append_out:
       @2
       EOF_KAMELEON_INTERNAL
 
+write_raw_local:
+  - exec_local: |
+      mkdir -p $(dirname @1);
+      cat >@1 <<'EOF_KAMELEON_INTERNAL'
+      @2
+      EOF_KAMELEON_INTERNAL
+
+write_raw_in:
+  - exec_in: |
+      mkdir -p $(dirname @1);
+      cat >@1 <<'EOF_KAMELEON_INTERNAL'
+      @2
+      EOF_KAMELEON_INTERNAL
+
+write_raw_out:
+  - exec_out: |
+      mkdir -p $(dirname @1);
+      cat >@1 <<'EOF_KAMELEON_INTERNAL'
+      @2
+      EOF_KAMELEON_INTERNAL
+
+append_raw_local:
+  - exec_local: |
+      mkdir -p $(dirname @1);
+      cat >>@1 <<'EOF_KAMELEON_INTERNAL'
+      @2
+      EOF_KAMELEON_INTERNAL
+
+append_raw_in:
+  - exec_in: |
+      mkdir -p $(dirname @1);
+      cat >>@1 <<'EOF_KAMELEON_INTERNAL'
+      @2
+      EOF_KAMELEON_INTERNAL
+
+append_raw_out:
+  - exec_out: |
+      mkdir -p $(dirname @1);
+      cat >>@1 <<'EOF_KAMELEON_INTERNAL'
+      @2
+      EOF_KAMELEON_INTERNAL
+
 local2out:
   - exec_out: |
       mkdir -p $(dirname @2)
