@@ -18,7 +18,7 @@ global:
   kernel_filename: vmlinux
   tmpfs_size: 4G
   qemu_arch: x86_64
-  arch_specific_packages:
+  arch_specific_packages: powerpc-utils ipmitool
 
   in_context:
     cmd: ssh -F $${ssh_config_file} $${kameleon_recipe_name} -t chroot $${rootfs} /usr/bin/qemu-$${arch}-static /bin/bash
