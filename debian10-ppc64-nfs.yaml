@@ -1,0 +1,24 @@
+#==============================================================================
+# vim: softtabstop=2 shiftwidth=2 expandtab fenc=utf-8 cc=81 tw=80
+#==============================================================================
+#
+# DESCRIPTION: Debian buster (10) ppc64 nfs Grid'5000 environment
+#
+#==============================================================================
+---
+extend: ./debian10-ppc64-common.yaml
+
+global:
+  # Grid'5000 environment variant
+  g5k_variant: nfs
+  # Grid'5000 Kadeploy environment parameters
+  g5k_postinst_script: g5k-postinstall --net debian --fstab nfs --restrict-user current
+
+bootstrap:
+  - "@base"
+
+setup:
+  - "@base"
+
+export:
+  - "@base"
