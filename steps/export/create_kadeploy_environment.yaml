@@ -84,7 +84,7 @@
         ${kaenv_postinstall_compression:+--modify postinstalls_compression0="$${grid5000_environment_export_postinstall_compression}"} \
         ${kaenv_additional_postinstall_path:+--add-postinstall "$kaenv_additional_postinstall_path:$${grid5000_environment_export_additional_postinstall_compression}:$${grid5000_environment_export_additional_postinstall_script}"} \
         > $${grid5000_environment_export_name}.yaml
-- create_additinal_postinstall_archive:
+- create_additional_postinstall_archive:
   - exec_local: |
       if [ -n "$${grid5000_environment_export_additional_postinstall_archive}" ]; then
         if [ -d "$${grid5000_environment_export_additional_postinstall_dir}" ]; then
