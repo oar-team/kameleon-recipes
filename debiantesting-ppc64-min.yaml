@@ -24,8 +24,8 @@ global:
   g5k_postinst_path: server:///grid5000/postinstalls/g5k-postinstall.tgz
   g5k_postinst_script: g5k-postinstall --net debian
   g5k_kernel_params: ""
-  g5k_kernel_path: "/boot/vmlinux"
-  g5k_initrd_path: "/boot/initrd.img"
+  g5k_kernel_path: "/vmlinux"
+  g5k_initrd_path: "/initrd.img"
   # kernel modules to blacklist
   kernel_modules_blacklist: "usb_storage usbhid ohci_hcd ehci_hcd usbcore nouveau myri10ge"
   # Grid'5000 deb repositories to add to sources

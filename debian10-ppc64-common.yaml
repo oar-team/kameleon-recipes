@@ -9,6 +9,9 @@
 extend: from_scratch/ppc64le/debian-buster.yaml
 
 global:
+  # Override uncommon kernel path
+  g5k_kernel_path: "/vmlinux"
+  g5k_initrd_path: "/initrd.img"
   # Export format to generate
   appliance_formats: qcow2 tar.gz
   # Output base filename
