@@ -31,5 +31,7 @@ class env::big ( $variant = "big", $parent_parameters = {} ){
   class { 'env::big::install_snmp_tools': }
   # remove RESUME device from initramfs
   class { 'env::big::configure_initramfs': }
+  # Prometheus
+  class { 'env::big::install_prometheus_exporters': }
 
 }
