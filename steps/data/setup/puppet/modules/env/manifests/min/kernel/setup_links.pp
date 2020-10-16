@@ -5,7 +5,10 @@ class env::min::kernel::setup_links {
       path     => '/etc/kernel-img.conf',
       line     => "link_in_boot = no",
       match    => '^link_in_boot =',
-      before   => Exec['linux-update-symlinks'];
+      before   => [
+        Exec['linux-update-symlinks-vmlinuz'],
+        Exec['linux-update-symlinks-vmlinux'],
+     ];
   }
 
   # Ensure symlinks to /boot are removed
@@ -16,6 +19,12 @@ class env::min::kernel::setup_links {
     '/boot/vmlinuz.old':
       path     => '/boot/vmlinuz.old',
       ensure   => absent;
+    '/boot/vmlinux':
+      path     => '/boot/vmlinux',
+      ensure   => absent;
+    '/boot/vmlinux.old':
+      path     => '/boot/vmlinux.old',
+      ensure   => absent;
     '/boot/initrd.img':
       path     => '/boot/initrd.img',
       ensure   => absent;
@@ -24,10 +33,16 @@ class env::min::kernel::setup_links {
       ensure   => absent;
   }
 
-  # Setup symlink for initrd and vmlinuz
+  # Setup symlink for initrd and vmlinuz/vmlinux
   exec {
-    'linux-update-symlinks':
+    'linux-update-symlinks-vmlinuz':
+      onlyif  => "/usr/bin/test -e /boot/vmlinuz-${kernelrelease}",
       command => "/usr/bin/linux-update-symlinks install ${kernelrelease} /boot/vmlinuz-${kernelrelease}";
+  }
+  exec {
+    'linux-update-symlinks-vmlinux':
+      onlyif  => "/usr/bin/test -e /boot/vmlinux-${kernelrelease}",
+      command => "/usr/bin/linux-update-symlinks install ${kernelrelease} /boot/vmlinux-${kernelrelease}";
   }
 
 }
