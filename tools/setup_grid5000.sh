@@ -30,4 +30,11 @@ apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install
 gem install --no-ri --no-rdoc kameleon-builder
 mv /bin/gzip /bin/gzip.OLD
 ln -s /usr/bin/pigz /bin/gzip
+
+# Disable SMT on Power (necessary for qemu)
+if [ "$ARCH" = "ppc64el" ]; then
+	apt-get update && apt-get install -y powerpc-ibm-utils
+	ppc64_cpu --smt=off
+fi
+
 cd /tmp
