@@ -14,7 +14,7 @@ echo "mdadm   mdadm/initrdstart       string  none" | debconf-set-selections
 KERNEL=linux-image-$(uname -r)
 VERSION=$(apt-cache policy $KERNEL | grep Installed: | awk '{print $2}')
 ARCH=$(dpkg --print-architecture)
-KERNEL_SHORT=$(uname -r | sed -re "s/^(.*)-${ARCH}$/\1/g")
+KERNEL_SHORT=$(uname -r | sed -re "s/^(.*)-[^-]*/\1/g")
 apt-get update
 apt-get install -y systemtap linux-image-$(uname -r)-dbg=$VERSION linux-headers-$(uname -r)=$VERSION
 /tmp/environments-recipes/tools/nofsync.stp </dev/null >/dev/null 2>&1 &
