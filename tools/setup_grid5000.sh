@@ -25,7 +25,7 @@ apt-get install -y systemtap linux-image-$(uname -r)-dbg=$VERSION linux-headers-
 if [ "$ARCH" = "arm64" -o "$ARCH" = "ppc64el" ]; then
 	echo deb http://packages.grid5000.fr/deb/libguestfs-backport / > /etc/apt/sources.list.d/libguestfs-backport.list
 fi
-apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends git linux-headers-${ARCH} socat qemu-utils ruby-dev ruby-childprocess polipo pigz netcat eatmydata libguestfs-tools dirmngr python-future gnupg gnupg-agent
+apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends git linux-headers-$(uname -r) socat qemu-utils ruby-dev ruby-childprocess polipo pigz netcat eatmydata libguestfs-tools dirmngr python-future gnupg gnupg-agent
 
 gem install --no-ri --no-rdoc kameleon-builder
 mv /bin/gzip /bin/gzip.OLD
