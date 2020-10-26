@@ -9,6 +9,9 @@
 extend: from_scratch/ppc64le/debian-testing.yaml
 
 global:
+  # For now, we systematically need to redeploy everything after each
+  # deployment.  This is a limitation in the way we configure petitboot.
+  g5k_destructive: true
   # Export format to generate
   appliance_formats: qcow2 tar.gz
   # Output base filename
