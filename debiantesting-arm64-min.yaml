@@ -29,10 +29,7 @@ global:
   # kernel modules to blacklist
   kernel_modules_blacklist: "usb_storage usbhid ohci_hcd ehci_hcd usbcore nouveau myri10ge"
   # Grid'5000 deb repositories to add to sources
-  # Bug 939076: Add the firmware-nonfree g5k repository to install a firmware-bnx2x
-  # package that fixes https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=939076
-  # TO REVERT/UNDO/REMOVE when the firmware-bnx2x package is updated in testing.
-  g5k_deb_repositories: "g5k-meta-packages tgz-g5k firmware-nonfree"
+  g5k_deb_repositories: "g5k-meta-packages tgz-g5k"
   # Grid'5000 metapackage name for the recipe
   g5k_meta_package: "g5k-meta-packages-$${distrib}$${release_number}-$${g5k_variant}"
   # packages to install, with version
