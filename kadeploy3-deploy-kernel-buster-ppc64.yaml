@@ -30,6 +30,53 @@ bootstrap:
 
 setup:
   - "@base"
-
+  - mkfs_uuid_wrappers:
+    - create_wrapper:
+      - exec_in: |
+          cat <<'EOF' > /usr/local/sbin/mkfs-uuid-wrapper
+          #!/bin/bash
+          set -e
+          echo "Using mkfs uuid wrapper for $0"
+          die() { echo "Error: $1." 1>&2 && exit 1; }
+          FS=${0#*mkfs.}
+          [[ "$0" != "$FS" ]] || die "Could not guess FS"
+          REGEX="^/dev/sd(\w)([[:digit:]]+)$"
+          for p in "$@"; do
+            if [[ $p =~ $REGEX ]]; then
+              DISK=${BASH_REMATCH[1]}
+              PART=${BASH_REMATCH[2]}
+            fi
+          done
+          [[ -n "$DISK" ]] && [[ -n "$PART" ]] || die "Could not guess DISK and PARTITION"
+          ord() { printf "%d" "'$1"; }
+          printf -v UUID "12345678-0000-0000-%04d-%012d" $(($(ord $DISK) - $(ord "a") + 1 )) $PART
+          declare -a OPT
+          case $FS in
+            ext2|ext3|ext4|btrfs)
+              OPT=("-U" $UUID)
+            ;;
+            xfs)
+              OPT=("-m" "uuid=$UUID")
+            ;;
+            reiserfs)
+              OPT=("--uuid" $UUID)
+            ;;
+            *)
+            die "Unhandled FILESYSTEM: $FS"
+            ;;
+          esac
+          echo exec $0.distrib "${OPT[@]}" "$@" 
+          exec $0.distrib "${OPT[@]}" "$@" 
+          EOF
+          chmod 755 /usr/local/sbin/mkfs-uuid-wrapper
+    - divert:
+      - exec_in: |
+          (shopt -s nullglob
+           for f in /{,s}bin/mkfs.{ext2,ext3,ext4,xfs,reiserfs,btrfs}; do
+             if [[ -x "$f" ]]; then
+               dpkg-divert --rename $f
+               ln -sv /usr/local/sbin/mkfs-uuid-wrapper $f
+             fi
+           done)
 export:
   - "@base"
