@@ -1,0 +1,1 @@
+<wait>e<wait><down><down><end> text ks=http://%LOCAL_IP%:%HTTP_PORT%/ks.cfg<ctrl-x>
