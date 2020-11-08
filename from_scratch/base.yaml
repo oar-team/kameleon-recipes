@@ -82,7 +82,7 @@ global:
   zerofree: false
 
   # GRUB
-  GRUB_CMDLINE_LINUX: console=tty0 console=ttyS0,115200
+  grub_cmdline_linux: console=tty0 console=ttyS0,115200
 
   http_directory: $${kameleon_cwd}/http_dir
   http_pid:  $${kameleon_cwd}/http.pid

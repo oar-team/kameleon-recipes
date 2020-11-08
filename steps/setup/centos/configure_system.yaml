@@ -1,5 +1,5 @@
 # System configuration
-- GRUB_CMDLINE_LINUX: ""
+- grub_cmdline_linux: ""
 
 # This will set the locals and the timezone
 - set_locales:
@@ -69,6 +69,6 @@
 - fix_NetworkManager_timeout:
   - exec_in: sed -i "s/--timeout=30/--timeout=50/" /usr/lib/systemd/system/NetworkManager-wait-online.service
 
-- configure_GRUB:
-  - exec_in: sed -i 's|^\(GRUB_CMDLINE_LINUX=\).*|\1"$${GRUB_CMDLINE_LINUX}"|' /etc/default/grub
+- configure_grub:
+  - exec_in: sed -i 's|^\(GRUB_CMDLINE_LINUX=\).*|\1"$${grub_cmdline_linux}"|' /etc/default/grub
   - exec_in: grub2-mkconfig -o "$(readlink -e /etc/grub2.cfg)"
