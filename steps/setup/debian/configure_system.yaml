@@ -1,5 +1,5 @@
 # System Config
-- GRUB_CMDLINE_LINUX: ""
+- grub_cmdline_linux: ""
 
 - configure_locales:
   # set locales programtically, based on http://linux.livejournal.com/1880366.html
@@ -22,7 +22,7 @@
     - /etc/initramfs-tools/conf.d/resume
     - RESUME=none
 
-- configure_GRUB:
-  - exec_in: sed -i 's|^\(GRUB_CMDLINE_LINUX=\).*|\1"$${GRUB_CMDLINE_LINUX}"|' /etc/default/grub
+- configure_grub:
+  - exec_in: sed -i 's|^\(GRUB_CMDLINE_LINUX=\).*|\1"$${grub_cmdline_linux}"|' /etc/default/grub
   - exec_in: update-grub
 
