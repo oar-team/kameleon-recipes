@@ -22,18 +22,15 @@ global:
   mirror_base_url: http://mirror.in2p3.fr/linux/CentOS/
   mirror_url: $${mirror_base_url}$${release}/os/$${arch}/
 
-  # location of the CentOS netinstall iso
-  # can be set manually or guessed using a url finder helper script
-  #installer_iso_filename: CentOS-$${release_major}-$${arch}-NetInstall-$${release_date}.iso
-  #installer_iso_url: $${mirror_base_url}/$${release_major}.$${release_minor}.$${release_date}/isos/$${arch}/$${installer_iso_filename}
-  installer_iso_finder_helper: $${kameleon_data_dir}/helpers/netinstall_iso_finder.py
-  installer_iso_finder_args: $${distrib} $${release_number} $${arch} $${mirror_base_url}
-  qemu_iso_path: $${kameleon_cwd}/$${distrib}.iso
 
+  qemu_iso_path:
+  installer_iso_finder_helper:
+  installer_kernel_url: $${mirror_base_url}$${release}/BaseOS/$${arch}/kickstart/ppc/ppc64/vmlinuz
+  installer_initrd_url: $${mirror_base_url}$${release}/BaseOS/$${arch}/kickstart/ppc/ppc64/initrd.img
 
   base_kickstart_path: $${kameleon_data_dir}/kickstart/$${distrib}$${release_number}-ks.cfg
+  installer_cmdline: "text ks=http://%LOCAL_IP%:%HTTP_PORT%/ks.cfg"
 
-  qemu_sendkeys_commands: $${kameleon_data_dir}/qemu-sendkeys/netinst-$${distrib}-grub
 
 bootstrap:
   - "@base"
