@@ -1,9 +1,0 @@
-# System configuration
-- GRUB_CMDLINE_LINUX: ""
-
-- set_timezone:
-  - exec_in: ln -sf /usr/share/zoneinfo/$${timezone} /etc/localtime
-
-- configure_GRUB:
-  - exec_in: sed -i 's|^\(GRUB_CMDLINE_LINUX=\).*|\1"$${GRUB_CMDLINE_LINUX}"|' /etc/default/grub
-  - exec_in: update-grub
