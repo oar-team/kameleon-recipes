@@ -30,6 +30,9 @@ bootstrap:
 
 setup:
   - "@base"
+  # This hack is here because we need to choose the UUID of filesystems and
+  # kadeploy does not allow to configure that.
+  # See Grid5000 bug 12368 for details.
   - mkfs_uuid_wrappers:
     - create_wrapper:
       - exec_in: |
