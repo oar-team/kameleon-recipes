@@ -1,0 +1,28 @@
+#==============================================================================
+# vim: softtabstop=2 shiftwidth=2 expandtab fenc=utf-8 cc=81 tw=80
+#==============================================================================
+#
+# DESCRIPTION: Debian testing recipe using the netinstall mechanism
+#
+#==============================================================================
+---
+extend: debian-base.yaml
+# Global variables use by Kameleon engine and the steps
+global:
+  # Distribution
+  distrib: debian
+  release: testing
+  release_number: X
+  # Overload default url (ftp.debian.org) because of version mismatch between
+  # the kernel version and the version of the modules fetched as udeb packages
+  installer_kernel_url: https://d-i.debian.org/daily-images/$${deb_arch}/daily/netboot/debian-installer/$${deb_arch}/vmlinux
+  installer_initrd_url: https://d-i.debian.org/daily-images/$${deb_arch}/daily/netboot/debian-installer/$${deb_arch}/initrd.gz
+
+bootstrap:
+  - "@base"
+
+setup:
+  - "@base"
+
+export:
+  - "@base"

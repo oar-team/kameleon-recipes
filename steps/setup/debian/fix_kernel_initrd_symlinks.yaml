@@ -5,11 +5,11 @@
       - exec_local: test "$${kernel_initrd_links_in_boot}" == "true"
       - exec_in: |
           sed -i -e "s/^link_in_boot = .\+$/link_in_boot = yes/" /etc/kernel-img.conf
-          rm -vf /{vmlinuz,initrd.img}{,.old}
+          rm -vf /{vmlinuz,vmlinux,initrd.img}{,.old}
       - exec_in: |
           sed -i -e "s/^link_in_boot = .\+$/link_in_boot = no/" /etc/kernel-img.conf
-          rm -vf /boot/{vmlinuz,initrd.img}{,.old}
+          rm -vf /boot/{vmlinuz,vmlinux,initrd.img}{,.old}
 - install-symlinks:
   - exec_in: |
-      KERNEL_VMLINUZ_FILE=$(ls /boot/vmlinuz-* | sort -h | tail -n 1)
-      linux-update-symlinks install ${KERNEL_VMLINUZ_FILE#/boot/vmlinuz-} $KERNEL_VMLINUZ_FILE
+      KERNEL_VMLINUZ_FILE=$(ls /boot/vmlinu[xz]-* | sort -h | tail -n 1)
+      linux-update-symlinks install ${KERNEL_VMLINUZ_FILE#/boot/vmlinu[xz]-} $KERNEL_VMLINUZ_FILE

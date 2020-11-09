@@ -1,0 +1,59 @@
+#==============================================================================
+# vim: softtabstop=2 shiftwidth=2 expandtab fenc=utf-8 cc=81 tw=80
+#==============================================================================
+#
+# DESCRIPTION: Debian generic recipe using the netinstall mechanim
+#
+# USAGE:
+#   Select directly in this recipe: see usage example commented in the global of
+#   this recipe
+#
+#   or, override the globals directly in CLI. For example:
+#
+#   kameleon build --global distrib:debian,release:wheezy
+#
+#   or extends this recipe with your own and override those variable in it.
+#
+#==============================================================================
+---
+extend: base.yaml
+
+global:
+  # Boilerplate values, so that `kameleon info' works with the recipe.
+  # For a specific version of Debian, please see the dedicated recipe, as this
+  # recipe is mainly meant as being extended.
+  distrib: debian
+  deb_arch: ppc64el
+  release: buster
+  release_number: 10
+
+  # URL to retrieve packages from (sources.list)
+  deb_mirror_hostname: ftp.debian.org
+  deb_mirror_directory: /debian
+  deb_mirror_uri: http://$${deb_mirror_hostname}$${deb_mirror_directory}
+  deb_security_hostname: security.debian.org
+  deb_security_directory: /debian
+  deb_components: main contrib non-free
+
+  qemu_iso_path:
+  installer_iso_finder_helper:
+  # Debian netinstall iso refuses to get keyborad keys via the qemu sendkey command on ARM64.
+  # Because of that, we cannot set the preseed in the iso image cdrom boot in qemu.
+  # As a consequence, we use the netboot instead and boot kernel and initrd directly
+  installer_kernel_url: $${deb_mirror_uri}/dists/$${release}/main/installer-$${deb_arch}/current/images/netboot/debian-installer/$${deb_arch}/vmlinux
+  installer_initrd_url: $${deb_mirror_uri}/dists/$${release}/main/installer-$${deb_arch}/current/images/netboot/debian-installer/$${deb_arch}/initrd.gz
+  # Debian arm64 netboot requires to give explicitly auto=true and priority=critical
+  # (the "auto" alias seems not to only be defined for amd64).
+  # FIXME find the Debian documentation page which explains that.
+  installer_cmdline: "auto=true priority=critical url=http://%LOCAL_IP%:%HTTP_PORT%/preseed.cfg"
+  base_preseed_path: $${kameleon_data_dir}/preseed/$${distrib}-$${release}-preseed.cfg
+  preseed_path: $${kameleon_cwd}/preseed.cfg
+
+bootstrap:
+  - "@base"
+
+setup:
+  - "@base"
+
+export:
+  - "@base"
