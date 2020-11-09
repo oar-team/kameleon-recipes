@@ -98,6 +98,11 @@ dryrun_debiantesting-arm64-min:
 dryrun_ubuntu1804-arm64-min:
   <<: *defaults-dryrun
 
+## ppc64
+# Debian testing
+dryrun_debiantesting-ppc64-min:
+  <<: *defaults-dryrun
+
 ### Build
 ## x64
 # Debian 9

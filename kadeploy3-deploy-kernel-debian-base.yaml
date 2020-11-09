@@ -29,7 +29,10 @@ global:
   # haveged is used to provide more entropy during boot
   system_packages: ash systemd systemd-sysv haveged
   net_packages: ifupdown ntpdate isc-dhcp-client openssh-client openssh-server taktuk netcat
-  disk_packages: tar bzip2 xz-utils hdparm parted dosfstools ntfs-3g aufs-tools
+  linux_fs_packages: e2fsprogs xfsprogs btrfs-progs
+  other_fs_packages: dosfstools #ntfs-3g 
+  archive_file_packages: tar bzip2 xz-utils
+  disk_packages: hdparm parted fdisk
   ruby_packages: ruby ruby-net-ssh ruby-net-ssh-multi ruby-daemons
   ruby_packages_bpo:
   to_remove_packages:
@@ -167,8 +170,8 @@ setup:
           fi
     - install_other_packages:
       - exec_in: |
-          echo "Installing $${system_packages} $${net_packages} $${disk_packages} $${ruby_packages}"
-          apt-get install -y --force-yes $${firmware_packages} $${system_packages} $${net_packages} $${disk_packages} $${ruby_packages}
+          echo "Installing other required packages"
+          apt-get install -y --force-yes $${firmware_packages} $${system_packages} $${net_packages} $${linux_fs_packages} $${other_fs_packages} $${archive_file_packages} $${disk_packages} $${ruby_packages} 
           if [ "$${use_backports}" == "true" -a -n "$${ruby_packages_bpo}" ]; then
             apt-get install -y --force-yes -t $${release}-backports $${ruby_packages_bpo}
           fi

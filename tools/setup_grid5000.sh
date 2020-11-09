@@ -14,20 +14,27 @@ echo "mdadm   mdadm/initrdstart       string  none" | debconf-set-selections
 KERNEL=linux-image-$(uname -r)
 VERSION=$(apt-cache policy $KERNEL | grep Installed: | awk '{print $2}')
 ARCH=$(dpkg --print-architecture)
-KERNEL_SHORT=$(uname -r | sed -re "s/^(.*)-${ARCH}$/\1/g")
+KERNEL_SHORT=$(uname -r | sed -re "s/^(.*)-[^-]*/\1/g")
 apt-get update
 apt-get install -y systemtap linux-image-$(uname -r)-dbg=$VERSION linux-headers-$(uname -r)=$VERSION
 /tmp/environments-recipes/tools/nofsync.stp </dev/null >/dev/null 2>&1 &
 
 # install other dependencies
 
-# if arm64, use backported package for libguestfs-tools. see #11432
-if [ "$ARCH" = "arm64" ]; then
-	echo deb http://packages.grid5000.fr/deb/libguestfs-backport-arm64 / > /etc/apt/sources.list.d/libguestfs-backport.list
+# if arm64 or ppc64, use backported package for libguestfs-tools. see #11432
+if [ "$ARCH" = "arm64" -o "$ARCH" = "ppc64el" ]; then
+	echo deb http://packages.grid5000.fr/deb/libguestfs-backport / > /etc/apt/sources.list.d/libguestfs-backport.list
 fi
-apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends git linux-headers-${ARCH} socat qemu-utils ruby-dev ruby-childprocess polipo pigz netcat eatmydata libguestfs-tools dirmngr python-future gnupg gnupg-agent
+apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends git linux-headers-$(uname -r) socat qemu-utils ruby-dev ruby-childprocess polipo pigz netcat eatmydata libguestfs-tools dirmngr python-future gnupg gnupg-agent
 
 gem install --no-ri --no-rdoc kameleon-builder
 mv /bin/gzip /bin/gzip.OLD
 ln -s /usr/bin/pigz /bin/gzip
+
+# Disable SMT on Power (necessary for qemu)
+if [ "$ARCH" = "ppc64el" ]; then
+	apt-get update && apt-get install -y powerpc-ibm-utils
+	ppc64_cpu --smt=off
+fi
+
 cd /tmp

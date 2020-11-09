@@ -49,8 +49,8 @@ class env::std ( $variant = "big", $parent_parameters = {} ){
   }
   # disable lvm pvscan (bug 9453)
   class { 'env::std::disable_lvm_pvscan': }
-  # Install backported libguestfs-tools from g5k packages on arm64
-  if $env::deb_arch == 'arm64' {
+  # Install backported libguestfs-tools from g5k packages on non-x86 arch
+  if $env::deb_arch == 'arm64' or $env::deb_arch == 'ppc64el' {
     class { 'env::std::install_libguestfs_backport': }
   }
 }

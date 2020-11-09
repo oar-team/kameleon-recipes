@@ -1,0 +1,66 @@
+#==============================================================================
+# vim: softtabstop=2 shiftwidth=2 expandtab fenc=utf-8 cc=81 tw=80
+#==============================================================================
+#
+# DESCRIPTION: Debian testing ppc64 min Grid'5000 environment
+#
+#==============================================================================
+---
+extend: from_scratch/ppc64le/debian-testing.yaml
+
+global:
+  # Export format to generate
+  appliance_formats: qcow2 tar.gz
+  # Output base filename
+  output: "$${kameleon_cwd}/$${kameleon_recipe_name}"
+  # Grid'5000 environment variant
+  g5k_variant: min
+  # Grid'5000 environment version
+  g5k_version: 1111111111
+  # Grid'5000 environment arch
+  g5k_image_arch: ppc64
+  # Grid'5000 kadeploy environment parameters
+  g5k_tgz_path: server:///path/to/your/image
+  g5k_postinst_path: server:///grid5000/postinstalls/g5k-postinstall.tgz
+  g5k_postinst_script: g5k-postinstall --net debian
+  g5k_kernel_params: ""
+  g5k_kernel_path: "/boot/vmlinux"
+  g5k_initrd_path: "/boot/initrd.img"
+  # kernel modules to blacklist
+  kernel_modules_blacklist: "usb_storage usbhid ohci_hcd ehci_hcd usbcore nouveau myri10ge"
+  # Grid'5000 deb repositories to add to sources
+  g5k_deb_repositories: "g5k-meta-packages tgz-g5k"
+  # Grid'5000 metapackage name for the recipe
+  g5k_meta_package: "g5k-meta-packages-$${distrib}$${release_number}-$${g5k_variant}"
+  # packages to install, with version
+  # haveged is used to provide more entropy during boot
+  packages: "tgz-g5k=2.0.12 firmware-linux firmware-bnx2x firmware-qlogic powerpc-ibm-utils"
+  # disable backports: they are not available for now
+  deb_backports: false
+  # locales
+  locales: POSIX C en_US.UTF8
+  lang: en_US.UTF8
+  timezone: Europe/Paris
+  # password
+  root_password: grid5000
+
+bootstrap:
+  - "@base"
+
+setup:
+  - "@base"
+  - configure_system
+  - configure_apt_sources
+  - configure_g5k_apt_sources
+  - install_packages
+  - set_kernel_modules_blacklist
+  - set_g5k_release
+  - set_g5k_dhclient_hook
+  - set_g5k_motd
+  - configure_ssh_server
+
+export:
+  - clean_dhcp_leases
+  - "@base"
+  - do_qcow2_finish_works
+  - export_g5k

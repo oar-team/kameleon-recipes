@@ -25,6 +25,10 @@ class env ($given_variant){
     $deb_arch = $architecture
     $deb_arch_long = 'AMD64/EM64T'
     $g5k_arch = 'x64'
+  } elsif $architecture == 'ppc64le' {
+    $deb_arch = 'ppc64el'
+    $deb_arch_long = 'powerpc64le'
+    $g5k_arch = 'ppc64'
   } else {
     $deb_arch = $architecture
     $deb_arch_long = upcase($deb_arch)
