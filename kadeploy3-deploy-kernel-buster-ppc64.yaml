@@ -68,8 +68,8 @@ setup:
             die "Unhandled FILESYSTEM: $FS"
             ;;
           esac
-          echo exec $0.distrib "${OPT[@]}" "$@" 
-          exec $0.distrib "${OPT[@]}" "$@" 
+          echo exec -a $0 $0.distrib "${OPT[@]}" "$@" 
+          exec -a $0 $0.distrib "${OPT[@]}" "$@" 
           EOF
           chmod 755 /usr/local/sbin/mkfs-uuid-wrapper
     - divert:
