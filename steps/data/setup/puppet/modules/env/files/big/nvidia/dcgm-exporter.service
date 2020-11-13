@@ -1,0 +1,12 @@
+[Unit]
+Description=NVIDIA DCGM prometheus exporter service
+After=network.target
+ConditionPathExists=/dev/nvidia0
+
+[Service]
+Type=simple
+ExecStart=/usr/sbin/dcgm-exporter
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
