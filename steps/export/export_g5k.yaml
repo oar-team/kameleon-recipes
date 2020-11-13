@@ -5,7 +5,7 @@
 - g5k_kernel_path: "/vmlinuz"
 - g5k_initrd_path: "/initrd.img"
 - g5k_filesystem: "ext4"
-- g5k_author: "support-staff@list.grid5000.fr"
+- g5k_author: "support-staff@lists.grid5000.fr"
 - g5k_visibility: "public"
 - g5k_destructive: "false"
 
