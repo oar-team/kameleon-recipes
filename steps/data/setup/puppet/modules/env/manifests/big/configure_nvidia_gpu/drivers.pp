@@ -4,7 +4,7 @@ class env::big::configure_nvidia_gpu::drivers () {
 
   case "$env::deb_arch" {
     "amd64": {
-      $driver_source = 'http://packages.grid5000.fr/other/nvidia/NVIDIA-Linux-x86_64-450.51.05.run'
+      $driver_source = 'http://packages.grid5000.fr/other/nvidia/NVIDIA-Linux-x86_64-450.80.02.run'
     }
     "ppc64el": {
       $driver_source = 'http://packages.grid5000.fr/other/nvidia/NVIDIA-Linux-ppc64le-450.80.02.run'
