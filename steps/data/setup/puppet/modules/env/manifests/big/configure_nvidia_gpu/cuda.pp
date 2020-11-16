@@ -2,7 +2,20 @@ class env::big::configure_nvidia_gpu::cuda () {
 
   case "${::lsbdistcodename}" {
     "buster" : {
-      $driver_source = 'http://packages.grid5000.fr/other/cuda/cuda_10.1.243_418.87.00_linux.run'
+      case "$env::deb_arch" {
+        "amd64": {
+          $driver_source = 'http://packages.grid5000.fr/other/cuda/cuda_10.1.243_418.87.00_linux.run'
+          $libcuda = '/usr/lib/x86_64-linux-gnu/libcuda.so'
+        }
+        "ppc64el": {
+          $driver_source = 'http://packages.grid5000.fr/other/cuda/cuda_10.1.243_418.87.00_linux_ppc64le.run'
+          $libcuda = '/usr/lib/powerpc64le-linux-gnu/libcuda.so'
+        }
+        default: {
+          err "${env::deb_arch} not supported"
+        }
+      }
+
       $opengl_packages = ['ocl-icd-libopencl1', 'opencl-headers']
 
       exec{
@@ -26,6 +39,7 @@ class env::big::configure_nvidia_gpu::cuda () {
     "stretch" : {
       $driver_source = 'http://packages.grid5000.fr/other/cuda/cuda_9.0.176_384.81_linux-run'
       $opengl_packages = ['ocl-icd-libopencl1', 'opencl-headers']
+      $libcuda = '/usr/lib/x86_64-linux-gnu/libcuda.so'
 
       exec{
         'retrieve_nvidia_cuda':
@@ -53,7 +67,7 @@ class env::big::configure_nvidia_gpu::cuda () {
           require   => Exec['retrieve_nvidia_cuda'];
         '/usr/local/cuda/lib64/libcuda.so':
           ensure    => 'link',
-          target    => '/usr/lib/x86_64-linux-gnu/libcuda.so',
+          target    => $libcuda,
           require   => Exec['install_nvidia_cuda'],
           notify    => Exec['update_ld_conf'];
         '/etc/ld.so.conf.d/cuda.conf':
