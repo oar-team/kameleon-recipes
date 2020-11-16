@@ -82,7 +82,7 @@ class env::big::configure_nvidia_gpu::cuda () {
           owner     => root,
           group     => root,
           mode      => '0644',
-          source    => 'puppet:///modules/env/big/nvidia/nvidia-persistenced-9.0.service';
+          source    => 'puppet:///modules/env/big/nvidia/nvidia-persistenced.service';
       }
     }
   }
