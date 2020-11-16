@@ -6,7 +6,7 @@ class env::nfs::configure_module_path () {
   # When removing, update the "require" of the other resource below.
   env::common::g5kpackages {
     'lmod':
-       ensure => installed;
+       ensure => $::env::common::software_versions::lmod;
   }
 
   # Configure module path (installed in g5k-metapackage)
