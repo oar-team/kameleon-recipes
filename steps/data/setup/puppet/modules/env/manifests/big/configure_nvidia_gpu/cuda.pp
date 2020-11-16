@@ -83,6 +83,9 @@ class env::big::configure_nvidia_gpu::cuda () {
           group     => root,
           mode      => '0644',
           source    => 'puppet:///modules/env/big/nvidia/nvidia-persistenced.service';
+        '/etc/systemd/system/multi-user.target.wants/nvidia-persistenced.service':
+          ensure => link,
+          target => '/etc/systemd/system/nvidia-persistenced.service';
       }
     }
   }
