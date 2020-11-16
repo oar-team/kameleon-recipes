@@ -1,6 +1,10 @@
 [Unit]
 Description=NVIDIA DCGM prometheus exporter service
 After=network.target
+# Ensure that /dev/nvidia0 is created by first calling nvidia-smi.
+# If no GPU is found, nvidia-smi will not create /dev/nvidia0 and we will not run.
+Wants=nvidia-smi.service
+After=nvidia-smi.service
 ConditionPathExists=/dev/nvidia0
 
 [Service]

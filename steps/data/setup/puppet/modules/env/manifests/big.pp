@@ -17,10 +17,12 @@ class env::big ( $variant = "big", $parent_parameters = {} ){
   class { 'env::big::configure_postfix': }
   # kvm
   class { 'env::big::configure_kvm': }
-  if $env::deb_arch == 'amd64' {
-    # nvidia
+  # nvidia
+  if $env::deb_arch == 'amd64' or $env::deb_arch == 'ppc64el' {
     class { 'env::big::configure_nvidia_gpu': }
-    # beegfs install
+  }
+  # beegfs install
+  if $env::deb_arch == 'amd64' {
     class { 'env::big::install_beegfs': }
   }
   #Allow sshfs

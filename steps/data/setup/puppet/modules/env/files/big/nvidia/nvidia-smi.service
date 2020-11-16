@@ -1,0 +1,10 @@
+[Unit]
+Description=Call nvidia-smi once to create /dev/nvidiaX
+
+[Service]
+Type=oneshot
+# Ignore the exit code: the command fails when no GPU is found
+ExecStart=-/usr/bin/nvidia-smi
+
+[Install]
+WantedBy=multi-user.target
