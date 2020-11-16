@@ -6,6 +6,8 @@ class env::big::configure_nvidia_gpu () {
   include 'env::big::configure_nvidia_gpu::modules'
   # Install nvidia drivers
   include 'env::big::configure_nvidia_gpu::drivers'
+  # Install additional services (currently nvidia-smi, needed by cuda and prometheus)
+  include 'env::big::configure_nvidia_gpu::services'
   # Install cuda
   include 'env::big::configure_nvidia_gpu::cuda'
   # Install nvidia ganglia plugins
