@@ -2,7 +2,7 @@ class env::big::configure_nvidia_gpu::cuda () {
 
   case "${::lsbdistcodename}" {
     "buster" : {
-      $driver_source = 'http://packages.grid5000.fr/other/cuda/cuda_10.1.168_418.67_linux.run'
+      $driver_source = 'http://packages.grid5000.fr/other/cuda/cuda_10.1.243_418.87.00_linux.run'
       $opengl_packages = ['ocl-icd-libopencl1', 'opencl-headers']
 
       exec{
