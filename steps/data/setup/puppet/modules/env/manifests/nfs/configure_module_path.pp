@@ -1,28 +1,23 @@
 class env::nfs::configure_module_path () {
 
+  # Install lmod from g5k repository (bug 12200)
+  # Remove when this is fixed in Debian buster:
+  # https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=972963
+  # When removing, update the "require" of the other resource below.
+  env::common::g5kpackages {
+    'lmod':
+       ensure => installed;
+  }
+
   # Configure module path (installed in g5k-metapackage)
   file {
     '/etc/lmod/modulespath':
       ensure   => file,
       backup   => '.puppet-bak',
       content  => "/grid5000/spack/share/spack/modules/linux-debian9-x86_64\n/grid5000/spack/share/spack/modules/linux-debian10-x86_64\n",
-      require  => Env::Common::G5kpackages['g5k-meta-packages'];
-  }
-
-  # Hack to workaround a hardcoded x86_64 path in lmod
-  # https://intranet.grid5000.fr/bugzilla/show_bug.cgi?id=12200
-  if $env::deb_arch == 'arm64' {
-    file {
-      '/usr/lib/x86_64-linux-gnu':
-        ensure   => directory,
-        target   => '/usr/lib/aarch64-linux-gnu/lua',
-        require  => Env::Common::G5kpackages['g5k-meta-packages'];
-    }
-    file {
-      '/usr/lib/x86_64-linux-gnu/lua':
-        ensure   => link,
-        target   => '/usr/lib/aarch64-linux-gnu/lua',
-        require  => File['/usr/lib/x86_64-linux-gnu'];
-    }
+      require  => [
+        Env::Common::G5kpackages['g5k-meta-packages'],
+        Env::Common::G5kpackages['lmod']
+     ];
   }
 }
