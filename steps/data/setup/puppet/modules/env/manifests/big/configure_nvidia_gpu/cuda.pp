@@ -82,7 +82,7 @@ class env::big::configure_nvidia_gpu::cuda () {
           owner     => root,
           group     => root,
           mode      => '0644',
-          source    => 'puppet:///modules/env/big/nvidia/cuda-9.0.conf',
+          source    => 'puppet:///modules/env/big/nvidia/cuda.conf',
           notify    => Exec['update_ld_conf'];
         '/etc/systemd/system/nvidia-persistenced.service':
           ensure    => file,
