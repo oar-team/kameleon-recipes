@@ -5,8 +5,14 @@ class env::big::configure_nvidia_gpu::prometheus () {
 
       env::common::g5kpackages {
         'nvidia-dcgm-exporter':
-          packages => ['dcgm-exporter', 'datacenter-gpu-manager'],
-          ensure => installed;
+          packages => 'dcgm-exporter';
+      }
+
+      # Version 2.X bumped the SONAME, so we force version 1.X for now
+      package {
+        'datacenter-gpu-manager':
+          ensure  => $::env::common::software_versions::datacenter_gpu_manager,
+          require => Env::Common::G5kpackages['nvidia-dcgm-exporter'];
       }
 
       file{
