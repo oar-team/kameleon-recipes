@@ -11,4 +11,8 @@ class env::min::configure_kernel_and_blacklist_some_modules {
   # initramfs regeneration declaration
   include env::min::kernel::initramfs
 
+  # Remove old kernel if exist: it can happen that the running kernel (the installer's one) is not the most recent (installed after upgrade)
+  class { 'env::min::kernel::remove_old':
+    stage => last,
+  }
 }
