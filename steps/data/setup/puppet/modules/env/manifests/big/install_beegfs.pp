@@ -39,6 +39,8 @@ class env::big::install_beegfs {
 
     "buster" : {
 
+      include env::big::prepare_kernel_module_build
+
       apt::source { 'beegfs':
           location     => 'https://www.beegfs.com/release/beegfs_7_1/',
           release      => 'stretch', #FIXME : change release to buster when beegfs release it
@@ -50,7 +52,7 @@ class env::big::install_beegfs {
           },
       }
       -> package { # client
-          [ 'beegfs-utils', 'beegfs-helperd', 'beegfs-client', 'linux-headers-amd64', 'libbeegfs-ib' ]:
+          [ 'beegfs-utils', 'beegfs-helperd', 'beegfs-client', 'libbeegfs-ib' ]:
           require => Class['apt::update'],
           ensure => installed;
       }
@@ -66,7 +68,8 @@ class env::big::install_beegfs {
       -> exec {
       '/etc/init.d/beegfs-client rebuild':
           timeout => 1200,
-          refreshonly => true
+          refreshonly => true,
+          require => Exec['prepare_kernel_module_build']
       }
     }
   }
