@@ -2,6 +2,10 @@
 
 class env::min ( $variant = "min", $parent_parameters = {} ) {
 
+  stage { 'last':
+    require => Stage['main'],
+  }
+
   $min_parameters = {
     misc_root_pwd => '$1$qzZwnZXQ$Ak1xs7Oma6HUHw/xDJ8q91',
   }

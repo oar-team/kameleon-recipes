@@ -29,7 +29,7 @@ class env::big::configure_nvidia_gpu::drivers () {
       user      => root,
       require   => Package['module-assistant'];
     'install_nvidia_driver':
-      command   => "/tmp/NVIDIA-Linux.run -qa --no-cc-version-check --ui=none --dkms; /bin/rm /tmp/NVIDIA-Linux.run",
+      command   => "/tmp/NVIDIA-Linux.run -qa --no-cc-version-check --ui=none --dkms -k ${installed_kernelreleases[-1]}; /bin/rm /tmp/NVIDIA-Linux.run",
       timeout   => 1200, # 20 min,
       user      => root,
       require   => [Exec['prepare_kernel_module_build'], File['/tmp/NVIDIA-Linux.run'], Package['dkms']];
