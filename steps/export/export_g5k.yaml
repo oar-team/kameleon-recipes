@@ -72,7 +72,7 @@
         kernel: $${g5k_kernel_path}
         initrd: $${g5k_initrd_path}
         hypervisor: /hypervisor
-        hypervisor_params: dom0_mem=4096M
+        hypervisor_params: "dom0_mem=4096M no-bootscrub"
       filesystem: $${g5k_filesystem}
       partition_type: 131
       multipart: false
