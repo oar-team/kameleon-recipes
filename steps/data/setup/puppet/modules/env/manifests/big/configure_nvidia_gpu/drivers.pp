@@ -9,7 +9,9 @@ class env::big::configure_nvidia_gpu::drivers () {
       $driver_source = 'http://packages.grid5000.fr/other/nvidia/NVIDIA-Linux-x86_64-450.80.02.run'
     }
     "ppc64el": {
-      $driver_source = 'http://packages.grid5000.fr/other/nvidia/NVIDIA-Linux-ppc64le-450.80.02.run'
+      # Newer version of the driver (440.X, 450.X) are unstable and cause kernel panic.
+      # See https://intranet.grid5000.fr/bugzilla/show_bug.cgi?id=12545
+      $driver_source = 'http://packages.grid5000.fr/other/nvidia/NVIDIA-Linux-ppc64le-418.165.02.run'
     }
     default: {
       err "${env::deb_arch} not supported"
