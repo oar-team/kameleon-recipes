@@ -31,7 +31,7 @@ global:
   net_packages: ifupdown ntpdate isc-dhcp-client openssh-client openssh-server taktuk netcat
   linux_fs_packages: e2fsprogs xfsprogs btrfs-progs
   other_fs_packages: dosfstools #ntfs-3g 
-  archive_file_packages: tar bzip2 xz-utils
+  archive_file_packages: tar bzip2 xz-utils zstd
   disk_packages: hdparm parted fdisk
   ruby_packages: ruby ruby-net-ssh ruby-net-ssh-multi ruby-daemons
   ruby_packages_bpo:
