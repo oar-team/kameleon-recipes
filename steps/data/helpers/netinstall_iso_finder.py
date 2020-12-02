@@ -23,13 +23,19 @@ class LinkParser(HTMLParser):
         if not contentType:
             return
         logger.debug("url = " + url );
-        logger.debug("contenType = " + contentType );
+        logger.debug("contentType = " + contentType );
         if ';' in contentType:
             (mediaType,charset) = contentType.split(";")
-            if mediaType =='text/html':
-                htmlBytes = response.read()
-                htmlString = htmlBytes.decode(charset.split("=")[1])
-                self.feed(htmlString)
+            charset = charset.split("=")[1]
+        else:
+            mediaType = contentType
+            # ISO-8859-1 is no longer the default charset, see https://tools.ietf.org/html/rfc7231#appendix-B
+            # Let's use UTF-8.
+            charset = "utf-8"
+        if mediaType =='text/html':
+            htmlBytes = response.read()
+            htmlString = htmlBytes.decode(charset)
+            self.feed(htmlString)
 
     def handle_starttag(self, tag, attrs):
         if tag == 'a':
