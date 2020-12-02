@@ -1,0 +1,23 @@
+#==============================================================================
+# vim: softtabstop=2 shiftwidth=2 expandtab fenc=utf-8 cc=81 tw=80
+#==============================================================================
+#
+# DESCRIPTION: Centos 7 recipe using the netinstall mechanism
+#
+#==============================================================================
+---
+extend: centos-base.yaml
+
+global:
+  release_number: 7
+  mirror_base_url: http://ftp.rz.uni-frankfurt.de/pub/mirrors/centos-altarch/
+  mirror_url: $${mirror_base_url}$${release}/os/$${arch}/
+
+bootstrap:
+  - "@base"
+
+setup:
+  - "@base"
+
+export:
+  - "@base"

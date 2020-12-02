@@ -30,6 +30,8 @@ global:
   installer_iso_finder_args: $${distrib} $${release_number} $${arch} $${mirror_base_url}
   qemu_iso_path: $${kameleon_cwd}/$${distrib}.iso
 
+  # If memory size is too low, the VM crashes.
+  qemu_memory_size: 2G
 
   base_kickstart_path: $${kameleon_data_dir}/kickstart/$${distrib}$${release_number}-ks.cfg
 
