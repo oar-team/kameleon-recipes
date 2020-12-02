@@ -2,11 +2,11 @@
 # vim: softtabstop=2 shiftwidth=2 expandtab fenc=utf-8 cc=81 tw=80
 #==============================================================================
 #
-# DESCRIPTION: Centos8 x64 min Grid'5000 environment
+# DESCRIPTION: Centos7 ppc64 min Grid'5000 environment
 #
 #==============================================================================
 ---
-extend: from_scratch/centos-8.yaml
+extend: from_scratch/ppc64le/centos-8.yaml
 
 global:
   appliance_formats: qcow2 tar.gz
@@ -17,7 +17,7 @@ global:
   # Grid'5000 environment version
   g5k_version: 1111111111
   # Grid'5000 environment arch
-  g5k_image_arch: x64
+  g5k_image_arch: ppc64
   # Grid'5000 kadeploy environment parameters
   g5k_tgz_path: server:///path/to/your/image
   g5k_postinst_path: server:///grid5000/postinstalls/g5k-postinstall.tgz
