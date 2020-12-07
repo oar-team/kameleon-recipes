@@ -21,10 +21,8 @@ class env::base::configure_omnipath(){
             command => "/bin/sed -i 's/opa_vnic/# opa_vnic/g' /etc/rdma/modules/opa.conf",
             require => Package[$rdmapackages]
         }
-      }
-
-      if $env::deb_arch == 'arm64' {
-        # opapackages and libfabric1 not available on arm64
+      } else {
+        # opapackages and libfabric1 are only available on amd64
         ensure_packages([$rdmapackages - ['libfabric1']], {
           ensure => present
         })
