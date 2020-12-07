@@ -16,7 +16,7 @@ class env::std::dell (
 
   include apt
 
-  $_key = '1285491434D8786F'
+  $_key = '42550ABD1E80D7C1BC0BAD851285491434D8786F'
 
   case $::lsbdistcodename {
     'jessie': {
