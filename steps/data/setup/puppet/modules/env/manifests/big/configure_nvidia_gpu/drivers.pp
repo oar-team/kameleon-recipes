@@ -27,6 +27,9 @@ class env::big::configure_nvidia_gpu::drivers () {
       command   => "/tmp/NVIDIA-Linux.run -qa --no-cc-version-check --ui=none --dkms -k ${installed_kernelreleases[-1]}",
       timeout   => 1200, # 20 min,
       user      => root,
+      # The nvidia installer tries to load the nvidia-drm module at the end, but it fails because
+      # the building machine has no GPU. Make sure that modprobe doesn't actually try to load the module.
+      environment => ['MODPROBE_OPTIONS=--dry-run'],
       require   => [Exec['prepare_kernel_module_build'], File['/tmp/NVIDIA-Linux.run']];
     'cleanup_nvidia':
       command   => "/bin/rm /tmp/NVIDIA-Linux.run",
