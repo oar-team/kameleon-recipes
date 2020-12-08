@@ -16,7 +16,7 @@ global:
   release_number: 9
   kernel_arch: amd64
 
-  deb_mirror_uri: http://ftp.debian.org/debian/
+  deb_mirror_uri: http://deb.debian.org/debian/
   deb_components: "main contrib non-free"
   deb_backports: false
 
