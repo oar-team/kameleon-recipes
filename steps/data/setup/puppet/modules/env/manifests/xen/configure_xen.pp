@@ -70,7 +70,7 @@ class env::xen::configure_xen () {
         before   => Exec['create_example_domU'];
       '/etc/xen-tools/xen-tools.conf: change mirror':
         path     => '/etc/xen-tools/xen-tools.conf',
-        line     => 'mirror = http://ftp.fr.debian.org/debian/',
+        line     => 'mirror = http://deb.debian.org/debian/',
         match    => '^ *mirror *=',
         require  => File['/etc/xen-tools/xen-tools.conf.puppet-bak'],
         before   => Exec['create_example_domU'];
