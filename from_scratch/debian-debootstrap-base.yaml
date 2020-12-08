@@ -34,7 +34,7 @@ global:
 
   bootstrap_script: $${kameleon_data_dir}/debootstrap.sh
   bootstrap_variant:
-  deb_mirror_hostname: ftp.debian.org
+  deb_mirror_hostname: deb.debian.org
   deb_mirror_uri: http://$${deb_mirror_hostname}/debian/
 
   bootstrap_packages: locales openssh-server linux-image-$${deb_kernel_arch}
