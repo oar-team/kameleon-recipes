@@ -42,6 +42,7 @@
       #       targeted - Only targeted network daemons are protected.
       #       strict - Full SELinux protection.
       SELINUXTYPE=$${selinuxtype}
+
 - make_new_kernels_the_default:
   - write_in:
     - /etc/sysconfig/kernel
@@ -51,20 +52,6 @@
       UPDATEDEFAULT=yes
       # DEFAULTKERNEL specifies the default kernel package type
       DEFAULTKERNEL=kernel
-- create_kernel_symlinks_hook:
-  - exec_in: |
-      mkdir -p /etc/kernel/postinst.d/
-      cat <<'EOF' > /etc/kernel/postinst.d/01-create-symlinks
-      #!/bin/bash
-      KERNEL_VERSION="${1:-$(uname -r)}"
-      KERNEL_IMAGE="${2:-/boot/vmlinuz-${KERNEL_VERSION}}"
-      INITRAMFS_IMAGE="/boot/initramfs-${KERNEL_VERSION}.img"
-      ln -sfv $KERNEL_IMAGE /vmlinuz
-      ln -sfv $INITRAMFS_IMAGE /initramfs.img
-      EOF
-      chmod 755 /etc/kernel/postinst.d/01-create-symlinks
-- force_create_kernel_symlinks:
-  - exec_in: /etc/kernel/postinst.d/01-create-symlinks
 
 - fix_NetworkManager_timeout:
   - exec_in: sed -i "s/--timeout=30/--timeout=50/" /usr/lib/systemd/system/NetworkManager-wait-online.service

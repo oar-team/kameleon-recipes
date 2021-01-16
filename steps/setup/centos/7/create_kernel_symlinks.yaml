@@ -1,0 +1,17 @@
+- create_kernel_symlinks_hook:
+  - exec_in: |
+      mkdir -p /etc/kernel/postinst.d/
+      cat <<'EOF' > /etc/kernel/postinst.d/01-create-symlinks
+      #!/bin/bash
+      KERNEL_VERSION="${1:-$(uname -r)}"
+      KERNEL_IMAGE="${2:-/boot/vmlinuz-${KERNEL_VERSION}}"
+      INITRAMFS_IMAGE="/boot/initramfs-${KERNEL_VERSION}.img"
+      echo "Create relative symlinks in /:"
+      ln -sfvn ${KERNEL_IMAGE#/} /vmlinuz
+      ln -sfvn ${INITRAMFS_IMAGE#/} /initramfs.img
+      EOF
+      chmod 755 /etc/kernel/postinst.d/01-create-symlinks
+- force_create_kernel_symlinks:
+  - exec_in: |
+      KERNEL_IMAGE=$(ls /boot/vmlinuz-* | sort -V | tail -n1)
+      /etc/kernel/postinst.d/01-create-symlinks ${KERNEL_IMAGE#vmlinuz-} ${KERNEL_IMAGE}
