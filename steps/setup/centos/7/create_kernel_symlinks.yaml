@@ -14,4 +14,4 @@
 - force_create_kernel_symlinks:
   - exec_in: |
       KERNEL_IMAGE=$(ls /boot/vmlinuz-* | sort -V | tail -n1)
-      /etc/kernel/postinst.d/01-create-symlinks ${KERNEL_IMAGE#vmlinuz-} ${KERNEL_IMAGE}
+      /etc/kernel/postinst.d/01-create-symlinks ${KERNEL_IMAGE#/boot/vmlinuz-} ${KERNEL_IMAGE}
