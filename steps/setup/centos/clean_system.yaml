@@ -1,6 +1,6 @@
 - remove_old_kernels:
   - on_setup_clean:
-    - exec_in: rpm -q kernel | head -n -1 | xargs -I {} rpm -e {}
+    - exec_in: rpm -q kernel --last | tail -n +2 | cut -d\  -f1 | xargs -I {} rpm -ev {}
 
 - clean_yum_cache:
   - on_setup_clean:
