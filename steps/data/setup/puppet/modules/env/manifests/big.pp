@@ -1,5 +1,4 @@
 # This file contains the 'big' class used to configure improved environment to be executed in grid'5000.
-
 class env::big ( $variant = "big", $parent_parameters = {} ){
 
   $big_parameters = {
@@ -35,5 +34,7 @@ class env::big ( $variant = "big", $parent_parameters = {} ){
   class { 'env::big::configure_initramfs': }
   # Prometheus
   class { 'env::big::install_prometheus_exporters': }
+  # g5k-jupyterlab
+  class { 'env::big::install_g5k_jupyterlab': }
 
 }
