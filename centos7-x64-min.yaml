@@ -38,9 +38,9 @@ bootstrap:
   - "@base"
 
 setup:
+  - create_kernel_symlinks
   - "@base"
   - configure_system
-  - create_kernel_symlinks
   - disable_kdump
   - set_kernel_modules_blacklist
   - set_g5k_release
