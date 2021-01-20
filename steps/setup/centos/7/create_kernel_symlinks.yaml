@@ -12,6 +12,7 @@
       EOF
       chmod 755 /etc/kernel/postinst.d/01-create-symlinks
 - force_create_kernel_symlinks:
-  - exec_in: |
-      KERNEL_IMAGE=$(ls /boot/vmlinuz-* | sort -V | tail -n1)
-      /etc/kernel/postinst.d/01-create-symlinks ${KERNEL_IMAGE#/boot/vmlinuz-} ${KERNEL_IMAGE}
+  - on_setup_clean:
+    - exec_in: |
+        KERNEL_PKG=$(rpm -q kernel --last | head -n1 | cut -d\  -f1)
+        /etc/kernel/postinst.d/01-create-symlinks ${KERNEL_PKG#kernel-} /boot/vmlinuz-${KERNEL_PKG#kernel-}

@@ -19,6 +19,7 @@
       EOF
       chmod 755 /etc/kernel/install.d/01-symlinks.install
 - force_create_kernel_symlinks:
-  - exec_in: |
-      KERNEL_IMAGE=$(ls /boot/vmlinuz-* | sort -V | tail -n1)
-      /etc/kernel/install.d/01-symlinks.install add ${KERNEL_IMAGE#/boot/vmlinuz-}
+  - on_setup_clean:
+    - exec_in: |
+        KERNEL_PKG=$(rpm -q kernel --last | head -n1 | cut -d\  -f1)
+        /etc/kernel/install.d/01-symlinks.install add ${KERNEL_PKG#kernel-}
