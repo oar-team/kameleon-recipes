@@ -13,12 +13,27 @@ class env::std::configure_rsyslog_remote {
       owner   => root,
       group   => root,
       source  => "puppet:///modules/env/std/net_access/syslog_iptables.conf";
+  }
+
+  # Stretch has an old iptables version that does not support hashlimit-rate-match
+  if "${::lsbdistcodename}" == "stretch" {
     # iptables installed by kameleon.
-    "/etc/network/if-pre-up.d/iptables":
-      mode    => '0755',
-      owner   => root,
-      group   => root,
-      source  => "puppet:///modules/env/std/net_access/iptables"
+    file {
+      "/etc/network/if-pre-up.d/iptables":
+        mode    => '0755',
+        owner   => root,
+        group   => root,
+        source  => "puppet:///modules/env/std/net_access/iptables.stretch"
+    }
+  } else {
+    # iptables installed by kameleon.
+    file {
+      "/etc/network/if-pre-up.d/iptables":
+        mode    => '0755',
+        owner   => root,
+        group   => root,
+        source  => "puppet:///modules/env/std/net_access/iptables"
+    }
   }
 }
 
