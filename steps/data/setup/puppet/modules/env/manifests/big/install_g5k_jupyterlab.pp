@@ -1,16 +1,18 @@
 class env::big::install_g5k_jupyterlab {
   case $operatingsystem {
     'Debian': {
+      if "${::lsbdistcodename}" != "stretch" {
 
-      include env::common::software_versions
+        include env::common::software_versions
 
-      env::common::g5kpackages {
-        'g5k-jupyterlab':
-          ensure => $::env::common::software_versions::g5k_jupyterlab;
+        env::common::g5kpackages {
+          'g5k-jupyterlab':
+            ensure => $::env::common::software_versions::g5k_jupyterlab;
+        }
       }
     }
     default: {
-      err "${operatingsystem} not suported."
+      err "${operatingsystem} not supported."
     }
   }
 }
