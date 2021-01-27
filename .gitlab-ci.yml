@@ -58,30 +58,30 @@ dryrun_debian11-x64-min:
     - debian11
   <<: *defaults-dryrun
 
-dryrun_debian11-x64-base:
-  only:
-    - debian11
-  <<: *defaults-dryrun
+#dryrun_debian11-x64-base:
+#  only:
+#    - debian11
+#  <<: *defaults-dryrun
 
-dryrun_debian11-x64-nfs:
-  only:
-    - debian11
-  <<: *defaults-dryrun
+#dryrun_debian11-x64-nfs:
+#  only:
+#    - debian11
+#  <<: *defaults-dryrun
 
-dryrun_debian11-x64-xen:
-  only:
-    - debian11
-  <<: *defaults-dryrun
+#dryrun_debian11-x64-xen:
+#  only:
+#    - debian11
+#  <<: *defaults-dryrun
 
-dryrun_debian11-x64-big:
-  only:
-    - debian11
-  <<: *defaults-dryrun
+#dryrun_debian11-x64-big:
+#  only:
+#    - debian11
+#  <<: *defaults-dryrun
 
-dryrun_debian11-x64-std:
-  only:
-    - debian11
-  <<: *defaults-dryrun
+#dryrun_debian11-x64-std:
+#  only:
+#    - debian11
+#  <<: *defaults-dryrun
 
 # Debian testing
 dryrun_debiantesting-x64-min:
@@ -127,30 +127,30 @@ dryrun_debian11-arm64-min:
     - debian11
   <<: *defaults-dryrun
 
-dryrun_debian11-arm64-base:
-  only:
-    - debian11
-  <<: *defaults-dryrun
+#dryrun_debian11-arm64-base:
+#  only:
+#    - debian11
+#  <<: *defaults-dryrun
 
-dryrun_debian11-arm64-nfs:
-  only:
-    - debian11
-  <<: *defaults-dryrun
+#dryrun_debian11-arm64-nfs:
+#  only:
+#    - debian11
+#  <<: *defaults-dryrun
 
-dryrun_debian11-arm64-xen:
-  only:
-    - debian11
-  <<: *defaults-dryrun
+#dryrun_debian11-arm64-xen:
+#  only:
+#    - debian11
+#  <<: *defaults-dryrun
 
-dryrun_debian11-arm64-big:
-  only:
-    - debian11
-  <<: *defaults-dryrun
+#dryrun_debian11-arm64-big:
+#  only:
+#    - debian11
+#  <<: *defaults-dryrun
 
-dryrun_debian11-arm64-std:
-  only:
-    - debian11
-  <<: *defaults-dryrun
+#dryrun_debian11-arm64-std:
+#  only:
+#    - debian11
+#  <<: *defaults-dryrun
 
 # Debian testing
 dryrun_debiantesting-arm64-min:
@@ -161,6 +161,12 @@ dryrun_ubuntu1804-arm64-min:
   <<: *defaults-dryrun
 
 ## ppc64
+# Debian11
+dryrun_debian11-ppc64-min:
+  only:
+    - debian11
+  <<: *defaults-dryrun
+
 # Debian testing
 dryrun_debiantesting-ppc64-min:
   <<: *defaults-dryrun
