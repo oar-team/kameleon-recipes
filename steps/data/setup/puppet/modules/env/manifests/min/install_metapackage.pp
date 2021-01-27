@@ -6,6 +6,9 @@ class env::min::install_metapackage ( $variant ) {
   case $operatingsystem {
     'Debian','Ubuntu': {
       case "${::lsbdistcodename}" {
+        'bullseye': {
+          $base = "g5k-meta-packages-debian11"
+        }
         'buster': {
           $base = "g5k-meta-packages-debian10"
         }
