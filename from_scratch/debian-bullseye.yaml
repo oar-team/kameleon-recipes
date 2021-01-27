@@ -2,7 +2,7 @@
 # vim: softtabstop=2 shiftwidth=2 expandtab fenc=utf-8 cc=81 tw=80
 #==============================================================================
 #
-# DESCRIPTION: Debian 10 (Buster) recipe using the netinstall mechanism
+# DESCRIPTION: Debian 11 (Bullseye) recipe using the netinstall mechanism
 #
 #==============================================================================
 ---
@@ -13,7 +13,7 @@ global:
   distrib: debian
   release: bullseye
   release_number: 11
-  installer_iso_url: https://cdimage.debian.org/cdimage/weekly-builds/amd64/iso-cd/debian-testing-amd64-netinst.iso
+  installer_iso_url: https://cdimage.debian.org/cdimage/weekly-builds/$${deb_arch}/iso-cd/debian-testing-$${deb_arch}-netinst.iso
 
 bootstrap:
   - "@base"
