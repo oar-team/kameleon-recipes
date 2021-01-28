@@ -3,7 +3,7 @@ class env::base::tcp_tuning_for_10gbe (){
 
 # *** Setting up TCP buffers
 #
-# See: https://www.grid5000.fr/mediawiki/index.php/TCP_bandwidth_tuning
+# See: https://www.grid5000.fr/w/TCP_bandwidth_tuning
 #
 
   file {

@@ -12,4 +12,4 @@ The `kameleon info <recipe>` command can be used get more information about the 
 Recipes found in subdirectories not supported by the Grid'5000 team.
  
 Users can use the Grid'5000 recipes as templates to create their own recipes. For more information, see the Grid'5000 documentation:
-  https://www.grid5000.fr/mediawiki/index.php/Environments_creation
+  https://www.grid5000.fr/w/Environments_creation_using_Kameleon_and_Puppet
