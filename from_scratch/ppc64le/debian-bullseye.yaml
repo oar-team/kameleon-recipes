@@ -1,1 +1,29 @@
-../debian-bullseye.yaml
+#==============================================================================
+# vim: softtabstop=2 shiftwidth=2 expandtab fenc=utf-8 cc=81 tw=80
+#==============================================================================
+#
+# DESCRIPTION: Debian 11 (Bullseye) recipe using the netinstall mechanism
+#
+#==============================================================================
+---
+extend: debian-base.yaml
+# Global variables use by Kameleon engine and the steps
+global:
+  # Distribution
+  distrib: debian
+  release: bullseye
+  release_number: 11
+  installer_kernel_url: https://d-i.debian.org/daily-images/$${deb_arch}/daily/netboot/debian-installer/$${deb_arch}/vmlinux
+  installer_initrd_url: https://d-i.debian.org/daily-images/$${deb_arch}/daily/netboot/debian-installer/$${deb_arch}/initrd.gz
+  #installer_kernel_url: $${deb_mirror_uri}/dists/$${release}/main/installer-$${deb_arch}/current/images/netboot/debian-installer/$${deb_arch}/vmlinux
+  #installer_initrd_url: $${deb_mirror_uri}/dists/$${release}/main/installer-$${deb_arch}/current/images/netboot/debian-installer/$${deb_arch}/initrd.gz
+  #installer_iso_url: https://cdimage.debian.org/cdimage/weekly-builds/$${deb_arch}/iso-cd/debian-testing-$${deb_arch}-netinst.iso
+
+bootstrap:
+  - "@base"
+
+setup:
+  - "@base"
+
+export:
+  - "@base"
