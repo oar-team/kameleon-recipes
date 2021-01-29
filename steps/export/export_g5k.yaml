@@ -8,6 +8,8 @@
 - g5k_author: "support-staff@lists.grid5000.fr"
 - g5k_visibility: "public"
 - g5k_destructive: "false"
+- g5k_tar_compression: "gzip"
+- g5k_postinst_compression: "gzip"
 
 # - save_as_tgz:
 #   - check_cmd_local: guestfish
@@ -33,12 +35,12 @@
       destructive: $${g5k_destructive}
       os: linux
       image:
-        file: $${g5k_tgz_path}
+        file: $${g5k_tar_path}
         kind: tar
-        compression: gzip
+        compression: $${g5k_tar_compression}
       postinstalls:
       - archive: $${g5k_postinst_path}
-        compression: gzip
+        compression: $${g5k_postinst_compression}
         script: $${g5k_postinst_script}
       boot:
         kernel_params: "$${g5k_kernel_params}"
@@ -59,12 +61,12 @@
       destructive: $${g5k_destructive}
       os: xen
       image:
-        file: $${g5k_tgz_path}
+        file: $${g5k_tar_path}
         kind: tar
-        compression: gzip
+        compression: $${g5k_tar_compression}
       postinstalls:
       - archive: $${g5k_postinst_path}
-        compression: gzip
+        compression: $${g5k_postinst_compression}
         script: $${g5k_postinst_script}
       boot:
         kernel_params: "$${g5k_kernel_params}"
