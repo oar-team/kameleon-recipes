@@ -13,7 +13,7 @@ global:
   g5k_kernel_path: "/vmlinux"
   g5k_initrd_path: "/initrd.img"
   # Export format to generate
-  appliance_formats: qcow2 tar.gz
+  appliance_formats: qcow2 tar.zst
   # Output base filename
   output: "$${kameleon_cwd}/$${kameleon_recipe_name}"
   # Grid'5000 environment variant
@@ -24,7 +24,7 @@ global:
   g5k_image_arch: ppc64
   # Grid'5000 kadeploy environment parameters
   g5k_tar_path: server:///path/to/your/image
-  g5k_tar_compression: "gzip"
+  g5k_tar_compression: "zstd"
   g5k_postinst_path: server:///grid5000/postinstalls/g5k-postinstall.tgz
   g5k_postinst_compression: "gzip"
   g5k_postinst_script: g5k-postinstall --net debian
