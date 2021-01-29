@@ -41,7 +41,7 @@ global:
   grid5000_environment_import_version: ""
   # New environment description
   grid5000_environment_export_name: "$${kameleon_recipe_name}"
-  grid5000_environment_export_format: "tar.gz"
+  grid5000_environment_export_format: "tar.zst"
   grid5000_environment_export_description: "Customized $${grid5000_environment_import_name}"
   #grid5000_environment_export_postinstall_script: "g5k-postinstall --net debian --fstab nfs --restrict-user current"
   grid5000_environment_export_additional_postinstall_archive: ""
@@ -54,7 +54,7 @@ global:
   filesystem_type: ext4
   image_size: 20G
   image_disk: $${kameleon_cwd}/base_$${kameleon_recipe_name}
-  # Allowed formats are: tar.gz, tar.bz2, tar.xz, tar.lzo, qcow, qcow2, qed, vdi, raw, vmdk
+  # Allowed formats are: tar.gz, tar.bz2, tar.xz, tar.zst, qcow, qcow2, qed, vdi, raw, vmdk
   appliance_formats: "$${grid5000_environment_export_format}"
   appliance_tar_compression_level: "9"
   appliance_filename: "$${kameleon_cwd}/$${kameleon_recipe_name}"

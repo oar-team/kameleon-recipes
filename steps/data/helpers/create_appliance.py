@@ -300,6 +300,8 @@ mkfs {filesystem} /dev/sda1 {mkfs_options}
         make_tar_cmd = "%s %s" % (which("bzcat"), input_)
     elif "gzip compressed data" in input_type:
         make_tar_cmd = "%s %s" % (which("zcat"), input_)
+    elif "zstandard compressed data" in input_type:
+        make_tar_cmd = "%s %s" % (which("zstdcat"), input_)
     elif "directory" in input_type:
         excludes = ['dev/*', 'proc/*', 'sys/*', 'tmp/*', 'run/*',
                     '/mnt/*']
