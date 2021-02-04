@@ -182,10 +182,30 @@ build_debian10-x64-std:
   <<: *defaults-build
 
 # Debian 11
-build_debian11-x64-std:
+build_debian11-x64-min:
   only:
     - debian11
   <<: *defaults-build
+build_debian11-x64-base:
+  only:
+    - debian11
+  <<: *defaults-build
+#build_debian11-x64-xen:
+#  only:
+#    - debian11
+#  <<: *defaults-build
+#build_debian11-x64-nfs:
+#  only:
+#    - debian11
+#  <<: *defaults-build
+#build_debian11-x64-big:
+#  only:
+#    - debian11
+#  <<: *defaults-build
+#build_debian11-x64-std:
+#  only:
+#    - debian11
+#  <<: *defaults-build
 
 # Debian testing
 build_debiantesting-x64-min:
