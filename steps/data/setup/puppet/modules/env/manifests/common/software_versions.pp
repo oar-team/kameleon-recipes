@@ -13,4 +13,14 @@ class env::common::software_versions {
    $datacenter_gpu_manager = '1:1.7.2'
    $dcgm_exporter = '2.0.0-rc.11'
    $g5k_jupyterlab = '0.6'
+
+  case $lsbdistcodename {
+    'bullseye': {
+      $datacenter_gpu_manager = '1:2.1.4'
+    }
+    default: {
+      $datacenter_gpu_manager = '1:1.7.2'
+    }
+
+  }
 }
