@@ -10,17 +10,40 @@ class env::common::software_versions {
    $libguestfs_backport_arm64 = '1:1.40.2-7~bpog5k10+1'
    $libguestfs_backport_ppc64el = '1:1.40.2-7~bpog5k10+1'
    $lmod = '6.6-0.3g5k1'
-   $datacenter_gpu_manager = '1:1.7.2'
-   $dcgm_exporter = '2.0.0-rc.11'
    $g5k_jupyterlab = '0.6'
 
   case $lsbdistcodename {
     'bullseye': {
-      $datacenter_gpu_manager = '1:2.1.4'
+      case "$env::deb_arch" {
+        "amd64": {
+          $nvidia_driver = 'x86_64-460.67'
+          $nvidia_cuda   = '11.2.2_460.32.03_linux'
+          $datacenter_gpu_manager = '1:2.1.4'
+          $dcgm_exporter = '2.3.0-1'
+        }
+        "ppc64el": {
+          $nvidia_driver = 'ppc64le-460.32.03'
+          $nvidia_cuda   = '11.2.2_460.32.03_linux_ppc64le'
+          $datacenter_gpu_manager = '1:2.0.15'
+          $dcgm_exporter = '2.3.0-1'
+        }
+      }
     }
     default: {
       $datacenter_gpu_manager = '1:1.7.2'
+      $dcgm_exporter = '2.0.0-rc.11'
+      case "$env::deb_arch" {
+        "amd64": {
+          $nvidia_driver = 'x86_64-450.80.02'
+          $nvidia_cuda   = '10.1.243_418.87.00_linux'
+        }
+        "ppc64el": {
+          # Newer version of the driver (440.X, 450.X) are unstable and cause kernel panic.
+          # See https://intranet.grid5000.fr/bugzilla/show_bug.cgi?id=12545
+          $nvidia_driver = 'ppc64le-418.181.07'
+          $nvidia_cuda   = '10.1.243_418.87.00_linux_ppc64le'
+        }
+      }
     }
-
   }
 }

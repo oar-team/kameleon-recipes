@@ -1,22 +1,10 @@
 class env::big::configure_nvidia_gpu::drivers () {
 
-  ### This class exists for gpuclus cluster, that require a recent version of nvidia driver
+  ### This class exists for GPU clusters that require a recent version of nvidia driver
 
   include env::big::prepare_kernel_module_build
 
-  case "$env::deb_arch" {
-    "amd64": {
-      $driver_source = 'http://packages.grid5000.fr/other/nvidia/NVIDIA-Linux-x86_64-450.80.02.run'
-    }
-    "ppc64el": {
-      # Newer version of the driver (440.X, 450.X) are unstable and cause kernel panic.
-      # See https://intranet.grid5000.fr/bugzilla/show_bug.cgi?id=12545
-      $driver_source = 'http://packages.grid5000.fr/other/nvidia/NVIDIA-Linux-ppc64le-418.181.07.run'
-    }
-    default: {
-      err "${env::deb_arch} not supported"
-    }
-  }
+  $driver_source = "http://packages.grid5000.fr/other/nvidia/NVIDIA-Linux-$::env::common::software_versions::nvidia_driver.run"
 
   exec{
     'retrieve_nvidia_drivers':
@@ -36,6 +24,7 @@ class env::big::configure_nvidia_gpu::drivers () {
       user      => root,
       require   => Exec['install_nvidia_driver'];
   }
+
   file{
     '/tmp/NVIDIA-Linux.run':
       ensure    => file,
