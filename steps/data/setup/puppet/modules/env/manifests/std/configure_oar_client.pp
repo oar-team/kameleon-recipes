@@ -15,6 +15,15 @@ class env::std::configure_oar_client {
         $oar_repos         = "2.5/debian/";
         $oar_repos_release = "buster-backports_beta"
       }
+      'bullseye' : {
+        # FIXME Beta pour le moment
+        $oar_version       = "2.5.9-1";
+        $oar_repos         = "debian/";
+        $oar_repos_release = "sid_beta"
+      }
+      default : {
+        err "${::lsbdistcodename} not supported."
+      }
     }
   }
 
