@@ -19,20 +19,24 @@ class env::std::dell (
   $_key = '42550ABD1E80D7C1BC0BAD851285491434D8786F'
 
   case $::lsbdistcodename {
-    'jessie': {
-      $_location = "https://linux.dell.com/repo/community/debian/"
-      $_release = "${::lsbdistcodename}"
-      $_repos = "openmanage"
-    }
     'stretch': {
       $_location = "https://linux.dell.com/repo/community/openmanage/910/${::lsbdistcodename}"
       $_release = "${::lsbdistcodename}"
       $_repos = "main"
     }
     'buster': {
-      # FIXME : mettre release sur buster quand ce sera supporté
+      # Pas de support officiel depuis buster
       $_location = "https://linux.dell.com/repo/community/openmanage/910/stretch"
       $_release = "stretch"
+      $_repos = "main"
+    }
+    'bullseye': {
+      # Pas de support officiel depuis buster
+      #$_location = "https://linux.dell.com/repo/community/openmanage/911/stretch"
+      #$_release = "stretch"
+      # Test paquet récent pour Ubuntu 20.04
+      $_location = "https://linux.dell.com/repo/community/openmanage/950/focal"
+      $_release = "focal"
       $_repos = "main"
     }
   }
@@ -70,7 +74,7 @@ class env::std::dell (
       require => Package[$packages_names];
   }
 
-  if $::lsbdistcodename == 'buster' {
+  if ($::lsbdistcodename == 'buster') or ($::lsbdistcodename == 'bullseye') {
     # Using enable => false doesn't seem to work, maybe because openipmi use systemd-sysv-generator
     exec {
       "disable openipmi service":
