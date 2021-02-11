@@ -23,12 +23,14 @@ class env::std::dell (
       $_location = "https://linux.dell.com/repo/community/openmanage/910/${::lsbdistcodename}"
       $_release = "${::lsbdistcodename}"
       $_repos = "main"
+      $_packages_names = $packages_names
     }
     'buster': {
       # Pas de support officiel depuis buster
       $_location = "https://linux.dell.com/repo/community/openmanage/910/stretch"
       $_release = "stretch"
       $_repos = "main"
+      $_packages_names = $packages_names
     }
     'bullseye': {
       # Pas de support officiel depuis buster
@@ -38,6 +40,7 @@ class env::std::dell (
       $_location = "https://linux.dell.com/repo/community/openmanage/950/focal"
       $_release = "focal"
       $_repos = "main"
+      $_packages_names = $packages_names - 'libssl1.0.0'
     }
   }
 
@@ -59,7 +62,7 @@ class env::std::dell (
   }
 
   package {
-    $packages_names:
+    $_packages_names:
       ensure  => present,
       require => [
         Apt::Source['dell'],
@@ -71,7 +74,7 @@ class env::std::dell (
     'dell OMSA':
       enable  => true,
       name    => $service_name,
-      require => Package[$packages_names];
+      require => Package[$_packages_names];
   }
 
   if ($::lsbdistcodename == 'buster') or ($::lsbdistcodename == 'bullseye') {
@@ -82,17 +85,19 @@ class env::std::dell (
         require => Package[$packages, 'ipmitool'];
     }
   }
-  # Fix bug 8048 and 8975
-  file {
-    '/etc/systemd/system/dataeng.service.d':
-      ensure  => 'directory',
-      require => Package[$packages];
-    '/etc/systemd/system/dataeng.service.d/stop.conf':
-      ensure  => 'file',
-      content => "[Service]\nExecStop=\nKillMode=control-group\nKillSignal=9",
-      require => Package[$packages];
-  }
-  File['/etc/systemd/system/dataeng.service.d']
-  ->File['/etc/systemd/system/dataeng.service.d/stop.conf']
 
+  if ($::lsbdistcodename == 'buster') {
+    # Fix bug 8048 and 8975
+    file {
+      '/etc/systemd/system/dataeng.service.d':
+        ensure  => 'directory',
+        require => Package[$packages];
+      '/etc/systemd/system/dataeng.service.d/stop.conf':
+        ensure  => 'file',
+        content => "[Service]\nExecStop=\nKillMode=control-group\nKillSignal=9",
+        require => Package[$packages];
+    }
+    File['/etc/systemd/system/dataeng.service.d']
+    ->File['/etc/systemd/system/dataeng.service.d/stop.conf']
+  }
 }
