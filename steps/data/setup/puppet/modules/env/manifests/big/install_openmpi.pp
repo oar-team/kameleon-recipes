@@ -2,18 +2,6 @@ class env::big::install_openmpi () {
 
   case "${::lsbdistcodename}" {
 
-    "jessie" : {
-      $openmpi_packages = [ 'librdmacm1', 'libgfortran3', 'libnuma1', 'blcr-util', 'libibverbs1-dbg', 'libopenmpi1.6', 'openmpi-common', 'openmpi-bin', 'libopenmpi-dev', 'openmpi-checkpoint' ]
-
-      package{
-        'libibverbs-dev':
-          ensure => installed;
-        $openmpi_packages:
-          ensure     => present,
-          require    => Package['libibverbs-dev']
-      }
-    }
-
     "stretch" : {
       $openmpi_packages = [ 'libopenmpi-dev', 'openmpi-bin' ]
       $openmpi_deps_packages = [ 'librdmacm1', 'libgfortran3', 'libnuma1', 'blcr-util', 'libibverbs1-dbg', 'libibverbs-dev', 'libpsm2-dev', 'libhfi1-dev', 'libopamgt-dev' ]
@@ -30,7 +18,7 @@ class env::big::install_openmpi () {
       })
     }
 
-    "buster" : {
+    "buster", "bullseye" : {
       $openmpi_packages = [ 'libopenmpi-dev', 'openmpi-bin' ]
       $openmpi_deps_packages = [ 'libnuma1', 'libibverbs-dev' ]
       $openmpi_opa_packages = [ 'libpsm2-dev', 'libopamgt-dev' ]
