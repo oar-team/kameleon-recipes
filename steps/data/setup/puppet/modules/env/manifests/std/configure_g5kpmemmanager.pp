@@ -5,7 +5,7 @@ class env::std::configure_g5kpmemmanager {
   case $operatingsystem {
     'Debian': {
       case "${::lsbdistcodename}" {
-        "buster" : {
+        "buster", "bullseye" : {
           file {
             '/etc/systemd/system/g5k-pmem-manager.service':
               source => 'puppet:///modules/env/std/g5k-manager/g5k-pmem-manager.service',
@@ -20,7 +20,7 @@ class env::std::configure_g5kpmemmanager {
           }
         }
         default : {
-          err "${operatingsystem} not supported."
+          err "${::lsbdistcodename} not supported."
         }
       }
     }

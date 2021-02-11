@@ -2,7 +2,7 @@ class env::std::configure_g5kmanager {
   case $operatingsystem {
     'Debian': {
       case "${::lsbdistcodename}" {
-        "jessie", "stretch", "buster" : {
+        "stretch", "buster", "bullseye" : {
           file {
             '/usr/local/libexec/':
               ensure   => directory,
@@ -21,7 +21,7 @@ class env::std::configure_g5kmanager {
           }
         }
         default : {
-          err "${operatingsystem} not supported."
+          err "${::lsbdistcodename} not supported."
         }
       }
     }
