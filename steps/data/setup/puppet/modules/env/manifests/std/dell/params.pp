@@ -13,6 +13,4 @@ class env::std::dell::params {
     'libxslt1.1',
     'libssl1.0.0',
   ]
-  $service_name = 'dataeng'
-  $service_status = 'service dataeng status'
 }

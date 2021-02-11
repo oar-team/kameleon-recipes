@@ -10,8 +10,6 @@ class { 'apt':
 
 class env::std::dell (
   Array $packages_names = $env::std::dell::params::packages_names,
-  String $service_name = $env::std::dell::params::service_name,
-  String $service_status = $env::std::dell::params::service_status
 ) inherits env::std::dell::params {
 
   include apt
@@ -24,6 +22,8 @@ class env::std::dell (
       $_release = "${::lsbdistcodename}"
       $_repos = "main"
       $_packages_names = $packages_names
+      $service_name = 'dataeng'
+      $service_status = 'service dataeng status'
     }
     'buster': {
       # Pas de support officiel depuis buster
@@ -31,6 +31,8 @@ class env::std::dell (
       $_release = "stretch"
       $_repos = "main"
       $_packages_names = $packages_names
+      $service_name = 'dataeng'
+      $service_status = 'service dataeng status'
     }
     'bullseye': {
       # Pas de support officiel depuis buster
@@ -41,6 +43,9 @@ class env::std::dell (
       $_release = "focal"
       $_repos = "main"
       $_packages_names = $packages_names - 'libssl1.0.0'
+      # FIXME should be 2 services dsm_sa_datamgrd and dsm_sa_eventmgrd.service !
+      $service_name = 'dsm_sa_datamgrd'
+      $service_status = 'systemctl status dsm_sa_datamgrd.service dsm_sa_eventmgrd.service'
     }
   }
 
