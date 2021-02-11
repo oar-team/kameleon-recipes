@@ -12,19 +12,10 @@ class env::std::install_g5kchecks {
       require env::commonpackages::rake
       require env::commonpackages::rubyrspec
 
-      # FIXME remove when g5k-checks bullseye released
-      if "${::lsbdistcodename}" == "bullseye" {
-        env::common::g5kpackages {
-          'g5k-checks':
-            ensure  => $::env::common::software_versions::g5k_checks,
-            release => "buster";
-        }
-      } else {
-        env::common::g5kpackages {
-          'g5k-checks':
-            ensure  => $::env::common::software_versions::g5k_checks,
-            release => "${::lsbdistcodename}";
-        }
+      env::common::g5kpackages {
+        'g5k-checks':
+          ensure  => $::env::common::software_versions::g5k_checks,
+          release => "${::lsbdistcodename}";
       }
 
       file {
