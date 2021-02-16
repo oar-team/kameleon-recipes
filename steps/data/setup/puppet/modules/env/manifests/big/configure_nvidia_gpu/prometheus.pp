@@ -5,7 +5,8 @@ class env::big::configure_nvidia_gpu::prometheus () {
 
       env::common::g5kpackages {
         'nvidia-dcgm-exporter':
-          packages => 'dcgm-exporter';
+          packages => 'dcgm-exporter',
+          ensure   => $::env::common::software_versions::dcgm_exporter;
       }
 
       # Version 2.X bumped the SONAME, so we force version 1.X for now
@@ -33,7 +34,7 @@ class env::big::configure_nvidia_gpu::prometheus () {
       }
     }
     default: {
-      err "${operatingsystem} not suported."
+      err "${operatingsystem} not supported."
     }
   }
 
