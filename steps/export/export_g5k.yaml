@@ -22,7 +22,6 @@
 - generate_dsc:
   - exec_local: echo "Creating description file for kaenv in $${output}.dsc"
   - exec_local: |
-      # Remove c-states from non min environmnents
       if [[ "x$${g5k_variant}" != "xxen" ]]; then
       cat << EOF > $${output}.dsc
       $${dashes}
