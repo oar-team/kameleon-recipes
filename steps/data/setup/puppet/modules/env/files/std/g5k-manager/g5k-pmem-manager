@@ -48,9 +48,8 @@ def main
 end
 
 def have_pmem?
-  _status, stdout = sh('ipmctl show -goal')
-
-  stdout.match(/No functional PMem modules in the system/) ? false : true
+  ref_api = JSON.parse(File.read('/etc/grid5000/ref-api.json'))
+  ref_api['main_memory'].key?('pmem_size')
 end
 
 def defined_regions?
