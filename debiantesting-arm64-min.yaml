@@ -34,7 +34,7 @@ global:
   g5k_meta_package: "g5k-meta-packages-$${distrib}$${release_number}-$${g5k_variant}"
   # packages to install, with version
   # haveged is used to provide more entropy during boot
-  packages: "tgz-g5k=2.0.15 firmware-linux firmware-qlogic grub-efi-arm64-bin"
+  packages: "tgz-g5k=2.0.16 firmware-linux firmware-qlogic grub-efi-arm64-bin"
   # disable backports: they are not available for now
   deb_backports: false
   # locales
