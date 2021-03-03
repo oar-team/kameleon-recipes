@@ -35,8 +35,6 @@ class env::big ( $variant = "big", $parent_parameters = {} ){
   # Prometheus
   class { 'env::big::install_prometheus_exporters': }
   # g5k-jupyterlab
-  if $env::deb_arch == 'amd64' {
-    class { 'env::big::install_g5k_jupyterlab': }
-  }
+  class { 'env::big::install_g5k_jupyterlab': }
 
 }
