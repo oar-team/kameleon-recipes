@@ -233,11 +233,6 @@ POST_LOAD_MODULES=""
 
 RUN_SYSCTL=${RUN_SYSCTL:-"no"}
 
-if [ "X${SDP_LOAD}" == "Xyes" ]; then
-    POST_LOAD_MODULES="$POST_LOAD_MODULES ib_sdp"
-    IPOIB_LOAD="yes"
-fi
-
 IPOIB=0
 IPOIB_MTU=${IPOIB_MTU:-65520}
 if [ "X${IPOIB_LOAD}" == "Xyes" ]; then
@@ -276,17 +271,17 @@ if [ "X${RDMA_UCM_LOAD}" == "Xyes" ]; then
     POST_LOAD_MODULES="$POST_LOAD_MODULES rdma_ucm"
 fi
 
-GEN1_UNLOAD_MODULES="ib_srp_target scsi_target ib_srp kdapltest_module ib_kdapl ib_sdp ib_useraccess ib_useraccess_cm ib_cm ib_dapl_srv ib_ip2pr ib_ipoib ib_tavor mod_thh mod_rhh ib_dm_client ib_sa_client ib_client_query ib_poll ib_mad ib_core ib_services"
+GEN1_UNLOAD_MODULES="ib_srp_target scsi_target ib_srp kdapltest_module ib_kdapl ib_useraccess ib_useraccess_cm ib_cm ib_dapl_srv ib_ip2pr ib_ipoib ib_tavor mod_thh mod_rhh ib_dm_client ib_sa_client ib_client_query ib_poll ib_mad ib_core ib_services"
 
-UNLOAD_MODULES="ib_mthca mlx5_ib mlx5_core mlx4_ib ib_ipath ipath_core ib_ehca iw_nes iw_cxgb3 cxgb3 iw_cxgb4 cxgb4 ocrdma"
+UNLOAD_MODULES="ib_mthca mlx5_ib mlx5_core mlx4_ib ib_ipath ipath_core ib_ehca iw_nes i40iw iw_cxgb3 cxgb3 iw_cxgb4 cxgb4 ocrdma bnxt_re bnxt_en"
 UNLOAD_MODULES="$UNLOAD_MODULES ib_qib"
 UNLOAD_MODULES="$UNLOAD_MODULES ib_ipoib ib_madeye ib_rds"
-UNLOAD_MODULES="$UNLOAD_MODULES rds_rdma rds_tcp rds ib_ucm kdapl ib_srp_target scsi_target ib_srpt ib_srp ib_iser ib_sdp"
+UNLOAD_MODULES="$UNLOAD_MODULES rpcrdma rds_rdma rds_tcp rds ib_ucm kdapl ib_srp_target scsi_target ib_srpt ib_srp ib_iser"
 UNLOAD_MODULES="$UNLOAD_MODULES rdma_ucm rdma_cm iw_cm ib_cm ib_local_sa findex"
 UNLOAD_MODULES="$UNLOAD_MODULES ib_sa ib_uverbs ib_umad ib_mad ib_core ib_addr"
 
-STATUS_MODULES="rdma_ucm ib_rds rds rds_rdma rds_tcp ib_srpt ib_srp qlgc_vnic ib_sdp rdma_cm ib_addr ib_local_sa findex ib_ipoib ib_ehca ib_ipath ipath_core mlx4_core mlx4_ib mlx4_en mlx5_core mlx5_ib ib_mthca ib_uverbs ib_umad ib_ucm ib_sa ib_cm ib_mad ib_core iw_cxgb3 iw_cxgb4 iw_nes"
-STATUS_MODULES="$STATUS_MODULES ib_qib ocrdma"
+STATUS_MODULES="rdma_ucm ib_rds rds rds_rdma rds_tcp ib_srpt ib_srp qlgc_vnic rdma_cm ib_addr ib_local_sa findex ib_ipoib ib_ehca ib_ipath ipath_core mlx4_core mlx4_ib mlx4_en mlx5_core mlx5_ib ib_mthca ib_uverbs ib_umad ib_ucm ib_sa ib_cm ib_mad ib_core iw_cxgb3 iw_cxgb4 iw_nes i40iw vmw_pvrdma"
+STATUS_MODULES="$STATUS_MODULES ib_qib ocrdma bnxt_re bnxt_en"
 
 if (modinfo scsi_transport_srp 2>/dev/null | grep depends: | grep -q compat 2>/dev/null) ||
     (lsmod 2>/dev/null | grep scsi_transport_srp | grep -q compat); then
@@ -775,7 +770,7 @@ start()
     fi
 
     # W/A: inbox drivers are loaded at boot instead of new ones
-    local loaded_modules=$(/sbin/lsmod 2>/dev/null | grep -E '^be2net|^cxgb|^mlx|^iw_nes|^iw_cxgb|^ib_qib|^ib_mthca|^ocrdma|^ib_ipoib|^ib_srp|^ib_iser|^ib_uverbs|^ib_addr|^ib_mad|^ib_sa|^iw_cm|^ib_core|^ib_ucm|^ib_cm|^rdma_ucm|^ib_umad|^rdma_cm|^compat' | awk '{print $1}')
+    local loaded_modules=$(/sbin/lsmod 2>/dev/null | grep -E '^be2net|^cxgb|^mlx|^iw_nes|^i40iw|^iw_cxgb|^ib_qib|^ib_mthca|^ocrdma|^bnxt_re|^ib_ipoib|^ib_srp|^ib_iser|^ib_uverbs|^ib_addr|^ib_mad|^ib_sa|^iw_cm|^ib_core|^ib_ucm|^ib_cm|^rdma_ucm|^ib_umad|^rdma_cm|^compat' | awk '{print $1}')
     for loaded_module in $loaded_modules
     do
         local loaded_srcver=$(/bin/cat /sys/module/$loaded_module/srcversion 2>/dev/null)
@@ -962,6 +957,28 @@ start()
         RC=$[ $RC + $my_rc ]
     fi
 
+    # Load i40iw driver
+    if [ "X${I40IW_LOAD}" == "Xyes" ]; then
+        fix_location_codes
+        load_module i40iw
+        my_rc=$?
+        if [ $my_rc -ne 0 ]; then
+                echo_failure $"Loading i40iw driver: "
+        fi
+        RC=$[ $RC + $my_rc ]
+    fi
+
+    # Load Broadcom bnxt_re driver
+    if [ "X${BNXT_RE_LOAD}" == "Xyes" ]; then
+        load_module bnxt_re
+        load_module bnxt_en
+        my_rc=$?
+        if [ $my_rc -ne 0 ]; then
+                echo_failure $"Loading Broadcom Netxtreme driver: "
+        fi
+        RC=$[ $RC + $my_rc ]
+    fi
+
     # Load Emulex One Connect driver
     if [ "X${OCRDMA_LOAD}" == "Xyes" ]; then
         load_module ocrdma
@@ -972,6 +989,16 @@ start()
             ${_truescale} start
         fi
         RC=$[ $RC + $my_rc ]
+    fi
+
+    # Load VMware Paravirtual RDMA driver
+    if [ "X${VMW_PVRDMA_LOAD}" == "Xyes" ]; then
+	load_module vmw_pvrdma
+	my_rc=$?
+	if [ $my_rc -ne 0 ]; then
+	    echo_failure $"Loading VMware Paravirtual RDMA driver: "
+	fi
+	RC=$[ $RC + $my_rc ]
     fi
 
     ib_set_node_desc > /dev/null 2>&1 &
@@ -1256,7 +1283,7 @@ unload()
                     unload_rec $mod
                     sleep 2
                     ;;
-                ib_mthca | mlx4_ib | mlx5_ib | ib_ehca | iw_cxgb3 | iw_cxgb4 | iw_nes)
+                ib_mthca | mlx4_ib | mlx5_ib | ib_ehca | iw_cxgb3 | iw_cxgb4 | iw_nes | i40iw)
                     unload_rec $mod
                     sleep 2
                     ;;
@@ -1476,7 +1503,7 @@ status()
 {
     local RC=0
 
-       if is_module ib_mthca || is_module mlx4_core || is_module mlx5_core || is_module ib_qib || is_module ib_ipath || is_module ib_ehca || is_module iw_cxgb3 || is_module iw_cxgb4 || is_module iw_nes; then
+       if is_module ib_mthca || is_module mlx4_core || is_module mlx5_core || is_module ib_qib || is_module ib_ipath || is_module ib_ehca || is_module iw_cxgb3 || is_module iw_cxgb4 || is_module iw_nes || is_module i40iw; then
                echo
                echo "  HCA driver loaded"
                echo
