@@ -12,5 +12,5 @@ class env::common::software_versions {
    $lmod = '6.6-0.3g5k1'
    $datacenter_gpu_manager = '1:1.7.2'
    $dcgm_exporter = '2.0.0-rc.11'
-   $g5k_jupyterlab = '0.4'
+   $g5k_jupyterlab = '0.6'
 }
