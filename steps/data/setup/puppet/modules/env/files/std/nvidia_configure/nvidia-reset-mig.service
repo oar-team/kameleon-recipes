@@ -1,0 +1,10 @@
+[Unit]
+Description=Reset MIG configuration on GPU nvidia A100
+Before=dcgm-exporter.service prometheus-node-exporter.service ganglia-monitor.service
+After=nvidia-smi.service
+[Service]
+Type=oneshot
+# Ignore the exit code: the command fails when no GPU is found or when GPU isn't A100
+ExecStart=-/usr/local/bin/nvidia-reset-mig
+[Install]
+WantedBy=multi-user.target
