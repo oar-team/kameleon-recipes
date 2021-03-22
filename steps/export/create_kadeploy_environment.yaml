@@ -50,6 +50,9 @@
       elif [ "$${grid5000_environment_export_format}" == "tar.xz" ]; then
         kaenv_kind="tar"
         kaenv_compression="xz"
+      elif [ "$${grid5000_environment_export_format}" == "tar.zst" ]; then
+        kaenv_kind="tar"
+        kaenv_compression="zstd"
       else
         fail "Unknown grid5000 environment format: '$${grid5000_environment_export_format}'"
       fi

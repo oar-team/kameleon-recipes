@@ -10,7 +10,7 @@ extend: from_scratch/ubuntu-18.04.yaml
 
 global:
   # Export format to generate
-  appliance_formats: qcow2 tar.gz
+  appliance_formats: qcow2 tar.zst
   # Output base filename
   output: "$${kameleon_cwd}/$${kameleon_recipe_name}"
   # Grid'5000 environment variant
@@ -20,8 +20,10 @@ global:
   # Grid'5000 environment arch
   g5k_image_arch: x64
   # Grid'5000 kadeploy environment parameters
-  g5k_tgz_path: server:///path/to/your/image
+  g5k_tar_path: server:///path/to/your/image
+  g5k_tar_compression: "zstd"
   g5k_postinst_path: server:///grid5000/postinstalls/g5k-postinstall.tgz
+  g5k_postinst_compression: "gzip"
   g5k_postinst_script: g5k-postinstall --net netplan
   g5k_kernel_params: ""
   # kernel modules to blacklist
