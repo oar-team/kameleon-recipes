@@ -1,7 +1,15 @@
 #!/bin/bash
-set -e
 GPU=`/usr/bin/nvidia-smi --query-gpu=index --format=csv,noheader`
+if [ $? -eq 9 ] ; then
+        echo "`hostname` node don't have GPU"
+        exit $?
+else
 for i in $GPU
-        do /usr/bin/nvidia-smi -i $i -mig 0
+        do mig=`/usr/bin/nvidia-smi -i $i -mig 0`
+        if [[ $mig =~ "Not Supported" ]]; then
+                echo "GPU $i isn't compatible with MIG"
+        else
+        echo "OK : Disabled MIG Mode for GPU $i"
+        fi
 done
-
+fi
