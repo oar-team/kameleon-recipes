@@ -47,7 +47,7 @@ class env::std ( $variant = "big", $parent_parameters = {} ){
     # g5k-pmem-manager
     class { 'env::std::configure_g5kpmemmanager': }
     # nvidia-reset-mig
-    class { 'env::std::configure_nvidia': }
+    class { 'env::std::nvidia_mig_configure': }
   }
   # disable lvm pvscan (bug 9453)
   class { 'env::std::disable_lvm_pvscan': }

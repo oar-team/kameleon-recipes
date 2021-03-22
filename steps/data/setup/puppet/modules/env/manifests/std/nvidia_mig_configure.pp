@@ -1,9 +1,5 @@
-class env::std::configure_nvidia () {
+class env::std::nvidia_mig_configure () {
 
-  # We only install the service but do not enable it.
-  # Services that depend on it can add "Wants=nvidia-smi.service"
-  # and "After=nvidia-smi.service", and this will automatically start
-  # this service.
   file{
     '/usr/local/bin/nvidia-reset-mig':
       ensure    => present,
