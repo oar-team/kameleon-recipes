@@ -1,4 +1,4 @@
-class env::std::nvidia_mig_configure () {
+class env::std::nvidia_reset_mig () {
 
   file{
     '/usr/local/bin/nvidia-reset-mig':
