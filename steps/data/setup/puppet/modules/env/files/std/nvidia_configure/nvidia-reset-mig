@@ -1,8 +1,7 @@
 #!/bin/bash
-GPU=`/usr/bin/nvidia-smi --query-gpu=index --format=csv,noheader`
+GPU=`/usr/bin/nvidia-smi --query-gpu=index --format=csv,noheader 2> /dev/null`
 if [ $? -eq 9 ] ; then
         echo "`hostname` node don't have GPU"
-        exit $?
 else
 for i in $GPU
         do mig=`/usr/bin/nvidia-smi -i $i -mig 0`
@@ -13,3 +12,4 @@ for i in $GPU
         fi
 done
 fi
+exit 0
