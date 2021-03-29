@@ -101,4 +101,15 @@ class env::big::configure_nvidia_gpu::cuda () {
     $opengl_packages:
       ensure    => installed;
   }
+
+  # Install a fake (empty) libcuda1 package to help satisfy dependencies.
+  # No need to force a particular version, newer versions of the package
+  # should still be equally empty.
+  env::common::g5kpackages {
+    'libcuda1':
+      ensure    => installed;
+  } -> package {
+    'libhwloc-contrib-plugins':
+      ensure    => installed;
+  }
 }
