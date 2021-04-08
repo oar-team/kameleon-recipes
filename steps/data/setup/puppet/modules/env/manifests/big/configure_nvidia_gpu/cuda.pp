@@ -78,14 +78,29 @@ class env::big::configure_nvidia_gpu::cuda () {
       ensure    => installed;
   }
 
-  # Install a fake (empty) libcuda1 package to help satisfy dependencies.
-  # No need to force a particular version, newer versions of the package
+  # Install one or more fake (empty) package(s) to help satisfy dependencies.
+  # No need to force a particular version, newer versions of the package(s)
   # should still be equally empty.
-  env::common::g5kpackages {
-    'libcuda1':
-      ensure    => installed;
-  } -> package {
-    'libhwloc-contrib-plugins':
-      ensure    => installed;
+  case "${::lsbdistcodename}" {
+    "bullseye" : {
+      env::common::g5kpackages {
+        'libcuda1':
+          ensure    => installed;
+        'libnvidia-ml1':
+          ensure    => installed;
+      } -> package {
+        'libhwloc-contrib-plugins':
+          ensure    => installed;
+      }
+    }
+    default: {
+      env::common::g5kpackages {
+        'libcuda1':
+          ensure    => installed;
+      } -> package {
+        'libhwloc-contrib-plugins':
+          ensure    => installed;
+      }
+    }
   }
 }
