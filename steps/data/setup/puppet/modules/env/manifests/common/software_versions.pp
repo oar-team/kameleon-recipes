@@ -22,8 +22,8 @@ class env::common::software_versions {
           $dcgm_exporter = '2.3.0-1'
         }
         "ppc64el": {
-          $nvidia_driver = 'ppc64le-460.32.03'
-          $nvidia_cuda   = '11.2.2_460.32.03_linux_ppc64le'
+          $nvidia_driver = 'ppc64le-418.181.07'
+          $nvidia_cuda   = '10.1.243_418.87.00_linux_ppc64le'
           $datacenter_gpu_manager = '1:2.0.15'
           $dcgm_exporter = '2.3.0-1'
         }

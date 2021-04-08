@@ -10,9 +10,11 @@ class env::big::configure_nvidia_gpu::cuda () {
       case "$env::deb_arch" {
         "amd64": {
           $libcuda = '/usr/lib/x86_64-linux-gnu/libcuda.so'
+          $cuda_args = '--silent'
         }
         "ppc64el": {
           $libcuda = '/usr/lib/powerpc64le-linux-gnu/libcuda.so'
+          $cuda_args = '--silent --override' # Do not check gcc version with --override arg (cf. #12791)
         }
       }
     }
@@ -26,7 +28,7 @@ class env::big::configure_nvidia_gpu::cuda () {
       timeout   => 1200, # 20 min
       creates   => "/tmp/NVIDIA-Linux_cuda.run";
     'install_nvidia_cuda':
-      command     => "/tmp/NVIDIA-Linux_cuda.run --silent --toolkit && /bin/rm /tmp/NVIDIA-Linux_cuda.run",
+      command     => "/tmp/NVIDIA-Linux_cuda.run $cuda_args --toolkit && /bin/rm /tmp/NVIDIA-Linux_cuda.run",
       timeout     => 2400, # 20 min
       user        => root,
       environment => ["HOME=/root", "USER=root"], # prevent cuda installer to failed when copying sample files (default sample path : $(HOME)/NVIDIA_CUDA-10.1_Samples, cf. https://docs.nvidia.com/cuda/cuda-installation-guide-linux/index.html#runfile-advanced)
