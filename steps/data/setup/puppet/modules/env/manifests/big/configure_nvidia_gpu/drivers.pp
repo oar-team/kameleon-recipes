@@ -11,7 +11,7 @@ class env::big::configure_nvidia_gpu::drivers () {
     "ppc64el": {
       # Newer version of the driver (440.X, 450.X) are unstable and cause kernel panic.
       # See https://intranet.grid5000.fr/bugzilla/show_bug.cgi?id=12545
-      $driver_source = 'http://packages.grid5000.fr/other/nvidia/NVIDIA-Linux-ppc64le-418.165.02.run'
+      $driver_source = 'http://packages.grid5000.fr/other/nvidia/NVIDIA-Linux-ppc64le-418.181.07.run'
     }
     default: {
       err "${env::deb_arch} not supported"
