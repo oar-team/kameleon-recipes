@@ -98,7 +98,8 @@ class env::std::dell (
     # Fix bug 12930
     exec {
       'disable NVMe devices support':
-        command => "/bin/sed -i 's/^vil7=dsm_sm_psrvil/; vil7=dsm_sm_psrvil/' /opt/dell/srvadmin/etc/srvadmin-storage/stsvc.ini";
+        command => "/bin/sed -i 's/^vil7=dsm_sm_psrvil/; vil7=dsm_sm_psrvil/' /opt/dell/srvadmin/etc/srvadmin-storage/stsvc.ini",
+        require => Package[$_packages_names];
     }
   }
 
