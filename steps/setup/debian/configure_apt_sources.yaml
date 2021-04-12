@@ -18,7 +18,7 @@
           deb-src $${deb_mirror_uri} $${release}-updates $${deb_components}
       - test:
         # cf. https://lists.debian.org/debian-devel-announce/2019/07/msg00004.html
-        - exec_in: test "$${release}" != "testing" -a "$${release}" != "bullseye"
+        - exec_in: test "$${release}" != "testing"
         - append_in:
           - /etc/apt/sources.list
           - |
