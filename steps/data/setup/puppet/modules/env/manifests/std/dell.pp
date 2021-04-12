@@ -17,34 +17,20 @@ class env::std::dell (
   $_key = '42550ABD1E80D7C1BC0BAD851285491434D8786F'
 
   case $::lsbdistcodename {
-    'stretch': {
-      $_location = "https://linux.dell.com/repo/community/openmanage/910/${::lsbdistcodename}"
-      $_release = "${::lsbdistcodename}"
-      $_repos = "main"
-      $_packages_names = $packages_names
-      $service_name = 'dataeng'
-      $service_status = 'service dataeng status'
-    }
-    'buster': {
-      # Pas de support officiel depuis buster
+    'stretch', 'buster': {
+      # No official Debian support since buster
       $_location = "https://linux.dell.com/repo/community/openmanage/910/stretch"
       $_release = "stretch"
       $_repos = "main"
       $_packages_names = $packages_names
-      $service_name = 'dataeng'
       $service_status = 'service dataeng status'
     }
     'bullseye': {
-      # Pas de support officiel depuis buster
-      #$_location = "https://linux.dell.com/repo/community/openmanage/911/stretch"
-      #$_release = "stretch"
-      # Test paquet récent pour Ubuntu 20.04
+      # Ubuntu 20.04 packages
       $_location = "https://linux.dell.com/repo/community/openmanage/950/focal"
       $_release = "focal"
       $_repos = "main"
       $_packages_names = $packages_names - 'libssl1.0.0'
-      # FIXME should be 2 services dsm_sa_datamgrd and dsm_sa_eventmgrd.service !
-      $service_name = 'dsm_sa_datamgrd'
       $service_status = 'systemctl status dsm_sa_datamgrd.service dsm_sa_eventmgrd.service'
     }
   }
@@ -75,19 +61,44 @@ class env::std::dell (
       ];
   }
 
-  service {
-    'dell OMSA':
-      enable  => true,
-      name    => $service_name,
-      require => Package[$_packages_names];
+  case $::lsbdistcodename  {
+    # OMSA <= 9.1.0
+    'stretch', 'buster': {
+      service {
+        'dataeng':
+          enable  => true,
+          require => Package[$_packages_names];
+      }
+    }
+    # OMSA >= 9.3.0
+    'bullseye': {
+      service {
+        'dsm_sa_datamgrd':
+          enable  => true,
+          require => Package[$_packages_names];
+      }
+      service {
+        'dsm_sa_eventmgrd.service':
+          enable  => true,
+          require => Package[$_packages_names];
+      }
+    }
   }
 
   if ($::lsbdistcodename == 'buster') or ($::lsbdistcodename == 'bullseye') {
     # Using enable => false doesn't seem to work, maybe because openipmi use systemd-sysv-generator
     exec {
-      "disable openipmi service":
+      'disable openipmi service':
         command => "/lib/systemd/systemd-sysv-install disable openipmi",
         require => Package[$packages, 'ipmitool'];
+    }
+  }
+
+  if ($::lsbdistcodename == 'bullseye') {
+    # Fix bug 12930
+    exec {
+      'disable NVMe devices support':
+        command => "/bin/sed -i 's/^vil7=dsm_sm_psrvil/; vil7=dsm_sm_psrvil/' /opt/dell/srvadmin/etc/srvadmin-storage/stsvc.ini";
     }
   }
 
