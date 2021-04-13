@@ -48,4 +48,6 @@ class env::base ( $variant = "base", $parent_parameters = {} ){
   class { 'env::base::disable_ndctl_monitor': }
   # Enable userns for Nix
   class { 'env::base::enable_userns': }
+  # Disable NVMe multipath support
+  class { 'env::base::disable_nvme_multipath': }
 }
