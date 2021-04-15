@@ -78,19 +78,34 @@ class env::big::configure_nvidia_gpu::cuda () {
       ensure    => installed;
   }
 
-  # Install one or more fake (empty) package(s) to help satisfy dependencies.
-  # No need to force a particular version, newer versions of the package(s)
-  # should still be equally empty.
+  # Install one or more fake (empty) package(s) to help satisfy libhwloc-contrib-plugins dependencies.
+  # No need to force a particular version, newer versions of the package(s) should still be equally empty.
+  # cf. bug #12877 and #12861
   case "${::lsbdistcodename}" {
     "bullseye" : {
-      env::common::g5kpackages {
-        'libcuda1':
-          ensure    => installed;
-        'libnvidia-ml1':
-          ensure    => installed;
-      } -> package {
-        'libhwloc-contrib-plugins':
-          ensure    => installed;
+      case "$env::deb_arch" {
+        "ppc64el": {
+          env::common::g5kpackages {
+            'libcuda1':
+              ensure    => installed;
+            'libnvidia-tesla-460-ml1':
+              ensure    => installed;
+          } -> package {
+            'libhwloc-contrib-plugins':
+              ensure    => installed;
+          }
+        }
+        default: {
+          env::common::g5kpackages {
+            'libcuda1':
+              ensure    => installed;
+            'libnvidia-ml1':
+              ensure    => installed;
+          } -> package {
+            'libhwloc-contrib-plugins':
+              ensure    => installed;
+          }
+        }
       }
     }
     default: {
