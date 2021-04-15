@@ -86,7 +86,7 @@ class env::big::configure_nvidia_gpu::cuda () {
       case "$env::deb_arch" {
         "ppc64el": {
           env::common::g5kpackages {
-            'libcuda1':
+            'libnvidia-tesla-460-cuda1':
               ensure    => installed;
             'libnvidia-tesla-460-ml1':
               ensure    => installed;
