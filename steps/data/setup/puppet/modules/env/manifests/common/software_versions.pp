@@ -16,13 +16,13 @@ class env::common::software_versions {
     'bullseye': {
       case "$env::deb_arch" {
         "amd64": {
-          $nvidia_driver = 'x86_64-460.67'
+          $nvidia_driver = 'x86_64-460.73.01'
           $nvidia_cuda   = '11.2.2_460.32.03_linux'
           $datacenter_gpu_manager = '1:2.1.4'
           $dcgm_exporter = '2.3.0-1'
         }
         "ppc64el": {
-          $nvidia_driver = 'ppc64le-418.181.07'
+          $nvidia_driver = 'ppc64le-418.197.02'
           $nvidia_cuda   = '10.1.243_418.87.00_linux_ppc64le'
           $datacenter_gpu_manager = '1:2.0.15'
           $dcgm_exporter = '2.3.0-1'
