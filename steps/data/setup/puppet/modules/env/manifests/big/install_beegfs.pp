@@ -74,39 +74,39 @@ class env::big::install_beegfs {
     }
 
     "bullseye" : {
+      # Do not build for now, cf. Bug #13077
 
-      include env::big::prepare_kernel_module_build
-
-      apt::source { 'beegfs':
-          location     => 'https://www.beegfs.io/release/beegfs_7.2.1',
-          release      => 'buster', #FIXME : change release to bullseye when beegfs release it
-          repos        => 'non-free',
-          architecture => 'amd64',
-          key          => {
-              id       => '055D000F1A9A092763B1F0DD14E8E08064497785',
-              source   => 'https://www.beegfs.io/release/beegfs_7.2.1/gpg/DEB-GPG-KEY-beegfs',
-          },
-      }
-      -> package { # client
-          [ 'beegfs-utils', 'beegfs-helperd', 'beegfs-client', 'libbeegfs-ib' ]:
-          require => Class['apt::update'],
-          ensure => installed;
-      }
-      -> service { [ 'beegfs-helperd', 'beegfs-client'] :
-        provider => systemd,
-        enable => false,
-      }
-
-      file { '/etc/beegfs/beegfs-client-autobuild.conf':
-          content => "buildEnabled=true\nbuildArgs=-j8 BEEGFS_OPENTK_IBVERBS=1\n",
-          require => Package['beegfs-client']
-      }
-      -> exec {
-      '/etc/init.d/beegfs-client rebuild':
-          timeout => 1200,
-          refreshonly => true,
-          require => Exec['prepare_kernel_module_build']
-      }
+#      include env::big::prepare_kernel_module_build
+#
+#      apt::source { 'beegfs':
+#          location     => 'https://www.beegfs.io/release/beegfs_7.2.1',
+#          release      => 'buster', #FIXME : change release to bullseye when beegfs release it
+#          repos        => 'non-free',
+#          architecture => 'amd64',
+#          key          => {
+#              id       => '055D000F1A9A092763B1F0DD14E8E08064497785',
+#              source   => 'https://www.beegfs.io/release/beegfs_7.2.1/gpg/DEB-GPG-KEY-beegfs',
+#          },
+#      }
+#      -> package { # client
+#          [ 'beegfs-utils', 'beegfs-helperd', 'beegfs-client', 'libbeegfs-ib' ]:
+#          require => Class['apt::update'],
+#          ensure => installed;
+#      }
+#      -> service { [ 'beegfs-helperd', 'beegfs-client'] :
+#        provider => systemd,
+#        enable => false,
+#      }
+#
+#      file { '/etc/beegfs/beegfs-client-autobuild.conf':
+#          content => "buildEnabled=true\nbuildArgs=-j8 BEEGFS_OPENTK_IBVERBS=1\n",
+#          require => Package['beegfs-client']
+#      }
+#      -> exec {
+#      '/etc/init.d/beegfs-client rebuild':
+#          timeout => 1200,
+#          require => Exec['prepare_kernel_module_build']
+#      }
     }
   }
 }
