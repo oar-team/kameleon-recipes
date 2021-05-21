@@ -1,39 +1,28 @@
 class env::big::configure_postfix () {
 
-  $mail_packages = [ postfix ]
+  $g5k_sysemail = 'sysadmin@internal.grid5000.fr'
 
- package {
-   $mail_packages:
-     ensure    => installed,
-     require   => Exec['fix_resolv_conf', 'fix_hostname'];
- }
-#   exec {
-#     'install_postfix_manual':
-#       command       => "/bin/echo 'postfix   postfix/main_mailer_type    select  No configuration' | /usr/bin/debconf-set-selections",
-#   }
-  # This is a damn dirty patch due to a bug in debian package for postfix. In the package, the, postinst create a /etc/postfix/main.cfg with a myhostname attribute
-  # myhostname attribute is retrieved by concatening hostname found in /etc/hostname and domain extract from /etc/resolv.conf. This domain MAY have a trailing dot (.grid5000.fr.)
-  # Sadly, after this, newaliases is called on this /etc/postfix/main.cfg and doesn't digest any trailing dot for attribute myhostname.
+  package {
+    'postfix':
+      ensure  => installed,
+      require => Exec['fix_resolv_conf', 'fix_hostname'],
+      before  => Exec['newaliases', 'set_root_alias'];
+  }
+
   exec {
     'fix_resolv_conf':
-      #command   => "/bin/sed 's/\\(\\s*domain\\s*.*\\)\\./\\1/' -i /etc/resolv.conf"
-      command   => "/bin/sed 's/\\([^\\s]*\\)\\.\\(\\s\\|$\\)/\\1\\2/g' -i /etc/resolv.conf";
+      command  => "/bin/sed 's/\\([^\\s]*\\)\\.\\(\\s\\|$\\)/\\1\\2/g' -i /etc/resolv.conf";
     'fix_hostname':
-    command => "/bin/sed 's/localhost//' -i /etc/hostname";
-      
+      command  => "/bin/sed 's/localhost//' -i /etc/hostname";
+    # set root alias to local + internal mailbox
+    'set_root_alias':
+      command  => "if /usr/bin/grep -q ^root: /etc/aliases; then /bin/sed -i 's/^root:.*/root: root, ${g5k_sysemail}/' /etc/aliases; else /usr/bin/echo 'root: root, ${g5k_sysemail}' >> /etc/aliases; fi",
+      provider => 'shell';
+    # update aliases database
+    'newaliases':
+      command  => '/usr/bin/newaliases',
   }
-  file {
-    '/etc/postfix/':
-      ensure    => directory,
-      owner     => root,
-      group     => root,
-      mode      => '644';
-    '/etc/postfix/main.cfg':
-      ensure    => present,
-      owner     => root,
-      group     => root,
-      mode      => '644',
-      source    => 'puppet:///modules/env/big/mail/postfix.cfg',
-      require   => File['/etc/postfix/'];
-  }
+
+  # Keep default main.cf configuration file
+  # Note that some configs are set with postconf by g5k-postinstall
 }
