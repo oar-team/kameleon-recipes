@@ -29,6 +29,8 @@ global:
   g5k_initrd_path: "/initramfs.img"
   # kernel modules to blacklist
   kernel_modules_blacklist: "usb_storage usbhid ohci_hcd ehci_hcd usbcore nouveau myri10ge"
+  # Packages to install
+  packages: "zstd"
   # locales
   locales: POSIX C en_US.UTF8
   lang: en_US.UTF8
@@ -43,6 +45,7 @@ setup:
   - create_kernel_symlinks
   - "@base"
   - configure_system
+  - install_packages
   - disable_kdump
   - set_kernel_modules_blacklist
   - set_g5k_release
