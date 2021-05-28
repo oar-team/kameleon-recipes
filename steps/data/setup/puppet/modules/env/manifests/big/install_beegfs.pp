@@ -79,13 +79,13 @@ class env::big::install_beegfs {
 #      include env::big::prepare_kernel_module_build
 #
 #      apt::source { 'beegfs':
-#          location     => 'https://www.beegfs.io/release/beegfs_7.2.1',
+#          location     => 'https://www.beegfs.io/release/beegfs_7.2.2',
 #          release      => 'buster', #FIXME : change release to bullseye when beegfs release it
 #          repos        => 'non-free',
 #          architecture => 'amd64',
 #          key          => {
 #              id       => '055D000F1A9A092763B1F0DD14E8E08064497785',
-#              source   => 'https://www.beegfs.io/release/beegfs_7.2.1/gpg/DEB-GPG-KEY-beegfs',
+#              source   => 'https://www.beegfs.io/release/beegfs_7.2.2/gpg/DEB-GPG-KEY-beegfs',
 #          },
 #      }
 #      -> package { # client
