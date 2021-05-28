@@ -20,6 +20,10 @@ class env::big ( $variant = "big", $parent_parameters = {} ){
   if $env::deb_arch == 'amd64' or $env::deb_arch == 'ppc64el' {
     class { 'env::big::configure_nvidia_gpu': }
   }
+  # amdgpu
+  if $env::deb_arch == 'amd64' {
+    class { 'env::big::configure_amd_gpu': }
+  }
   # beegfs install
   if $env::deb_arch == 'amd64' {
     class { 'env::big::install_beegfs': }
