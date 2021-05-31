@@ -52,8 +52,8 @@ global:
   ## QEMU options
   qemu_enable_kvm: true
   qemu_uefi: false
-  qemu_cpus: 2
-  qemu_memory_size: 2G
+  qemu_cpus: 8
+  qemu_memory_size: 16G
   qemu_monitor_socket: $${kameleon_cwd}/qemu_monitor.socket
   qemu_arch: $${arch}
   qemu_image_size: 10G
