@@ -12,23 +12,20 @@ class env::std::install_g5kchecks {
       require env::commonpackages::rake
       require env::commonpackages::rubyrspec
 
-      if "${::lsbdistcodename}" != "jessie" {
+      env::common::g5kpackages {
+        'g5k-checks':
+          ensure  => $::env::common::software_versions::g5k_checks,
+          release => "${::lsbdistcodename}";
+      }
 
-        env::common::g5kpackages {
-          'g5k-checks':
-            ensure  => $::env::common::software_versions::g5k_checks,
-            release => "${::lsbdistcodename}";
-        }
-
-        file {
-          '/etc/g5k-checks.conf':
-            ensure   => present,
-            owner    => root,
-            group    => root,
-            mode     => '0644',
-            source   => "puppet:///modules/env/std/g5kchecks/g5k-checks.conf",
-            require  => Package["g5k-checks"];
-        }
+      file {
+        '/etc/g5k-checks.conf':
+          ensure   => present,
+          owner    => root,
+          group    => root,
+          mode     => '0644',
+          source   => "puppet:///modules/env/std/g5kchecks/g5k-checks.conf",
+          require  => Package["g5k-checks"];
       }
     }
     default: {

@@ -10,8 +10,6 @@ class { 'apt':
 
 class env::std::dell (
   Array $packages_names = $env::std::dell::params::packages_names,
-  String $service_name = $env::std::dell::params::service_name,
-  String $service_status = $env::std::dell::params::service_status
 ) inherits env::std::dell::params {
 
   include apt
@@ -19,21 +17,21 @@ class env::std::dell (
   $_key = '42550ABD1E80D7C1BC0BAD851285491434D8786F'
 
   case $::lsbdistcodename {
-    'jessie': {
-      $_location = "https://linux.dell.com/repo/community/debian/"
-      $_release = "${::lsbdistcodename}"
-      $_repos = "openmanage"
-    }
-    'stretch': {
-      $_location = "https://linux.dell.com/repo/community/openmanage/910/${::lsbdistcodename}"
-      $_release = "${::lsbdistcodename}"
-      $_repos = "main"
-    }
-    'buster': {
-      # FIXME : mettre release sur buster quand ce sera supporté
+    'stretch', 'buster': {
+      # No official Debian support since buster
       $_location = "https://linux.dell.com/repo/community/openmanage/910/stretch"
       $_release = "stretch"
       $_repos = "main"
+      $_packages_names = $packages_names
+      $service_status = 'service dataeng status'
+    }
+    'bullseye': {
+      # Ubuntu 20.04 packages
+      $_location = "https://linux.dell.com/repo/community/openmanage/950/focal"
+      $_release = "focal"
+      $_repos = "main"
+      $_packages_names = $packages_names - 'libssl1.0.0'
+      $service_status = 'systemctl status dsm_sa_datamgrd.service dsm_sa_eventmgrd.service'
     }
   }
 
@@ -55,7 +53,7 @@ class env::std::dell (
   }
 
   package {
-    $packages_names:
+    $_packages_names:
       ensure  => present,
       require => [
         Apt::Source['dell'],
@@ -63,32 +61,60 @@ class env::std::dell (
       ];
   }
 
-  service {
-    'dell OMSA':
-      enable  => true,
-      name    => $service_name,
-      require => Package[$packages_names];
+  case $::lsbdistcodename  {
+    # OMSA <= 9.1.0
+    'stretch', 'buster': {
+      service {
+        'dataeng':
+          enable  => true,
+          require => Package[$_packages_names];
+      }
+    }
+    # OMSA >= 9.3.0
+    'bullseye': {
+      service {
+        'dsm_sa_datamgrd':
+          enable  => true,
+          require => Package[$_packages_names];
+      }
+      service {
+        'dsm_sa_eventmgrd.service':
+          enable  => true,
+          require => Package[$_packages_names];
+      }
+    }
   }
 
-  if $::lsbdistcodename == 'buster' {
+  if ($::lsbdistcodename == 'buster') or ($::lsbdistcodename == 'bullseye') {
     # Using enable => false doesn't seem to work, maybe because openipmi use systemd-sysv-generator
     exec {
-      "disable openipmi service":
+      'disable openipmi service':
         command => "/lib/systemd/systemd-sysv-install disable openipmi",
         require => Package[$packages, 'ipmitool'];
     }
   }
-  # Fix bug 8048 and 8975
-  file {
-    '/etc/systemd/system/dataeng.service.d':
-      ensure  => 'directory',
-      require => Package[$packages];
-    '/etc/systemd/system/dataeng.service.d/stop.conf':
-      ensure  => 'file',
-      content => "[Service]\nExecStop=\nKillMode=control-group\nKillSignal=9",
-      require => Package[$packages];
-  }
-  File['/etc/systemd/system/dataeng.service.d']
-  ->File['/etc/systemd/system/dataeng.service.d/stop.conf']
 
+  if ($::lsbdistcodename == 'bullseye') {
+    # Fix bug 12930
+    exec {
+      'disable NVMe devices support':
+        command => "/bin/sed -i 's/^vil7=dsm_sm_psrvil/; vil7=dsm_sm_psrvil/' /opt/dell/srvadmin/etc/srvadmin-storage/stsvc.ini",
+        require => Package[$_packages_names];
+    }
+  }
+
+  if ($::lsbdistcodename == 'buster') {
+    # Fix bug 8048 and 8975
+    file {
+      '/etc/systemd/system/dataeng.service.d':
+        ensure  => 'directory',
+        require => Package[$packages];
+      '/etc/systemd/system/dataeng.service.d/stop.conf':
+        ensure  => 'file',
+        content => "[Service]\nExecStop=\nKillMode=control-group\nKillSignal=9",
+        require => Package[$packages];
+    }
+    File['/etc/systemd/system/dataeng.service.d']
+    ->File['/etc/systemd/system/dataeng.service.d/stop.conf']
+  }
 }

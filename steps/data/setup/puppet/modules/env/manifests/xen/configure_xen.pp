@@ -29,6 +29,11 @@ class env::xen::configure_xen () {
         $hypervisor = "/boot/xen-4.11-${env::deb_arch}.gz"
         $xen_packages = [ 'xen-utils', 'debootstrap', 'xen-tools', 'sysfsutils', "xen-system-${env::deb_arch}" ]
       }
+
+      'bullseye' : {
+        $hypervisor = "/boot/xen-4.14-${env::deb_arch}.gz"
+        $xen_packages = [ 'xen-utils', 'debootstrap', 'xen-tools', 'sysfsutils', "xen-system-${env::deb_arch}" ]
+      }
     }
 
     file_line {
