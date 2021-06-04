@@ -54,33 +54,21 @@ dryrun_debian10-x64-std:
 
 # Debian11
 dryrun_debian11-x64-min:
-  only:
-    - debian11
   <<: *defaults-dryrun
 
 dryrun_debian11-x64-base:
-  only:
-    - debian11
   <<: *defaults-dryrun
 
 dryrun_debian11-x64-nfs:
-  only:
-    - debian11
   <<: *defaults-dryrun
 
 dryrun_debian11-x64-xen:
-  only:
-    - debian11
   <<: *defaults-dryrun
 
 dryrun_debian11-x64-big:
-  only:
-    - debian11
   <<: *defaults-dryrun
 
 dryrun_debian11-x64-std:
-  only:
-    - debian11
   <<: *defaults-dryrun
 
 # Debian testing
@@ -123,33 +111,21 @@ dryrun_debian10-arm64-std:
 
 # Debian11
 dryrun_debian11-arm64-min:
-  only:
-    - debian11
   <<: *defaults-dryrun
 
 dryrun_debian11-arm64-base:
-  only:
-    - debian11
   <<: *defaults-dryrun
 
 dryrun_debian11-arm64-nfs:
-  only:
-    - debian11
   <<: *defaults-dryrun
 
 dryrun_debian11-arm64-xen:
-  only:
-    - debian11
   <<: *defaults-dryrun
 
 dryrun_debian11-arm64-big:
-  only:
-    - debian11
   <<: *defaults-dryrun
 
 dryrun_debian11-arm64-std:
-  only:
-    - debian11
   <<: *defaults-dryrun
 
 # Debian testing
@@ -163,8 +139,6 @@ dryrun_ubuntu1804-arm64-min:
 ## ppc64
 # Debian11
 dryrun_debian11-ppc64-min:
-  only:
-    - debian11
   <<: *defaults-dryrun
 
 # Debian testing
@@ -182,29 +156,8 @@ build_debian10-x64-std:
   <<: *defaults-build
 
 # Debian 11
-build_debian11-x64-min:
-  only:
-    - debian11
-  <<: *defaults-build
-build_debian11-x64-base:
-  only:
-    - debian11
-  <<: *defaults-build
-build_debian11-x64-xen:
-  only:
-    - debian11
-  <<: *defaults-build
-build_debian11-x64-nfs:
-  only:
-    - debian11
-  <<: *defaults-build
-build_debian11-x64-big:
-  only:
-    - debian11
   <<: *defaults-build
 build_debian11-x64-std:
-  only:
-    - debian11
   <<: *defaults-build
 
 # Debian testing
