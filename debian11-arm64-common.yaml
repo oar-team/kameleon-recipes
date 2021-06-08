@@ -25,7 +25,7 @@ global:
   g5k_postinst_path: server:///grid5000/postinstalls/g5k-postinstall.tgz
   g5k_postinst_compression: "gzip"
   g5k_postinst_script: g5k-postinstall --net debian
-  g5k_kernel_params: "systemd.unified_cgroup_hierarchy=false systemd.legacy_systemd_cgroup_controller=true"
+  g5k_kernel_params: ""
   deb_backports: true
   packages: ""
   arch_packages_no_clean: "grub-efi-arm64 grub-common"
