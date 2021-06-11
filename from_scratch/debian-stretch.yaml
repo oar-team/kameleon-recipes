@@ -15,7 +15,7 @@ global:
   release_number: 9
   virtualbox_deb_source: "backports"
 
-  qemu_memory_size: 4G
+  qemu_memory_size: 2G
 
 bootstrap:
   - "@base"
