@@ -40,5 +40,7 @@ class env::big ( $variant = "big", $parent_parameters = {} ){
   class { 'env::big::install_prometheus_exporters': }
   # g5k-jupyterlab
   class { 'env::big::install_g5k_jupyterlab': }
+  # smartd
+  class { 'env::big::install_smartd': }
 
 }
