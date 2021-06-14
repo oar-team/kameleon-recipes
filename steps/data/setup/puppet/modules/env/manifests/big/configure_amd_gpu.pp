@@ -1,8 +1,8 @@
 class env::big::configure_amd_gpu () {
 
-  case "${::lsbdistcodename}" {
+  case $::lsbdistcodename {
 
-    "buster" : {
+    'buster' : {
       apt::source {
         'repo.radeon.com':
           comment      => 'Repo for AMD ROCM packages',
@@ -33,9 +33,16 @@ class env::big::configure_amd_gpu () {
           path => '/etc/profile',
           line => 'export PATH=$PATH:/opt/rocm-4.2.0/bin';
       }
+
+      file {
+        '/usr/local/bin/rocm-smi':
+          ensure  => link,
+          target  => '/opt/rocm-4.2.0/bin/rocm-smi',
+          require => Package['rocm-smi-lib'];
+      }
     }
 
-    "bullseye" : {
+    'bullseye' : {
       # TODO Build du module amdgpu (Rocm 4.2) en erreur avec le kernel 5.10 - Bug #13159
     }
   }
