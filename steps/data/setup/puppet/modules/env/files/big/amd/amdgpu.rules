@@ -1,0 +1,3 @@
+KERNEL=="kfd", GROUP="8000", MODE="0660"
+KERNEL=="card*", GROUP="8000", MODE="0660"
+KERNEL=="renderD*", GROUP="8000", MODE="0660"
