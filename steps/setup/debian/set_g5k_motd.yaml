@@ -6,8 +6,6 @@
       (Image based on %%DISTRIB%% %%RELEASE%% for %%ARCH%%)
       Maintained by support-staff <support-staff@lists.grid5000.fr>
       
-      Doc: https://www.grid5000.fr/w/Getting_Started#Deploying_nodes_with_Kadeploy
-      
   - exec_in: |
       sed -i \
         -e 's/%%RECIPE_NAME%%/$${kameleon_recipe_name}/g' \
