@@ -35,10 +35,6 @@ class env::big::configure_amd_gpu () {
       }
 
       file {
-        '/etc/udev/rules.d/70-amdgpu.rules':
-          ensure  => file,
-          source  => 'puppet:///modules/env/big/amd/amdgpu.rules',
-          require => Package['rock-dkms'];
         '/usr/local/bin/rocm-smi':
           ensure  => link,
           target  => '/opt/rocm-4.2.0/bin/rocm-smi',
