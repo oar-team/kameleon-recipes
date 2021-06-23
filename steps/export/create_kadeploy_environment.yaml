@@ -86,7 +86,7 @@
         ${kaenv_postinstall_archive:+--modify postinstalls_archive0="$${grid5000_environment_export_postinstall_archive}"} \
         ${kaenv_postinstall_compression:+--modify postinstalls_compression0="$${grid5000_environment_export_postinstall_compression}"} \
         ${kaenv_additional_postinstall_path:+--add-postinstall "$kaenv_additional_postinstall_path:$${grid5000_environment_export_additional_postinstall_compression}:$${grid5000_environment_export_additional_postinstall_script}"} \
-        > $${grid5000_environment_export_name}.yaml
+        > $${grid5000_environment_export_name}.dsc
 - create_additional_postinstall_archive:
   - exec_local: |
       if [ -n "$${grid5000_environment_export_additional_postinstall_archive}" ]; then
@@ -110,7 +110,8 @@
         echo "Copying grid5000 environment files to $${grid5000_environment_export_dir}"
         mkdir -p "$${grid5000_environment_export_dir}"
         cp -vf $${grid5000_environment_export_image_file} $${grid5000_environment_export_dir}/
-        cp -vf $${grid5000_environment_export_name}.yaml $${grid5000_environment_export_dir}/
+        cp -vf $${grid5000_environment_export_name}.dsc $${grid5000_environment_export_dir}/
+        ln -sf $${grid5000_environment_export_name}.dsc $${grid5000_environment_export_dir}/$${grid5000_environment_export_name}.yaml # for backward compat
         if [ -n "$${grid5000_environment_export_additional_postinstall_archive}" ]; then
           cp -vf $${grid5000_environment_export_additional_postinstall_archive} \
             $${grid5000_environment_export_dir}/$${grid5000_environment_export_additional_postinstall_archive}
