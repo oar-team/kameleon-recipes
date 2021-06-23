@@ -10,22 +10,28 @@
         virt-customize -a $${output}.qcow2 --run-command 'printf "datasource:\n  Ec2:\n    timeout: 3\n    max_wait: -1\n" > /etc/cloud/cloud.cfg.d/92-set-ec2-timeout.cfg'
         # Remove DHCP hook to let cloud-init handle hostname
         virt-customize -a $${output}.qcow2 --run-command 'rm -f /etc/dhcp/dhclient-exit-hooks.d/g5k-update-host-name'
+      else
+        echo "No qcow2 export, do nothing."
       fi
 
 - fix_interface_name:
   - exec_local: |
       if [[ "$${appliance_formats}" =~ "qcow2" && "$${distrib}" == "debian" ]]; then
         virt-customize -a $${output}.qcow2 --run-command 'sed -i s/ens3/enp0s2/ /etc/network/interfaces'
+      else
+        echo "No qcow2 export, do nothing."
       fi
 
 - setup_uefi_boot:
    - exec_local: |
-       if [[ "$${qemu_uefi}" == "true" ]] && [[ "$${arch}" == "aarch64" ]] && [[ "$${appliance_formats}" =~ "qcow2" ]]; then
-         echo "Setting up ARM64 UEFI boot for qcow2 image"
-         virt-customize \
-           -a $${output}.qcow2 \
-           --run-command 'if ! [ -e /boot/efi/EFI/BOOT/BOOTAA64.EFI ]; then mkdir -p /boot/efi/EFI/BOOT ; cp /boot/efi/EFI/$${distrib}/grubaa64.efi /boot/efi/EFI/BOOT/BOOTAA64.EFI; fi'
-       fi
+      if [[ "$${qemu_uefi}" == "true" ]] && [[ "$${arch}" == "aarch64" ]] && [[ "$${appliance_formats}" =~ "qcow2" ]]; then
+        echo "Setting up ARM64 UEFI boot for qcow2 image"
+        virt-customize \
+          -a $${output}.qcow2 \
+          --run-command 'if ! [ -e /boot/efi/EFI/BOOT/BOOTAA64.EFI ]; then mkdir -p /boot/efi/EFI/BOOT ; cp /boot/efi/EFI/$${distrib}/grubaa64.efi /boot/efi/EFI/BOOT/BOOTAA64.EFI; fi'
+      else
+        echo "No qcow2 export, do nothing."
+      fi
 
 - sparsify_qcow2_image:
   - exec_local: |
@@ -33,4 +39,6 @@
         echo "Compress and reduce qcow2 size"
         virt-sparsify --compress $${output}.qcow2 $${output}.qcow2.sparsed
         mv -f $${output}.qcow2.sparsed $${output}.qcow2
+      else
+        echo "No qcow2 export, do nothing."
       fi
