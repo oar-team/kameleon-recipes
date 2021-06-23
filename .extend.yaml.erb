@@ -1,0 +1,66 @@
+#==============================================================================
+# vim: softtabstop=2 shiftwidth=2 expandtab fenc=utf-8 cc=81 tw=80
+#==============================================================================
+#
+# DESCRIPTION: Recipe extending a Grid'5000 environment recipe supported by
+# the technical team. The build will be similar to the one of the supported
+# environments, involving puppet notably.
+#
+#==============================================================================
+# This recipe extends another. To look at the step involed, run:
+#   kameleon dryrun <%= recipe_name %>
+# To see the variables that you can override, use the following command:
+#   kameleon info <%= recipe_name %>
+---
+extend: <%= tpl.relative_path_from_recipe(recipe_path) %>
+
+global:
+  ### Uncomment and adapt the global variables below as needed
+
+  ## Export format to generate
+  # appliance_formats: qcow2 tar.zst
+
+  ## Environment description customization
+  ## Author
+  # g5k_author: "john.doe@grid5000.fr"
+  ## Version
+  # g5k_version: 1
+  ## Environment image path and compression
+  # g5k_tar_path: local:///path/to/your/image
+  # g5k_tar_compression: "zstd"
+  ## Environment postinstall path, compression, and script command
+  # g5k_postinst_path: server:///grid5000/postinstalls/g5k-postinstall.tgz
+  # g5k_postinst_compression: "gzip"
+  # g5k_postinst_script: g5k-postinstall --net debian
+  ## Environment kernel path and params
+  # g5k_kernel_path: "/vmlinuz"
+  # g5k_initrd_path: "/initrd.img"
+  # g5k_kernel_params: ""
+  ## Environment visibility
+  # g5k_visibility: "shared"
+
+  ## Other parameters can be changed, see kameleon info <%= recipe_name %>
+
+bootstrap:
+  ### The bootstrap section takes in charge the initial installation of the
+  ## system (distribution installation). No modification should be needed here.
+  - "@base"
+
+setup:
+  ### The setup section is where customizations of the system take place.
+  ## We can request steps from the extended recipe to be executed
+  - "@base"
+  ## We add steps required by our customization after or before @base. Use
+  ## kameleon dryrun <%= recipe_name %> to see the resulting steps in the build.
+  ## The following is given as example only, replace with your steps.
+  - a_customization_step:
+    - microstep1:
+      - exec_in: echo "Hello world!"
+    - microstep1:
+      # This breakpoint will stop the build for inspecting the environment
+      - breakpoint
+
+export:
+  ### The export section takes in charge the export of your customized Grid'5000
+  ## environment. No modification should be needed here.
+  - "@base"
