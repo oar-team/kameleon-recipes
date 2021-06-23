@@ -31,7 +31,6 @@ global:
   # efi boot methods. This package can be installed in parallel with grub-pc
   # (in contrary to grub-efi-amd64 which conflit with grub-pc)
   packages: "grub-efi-amd64-bin"
-  arch_packages_no_clean: "grub-pc grub-efi-amd64-bin"
   # locales
   locales: POSIX C en_US.UTF8
   lang: en_US.UTF8
