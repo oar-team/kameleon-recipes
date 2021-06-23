@@ -11,7 +11,7 @@
         # Remove DHCP hook to let cloud-init handle hostname
         virt-customize -a $${output}.qcow2 --run-command 'rm -f /etc/dhcp/dhclient-exit-hooks.d/g5k-update-host-name'
       else
-        echo "No qcow2 export, do nothing."
+        echo "No qcow2 export, nothing to do."
       fi
 
 - fix_interface_name:
@@ -19,7 +19,7 @@
       if [[ "$${appliance_formats}" =~ "qcow2" && "$${distrib}" == "debian" ]]; then
         virt-customize -a $${output}.qcow2 --run-command 'sed -i s/ens3/enp0s2/ /etc/network/interfaces'
       else
-        echo "No qcow2 export, do nothing."
+        echo "Nothing to do."
       fi
 
 - setup_uefi_boot:
@@ -30,7 +30,7 @@
           -a $${output}.qcow2 \
           --run-command 'if ! [ -e /boot/efi/EFI/BOOT/BOOTAA64.EFI ]; then mkdir -p /boot/efi/EFI/BOOT ; cp /boot/efi/EFI/$${distrib}/grubaa64.efi /boot/efi/EFI/BOOT/BOOTAA64.EFI; fi'
       else
-        echo "No qcow2 export, do nothing."
+        echo "Nothing to do."
       fi
 
 - sparsify_qcow2_image:
@@ -40,5 +40,5 @@
         virt-sparsify --compress $${output}.qcow2 $${output}.qcow2.sparsed
         mv -f $${output}.qcow2.sparsed $${output}.qcow2
       else
-        echo "No qcow2 export, do nothing."
+        echo "No qcow2 export, nothing to do."
       fi
