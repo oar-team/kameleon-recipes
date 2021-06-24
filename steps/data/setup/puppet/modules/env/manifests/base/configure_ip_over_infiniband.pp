@@ -54,4 +54,16 @@ class env::base::configure_ip_over_infiniband (){
       mode    => '0644',
       source  => 'puppet:///modules/env/base/infiniband/90-ib.rules';
   }
+
+  # Empeche que ibacm.service soit en status failed (voir #13013)
+  if "${::lsbdistcodename}" == "bullseye" {
+    file {
+      '/etc/systemd/system/ibacm.service.d/':
+        ensure  => directory;
+      '/etc/systemd/system/ibacm.service.d/override.conf':
+        ensure  => present,
+        content => "[Service]\nType=exec\nExecStart=\nExecStart=-/usr/sbin/ibacm --systemd",
+        require => File['/etc/systemd/system/ibacm.service.d/'];
+    }
+  }
 }
