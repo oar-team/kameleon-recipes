@@ -16,7 +16,7 @@ class env::common::software_versions {
     'bullseye': {
       case "$env::deb_arch" {
         "amd64": {
-          $nvidia_driver = 'x86_64-460.73.01'
+          $nvidia_driver = 'x86_64-450.119.04'
           $nvidia_cuda   = '11.2.2_460.32.03_linux'
           $datacenter_gpu_manager = '1:2.1.4'
           $dcgm_exporter = '2.3.0-1'
