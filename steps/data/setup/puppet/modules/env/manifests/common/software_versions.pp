@@ -34,7 +34,7 @@ class env::common::software_versions {
       $dcgm_exporter = '2.0.0-rc.11'
       case "$env::deb_arch" {
         "amd64": {
-          $nvidia_driver = 'x86_64-450.80.02'
+          $nvidia_driver = 'x86_64-450.119.04'
           $nvidia_cuda   = '10.1.243_418.87.00_linux'
         }
         "ppc64el": {
