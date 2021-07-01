@@ -12,7 +12,7 @@ global:
   # Grid'5000 environment variant
   g5k_variant: std
   # Grid'5000 Kadeploy environment parameters
-  g5k_postinst_script: g5k-postinstall --net debian-bridged --net hpc --fstab nfs --fstab site-specific --restrict-user std
+  g5k_postinst_script: g5k-postinstall --net debian-bridged --net hpc --fstab nfs --restrict-user std
   # QEMU options
   qemu_image_size: 18G
 
