@@ -12,7 +12,8 @@ class env::big::configure_nvidia_gpu::cuda () {
     }
   }
 
-  $opengl_packages = ['ocl-icd-libopencl1', 'opencl-headers']
+  # ncursesw5 is needed for cuda-gdb
+  $extra_packages = ['ocl-icd-libopencl1', 'opencl-headers', 'libncursesw5']
 
   exec{
     'retrieve_nvidia_cuda':
@@ -66,7 +67,7 @@ class env::big::configure_nvidia_gpu::cuda () {
   }
 
   package{
-    $opengl_packages:
+    $extra_packages:
       ensure    => installed;
   }
 
