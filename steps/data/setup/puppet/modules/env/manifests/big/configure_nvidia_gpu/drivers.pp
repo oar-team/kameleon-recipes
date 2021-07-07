@@ -4,7 +4,7 @@ class env::big::configure_nvidia_gpu::drivers () {
 
   include env::big::prepare_kernel_module_build
 
-  $driver_source = "http://packages.grid5000.fr/other/nvidia/NVIDIA-Linux-$::env::common::software_versions::nvidia_driver.run"
+  $driver_source = "http://packages.grid5000.fr/other/nvidia/NVIDIA-Linux-${::env::common::software_versions::nvidia_driver_arch}-${::env::common::software_versions::nvidia_driver}.run"
   $nvidia_basename = 'NVIDIA-Linux'
   $nvidia_runfile = "$nvidia_basename.run"
 
