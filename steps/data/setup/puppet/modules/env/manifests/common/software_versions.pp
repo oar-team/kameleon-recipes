@@ -33,14 +33,13 @@ class env::common::software_versions {
       # Newer version of the driver (440.X, 450.X) are unstable and cause kernel panic.
       # See https://intranet.grid5000.fr/bugzilla/show_bug.cgi?id=12545
       $nvidia_cuda                = '10.1.243_418.87.00_linux_ppc64le'
+      $nvidia_driver              = 'ppc64le-418.197.02'
       case $lsbdistcodename {
         'stretch', 'buster': {
-          $nvidia_driver          = 'ppc64le-418.181.07'
           $datacenter_gpu_manager = '1:1.7.2'
           $dcgm_exporter          = '2.0.0-rc.11'
         }
         'bullseye': {
-          $nvidia_driver          = 'ppc64le-418.197.02'
           $datacenter_gpu_manager = '1:2.0.15'
           $dcgm_exporter          = '2.3.0-1'
         }
