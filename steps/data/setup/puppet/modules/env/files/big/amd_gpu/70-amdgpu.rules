@@ -1,0 +1,4 @@
+# INSTALLED BY PUPPET
+KERNEL=="kfd", GROUP="8000", MODE="0660"
+KERNEL=="card*", DRIVERS=="amdgpu", GROUP="8000", MODE="0660"
+KERNEL=="renderD*", DRIVERS=="amdgpu", GROUP="8000", MODE="0660"

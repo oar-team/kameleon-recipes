@@ -39,6 +39,12 @@ class env::big::configure_amd_gpu () {
           ensure  => link,
           target  => '/opt/rocm-4.2.0/bin/rocm-smi',
           require => Package['rocm-smi-lib'];
+        '/etc/udev/rules.d/70-amdgpu.rules':
+          ensure  => present,
+          owner   => root,
+          group   => root,
+          mode    => '0644',
+          source  => 'puppet:///modules/env/big/amd_gpu/70-amdgpu.rules';
       }
     }
 
