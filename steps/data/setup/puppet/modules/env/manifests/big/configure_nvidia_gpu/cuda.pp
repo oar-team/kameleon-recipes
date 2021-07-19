@@ -15,7 +15,7 @@ class env::big::configure_nvidia_gpu::cuda () {
         }
         "ppc64el": {
           $libcuda = '/usr/lib/powerpc64le-linux-gnu/libcuda.so'
-          $cuda_args = '--silent --override' # Do not check gcc version with --override arg (cf. #12791)
+          $cuda_args = '--silent'
         }
       }
     }
