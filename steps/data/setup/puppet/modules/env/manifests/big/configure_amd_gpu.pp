@@ -22,7 +22,7 @@ class env::big::configure_amd_gpu () {
       }
 
       package {
-        [ 'rock-dkms', 'hip-base', 'rocminfo', 'rocm-smi-lib', 'hip-rocclr', 'rocm-device-libs' ]:
+        [ 'rock-dkms', 'hip-base', 'rocminfo', 'rocm-smi-lib', 'hip-rocclr', 'rocm-device-libs', 'libtinfo5' ]:
           ensure          => installed,
           install_options => ['--no-install-recommends'],
           require         => [Apt::Source['repo.radeon.com'], Exec['apt_update']];
@@ -44,7 +44,8 @@ class env::big::configure_amd_gpu () {
           owner   => root,
           group   => root,
           mode    => '0644',
-          source  => 'puppet:///modules/env/big/amd_gpu/70-amdgpu.rules';
+          source  => 'puppet:///modules/env/big/amd_gpu/70-amdgpu.rules',
+          require => Package['rock-dkms'];
       }
     }
 
