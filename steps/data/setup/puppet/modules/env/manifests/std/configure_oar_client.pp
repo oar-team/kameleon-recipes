@@ -11,7 +11,7 @@ class env::std::configure_oar_client {
         $oar_repos_release = "stretch-backports_beta"
       }
       'buster' : {
-        $oar_version       = "2.5.9~g5k6-1~bpo10+1";
+        $oar_version       = "2.5.10~g5k7-1~bpo10+1";
         $oar_repos         = "2.5/debian/";
         $oar_repos_release = "buster-backports_beta"
       }
