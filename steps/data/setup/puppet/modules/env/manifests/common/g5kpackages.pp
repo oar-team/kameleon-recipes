@@ -6,13 +6,14 @@
 #  }
 
 define env::common::g5kpackages (
+  String $source_filename = $name,
   Variant[Array, String] $packages = $name,
   String $ensure = installed,
   String $release = ''
 ) {
   include apt
 
-  apt::source { $name:
+  apt::source { $source_filename:
     key      => {
       'id'      => '3C38BDEAA05D4A7BED7815E5B1F34F56797BF2D1',
       'content' => file('env/min/apt/grid5000-archive-key.asc')
