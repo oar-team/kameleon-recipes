@@ -11,13 +11,12 @@ class env::std::configure_oar_client {
         $oar_repos_release = "stretch-backports_beta"
       }
       'buster' : {
-        $oar_version       = "2.5.10~g5k7-1~bpo10+1";
-        $oar_repos         = "2.5/debian/";
-        $oar_repos_release = "buster-backports_beta"
+        $oar_version       = "2.5.10~g5k8-1";
+        $oar_repos         = "g5k"
       }
       'bullseye' : {
-        $oar_version       = "2.5.9-1";
-        $oar_repos         = "default"
+        $oar_version       = "2.5.10~g5k8-1";
+        $oar_repos         = "g5k"
       }
       default : {
         err "${::lsbdistcodename} not supported."
@@ -35,6 +34,13 @@ class env::std::configure_oar_client {
         require  => Package["liboar-perl"];
       'liboar-perl':
         ensure   => $oar_version;
+    }
+  } elsif ($oar_repos == "g5k") {
+    env::common::g5kpackages {
+      "oar/${::lsbdistcodename}":
+        source_filename => 'oar',
+        packages        => ['liboar-perl', 'oar-common', 'oar-node'],
+        ensure          => $oar_version
     }
   } else {
     apt::source {
