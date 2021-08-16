@@ -13,7 +13,6 @@ global:
   distrib: debian
   release: bullseye
   release_number: 11
-  installer_iso_url: https://cdimage.debian.org/cdimage/weekly-builds/$${deb_arch}/iso-cd/debian-testing-$${deb_arch}-netinst.iso
 
 bootstrap:
   - "@base"
