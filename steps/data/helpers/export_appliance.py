@@ -15,7 +15,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 tar_formats = ('tar', 'tar.gz', 'tgz', 'tar.bz2', 'tbz', 'tar.xz', 'txz',
-               'tar.lzo', 'tzo')
+               'tar.lzo', 'tzo', 'tar.zst', 'tzst')
 
 tar_options = ["--selinux", "--xattrs", "--xattrs-include=*", "--numeric-owner", "--one-file-system"] 
 
@@ -63,6 +63,11 @@ def tar_convert(disk, output, excludes, compression_level):
             which("xz"), compression_level_opt)
     elif output.endswith(('tar.lzo', 'tzo')):
         compr = "| %s %s -c -" % (which("lzop"), compression_level_opt)
+    elif output.endswith(('tar.zst', 'tzst')):
+        try:
+            compr = "| %s %s" % (which("zstdmt"), compression_level_opt)
+        except:
+            compr = "| %s -T0 %s" % (which("zstd"), compression_level_opt)
 
     # NB: guestfish version >= 1.32 supports the special tar options, but not available in Debian stable (jessie): do not use for now
     #tar_options_list = ["selinux:true", "acls:true", "xattrs:true",

@@ -2,7 +2,7 @@
 # vim: softtabstop=2 shiftwidth=2 expandtab fenc=utf-8 cc=81 tw=80
 #==============================================================================
 #
-# DESCRIPTION: Debian 9 (Stretch) recipe using the netinstall mechanism
+# DESCRIPTION: Debian 11 (Bullseye) recipe using the netinstall mechanism
 #
 #==============================================================================
 ---
@@ -11,11 +11,8 @@ extend: debian-base.yaml
 global:
   # Distribution
   distrib: debian
-  release: stretch
-  release_number: 9
-  virtualbox_deb_source: "backports"
-
-  qemu_memory_size: 2G
+  release: bullseye
+  release_number: 11
 
 bootstrap:
   - "@base"

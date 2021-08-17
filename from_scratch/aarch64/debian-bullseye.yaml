@@ -2,7 +2,7 @@
 # vim: softtabstop=2 shiftwidth=2 expandtab fenc=utf-8 cc=81 tw=80
 #==============================================================================
 #
-# DESCRIPTION: Debian 9 (Stretch) recipe using the netinstall mechanism
+# DESCRIPTION: Debian 11 (Bullseye) recipe using the netinstall mechanism
 #
 #==============================================================================
 ---
@@ -11,11 +11,10 @@ extend: debian-base.yaml
 global:
   # Distribution
   distrib: debian
-  release: stretch
-  release_number: 9
-  virtualbox_deb_source: "backports"
-
-  qemu_memory_size: 2G
+  release: bullseye
+  release_number: 11
+  installer_kernel_url: https://d-i.debian.org/daily-images/$${deb_arch}/daily/netboot/debian-installer/$${deb_arch}/linux
+  installer_initrd_url: https://d-i.debian.org/daily-images/$${deb_arch}/daily/netboot/debian-installer/$${deb_arch}/initrd.gz
 
 bootstrap:
   - "@base"

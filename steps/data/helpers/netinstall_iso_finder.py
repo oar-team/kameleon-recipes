@@ -109,7 +109,7 @@ if __name__ == '__main__':
                 args.mirror = "http://cdimage.debian.org/"
             if not re.match("^\d+$",args.version):
                 raise Exception("please give the Debian release number (e.g. 8 for Jessie)")
-            if args.version == '10':
+            if args.version == '11':
                 url_regex = re.compile("^"+args.mirror+"cdimage/release/(?:"+args.version+"\.\d+\.\d+/(?:"+args.arch+"/(?:iso-cd/(?:debian-"+args.version+"\.\d+\.\d+-"+args.arch+"-netinst\.iso)?)?)?)?$")
             else:
                 url_regex = re.compile("^"+args.mirror+"cdimage/archive/(?:"+args.version+"\.\d+\.\d+/(?:"+args.arch+"/(?:iso-cd/(?:debian-"+args.version+"\.\d+\.\d+-"+args.arch+"-netinst\.iso)?)?)?)?$")
