@@ -137,6 +137,8 @@ function __download_kadeploy_environment_image() {
         image[compression]="gz"
     elif [ "${image[compression]}" == "bzip2" ]; then
         image[compression]="bz2"
+    elif [ "${image[compression]}" == "zstd" ]; then
+        image[compression]="zst"
     fi
     image[protocol]=${image[file]%%:*}
     image[path]=${image[file]#*://}
