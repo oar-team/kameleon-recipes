@@ -14,7 +14,6 @@ global:
   to_remove_packages: wget libpsl5
   use_backports: no
   security_release: $${release}-security
-  hwraid_release: buster
 bootstrap:
   - "@base"
 
