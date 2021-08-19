@@ -32,7 +32,7 @@ class env::std::install_hwraid_apt_source {
         include  => {
           'deb' => true,
           'src' => false
-       }
+      }
     }
   }
 }

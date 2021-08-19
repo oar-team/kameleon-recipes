@@ -8,7 +8,7 @@ class env::min::kernel::setup_links {
       before   => [
         Exec['linux-update-symlinks-vmlinuz'],
         Exec['linux-update-symlinks-vmlinux'],
-     ];
+        ];
   }
 
   # Ensure symlinks to /boot are removed

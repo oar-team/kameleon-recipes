@@ -204,7 +204,7 @@ class env::std::configure_oar_client {
       ],
       require  => File['/etc/oar/sshd_config'];
   }
-  
+
   file_line { 'oar_conf':
     ensure     => present,
     match      => "^(#)?COMPUTE_THREAD_SIBLINGS=*",

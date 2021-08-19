@@ -1,5 +1,5 @@
 class env::commonpackages{
-  
+
 }
 
 class env::commonpackages::rubyrspec{

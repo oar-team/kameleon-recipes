@@ -29,9 +29,9 @@ class env::big::configure_nvidia_gpu::ganglia () {
               source  => "puppet:///modules/env/big/nvidia/ganglia-monitor.service";
           }
           exec {
-           'Enable ganglia on startup':
-             command => "systemctl enable ganglia-monitor",
-             path    => ['/bin','/usr/bin','/sbin'];
+            'Enable ganglia on startup':
+              command => "systemctl enable ganglia-monitor",
+              path    => ['/bin','/usr/bin','/sbin'];
           }
         }
         default : {

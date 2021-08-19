@@ -40,7 +40,7 @@ class env::min ( $variant = "min", $parent_parameters = {} ) {
   class { 'env::min::configure_network_and_install_drivers': }
   # root password
   class { 'env::min::set_root_password':
-     root_pwd => $parameters['misc_root_pwd'];
+    root_pwd => $parameters['misc_root_pwd'];
   }
   # timezone
   class { 'env::min::set_timezone_to_europe_paris': }

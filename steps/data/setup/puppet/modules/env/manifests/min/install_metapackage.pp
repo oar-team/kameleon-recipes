@@ -37,9 +37,9 @@ class env::min::install_metapackage ( $variant ) {
 
   env::common::g5kpackages {
     'g5k-meta-packages':
-       packages => $g5kmetapackages,
-       ensure   => $::env::common::software_versions::g5k_meta_packages,
-       require  => Env::Common::Apt_pinning['g5k-meta-packages'];
+      packages => $g5kmetapackages,
+      ensure   => $::env::common::software_versions::g5k_meta_packages,
+      require  => Env::Common::Apt_pinning['g5k-meta-packages'];
   }
 
 }

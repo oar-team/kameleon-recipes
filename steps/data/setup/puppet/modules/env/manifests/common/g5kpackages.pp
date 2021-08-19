@@ -27,7 +27,7 @@ define env::common::g5kpackages (
 
   package {
     $packages:
-       ensure  => $ensure,
-       require => Class['apt::update']
+      ensure  => $ensure,
+      require => Class['apt::update']
   }
 }

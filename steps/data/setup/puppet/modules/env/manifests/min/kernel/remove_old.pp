@@ -7,11 +7,11 @@ class env::min::kernel::remove_old {
 
     file {
       "/lib/modules/$kernelrelease":
-       ensure => absent,
-       force  => true;
+        ensure => absent,
+        force  => true;
       "/usr/lib/modules/$kernelrelease":
-       ensure => absent,
-       force  => true;
+        ensure => absent,
+        force  => true;
     }
   }
 }

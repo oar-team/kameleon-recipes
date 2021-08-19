@@ -68,9 +68,9 @@ class env::big::configure_kvm () {
   }
 
   file_line { 'kvm_etc_profile_path':
-     path => '/etc/profile',
-     line => 'export XDG_RUNTIME_DIR=/tmp/$USER-runtime-dir',
-     require => File_line['kvm_etc_profile_createpath'];
+    path => '/etc/profile',
+    line => 'export XDG_RUNTIME_DIR=/tmp/$USER-runtime-dir',
+    require => File_line['kvm_etc_profile_createpath'];
   }
 
   # Not sure this is required anymore. Try without, uncomment if needed

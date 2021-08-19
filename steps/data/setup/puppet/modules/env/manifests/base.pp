@@ -16,7 +16,7 @@ class env::base ( $variant = "base", $parent_parameters = {} ){
   }
 
   class { 'env::base::do_not_clean_tmp':
-     keep_tmp => $parameters['misc_keep_tmp'];
+    keep_tmp => $parameters['misc_keep_tmp'];
   }
 
   # Include kexec-tools

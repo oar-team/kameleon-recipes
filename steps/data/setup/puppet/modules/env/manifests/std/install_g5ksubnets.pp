@@ -4,6 +4,6 @@ class env::std::install_g5ksubnets {
 
   env::common::g5kpackages {
     'g5k-subnets':
-       ensure => $::env::common::software_versions::g5k_subnets;
+      ensure => $::env::common::software_versions::g5k_subnets;
   }
 }
