@@ -28,7 +28,6 @@ global:
   g5k_kernel_params: ""
   deb_backports: true
   packages: ""
-  arch_packages_no_clean: "grub-efi-arm64 grub-common"
   # locales
   locales: POSIX C en_US.UTF8
   lang: en_US.UTF8

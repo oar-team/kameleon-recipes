@@ -31,9 +31,7 @@ global:
   # kernel modules to blacklist
   kernel_modules_blacklist: "usb_storage usbhid ohci_hcd ehci_hcd usbcore nouveau myri10ge"
   # Grid'5000 deb repositories to add to sources
-  g5k_deb_repositories: "g5k-meta-packages tgz-g5k"
-  # Grid'5000 metapackage name for the recipe
-  g5k_meta_package: "g5k-meta-packages-$${distrib}$${release_number}-$${g5k_variant}"
+  g5k_deb_repositories: "tgz-g5k"
   # packages to install, with version
   # haveged is used to provide more entropy during boot
   packages: "tgz-g5k=2.0.17 firmware-linux firmware-bnx2x firmware-qlogic powerpc-ibm-utils zstd"
@@ -45,6 +43,10 @@ global:
   timezone: Europe/Paris
   # password
   root_password: grid5000
+  # clean_unnecessary_packages step settings (packages debfoster must keep)
+  default_packages_no_clean: tgz-g5k gnupg linux-image-$${deb_arch} console-setup rsync locales firmware-bnx2 firmware-bnx2x firmware-qlogic
+  arch_packages_no_clean: grub-ieee1275 grub-common
+  other_packages_no_clean:
 
 bootstrap:
   - "@base"
