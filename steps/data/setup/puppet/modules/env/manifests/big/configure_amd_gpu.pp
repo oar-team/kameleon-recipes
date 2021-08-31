@@ -6,8 +6,8 @@ class env::big::configure_amd_gpu () {
       apt::source {
         'repo.radeon.com':
           comment      => 'Repo for AMD ROCM packages',
-          location     => 'https://repo.radeon.com/rocm/apt/debian/',
-          release      => 'xenial',
+          location     => "https://repo.radeon.com/rocm/apt/${::env::common::software_versions::rocm_version}/",
+          release      => 'ubuntu',
           repos        => 'main',
           architecture => 'amd64',
           key          => {
@@ -28,17 +28,23 @@ class env::big::configure_amd_gpu () {
           require         => [Apt::Source['repo.radeon.com'], Exec['apt_update']];
       }
 
+      exec {
+        'add_rocm_symlink':
+          command => "/bin/ln -s /opt/rocm-*/ /opt/rocm",
+          require => Package['rocm-smi-lib'];
+      }
+
       file_line {
         'rocm_etc_profile_path':
           path => '/etc/profile',
-          line => 'export PATH=$PATH:/opt/rocm-4.2.0/bin';
+          line => 'export PATH=$PATH:/opt/rocm/bin';
       }
 
       file {
         '/usr/local/bin/rocm-smi':
           ensure  => link,
-          target  => '/opt/rocm-4.2.0/bin/rocm-smi',
-          require => Package['rocm-smi-lib'];
+          target  => '/opt/rocm/bin/rocm-smi',
+          require => [Package['rocm-smi-lib'], Exec['add_rocm_symlink']];
         '/etc/udev/rules.d/70-amdgpu.rules':
           ensure  => present,
           owner   => root,
