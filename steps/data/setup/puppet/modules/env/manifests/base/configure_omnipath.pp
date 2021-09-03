@@ -5,8 +5,9 @@ class env::base::configure_omnipath(){
       $opapackages = ['opa-address-resolution', 'opa-fastfabric', 'libopamgt0', 'libopasadb1',
                       'opa-basic-tools', 'firmware-misc-nonfree']
 
+      # Note: G5K libfabric1 packages installed in install_openmpi.pp
       $rdmapackages = ['qperf', 'libibverbs1', 'librdmacm1', 'libibmad5', 'libibumad3', 'ibverbs-providers',
-                      'rdmacm-utils', 'infiniband-diags', 'libfabric1', 'ibverbs-utils']
+                      'rdmacm-utils', 'infiniband-diags', 'ibverbs-utils']
 
       if $env::deb_arch == 'amd64' {
         ensure_packages([$opapackages, $rdmapackages], {
