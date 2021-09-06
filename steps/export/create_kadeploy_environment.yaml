@@ -73,7 +73,7 @@
       else
         kaenv_image_file="$${grid5000_environment_export_image_file}"
       fi
-      python2 $${grid5000_environment_customizer} \
+      $${grid5000_environment_customizer} \
         $kaenv_import $kaenv_frontend \
         --modify name=$${grid5000_environment_export_name} \
         --modify author="$kaenv_author" \

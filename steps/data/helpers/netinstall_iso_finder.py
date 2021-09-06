@@ -1,10 +1,10 @@
-#!/usr/bin/env python2
+#!/usr/bin/python3
 # -*- coding: utf-8 -*-
 """Find the latest netinstall iso for a Debian version and system architecture."""
 
 from html.parser import HTMLParser
-from urllib2 import urlopen
-from urlparse import urljoin
+from urllib.request import urlopen
+from urllib.parse import urljoin
 import re
 import sys
 import argparse
