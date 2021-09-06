@@ -32,7 +32,7 @@ global:
   g5k_deb_repositories: "tgz-g5k"
   # packages to install, with version
   # haveged is used to provide more entropy during boot
-  packages: "tgz-g5k=2.0.17 firmware-bnx2 firmware-bnx2x firmware-linux grub-efi-amd64-bin zstd"
+  packages: "tgz-g5k=2.0.17 firmware-bnx2 firmware-bnx2x firmware-linux-free firmware-misc-nonfree grub-efi-amd64-bin zstd"
   # disable backports: they are not available for now
   deb_backports: false
   # locales
