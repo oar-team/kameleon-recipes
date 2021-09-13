@@ -23,7 +23,7 @@ class env::common::software_versions {
           $dcgm_exporter          = '2.0.0-rc.11'
         }
         'bullseye': {
-          $nvidia_driver          = '460.73.01'
+          $nvidia_driver          = '460.91.03'
           $nvidia_cuda            = '11.2.2_460.32.03_linux'
           $datacenter_gpu_manager = '1:2.1.4'
           $dcgm_exporter          = '2.3.0-1'
@@ -44,7 +44,7 @@ class env::common::software_versions {
         }
         'bullseye': {
           $nvidia_driver          = '418.197.02'
-          $nvidia_user_driver     = '460.73.01'
+          $nvidia_user_driver     = '460.91.03'
           $nvidia_cuda            = '11.2.2_460.32.03_linux_ppc64le'
           $datacenter_gpu_manager = '1:2.0.15'
           $dcgm_exporter          = '2.3.0-1'
