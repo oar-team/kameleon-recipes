@@ -11,11 +11,11 @@ class env::std::configure_oar_client {
         $oar_repos_release = "stretch-backports_beta"
       }
       'buster' : {
-        $oar_version       = "2.5.10~g5k8-1";
+        $oar_version       = "2.5.10~g5k10-2";
         $oar_repos         = "g5k"
       }
       'bullseye' : {
-        $oar_version       = "2.5.10~g5k8-1";
+        $oar_version       = "2.5.10~g5k10-2";
         $oar_repos         = "g5k"
       }
       default : {
@@ -168,12 +168,12 @@ class env::std::configure_oar_client {
       mode     => '0644',
       content  => $hiera['oar_authorized_keys'],
       require  => Package[$oar_packages];
-    '/etc/default/oar-node':
+    '/etc/oar/oar-node-service':
       ensure   => present,
       owner    => root,
       group    => root,
-      mode     => '0644',
-      source   => 'puppet:///modules/env/std/oar/default_oar-node',
+      mode     => '0755',
+      source   => 'puppet:///modules/env/std/oar/oar-node-service',
       require  => Package[$oar_packages];
   }
 

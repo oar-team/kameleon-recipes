@@ -1,3 +1,8 @@
+#!/bin/sh -eu
+
+# This script is called when oar-node service is started.
+# You can change this to use another method to switch the node into the Alive state
+
 # OARSERVER: machine where we remotely run oarnodesetting
 OARREMOTE="oar"
 
@@ -11,7 +16,6 @@ OARHOME=/var/lib/oar
 MODSLEEP=20
 MINSLEEP=10
 MAXRETRY=180
-
 
 start_oar_node() {
     test -n "$OARREMOTE" || exit 0
@@ -38,16 +42,39 @@ start_oar_node() {
         # not provide $RANDOM
         if [ "x$random" = "x" ]; then
             random=$(bash -c 'echo $RANDOM')
-        fi 
+        fi
         sleep=$(($random % $MODSLEEP + $MINSLEEP))
         echo "oar-node: retrying in $sleep seconds..."
         sleep $sleep
       }
     done
+
     return 0
 }
+
+# This function is called when oar-node service is stopped.
+# You can change this to use another method to switch the node into the Absent state
 
 stop_oar_node() {
     :
 }
 
+usage() {
+        echo "Usage: $0 start|stop"
+}
+
+if [ $# -eq 0 ]; then
+    echo "Missing operation!"
+    usage
+    exit 1
+fi
+
+if [ $1 = "start" ]; then
+    start_oar_node
+elif [ $1 = "stop" ]; then
+    stop_oar_node
+else
+    echo "Unknown operation!"
+    usage
+    exit 1
+fi
