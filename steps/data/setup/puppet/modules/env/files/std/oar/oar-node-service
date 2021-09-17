@@ -1,4 +1,4 @@
-#!/bin/sh -eu
+#!/bin/sh
 
 # This script is called when oar-node service is started.
 # You can change this to use another method to switch the node into the Alive state
@@ -15,7 +15,7 @@ OARHOME=/var/lib/oar
 # retry settings
 MODSLEEP=20
 MINSLEEP=10
-MAXRETRY=180
+MAXRETRY=300
 
 start_oar_node() {
     test -n "$OARREMOTE" || exit 0
