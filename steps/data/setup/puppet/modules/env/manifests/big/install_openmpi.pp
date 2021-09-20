@@ -19,7 +19,7 @@ class env::big::install_openmpi () {
     }
 
     "buster", "bullseye" : {
-      $openmpi_packages = [ 'libopenmpi-dev', 'openmpi-bin' ]
+      $openmpi_packages = [ 'libopenmpi-dev', 'openmpi-bin', 'ucx-utils', 'libfabric-bin' ]
       $openmpi_deps_packages = [ 'libnuma1', 'libibverbs-dev' ]
       $openmpi_opa_packages = [ 'libpsm2-dev', 'libopamgt-dev' ]
 
@@ -65,6 +65,12 @@ class env::big::install_openmpi () {
       env::common::g5kpackages {
         'libfabric1':
           packages => 'libfabric1';
+      }
+      # Debian11 disables many providers by default. We restore UCX and Fabric,
+      # while keeping openib disabled to avoid useless warnings
+      file { '/etc/openmpi/openmpi-mca-params.conf':
+        content => "#Managed by Grid'5000 environement recipes\nbtl_base_warn_component_unused=0\nbtl = ^openib",
+        require => Package['openmpi-bin'];
       }
     }
   }
