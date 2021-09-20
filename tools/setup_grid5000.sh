@@ -27,7 +27,6 @@ if [ "$ARCH" = "arm64" -o "$ARCH" = "ppc64el" ]; then
 fi
 apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends git linux-headers-$(uname -r) socat qemu-utils ruby-dev ruby-childprocess polipo pigz zstd netcat eatmydata libguestfs-tools dirmngr python-future gnupg gnupg-agent
 
-gem install --no-ri --no-rdoc kameleon-builder
 mv /bin/gzip /bin/gzip.OLD
 ln -s /usr/bin/pigz /bin/gzip
 
