@@ -1,4 +1,4 @@
-#/bin/bash
+#!/bin/bash
 set -e
 set -x
 echo "libguestfs0     libguestfs/update-appliance     boolean false" | debconf-set-selections
@@ -20,12 +20,7 @@ apt-get install -y systemtap linux-image-$(uname -r)-dbg=$VERSION linux-headers-
 /tmp/environments-recipes/tools/nofsync.stp </dev/null >/dev/null 2>&1 &
 
 # install other dependencies
-
-# if arm64 or ppc64, use backported package for libguestfs-tools. see #11432
-if [ "$ARCH" = "arm64" -o "$ARCH" = "ppc64el" ]; then
-	echo deb http://packages.grid5000.fr/deb/libguestfs-backport / > /etc/apt/sources.list.d/libguestfs-backport.list
-fi
-apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends git linux-headers-$(uname -r) socat qemu-utils ruby-dev ruby-childprocess polipo pigz zstd netcat eatmydata libguestfs-tools dirmngr python-future gnupg gnupg-agent
+apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends linux-headers-$(uname -r) netcat eatmydata gnupg-agent
 
 mv /bin/gzip /bin/gzip.OLD
 ln -s /usr/bin/pigz /bin/gzip
