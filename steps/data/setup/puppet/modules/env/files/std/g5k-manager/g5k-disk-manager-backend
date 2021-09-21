@@ -14,6 +14,9 @@ ENABLE_LAST_DELAY = 2
 
 def main
   options = parse_cmdline
+  if duplicate_scsi_ids?
+    error(1, 'Multiple disks have the same scsi_id in their by_path: we cannot identify them correctly to run megacli')
+  end
   start
   if options[:on_boot]
     startup_service(options[:force])
@@ -35,7 +38,7 @@ end
 def parse_cmdline
   options = {}
   OptionParser.new do |opts|
-    opts.banner = 'Usage: g5k-disk-manager-backend [--enable 1,2,3] [--disable 4,5]'
+    opts.banner = 'Usage: g5k-disk-manager-backend [--enable disk1,disk2,disk3] [--disable disk4,disk5]'
     opts.on('--on-boot', 'Enable all disks at boot time') do |v|
       options[:on_boot] = v
     end
@@ -57,7 +60,7 @@ def parse_cmdline
 end
 
 # The aim of this function is to activate all disks of the node in a predefined
-# order, so that sdb, sdc, ... devices names are always given to the same
+# order, so that disk1, disk2, ... devices names are always given to the same
 # physical disks.
 # It must be done just before g5k-checks is launched on the node, to avoid
 # g5k-checks errors.
@@ -65,7 +68,7 @@ end
 def startup_service(force)
   _status, hostname = sh('hostname')
 
-  unless reservable_disks?
+  if RESERVABLE_DISKS.empty?
     notice "This cluster doesn't have reservable disks: exit service"
     close
   end
@@ -92,8 +95,8 @@ def startup_service(force)
     close
   end
 
-  # Remove the first disk from the list (first disk is the main disk sda)
-  physical_disks.shift
+  # Remove the main disk from the list
+  physical_disks.delete_if { |pd| pd[:device_id] == MAIN_DISK['by_path'].gsub(/.*\d+:\d+:(\d+):\d+$/,'\1').to_i }
 
   # Disable then enable the disks
   disable(physical_disks)
@@ -132,22 +135,18 @@ end
 def disks_locations(physical_disks, ids)
   return [] if ids.nil?
 
-  ids = ids.split(',').map { |e| e.strip.to_i }
+  ids = ids.split(',').map { |e| e.strip }
+  error(4, "Too much disk ids in argument") if ids.length >= physical_disks.length
   disks = []
   ids.each do |id|
-    # id == 0 corresponds to the main disk sda
-    error(4, "Wrong disk id: #{id}") if id <= 0 || id >= physical_disks.length
-    disks.push(physical_disks[id])
+    # id == disk0 corresponds to the main disk
+    error(4, "Wrong disk id: #{id}") if id == 'disk0'
+    # We assume that the device ID used by megacli is this captured digit in by_path
+    # See: https://github.com/eLvErDe/hwraid/blob/master/wrapper-scripts/megaclisas-status#L301
+    device_id = RESERVABLE_DISKS[id]['by_path'].gsub(/.*\d+:\d+:(\d+):\d+$/,'\1').to_i
+    disks.push(physical_disks[device_id])
   end
   disks
-end
-
-# Clusters with reservable disks are clusters whose
-# reference-repository storage_devices property contains property
-# reservation: true
-def reservable_disks?
-  ref_api = File.read('/etc/grid5000/ref-api.json')
-  JSON.parse(ref_api)['storage_devices'].select { |sd| sd['reservation'] }.any?
 end
 
 def megacli_compliant?
@@ -276,9 +275,30 @@ def disable(physical_disks)
   num_disable_errors
 end
 
+# Clusters with reservable disks are clusters whose
+# reference-repository storage_devices property contains property
+# reservation: true
+# The main disk is the one with id 'disk0'
+def g5k_disks
+  ref_api = File.read('/etc/grid5000/ref-api.json')
+  reservable_disks = JSON.parse(ref_api)['storage_devices'].select { |sd| sd['reservation'] }
+    .map { |sd| [sd['id'], sd] }.to_h
+  main_disk = JSON.parse(ref_api)['storage_devices'].select { |sd| sd['id'] == 'disk0' }.first
+  [reservable_disks, main_disk]
+end
+
+# We assume that the by-path of a disk is containing the device ID used by megacli
+# to enable or disable it. However, if for some reason this ID can be the same
+# for multiple disks, we prefer to fail and investiguate the issue.
+def duplicate_scsi_ids?
+  ids = RESERVABLE_DISKS.map { |_id, rd| rd['by_path'].gsub(/.*\d+:\d+:(\d+):\d+$/,'\1') }
+  (ids - ids.uniq).any?
+end
+
 # Main program
 
 MEGACLI = '/usr/sbin/megacli'.freeze
+RESERVABLE_DISKS, MAIN_DISK = g5k_disks
 
 _status, TMPDIR = sh('mktemp -d /tmp/tmp.g5k-disk-manager-backend.XXXXXX')
 main
