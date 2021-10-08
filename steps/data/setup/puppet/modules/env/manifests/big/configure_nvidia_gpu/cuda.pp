@@ -95,6 +95,10 @@ class env::big::configure_nvidia_gpu::cuda () {
               ensure    => installed;
           } -> package {
             'libhwloc-contrib-plugins':
+              install_options => ['-t', 'bullseye-backports'],
+              ensure    => installed;
+            'hwloc':
+              install_options => ['-t', 'bullseye-backports'],
               ensure    => installed;
           }
         }
@@ -108,6 +112,10 @@ class env::big::configure_nvidia_gpu::cuda () {
               ensure    => installed;
           } -> package {
             'libhwloc-contrib-plugins':
+              install_options => ['-t', 'bullseye-backports'],
+              ensure    => installed;
+            'hwloc':
+              install_options => ['-t', 'bullseye-backports'],
               ensure    => installed;
           }
         }
