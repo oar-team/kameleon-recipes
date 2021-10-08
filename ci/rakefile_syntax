@@ -1,0 +1,4 @@
+require 'puppet-syntax/tasks/puppet-syntax'
+
+PuppetSyntax.fail_on_deprecation_notices = false
+PuppetSyntax.check_hiera_keys = true
