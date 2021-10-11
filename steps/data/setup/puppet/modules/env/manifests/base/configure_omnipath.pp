@@ -27,6 +27,13 @@ class env::base::configure_omnipath(){
           ensure => present
         })
       }
+      file {
+        # Fix PSM2, see #13470
+        '/lib/udev/rules.d/60-rdma-persistent-naming.rules':
+          ensure  => 'file',
+          content => 'ACTION=="add", SUBSYSTEM=="infiniband", PROGRAM="rdma_rename %k NAME_KERNEL"',
+          require => Package['rdma-core'];
+      }
     }
     'buster': {
       $opapackages = ['opa-address-resolution', 'opa-fastfabric', 'libopamgt0', 'libopasadb1',
