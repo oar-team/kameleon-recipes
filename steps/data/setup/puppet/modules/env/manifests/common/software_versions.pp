@@ -23,7 +23,13 @@ class env::common::software_versions {
           $datacenter_gpu_manager = '1:1.7.2'
           $dcgm_exporter          = '2.0.0-rc.11'
         }
-        'buster', 'bullseye': {
+        'buster': {
+          $nvidia_driver          = '460.91.03'
+          $nvidia_cuda            = '10.1.243_418.87.00_linux'
+          $datacenter_gpu_manager = '1:1.7.2'
+          $dcgm_exporter          = '2.0.0-rc.11'
+        }
+        'bullseye': {
           $nvidia_driver          = '460.91.03'
           $nvidia_cuda            = '11.2.2_460.32.03_linux'
           $datacenter_gpu_manager = '1:2.1.4'
