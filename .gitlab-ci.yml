@@ -2,6 +2,22 @@ stages:
  - dryrun
  - build
 
+lint:
+  stage: .pre
+  tags:
+    - grid5000-docker
+  image: debian:bullseye
+  script:
+    - apt-get update && apt-get -y --no-install-recommends install rubygems
+    - gem install bundler
+    - bundle install --gemfile=ci/Gemfile
+    # Puppet manifests syntax check (equivalent to puppet parser validate) - The most important check
+    - BUNDLE_GEMFILE=ci/Gemfile bundle exec rake --rakefile ci/rakefile_syntax syntax:manifests
+    - BUNDLE_GEMFILE=ci/Gemfile bundle exec rake --rakefile ci/rakefile_syntax syntax:templates
+    - BUNDLE_GEMFILE=ci/Gemfile bundle exec rake --rakefile ci/rakefile_syntax syntax:hiera
+    # Puppet style check
+    - BUNDLE_GEMFILE=ci/Gemfile bundle exec rake --rakefile ci/rakefile_lint lint
+
 .defaults-dryrun: &defaults-dryrun
   stage: dryrun
   tags:
