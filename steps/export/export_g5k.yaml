@@ -10,6 +10,7 @@
 - g5k_destructive: "false"
 - g5k_tar_compression: "gzip"
 - g5k_postinst_compression: "gzip"
+- g5k_description: $${distrib} $${release_number} ($${release}) for $${g5k_image_arch} - $${g5k_variant}
 
 # - save_as_tgz:
 #   - check_cmd_local: guestfish
@@ -29,7 +30,7 @@
       $${dashes}
       name: $${kameleon_recipe_name}
       version: $${g5k_version}
-      description: $${distrib} $${release_number} ($${release}) for $${g5k_image_arch} - $${g5k_variant}
+      description: $${g5k_description}
       author: $${g5k_author}
       visibility: $${g5k_visibility}
       destructive: $${g5k_destructive}
@@ -55,7 +56,7 @@
       $${dashes}
       name: $${kameleon_recipe_name}
       version: $${g5k_version}
-      description: $${distrib} $${release_number} ($${release}) for $${g5k_image_arch} - $${g5k_variant}
+      description: $${g5k_description}
       author: $${g5k_author}
       visibility: $${g5k_visibility}
       destructive: $${g5k_destructive}
