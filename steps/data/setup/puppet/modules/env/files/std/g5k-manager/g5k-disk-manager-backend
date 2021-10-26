@@ -144,7 +144,7 @@ def disks_locations(physical_disks, ids)
     # We assume that the device ID used by megacli is this captured digit in by_path
     # See: https://github.com/eLvErDe/hwraid/blob/master/wrapper-scripts/megaclisas-status#L301
     device_id = RESERVABLE_DISKS[id]['by_path'].gsub(/.*\d+:\d+:(\d+):\d+$/,'\1').to_i
-    disks.push(physical_disks[device_id])
+    disks.push(physical_disks.select { |x| x[:device_id] == device_id }.first)
   end
   disks
 end
