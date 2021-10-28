@@ -29,6 +29,7 @@
       cat << EOF > $${output}.dsc
       $${dashes}
       name: $${kameleon_recipe_name}
+      arch: $${arch}
       version: $${g5k_version}
       description: $${g5k_description}
       author: $${g5k_author}
@@ -55,6 +56,7 @@
       cat << EOF > $${output}.dsc
       $${dashes}
       name: $${kameleon_recipe_name}
+      arch: $${arch}
       version: $${g5k_version}
       description: $${g5k_description}
       author: $${g5k_author}
