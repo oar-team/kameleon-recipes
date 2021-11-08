@@ -11,7 +11,6 @@ class env::common::software_versions {
   $libguestfs_backport_ppc64el = '1:1.40.2-7~bpog5k10+1'
   $lmod                        = '6.6-0.3g5k1'
   $g5k_jupyterlab              = '0.9'
-  $rocm_version                = '4.3.1'
 
   case "${env::deb_arch}" {
     'amd64': {
@@ -24,12 +23,14 @@ class env::common::software_versions {
           $dcgm_exporter          = '2.0.0-rc.11'
         }
         'buster': {
+          $rocm_version           = '4.3.1'
           $nvidia_driver          = '460.91.03'
           $nvidia_cuda            = '10.1.243_418.87.00_linux'
           $datacenter_gpu_manager = '1:1.7.2'
           $dcgm_exporter          = '2.0.0-rc.11'
         }
         'bullseye': {
+          $rocm_version           = '4.5'
           $nvidia_driver          = '460.91.03'
           $nvidia_cuda            = '11.2.2_460.32.03_linux'
           $datacenter_gpu_manager = '1:2.1.4'
