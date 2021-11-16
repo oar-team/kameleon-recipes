@@ -82,41 +82,35 @@ class env::big::configure_nvidia_gpu::cuda () {
   # Install one or more fake (empty) package(s) to help satisfy libhwloc-contrib-plugins dependencies.
   # No need to force a particular version, newer versions of the package(s) should still be equally empty.
   # cf. bug #12877, #12861 and #13260
+  # Using hwloc G5K repository to avoid missing bullseye-backports packages
+  # cf. bug #13571
   case "${::lsbdistcodename}" {
     "bullseye" : {
       case "$env::deb_arch" {
         "ppc64el": {
           env::common::g5kpackages {
             'libnvidia-tesla-460-cuda1':
-              ensure    => installed;
+              ensure   => installed;
             'libnvidia-tesla-460-ml1':
-              ensure    => installed;
+              ensure   => installed;
             'libcudart11.0':
-              ensure    => installed;
-          } -> package {
-            'libhwloc-contrib-plugins':
-              install_options => ['-t', 'bullseye-backports'],
-              ensure    => installed;
+              ensure   => installed;
             'hwloc':
-              install_options => ['-t', 'bullseye-backports'],
-              ensure    => installed;
+              packages => ['hwloc', 'libhwloc-contrib-plugins'],
+              ensure   => installed;
           }
         }
         default: {
           env::common::g5kpackages {
             'libcuda1':
-              ensure    => installed;
+              ensure   => installed;
             'libnvidia-ml1':
-              ensure    => installed;
+              ensure   => installed;
             'libcudart11.0':
-              ensure    => installed;
-          } -> package {
-            'libhwloc-contrib-plugins':
-              install_options => ['-t', 'bullseye-backports'],
-              ensure    => installed;
+              ensure   => installed;
             'hwloc':
-              install_options => ['-t', 'bullseye-backports'],
-              ensure    => installed;
+              packages => ['hwloc', 'libhwloc-contrib-plugins'],
+              ensure   => installed;
           }
         }
       }
