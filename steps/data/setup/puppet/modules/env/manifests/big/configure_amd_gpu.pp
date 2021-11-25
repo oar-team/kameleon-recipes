@@ -96,13 +96,18 @@ class env::big::configure_amd_gpu () {
           ensure          => installed,
           install_options => ['--no-install-recommends'],
           require         => [Apt::Source['repo.radeon.com-amdgpu'], Exec['apt_update']];
-        [ 'hip-dev', 'rocminfo', 'rocm-smi-lib', 'rocm-device-libs' ]:
+        [ 'hip-dev', 'rocminfo', 'rocm-smi-lib', 'rocm-device-libs', 'rocm-hip-runtime' ]:
           ensure          => installed,
           install_options => ['--no-install-recommends'],
-          require         => [Apt::Source['repo.radeon.com-rocm'], Exec['apt_update']];
+          require         => [Apt::Source['repo.radeon.com-rocm'], Exec['apt_update'], Exec['build_and_install_rocm_llvm']];
       }
 
       exec {
+        'build_and_install_rocm_llvm':
+          command  => "mkdir /tmp/rocm && cd /tmp/rocm && apt download rocm-llvm && dpkg-deb -x rocm-llvm_*.deb rocm-llvm && dpkg-deb --control rocm-llvm_*.deb rocm-llvm/DEBIAN && sed -i 's/^Depends: .*/Depends: libc6/g' rocm-llvm/DEBIAN/control && dpkg -b rocm-llvm/ rocm-llvm.deb && apt install -y ./rocm-llvm.deb && rm -fr /tmp/rocm",
+          provider => shell,
+          timeout  => 1800,
+          require  => [Apt::Source['repo.radeon.com-rocm'], Exec['apt_update']];
         'add_rocm_symlink':
           command => "/bin/ln -s /opt/rocm-*/ /opt/rocm",
           require => Package['rocm-smi-lib'];
