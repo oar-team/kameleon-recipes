@@ -27,18 +27,6 @@ class env::std::install_g5kchecks {
           source   => "puppet:///modules/env/std/g5kchecks/g5k-checks.conf",
           require  => Package["g5k-checks"];
       }
-
-      # Use refrepo specific branch for testing
-      if "${::lsbdistcodename}" == "bullseye" {
-        file_line { 'g5k-checks_conf':
-          ensure     => present,
-          match      => "^(#)?branch:*",
-          path       => '/etc/g5k-checks.conf',
-          line       => 'branch: debian11_std',
-          replace    => true,
-          require    => File['/etc/g5k-checks.conf'];
-        }
-      }
     }
     default: {
       err "${operatingsystem} not supported."
