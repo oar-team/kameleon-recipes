@@ -141,6 +141,17 @@ if __name__ == '__main__':
                 url_regex = re.compile("^"+args.mirror+"(?:"+args.version+"/(?:isos/(?:"+args.arch+"/(?:CentOS-"+args.version+"\.\d+\.\d+-"+args.arch+"-boot\.iso)?)?)?)?$")
                 target_regex = re.compile("^.*CentOS-\d+\.\d+\.\d+-\w+-boot\.iso$")
             [visited,found] = url_find(set([args.mirror]), set(), set())
+        elif (args.distrib.lower() == "rocky"):
+            if args.mirror == None:
+                args.mirror = "https://mirror.in2p3.fr/linux/rocky/"
+            if not re.match("^\d+$",args.version):
+                raise Exception("please give the Rocky Linux release number (e.g. 8 for Rocky Linux 8)")
+            if args.version != '8':
+                raise Exception("Only Rocky Linux 8 is supported !")
+            else:
+                url_regex = re.compile("^"+args.mirror+"(?:"+args.version+"/(?:isos/(?:"+args.arch+"/(?:Rocky-"+args.version+"\.\d+-"+args.arch+"-boot\.iso)?)?)?)?$")
+                target_regex = re.compile("^.*Rocky-\d+\.\d+-\w+-boot\.iso$")
+            [visited,found] = url_find(set([args.mirror]), set(), set())
         else:
             raise Exception("this distribution is not supported")
         logger.info("URL regex: "+url_regex.pattern)
