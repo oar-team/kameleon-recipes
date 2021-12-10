@@ -74,54 +74,53 @@ class env::big::install_beegfs {
     }
 
     'bullseye' : {
-      # Oficial beegfs-client does not build for now (kenrel 5.10)
-      # Workaround: mix beetween 7.1.5 official packages and Olivier Sallou (IRISA) patched client
+      # Official beegfs-client does not build for now (kernel 5.10)
       # cf. Bug #13077
 
-      include env::big::prepare_kernel_module_build
+      #include env::big::prepare_kernel_module_build
 
-      apt::source { 'beegfs_official':
-          location     => 'https://www.beegfs.io/release/beegfs_7_1',
-          release      => 'stretch', #FIXME : change release to bullseye when beegfs release it
-          repos        => 'non-free',
-          architecture => 'amd64',
-          key          => {
-              id       => '055D000F1A9A092763B1F0DD14E8E08064497785',
-              source   => 'https://www.beegfs.io/release/beegfs_7_1/gpg/DEB-GPG-KEY-beegfs',
-          },
-      }
-      -> package { # client
-          [ 'beegfs-utils', 'beegfs-helperd', 'libbeegfs-ib' ]:
-          require => Class['apt::update'],
-          ensure => installed;
-      }
-      -> service {
-        'beegfs-helperd' :
-          provider => systemd,
-          enable   => false,
-      }
+      #apt::source { 'beegfs_official':
+      #    location     => 'https://www.beegfs.io/release/beegfs_7_1',
+      #    release      => 'stretch', #FIXME : change release to bullseye when beegfs release it
+      #    repos        => 'non-free',
+      #    architecture => 'amd64',
+      #    key          => {
+      #        id       => '055D000F1A9A092763B1F0DD14E8E08064497785',
+      #        source   => 'https://www.beegfs.io/release/beegfs_7_1/gpg/DEB-GPG-KEY-beegfs',
+      #    },
+      #}
+      #-> package { # client
+      #    [ 'beegfs-utils', 'beegfs-helperd', 'libbeegfs-ib' ]:
+      #    require => Class['apt::update'],
+      #    ensure => installed;
+      #}
+      #-> service {
+      #  'beegfs-helperd' :
+      #    provider => systemd,
+      #    enable   => false,
+      #}
 
-      env::common::g5kpackages {
-        'beegfs':
-          packages => 'beegfs-client',
-          ensure   => '19:7.1.5-8-g5d4fbae18d';
-      }
-      -> service {
-        'beegfs-client' :
-          provider => systemd,
-          enable   => false,
-      }
+      #env::common::g5kpackages {
+      #  'beegfs':
+      #    packages => 'beegfs-client',
+      #    ensure   => '19:7.1.5-8-g5d4fbae18d';
+      #}
+      #-> service {
+      #  'beegfs-client' :
+      #    provider => systemd,
+      #    enable   => false,
+      #}
 
 
-      file { '/etc/beegfs/beegfs-client-autobuild.conf':
-          content => "buildEnabled=true\nbuildArgs=-j8 BEEGFS_OPENTK_IBVERBS=1\n",
-          require => Package['beegfs-client']
-      }
-      -> exec {
-      '/etc/init.d/beegfs-client rebuild':
-          timeout => 1200,
-          require => Exec['prepare_kernel_module_build']
-      }
+      #file { '/etc/beegfs/beegfs-client-autobuild.conf':
+      #    content => "buildEnabled=true\nbuildArgs=-j8 BEEGFS_OPENTK_IBVERBS=1\n",
+      #    require => Package['beegfs-client']
+      #}
+      #-> exec {
+      #'/etc/init.d/beegfs-client rebuild':
+      #    timeout => 1200,
+      #    require => Exec['prepare_kernel_module_build']
+      #}
     }
   }
 }
