@@ -22,9 +22,6 @@ apt-get install -y systemtap linux-image-$(uname -r)-dbg=$VERSION linux-headers-
 # if arm64 or ppc64, use backported package for libguestfs-tools. see #11432
 if [ "$ARCH" = "arm64" -o "$ARCH" = "ppc64el" ]; then
 	echo deb http://packages.grid5000.fr/deb/libguestfs-backport / > /etc/apt/sources.list.d/libguestfs-backport.list
-	# Temporary kvm rights fix (until next env release)
-        chown root:8000 /dev/kvm
-        chmod 0666 /dev/kvm
 fi
 # install other dependencies
 apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends linux-headers-$(uname -r) netcat eatmydata libguestfs-tools gnupg-agent
