@@ -105,6 +105,10 @@ dryrun_centos7-x64-min:
 dryrun_centos8-x64-min:
   <<: *defaults-dryrun
 
+# Rocky
+dryrun_rocky8-x64-min:
+  <<: *defaults-dryrun
+
 ## arm64
 # Debian10
 dryrun_debian10-arm64-min:
@@ -192,4 +196,8 @@ build_centos7-x64-min:
   <<: *defaults-build
 
 build_centos8-x64-min:
+  <<: *defaults-build
+
+# Rocky
+build_rocky8-x64-min:
   <<: *defaults-build
