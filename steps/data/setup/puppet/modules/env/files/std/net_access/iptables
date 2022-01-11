@@ -25,7 +25,8 @@
 # https://intranet.grid5000.fr/bugzilla/show_bug.cgi?id=12295
 -A OUTPUT -p udp -m hashlimit --hashlimit-name UDPG5K --hashlimit-rate-match --hashlimit-above 10/s --hashlimit-mode dstip -j ACCEPT
 
-# Log everything else : it's going outside g5k
--A OUTPUT -m conntrack --ctstate NEW -j LOG --log-level 7 --log-uid --log-prefix "outgoing traffic "
+# Log all new connections that are going outside g5k.
+# Checking ctstatus is necessary for UDP: https://intranet.grid5000.fr/bugzilla/show_bug.cgi?id=13647
+-A OUTPUT -m conntrack --ctstate NEW ! --ctstatus CONFIRMED -j LOG --log-level 7 --log-uid --log-prefix "outgoing traffic "
 COMMIT
 EOF
