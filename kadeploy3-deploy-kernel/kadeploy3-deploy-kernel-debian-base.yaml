@@ -419,6 +419,7 @@ export:
            rm -rf $${kameleon_recipe_name}/debian
            mkdir -p $${kameleon_recipe_name}/debian
       - exec_local: |
+          export DEBEMAIL="Grid'5000 team <support-staff@lists.grid5000.fr>"
           (cd $${kameleon_recipe_name} && \
            dch --create \
                --package $${kameleon_recipe_name} \
