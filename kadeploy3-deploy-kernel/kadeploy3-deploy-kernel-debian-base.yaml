@@ -38,6 +38,7 @@ global:
   target_directory: /grid5000/kadeploy-kernels
   # xz is greedy in memory
   qemu_memory_size: 2G
+  out_context_use_backports: true
 
 bootstrap:
   - enable_checkpoint
