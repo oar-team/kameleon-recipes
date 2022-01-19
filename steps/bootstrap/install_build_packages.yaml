@@ -1,10 +1,13 @@
+- out_context_use_backports: false
 - apt_install:
-  # Add jessie backports, see workaround explanation: https://unix.stackexchange.com/questions/508724/failed-to-fetch-jessie-backports-repository/508840#508840
-  - append_out:
-    - /etc/apt/sources.list
-    - deb http://archive.debian.org/debian jessie-backports main
-  - write_out:
-    - /etc/apt/apt.conf.d/100disablechecks
-    - Acquire::Check-Valid-Until "false";
-  - apt-get_out: update
-  - apt-get_out: -t jessie-backports install $${build_packages}
+  - test:
+    - exec_local: test "$${out_context_use_backports}" == "true"
+    - group:
+      - append_out:
+        - /etc/apt/sources.list
+        - deb http://deb.debian.org/debian bullseye-backports main
+      - apt-get_out: update
+      - apt-get_out: -t bullseye-backports install $${build_packages}
+    - group:
+      - apt-get_out: update
+      - apt-get_out: install $${build_packages}
