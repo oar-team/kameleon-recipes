@@ -16,6 +16,8 @@ global:
   g5k_kernel_params: "cgroup_enable=memory"
   # QEMU options
   qemu_image_size: 18G
+  # Visibility override
+  g5k_visibility: shared
 
 bootstrap:
   - "@base"
