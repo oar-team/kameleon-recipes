@@ -19,7 +19,8 @@ class env::std::dell (
   case $::lsbdistcodename {
     'stretch', 'buster': {
       # No official Debian support since buster
-      $_location = "https://linux.dell.com/repo/community/openmanage/910/stretch"
+      # $_location = "https://linux.dell.com/repo/community/openmanage/910/stretch"
+      $_location = "http://packages.grid5000.fr/deb/openmanage/910/stretch"
       $_release = "stretch"
       $_repos = "main"
       $_packages_names = $packages_names
@@ -27,7 +28,8 @@ class env::std::dell (
     }
     'bullseye': {
       # Ubuntu 20.04 packages
-      $_location = "https://linux.dell.com/repo/community/openmanage/950/focal"
+      # $_location = "https://linux.dell.com/repo/community/openmanage/950/focal"
+      $_location = "http://packages.grid5000.fr/deb/openmanage/950/focal"
       $_release = "focal"
       $_repos = "main"
       $_packages_names = $packages_names - 'libssl1.0.0'
