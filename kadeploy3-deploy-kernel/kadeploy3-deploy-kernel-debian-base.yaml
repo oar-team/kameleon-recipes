@@ -243,7 +243,7 @@ setup:
             esac
           done
           echo -n "Wait for ${eth_dev} link to be ready."
-          while ! [ -r "/sys/class/net/${eth_dev}/operstate" -a $(< /sys/class/net/${eth_dev}/operstate) == "up" ] && [ $((timeout--)) -gt 0 ]; do
+          while ( [ ! -r "/sys/class/net/${eth_dev}/operstate" ] || [ "$(</sys/class/net/${eth_dev}/operstate)" != "up" ] ) && [ $((timeout--)) -gt 0 ]; do
             ip link set dev ${eth_dev} up || true
             echo -n .
             sleep 1
