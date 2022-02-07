@@ -1,0 +1,23 @@
+#==============================================================================
+# vim: softtabstop=2 shiftwidth=2 expandtab fenc=utf-8 cc=81 tw=80
+#==============================================================================
+#
+# DESCRIPTION: Centos 8 recipe using the netinstall mechanism
+#
+#==============================================================================
+---
+extend: centos-stream-base.yaml
+
+global:
+  release_number: 8
+  mirror_base_url: http://mirror.in2p3.fr/linux/CentOS/
+  mirror_url: $${mirror_base_url}$${release}/BaseOS/$${arch}/os
+
+bootstrap:
+  - "@base"
+
+setup:
+  - "@base"
+
+export:
+  - "@base"
