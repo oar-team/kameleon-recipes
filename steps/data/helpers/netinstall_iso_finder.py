@@ -141,6 +141,21 @@ if __name__ == '__main__':
                 url_regex = re.compile("^"+args.mirror+"(?:"+args.version+"/(?:isos/(?:"+args.arch+"/(?:CentOS-"+args.version+"\.\d+\.\d+-"+args.arch+"-boot\.iso)?)?)?)?$")
                 target_regex = re.compile("^.*CentOS-\d+\.\d+\.\d+-\w+-boot\.iso$")
             [visited,found] = url_find(set([args.mirror]), set(), set())
+        elif (args.distrib.lower() == "centos-stream"):
+            if not re.match("^\d+$",args.version):
+                raise Exception("please give the CentOS-stream release number (e.g. 8)")
+            if args.version == '8':
+                if args.mirror == None:
+                    args.mirror = "http://mirror.in2p3.fr/linux/CentOS/"
+                url_regex = re.compile("^"+args.mirror+"(?:"+args.version+"-stream/(?:isos/(?:"+args.arch+"/(?:CentOS-Stream-"+args.version+"-"+args.arch+"-latest-boot\.iso)?)?)?)?$")
+                target_regex = re.compile("^.*CentOS-Stream-\d+-\w+-latest-boot\.iso$")
+            else:
+                if args.mirror == None:
+                    args.mirror = "http://mirror.stream.centos.org/"
+                url_regex = re.compile("^"+args.mirror+"(?:"+args.version+"-stream/(?:BaseOS/(?:"+args.arch+"/(?:iso/(?:CentOS-Stream-"+args.version+"-latest-"+args.arch+"-boot\.iso)?)?)?)?)?$")
+                target_regex = re.compile("^.*CentOS-Stream-\d+-latest-\w+-boot\.iso$")
+
+            [visited,found] = url_find(set([args.mirror]), set(), set())
         elif (args.distrib.lower() == "rocky"):
             if args.mirror == None:
                 args.mirror = "https://mirror.in2p3.fr/linux/rocky/"
