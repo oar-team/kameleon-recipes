@@ -3,4 +3,10 @@
   - exec_in: echo -n 'root:$${root_password}' | chpasswd
 
 - update_system:
+  - test:
+    # fix URL for centos 8 (not needed for centos-stream 8)
+    - exec_local: test "$${distrib}" == "centos" -a "$${release_number}" == "8"
+    - exec_in: |
+        sed -i -e 's%^\(mirrorlist=http://mirrorlist.centos.org\)%#\1%' /etc/yum.repos.d/*
+        sed -i -e 's%^#baseurl=http://mirror.centos.org/%baseurl=http://vault.centos.org/%' /etc/yum.repos.d/*
   - exec_in: yum upgrade -y
