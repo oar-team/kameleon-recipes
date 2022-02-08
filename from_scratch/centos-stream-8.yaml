@@ -10,8 +10,9 @@ extend: centos-stream-base.yaml
 
 global:
   release_number: 8
-  mirror_base_url: http://mirror.in2p3.fr/linux/CentOS/
-  mirror_url: $${mirror_base_url}$${release}/BaseOS/$${arch}/os
+  installer_iso_finder_mirror_url: http://mirror.in2p3.fr/linux/CentOS/
+  mirror_base_url: http://mirror.centos.org/centos/
+  mirror_url: $${mirror_base_url}$${release}-stream/BaseOS/$${arch}/os
 
 bootstrap:
   - "@base"
