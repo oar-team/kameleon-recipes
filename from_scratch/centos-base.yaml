@@ -29,7 +29,8 @@ global:
   #installer_iso_filename: CentOS-$${release_major}-$${arch}-NetInstall-$${release_date}.iso
   #installer_iso_url: $${mirror_base_url}/$${release_major}.$${release_minor}.$${release_date}/isos/$${arch}/$${installer_iso_filename}
   installer_iso_finder_helper: $${kameleon_data_dir}/helpers/netinstall_iso_finder.py
-  installer_iso_finder_args: $${distrib} $${release_number} $${arch} $${mirror_base_url}
+  installer_iso_finder_mirror_url: $${mirror_base_url}
+  installer_iso_finder_args: $${distrib} $${release_number} $${arch} $${installer_iso_finder_mirror_url}
   qemu_iso_path: $${kameleon_cwd}/$${distrib}.iso
 
   # If memory size is too low, the VM crashes.
