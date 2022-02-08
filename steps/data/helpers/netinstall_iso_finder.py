@@ -128,17 +128,17 @@ if __name__ == '__main__':
             [visited,found] = url_find(servers, set(), set())
         elif (args.distrib.lower() == "centos"):
             if args.mirror == None:
-                args.mirror = "http://mirror.in2p3.fr/linux/CentOS/"
+                args.mirror = "https://vault.centos.org/"
             if not re.match("^\d+$",args.version):
                 raise Exception("please give the CentOS release number (e.g. 7 for CentOS-7)")
             if args.version == '6':
-                url_regex = re.compile("^"+args.mirror+"(?:"+args.version+"/(?:isos/(?:"+args.arch+"/(?:CentOS-"+args.version+"(?:\.\d+)?-"+args.arch+"-netinstall\.iso)?)?)?)?$")
+                url_regex = re.compile("^"+args.mirror+"(?:"+args.version+"(?:\.\d+)?/(?:isos/(?:"+args.arch+"/(?:CentOS-"+args.version+"(?:\.\d+)?-"+args.arch+"-netinstall\.iso)?)?)?)?$")
                 target_regex = re.compile("^.*CentOS-\d+(?:\.\d+)?-\w+-netinstall\.iso$")
             elif args.version == '7':
-                url_regex = re.compile("^"+args.mirror+"(?:"+args.version+"/(?:isos/(?:"+args.arch+"/(?:CentOS-"+args.version+"-"+args.arch+"-NetInstall-\d+\.iso)?)?)?)?$")
+                url_regex = re.compile("^"+args.mirror+"(?:"+args.version+"(?:\.\d+)*/(?:isos/(?:"+args.arch+"/(?:CentOS-"+args.version+"-"+args.arch+"-NetInstall-\d+\.iso)?)?)?)?$")
                 target_regex = re.compile("^.*CentOS-\d+-\w+-NetInstall-\d+\.iso$")
             else:
-                url_regex = re.compile("^"+args.mirror+"(?:"+args.version+"/(?:isos/(?:"+args.arch+"/(?:CentOS-"+args.version+"\.\d+\.\d+-"+args.arch+"-boot\.iso)?)?)?)?$")
+                url_regex = re.compile("^"+args.mirror+"(?:"+args.version+"(?:\.\d+)*/(?:isos/(?:"+args.arch+"/(?:CentOS-"+args.version+"\.\d+\.\d+-"+args.arch+"-boot\.iso)?)?)?)?$")
                 target_regex = re.compile("^.*CentOS-\d+\.\d+\.\d+-\w+-boot\.iso$")
             [visited,found] = url_find(set([args.mirror]), set(), set())
         elif (args.distrib.lower() == "centos-stream"):
@@ -181,7 +181,7 @@ if __name__ == '__main__':
             if (args.distrib.lower() == "debian"):
                 print(sorted(found,key=lambda x:key_normalize(re.sub(r".*/debian-(\d+).(\d+).(\d+)-"+args.arch+"-netinst\.iso$",r"\1.\2.\3",x)),reverse=True)[0])
             else:
-                print(sorted(found, reverse=False)[0])
+                print(sorted(found, reverse=True)[0])
         else:
             raise Exception("no url found")
     except Exception as exc:
