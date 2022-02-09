@@ -105,6 +105,10 @@ dryrun_centos7-x64-min:
 dryrun_centos8-x64-min:
   <<: *defaults-dryrun
 
+# Centos Stream
+dryrun_centosstream8-x64-min:
+  <<: *defaults-dryrun
+
 # Rocky
 dryrun_rocky8-x64-min:
   <<: *defaults-dryrun
@@ -196,6 +200,10 @@ build_centos7-x64-min:
   <<: *defaults-build
 
 build_centos8-x64-min:
+  <<: *defaults-build
+
+# Centos Stream
+build_centosstream8-x64-min:
   <<: *defaults-build
 
 # Rocky
