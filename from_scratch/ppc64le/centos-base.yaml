@@ -40,6 +40,11 @@ global:
 
   qemu_sendkeys_commands: $${kameleon_data_dir}/qemu-sendkeys/netinst-$${distrib}-grub
 
+  # Include specific steps
+  include_steps:
+    - $${distrib}/$${release_number}
+    - $${distrib}
+
 bootstrap:
   - "@base"
 
