@@ -10,7 +10,7 @@
 - g5k_destructive: "false"
 - g5k_tar_compression: "gzip"
 - g5k_postinst_compression: "gzip"
-- g5k_description: $${distrib} $${release_number} ($${release}) for $${g5k_image_arch} - $${g5k_variant}
+- g5k_description: $${distrib} $${release_number} ($${release}) for $${arch} - $${g5k_variant}
 
 # - save_as_tgz:
 #   - check_cmd_local: guestfish
@@ -28,7 +28,8 @@
       if [[ "x$${g5k_variant}" != "xxen" ]]; then
       cat << EOF > $${output}.dsc
       $${dashes}
-      name: $${kameleon_recipe_name}
+      name: $${distrib}-$${g5k_variant}
+      alias: $${distrib}-$${g5k_image_arch}-$${g5k_variant}
       arch: $${arch}
       version: $${g5k_version}
       description: $${g5k_description}
@@ -55,7 +56,8 @@
       else
       cat << EOF > $${output}.dsc
       $${dashes}
-      name: $${kameleon_recipe_name}
+      name: $${distrib}-$${g5k_variant}
+      alias: $${distrib}-$${g5k_image_arch}-$${g5k_variant}
       arch: $${arch}
       version: $${g5k_version}
       description: $${g5k_description}
