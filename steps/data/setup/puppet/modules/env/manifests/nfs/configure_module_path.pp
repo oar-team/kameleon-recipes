@@ -14,7 +14,8 @@ class env::nfs::configure_module_path () {
       }
     }
     "ppc64el": {
-      $modulespath = "/grid5000/spack/share/spack/modules/linux-debian10-ppc64le\n/grid5000/spack/share/spack/modules/linux-debian11-x86_64\n"
+      # No Debian11 ppc64 spack modules (Bug 13722)
+      $modulespath = "/grid5000/spack/share/spack/modules/linux-debian10-ppc64le\n"
     }
     default: {
       $modulespath = ""
