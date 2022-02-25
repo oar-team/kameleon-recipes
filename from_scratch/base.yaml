@@ -33,6 +33,7 @@ global:
     - $${distrib}/$${release}
     - $${distrib}
 
+  boot_timeout_installer: 5
   # If qemu_iso_path is set, boot from an iso, retrieved from the following URL:
   installer_iso_arch: x86_64
   installer_iso_url:
@@ -69,6 +70,7 @@ global:
   filesystem_type: ext4
 
   # appliance options
+  boot_timeout_setupvm: 100
   image_disk: $${kameleon_cwd}/base_$${kameleon_recipe_name}
   image_format: qcow2
 
@@ -112,7 +114,7 @@ bootstrap:
     - shutdown_vm_immediately: true
     - vm_cleanup_section: bootstrap
     - vm_expected_service:
-    - boot_timeout: 5
+    - boot_timeout: $${boot_timeout_installer}
   - prepare_ssh_to_out_context
   - prepare_appliance
   - start_qemu:
@@ -120,7 +122,7 @@ bootstrap:
     - shutdown_vm_immediately: false
     - vm_cleanup_section: setup
     - vm_expected_server: ssh
-    - boot_timeout: 100
+    - boot_timeout: $${boot_timeout_setupvm}
     - qemu_iso_boot: false
     - qemu_iso_path: ""
     - qemu_kernel_path: ""
