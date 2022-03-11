@@ -12,8 +12,12 @@ echo "mdadm   mdadm/initrdstart       string  none" | debconf-set-selections
 # echo 'deb [check-valid-until=no] http://snapshot.debian.org/archive/debian-security/20190813T053201Z/ buster/updates main' > /etc/apt/sources.list.d/snapshot-kernel.list
 
 KERNEL=linux-image-$(uname -r)
-#VERSION=$(apt-cache policy $KERNEL | grep Installed: | awk '{print $2}')
-VERSION="5.10.92-2"
+# Temporary amd64 fix
+if [ "$ARCH" = "arm64" ]; then
+  VERSION=$(apt-cache policy $KERNEL | grep Installed: | awk '{print $2}')
+else
+  VERSION="5.10.92-2"
+fi
 ARCH=$(dpkg --print-architecture)
 KERNEL_SHORT=$(uname -r | sed -re "s/^(.*)-[^-]*/\1/g")
 apt-get update
