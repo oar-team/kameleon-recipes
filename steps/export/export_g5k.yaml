@@ -10,6 +10,7 @@
 - g5k_destructive: "false"
 - g5k_tar_compression: "gzip"
 - g5k_postinst_compression: "gzip"
+- g5k_no_chroot_for_grub: "false"
 - g5k_description: $${distrib} $${release_number} ($${release}) for $${arch} - $${g5k_variant}
 
 # - save_as_tgz:
@@ -82,6 +83,12 @@
       filesystem: $${g5k_filesystem}
       partition_type: 131
       multipart: false
+      EOF
+      fi
+      if [[ "x$${g5k_no_chroot_for_grub}" == "xtrue" ]]; then
+      cat << EOF >> $${output}.dsc
+      custom_variables:
+        BOOTLOADER_NO_GRUB_FROM_DEST: '1'
       EOF
       fi
 
