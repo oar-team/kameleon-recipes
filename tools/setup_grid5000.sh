@@ -12,16 +12,13 @@ echo "mdadm   mdadm/initrdstart       string  none" | debconf-set-selections
 # echo 'deb [check-valid-until=no] http://snapshot.debian.org/archive/debian-security/20190813T053201Z/ buster/updates main' > /etc/apt/sources.list.d/snapshot-kernel.list
 
 KERNEL=linux-image-$(uname -r)
-# Temporary amd64 fix
+# Temporary unavailable packages fix
 #VERSION=$(apt-cache policy $KERNEL | grep Installed: | awk '{print $2}')
-VERSION="5.10.92-2"
 ARCH=$(dpkg --print-architecture)
 KERNEL_SHORT=$(uname -r | sed -re "s/^(.*)-[^-]*/\1/g")
 apt-get update
-if [ "$ARCH" != "arm64" ]; then
-  apt-get install -y systemtap linux-image-$(uname -r)-dbg=$VERSION linux-headers-$(uname -r)=$VERSION linux-headers-$KERNEL_SHORT-common=$VERSION
-  /tmp/environments-recipes/tools/nofsync.stp </dev/null >/dev/null 2>&1 &
-fi
+#apt-get install -y systemtap linux-image-$(uname -r)-dbg=$VERSION linux-headers-$(uname -r)=$VERSION linux-headers-$KERNEL_SHORT-common=$VERSION
+#/tmp/environments-recipes/tools/nofsync.stp </dev/null >/dev/null 2>&1 &
 
 # if arm64 or ppc64, use backported package for libguestfs-tools. see #11432
 if [ "$ARCH" = "arm64" -o "$ARCH" = "ppc64el" ]; then
