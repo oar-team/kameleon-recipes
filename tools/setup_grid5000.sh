@@ -13,23 +13,26 @@ echo "mdadm   mdadm/initrdstart       string  none" | debconf-set-selections
 
 KERNEL=linux-image-$(uname -r)
 # Temporary amd64 fix
-if [ "$ARCH" = "arm64" ]; then
-  VERSION=$(apt-cache policy $KERNEL | grep Installed: | awk '{print $2}')
-else
-  VERSION="5.10.92-2"
-fi
+#VERSION=$(apt-cache policy $KERNEL | grep Installed: | awk '{print $2}')
+VERSION="5.10.92-2"
 ARCH=$(dpkg --print-architecture)
 KERNEL_SHORT=$(uname -r | sed -re "s/^(.*)-[^-]*/\1/g")
 apt-get update
-apt-get install -y systemtap linux-image-$(uname -r)-dbg=$VERSION linux-headers-$(uname -r)=$VERSION linux-headers-$KERNEL_SHORT-common=$VERSION
-/tmp/environments-recipes/tools/nofsync.stp </dev/null >/dev/null 2>&1 &
+if [ "$ARCH" != "arm64" ]; then
+  apt-get install -y systemtap linux-image-$(uname -r)-dbg=$VERSION linux-headers-$(uname -r)=$VERSION linux-headers-$KERNEL_SHORT-common=$VERSION
+  /tmp/environments-recipes/tools/nofsync.stp </dev/null >/dev/null 2>&1 &
+fi
 
 # if arm64 or ppc64, use backported package for libguestfs-tools. see #11432
 if [ "$ARCH" = "arm64" -o "$ARCH" = "ppc64el" ]; then
 	echo deb http://packages.grid5000.fr/deb/libguestfs-backport / > /etc/apt/sources.list.d/libguestfs-backport.list
 fi
 # install other dependencies
-apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends linux-headers-$(uname -r) netcat eatmydata libguestfs-tools gnupg-agent
+if [ "$ARCH" = "arm64" ]; then
+  apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends netcat eatmydata libguestfs-tools gnupg-agent
+else
+  apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends linux-headers-$(uname -r) netcat eatmydata libguestfs-tools gnupg-agent
+fi
 
 mv /bin/gzip /bin/gzip.OLD
 ln -s /usr/bin/pigz /bin/gzip
