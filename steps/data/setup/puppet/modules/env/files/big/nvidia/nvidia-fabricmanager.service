@@ -1,0 +1,15 @@
+[Unit]
+Description=NVIDIA fabric manager service
+
+[Service]
+User=root
+PrivateTmp=false
+Type=forking
+TimeoutStartSec=120
+
+ExecStart=/usr/bin/nv-fabricmanager -c /usr/share/nvidia/nvswitch/fabricmanager.cfg
+
+LimitCORE=infinity
+
+[Install]
+WantedBy=multi-user.target
