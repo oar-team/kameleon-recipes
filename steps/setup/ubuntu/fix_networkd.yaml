@@ -5,4 +5,4 @@
     - /lib/systemd/system/systemd-networkd.service.d/after-udev.conf
     - |
       [Service]
-      ExecStartPre=/sbin/udevadm settle
+      ExecStartPre=/bin/udevadm settle
