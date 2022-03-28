@@ -188,6 +188,24 @@ class env::std::configure_oar_client {
       mode     => '0644',
       source   => 'puppet:///modules/env/std/oar/oar-node.service.override',
       require  => [Package[$oar_packages], File['/etc/systemd/system/oar-node.service.d']];
+    '/etc/pam.d/common-session':
+      ensure   => file,
+      owner    => root,
+      group    => root,
+      mode     => '0644',
+      source   => 'puppet:///modules/env/std/oar/etc/pam.d/common-session';
+    '/etc/pam.d/common-session-noninteractive':
+      ensure   => file,
+      owner    => root,
+      group    => root,
+      mode     => '0644',
+      source   => 'puppet:///modules/env/std/oar/etc/pam.d/common-session-noninteractive';
+    '/usr/local/sbin/pam_oar_adopt':
+      ensure   => file,
+      owner    => root,
+      group    => root,
+      mode     => '0755',
+      source   => 'puppet:///modules/env/std/oar/pam_oar_adopt';
   }
 
   augeas {

@@ -8,6 +8,7 @@
 #
 
 <% if scope.lookupvar('env::variant') == "std" %>
+account sufficient      pam_exec.so quiet debug stdout /usr/local/sbin/pam_oar_adopt -a
 account sufficient      pam_access.so accessfile=/etc/security/access.conf
 account required        pam_access.so accessfile=/var/lib/oar/access.conf
 <% else -%>
