@@ -1,0 +1,26 @@
+#==============================================================================
+# vim: softtabstop=2 shiftwidth=2 expandtab fenc=utf-8 cc=81 tw=80
+#==============================================================================
+#
+# DESCRIPTION: Ubuntu 20.04 (focal) recipe using the netinstall mechanism
+#
+#==============================================================================
+---
+extend: ubuntu-base.yaml
+# Global variables use by Kameleon engine and the steps
+global:
+  # Distribution
+  release: focal
+  release_number: 20.04
+
+  installer_kernel_url: $${deb_mirror_uri}/dists/$${release}-updates/main/installer-$${deb_arch}/current/legacy-images/netboot/ubuntu-installer/$${deb_arch}/linux
+  installer_initrd_url: $${deb_mirror_uri}/dists/$${release}-updates/main/installer-$${deb_arch}/current/legacy-images/netboot/ubuntu-installer/$${deb_arch}/initrd.gz
+
+bootstrap:
+  - "@base"
+
+setup:
+  - "@base"
+
+export:
+  - "@base"

@@ -160,6 +160,9 @@ dryrun_debiantesting-arm64-min:
 dryrun_ubuntu1804-arm64-min:
   <<: *defaults-dryrun
 
+dryrun_ubuntu2004-arm64-min:
+  <<: *defaults-dryrun
+
 ## ppc64
 # Debian11
 dryrun_debian11-ppc64-min:
@@ -167,6 +170,10 @@ dryrun_debian11-ppc64-min:
 
 # Debian testing
 dryrun_debiantesting-ppc64-min:
+  <<: *defaults-dryrun
+
+# Ubuntu
+dryrun_ubuntu2004-ppc64-min:
   <<: *defaults-dryrun
 
 ### Build

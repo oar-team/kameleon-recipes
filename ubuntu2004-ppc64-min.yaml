@@ -1,0 +1,61 @@
+#==============================================================================
+# vim: softtabstop=2 shiftwidth=2 expandtab fenc=utf-8 cc=81 tw=80
+#==============================================================================
+#
+# DESCRIPTION: Ubuntu 20.04 ppc64 min Grid'5000 environment
+#
+#==============================================================================
+---
+extend: from_scratch/ppc64le/ubuntu-20.04.yaml
+
+global:
+  # Export format to generate
+  appliance_formats: qcow2 tar.zst
+  # Output base filename
+  output: "$${kameleon_cwd}/$${kameleon_recipe_name}"
+  # Grid'5000 environment variant
+  g5k_variant: min
+  # Grid'5000 environment version
+  g5k_version: 1111111111
+  # Grid'5000 environment arch
+  g5k_image_arch: ppc64
+  # Grid'5000 kadeploy environment parameters
+  g5k_tar_path: server:///path/to/your/image
+  g5k_tar_compression: "zstd"
+  g5k_postinst_path: server:///grid5000/postinstalls/g5k-postinstall.tgz
+  g5k_postinst_compression: "gzip"
+  g5k_postinst_script: g5k-postinstall --net netplan --disk-aliases
+  g5k_kernel_params: ""
+  g5k_kernel_path: "/boot/vmlinux"
+  g5k_initrd_path: "/boot/initrd.img"
+  # kernel modules to blacklist
+  kernel_modules_blacklist: "usb_storage usbhid ohci_hcd ehci_hcd usbcore nouveau myri10ge"
+  # Grid'5000 deb repositories to add to sources
+  g5k_deb_repositories: "tgz-g5k"
+  # packages to install, with version
+  packages: "tgz-g5k=2.0.17 policykit-1 zstd"
+  # locales
+  locales: POSIX C en_US.UTF8
+  lang: en_US.UTF8
+  timezone: Europe/Paris
+  # passwords
+  root_password: grid5000
+
+bootstrap:
+  - "@base"
+
+setup:
+  - "@base"
+  - configure_system
+  - fix_networkd
+  - configure_apt_sources
+  - configure_g5k_apt_sources
+  - install_packages
+  - set_kernel_modules_blacklist
+  - set_g5k_release
+  - set_g5k_motd
+
+export:
+  - "@base"
+  - do_qcow2_finish_works
+  - export_g5k
