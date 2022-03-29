@@ -1,8 +1,18 @@
 class env::big::configure_kvm () {
 
+  file {
+    'disable-dpkg-service-start':
+      path      => '/usr/sbin/policy-rc.d',
+      content   => 'exit 101',
+      mode      => '0755',
+  } ->
   package {
     'uml-utilities':
       ensure    => installed;
+  } ->
+  exec {
+    'enable-dpkg-service-start':
+      command   => '/bin/rm /usr/sbin/policy-rc.d',
   }
 
   file {
