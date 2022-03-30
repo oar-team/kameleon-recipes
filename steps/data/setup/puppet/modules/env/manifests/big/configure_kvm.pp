@@ -1,5 +1,11 @@
 class env::big::configure_kvm () {
 
+  # This is a hack to not start uml-utilities service when installing it
+  # Indeed, it fails to start making dpkg unhappy. Since the service it
+  # disabled anyway in the environment, this is not a problem to not
+  # start it at installation.
+  # The trick to disable the service start was taken from :
+  # https://jpetazzo.github.io/2013/10/06/policy-rc-d-do-not-start-services-automatically/
   file {
     'disable-dpkg-service-start':
       path      => '/usr/sbin/policy-rc.d',
