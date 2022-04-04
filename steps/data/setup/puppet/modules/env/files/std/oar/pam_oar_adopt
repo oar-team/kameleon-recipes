@@ -37,7 +37,7 @@ pam_account() {
 	elif [ $(echo "${USER_CGROUPS}" | awk '{ print NF}') -ne 1 ] ||
 	     [ $(cat ${OAR_CPUSETS_BASE}/$(echo -n ${USER_CGROUPS})/cpuset.cpus) != $ALL_CPUSETS ]; then
 		cat << EOF >&2
-Cannot connect to node using 'ssh' because all CPU cores are not assigned to a single job.
+Cannot connect to node using 'ssh' because not all its CPU cores are assigned to the job which reserves it.
 Reserve the whole node, or use 'oarsh' instead.
 EOF
 		exit 1
