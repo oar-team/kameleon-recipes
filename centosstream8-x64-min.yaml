@@ -27,8 +27,6 @@ global:
   g5k_kernel_params: "crashkernel=no"
   g5k_kernel_path: "/vmlinuz"
   g5k_initrd_path: "/initramfs.img"
-  # kernel modules to blacklist
-  kernel_modules_blacklist: "usb_storage usbhid ohci_hcd ehci_hcd usbcore nouveau myri10ge"
   # Packages to install
   packages: "zstd"
   # locales
@@ -53,7 +51,6 @@ setup:
   - configure_system
   - install_packages
   - disable_kdump
-  - set_kernel_modules_blacklist
   - set_g5k_release
   - set_g5k_motd
 

@@ -1,6 +1,11 @@
 class env::big::configure_nvidia_gpu::modules () {
 
   augeas {
+    'blacklist_nouveau':
+      context   => "/files/etc/modprobe.d/blacklist.conf",
+      tag       => "modules",
+      changes   =>["set blacklist[last()+1] nouveau",],
+      onlyif    =>"match blacklist[.='nouveau'] size == 0 ";
     'blacklist_vga16fb':
       context   => "/files/etc/modprobe.d/blacklist.conf",
       tag       => "modules",
