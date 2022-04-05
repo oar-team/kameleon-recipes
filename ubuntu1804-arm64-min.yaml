@@ -28,8 +28,6 @@ global:
   g5k_kernel_params: ""
   g5k_kernel_path: "/boot/vmlinuz"
   g5k_initrd_path: "/boot/initrd.img"
-  # kernel modules to blacklist
-  kernel_modules_blacklist: "usb_storage usbhid ohci_hcd ehci_hcd usbcore nouveau myri10ge"
   # Grid'5000 deb repositories to add to sources
   g5k_deb_repositories: "tgz-g5k"
   # packages to install, with version
@@ -51,7 +49,6 @@ setup:
   - configure_apt_sources
   - configure_g5k_apt_sources
   - install_packages
-  - set_kernel_modules_blacklist
   - set_g5k_release
   - set_g5k_motd
 

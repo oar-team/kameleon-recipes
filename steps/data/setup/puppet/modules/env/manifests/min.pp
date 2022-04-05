@@ -47,7 +47,7 @@ class env::min ( $variant = "min", $parent_parameters = {} ) {
   # keep tmp
 
   # kernel installation
-  class { 'env::min::configure_kernel_and_blacklist_some_modules': }
+  class { 'env::min::configure_kernel': }
   # Tagging to recognize images
   class { 'env::min::add_image_version_in_etc': }
 }
