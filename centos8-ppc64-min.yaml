@@ -27,6 +27,7 @@ global:
   g5k_kernel_params: "crashkernel=no"
   g5k_kernel_path: "/vmlinuz"
   g5k_initrd_path: "/initramfs.img"
+  g5k_no_chroot_for_grub: "true"
   # Packages to install
   packages: "zstd"
   # locales
