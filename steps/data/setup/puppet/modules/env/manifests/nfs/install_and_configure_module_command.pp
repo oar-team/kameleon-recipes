@@ -1,6 +1,16 @@
-class env::nfs::configure_module_path () {
+class env::nfs::install_and_configure_module_command () {
 
-  # Configure module path (installed in g5k-metapackage)
+  if ($::lsbdistcodename != 'buster') and ($::lsbdistcodename != 'stretch') {
+    # Install lmod from g5kpackages (custom version that includes module-stats-wrapper)
+    # Otherwise, for debian 9 and 10, lmod is installed with g5k-meta-packages
+    env::common::g5kpackages {
+      "lmod":
+        release => "${::lsbdistcodename}",
+        ensure => $::env::common::software_versions::lmod;
+    }
+  }
+
+  # Configure module path
   case "$env::deb_arch" {
     "amd64": {
       case "${::lsbdistcodename}" {
@@ -22,11 +32,22 @@ class env::nfs::configure_module_path () {
     }
   }
 
+  if ($::lsbdistcodename != 'buster') and ($::lsbdistcodename != 'stretch') {
+    $req = [
+      Env::Common::G5kpackages['g5k-meta-packages'],
+      Env::Common::G5kpackages["lmod"]
+    ]
+  } else {
+    $req = [
+      Env::Common::G5kpackages['g5k-meta-packages']
+    ]
+  }
+
   file {
     '/etc/lmod/modulespath':
       ensure   => file,
       backup   => '.puppet-bak',
       content  => $modulespath,
-      require  => Env::Common::G5kpackages['g5k-meta-packages'];
+      require  => $req;
   }
 }

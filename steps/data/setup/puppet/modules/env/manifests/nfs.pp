@@ -27,5 +27,5 @@ class env::nfs ( $variant = "nfs", $parent_parameters = {} ){
   # osirim
   class { 'env::nfs::install_osirim_requirements': }
   # module spack
-  class { 'env::nfs::configure_module_path': }
+  class { 'env::nfs::install_and_configure_module_command': }
 }
