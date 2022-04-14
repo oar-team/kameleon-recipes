@@ -2,7 +2,7 @@
 
 class env::common::software_versions {
   $g5k_subnets                 = '1.4.2'
-  $g5k_meta_packages           = '0.7.48'
+  $g5k_meta_packages           = '0.7.49'
   $tgz_g5k                     = '2.0.19'
   $g5k_checks                  = '0.11.9'
   $sudo_g5k                    = '1.12'
