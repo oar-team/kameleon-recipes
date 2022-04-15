@@ -64,6 +64,9 @@ build_ubuntu1804-x64-min:
 build_ubuntu2004-x64-min:
   <<: *defaults-build
 
+build_ubuntu2204-x64-min:
+  <<: *defaults-build
+
 # Centos
 build_centos7-x64-min:
   <<: *defaults-build
