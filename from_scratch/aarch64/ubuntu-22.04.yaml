@@ -1,0 +1,33 @@
+#==============================================================================
+# vim: softtabstop=2 shiftwidth=2 expandtab fenc=utf-8 cc=81 tw=80
+#==============================================================================
+#
+# DESCRIPTION: Ubuntu 22.04 (jammy) recipe using the autoinstall mechanism
+#
+#==============================================================================
+---
+extend: ubuntu-base.yaml
+# Global variables use by Kameleon engine and the steps
+global:
+  # Distribution
+  release: jammy
+  release_number: 22.04
+
+  installer_kernel_url:
+  installer_initrd_url:
+  qemu_kernel_path:
+  qemu_iso_path: $${kameleon_cwd}/$${distrib}.iso
+  #installer_iso_url: https://cdimage.ubuntu.com/ubuntu-server/daily-live/current/$${release}-live-server-$${deb_arch}.iso
+  installer_iso_url: https://cdimage.ubuntu.com/releases/22.04/beta/$${distrib}-$${release_number}-beta-live-server-$${deb_arch}.iso
+  qemu_sendkeys_commands: $${kameleon_data_dir}/qemu-sendkeys/autoinstall-iso-$${distrib}-$${release}-$${arch}
+  base_preseed_path: ''
+  base_autoinstall_path: $${kameleon_data_dir}/autoinstall/$${distrib}-$${release}-installer.yaml
+
+bootstrap:
+  - "@base"
+
+setup:
+  - "@base"
+
+export:
+  - "@base"
