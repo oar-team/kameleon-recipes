@@ -30,6 +30,7 @@ global:
   installer_kernel_url: $${deb_mirror_uri}/dists/$${release}-updates/main/installer-$${deb_arch}/current/images/netboot/ubuntu-installer/$${deb_arch}/vmlinux
   installer_initrd_url: $${deb_mirror_uri}/dists/$${release}-updates/main/installer-$${deb_arch}/current/images/netboot/ubuntu-installer/$${deb_arch}/initrd.gz
   installer_cmdline: "auto=true priority=critical netcfg/get_hostname=localhost netcfg/get_domain=localdomain url=http://%LOCAL_IP%:%HTTP_PORT%/preseed.cfg"
+  base_autoinstall_path: ""
 
   bootstrap_packages: locales openssh-server linux-image-generic
   additional_packages: ""

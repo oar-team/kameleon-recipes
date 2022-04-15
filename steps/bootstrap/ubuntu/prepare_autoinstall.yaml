@@ -1,0 +1,24 @@
+- copy_autoinstall_script_to_http_directory:
+  # Autoinstall
+  - test:
+    - exec_local: test -n "$${base_autoinstall_path}"
+    - group:
+      - exec_local: mkdir -p $${http_directory}/autoinstall
+      - exec_local: cp $${base_autoinstall_path} $${http_directory}/autoinstall/user-data
+      - exec_local: touch $${http_directory}/autoinstall/meta-data
+      # Customize autoinstall
+      - exec_local: export CRYPTED_PASS=$(python3 -c "import crypt;print(crypt.crypt('$${root_password}', crypt.mksalt(crypt.METHOD_SHA512)))")
+      - exec_local: sed -i -e "s|\(        passwd:\).*|\1 $CRYPTED_PASS|g" $${http_directory}/autoinstall/user-data
+  # Preseed
+  - test:
+    - exec_local: test -z "$${base_autoinstall_path}"
+    - group:
+      - exec_local: mkdir -p $${http_directory}
+      - exec_local: cp $${base_preseed_path} $${http_directory}/preseed.cfg
+      # Customize preseed
+      - exec_local: sed -i -e 's|\(d-i passwd/root-password password \).*|\1$${root_password}|g' $${http_directory}/preseed.cfg
+      - exec_local: sed -i -e 's|\(d-i passwd/root-password-again password \).*|\1$${root_password}|g' $${http_directory}/preseed.cfg
+      - exec_local: sed -i -e 's|\(d-i mirror/http/hostname string \).*|\1$${deb_mirror_hostname}|g' $${http_directory}/preseed.cfg
+      - exec_local: sed -i -e 's|\(d-i mirror/http/directory string \).*|\1$${deb_mirror_directory}|g' $${http_directory}/preseed.cfg
+      - exec_local: sed -i -e 's|\(d-i apt-setup/security_host string \).*|\1$${deb_security_hostname}|g' $${http_directory}/preseed.cfg
+      - exec_local: sed -i -e 's|\(d-i apt-setup/security_path string \).*|\1$${deb_security_directory}|g' $${http_directory}/preseed.cfg
