@@ -32,8 +32,6 @@ class env::min ( $variant = "min", $parent_parameters = {} ) {
   class { 'env::min::install_and_configure_locales': }
   # motd
   class { 'env::min::generate_etc_motd': }
-  # tgs-g5k
-  class { 'env::min::install_tgz_g5k': }
   # install meta-packages
   class { 'env::min::install_metapackage': variant => $variant }
   # network configuration

@@ -30,11 +30,9 @@ global:
   g5k_kernel_params: ""
   g5k_kernel_path: "/boot/vmlinux"
   g5k_initrd_path: "/boot/initrd.img"
-  # Grid'5000 deb repositories to add to sources
-  g5k_deb_repositories: "tgz-g5k"
-  # packages to install, with version
+  # packages to install
   # haveged is used to provide more entropy during boot
-  packages: "tgz-g5k=2.0.17 firmware-linux firmware-bnx2x firmware-qlogic powerpc-ibm-utils zstd"
+  packages: "firmware-linux firmware-bnx2x firmware-qlogic powerpc-ibm-utils zstd"
   # disable backports: they are not available for now
   deb_backports: false
   # locales
@@ -44,7 +42,7 @@ global:
   # password
   root_password: grid5000
   # clean_unnecessary_packages step settings (packages debfoster must keep)
-  default_packages_no_clean: tgz-g5k gnupg linux-image-$${deb_arch} console-setup rsync locales firmware-bnx2 firmware-bnx2x firmware-qlogic
+  default_packages_no_clean: gnupg linux-image-$${deb_arch} console-setup rsync locales firmware-bnx2 firmware-bnx2x firmware-qlogic
   arch_packages_no_clean: grub-ieee1275 grub-common
   other_packages_no_clean:
 
