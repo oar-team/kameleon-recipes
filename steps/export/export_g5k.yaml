@@ -29,8 +29,8 @@
       if [[ "x$${g5k_variant}" != "xxen" ]]; then
       cat << EOF > $${output}.dsc
       $${dashes}
-      name: $${distrib}-$${g5k_variant}
-      alias: $${distrib}-$${g5k_image_arch}-$${g5k_variant}
+      name: $${distrib}$${release_number}-$${g5k_variant}
+      alias: $${distrib}$${release_number}-$${g5k_image_arch}-$${g5k_variant}
       arch: $${arch}
       version: $${g5k_version}
       description: $${g5k_description}
@@ -57,8 +57,8 @@
       else
       cat << EOF > $${output}.dsc
       $${dashes}
-      name: $${distrib}-$${g5k_variant}
-      alias: $${distrib}-$${g5k_image_arch}-$${g5k_variant}
+      name: $${distrib}$${release_number}-$${g5k_variant}
+      alias: $${distrib}$${release_number}-$${g5k_image_arch}-$${g5k_variant}
       arch: $${arch}
       version: $${g5k_version}
       description: $${g5k_description}
