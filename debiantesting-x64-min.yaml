@@ -28,11 +28,9 @@ global:
   g5k_postinst_compression: "gzip"
   g5k_postinst_script: g5k-postinstall --net debian --disk-aliases
   g5k_kernel_params: ""
-  # Grid'5000 deb repositories to add to sources
-  g5k_deb_repositories: "tgz-g5k"
-  # packages to install, with version
+  # packages to install
   # haveged is used to provide more entropy during boot
-  packages: "tgz-g5k=2.0.17 firmware-bnx2 firmware-bnx2x firmware-linux-free firmware-misc-nonfree grub-efi-amd64-bin zstd"
+  packages: "firmware-bnx2 firmware-bnx2x firmware-linux-free firmware-misc-nonfree grub-efi-amd64-bin zstd"
   # disable backports: they are not available for now
   deb_backports: false
   # locales
@@ -42,7 +40,7 @@ global:
   # password
   root_password: grid5000
   # clean_unnecessary_packages step settings (packages debfoster must keep)
-  default_packages_no_clean: tgz-g5k gnupg linux-image-$${deb_arch} console-setup rsync locales firmware-bnx2 firmware-bnx2x firmware-qlogic
+  default_packages_no_clean: gnupg linux-image-$${deb_arch} console-setup rsync locales firmware-bnx2 firmware-bnx2x firmware-qlogic
   arch_packages_no_clean: grub-pc grub-efi-amd64-bin
   other_packages_no_clean:
 
