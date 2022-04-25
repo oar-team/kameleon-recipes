@@ -11,11 +11,11 @@ class env::std::configure_oar_client {
         $oar_repos_release = "stretch-backports_beta"
       }
       'buster' : {
-        $oar_version       = "2.5.10~g5k10-2";
+        $oar_version       = "2.5.10~g5k20-1";
         $oar_repos         = "g5k"
       }
       'bullseye' : {
-        $oar_version       = "2.5.10~g5k10-2";
+        $oar_version       = "2.5.10~g5k20-1";
         $oar_repos         = "g5k"
       }
       default : {
