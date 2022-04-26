@@ -36,8 +36,6 @@ autoinstall:
   debconf-selections: |
     popularity-contest popularity-contest/participate boolean false
   late-commands:
-    - curtin in-target --target=/target -- apt-get -y remove ubuntu-server
-    - curtin in-target --target=/target -- apt-get -y autoremove
     - curtin in-target --target=/target -- apt-get update
-    - curtin in-target --target=/target -- apt-get -y upgrade
+    - curtin in-target --target=/target -- apt-get upgrade -y
     - curtin in-target --target /target update-grub2
