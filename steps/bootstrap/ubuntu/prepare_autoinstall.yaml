@@ -1,7 +1,7 @@
 - copy_autoinstall_script_to_http_directory:
-  # Autoinstall
   - test:
     - exec_local: test -n "$${base_autoinstall_path}"
+    # Autoinstall
     - group:
       - exec_local: mkdir -p $${http_directory}/autoinstall
       - exec_local: cp $${base_autoinstall_path} $${http_directory}/autoinstall/user-data
@@ -9,9 +9,7 @@
       # Customize autoinstall
       - exec_local: export CRYPTED_PASS=$(python3 -c "import crypt;print(crypt.crypt('$${root_password}', crypt.mksalt(crypt.METHOD_SHA512)))")
       - exec_local: sed -i -e "s|\(        passwd:\).*|\1 $CRYPTED_PASS|g" $${http_directory}/autoinstall/user-data
-  # Preseed
-  - test:
-    - exec_local: test -z "$${base_autoinstall_path}"
+    # Preseed
     - group:
       - exec_local: mkdir -p $${http_directory}
       - exec_local: cp $${base_preseed_path} $${http_directory}/preseed.cfg
