@@ -2,29 +2,6 @@ class env::xen::configure_xen () {
 
   if "$operatingsystem" == "Debian" {
     case "${::lsbdistcodename}" {
-      'stretch' : {
-        $hypervisor = "/boot/xen-4.8-${env::deb_arch}.gz"
-        $xen_packages = [ 'xen-utils', 'debootstrap', 'xen-tools', 'sysfsutils', "xen-linux-system-${env::deb_arch}" ]
-        file {
-          '/etc/xen/xend-config.sxp.puppet-bak':
-            ensure   => file,
-            owner    => root,
-            group    => root,
-            mode     => '0644',
-            source   => '/etc/xen/xend-config.sxp',
-            require  => Package['xen-utils'];
-        }
-
-        file_line {
-          '/etc/xen/xend-config.sxp: enable network bridge':
-            path     => '/etc/xen/xend-config.sxp',
-            line     => '(network-script network-bridge)',
-            match    => '^#\ \(network-script\ network-bridge\)',
-            require  => [ Package['xen-utils'], File['/etc/xen/xend-config.sxp.puppet-bak'] ],
-            before   => Exec['create_example_domU'];
-        }
-      }
-
       'buster' : {
         $hypervisor = "/boot/xen-4.11-${env::deb_arch}.gz"
         $xen_packages = [ 'xen-utils', 'debootstrap', 'xen-tools', 'sysfsutils', "xen-system-${env::deb_arch}" ]

@@ -1,7 +1,7 @@
 class env::big::configure_initramfs () {
 
   case "${::lsbdistcodename}" {
-    "stretch", "buster" : {
+    "buster" : {
       file {
         '/etc/initramfs-tools/conf.d/resume':
           ensure    => present,

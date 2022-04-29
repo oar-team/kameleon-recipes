@@ -1,8 +1,8 @@
 class env::nfs::install_and_configure_module_command () {
 
-  if ($::lsbdistcodename != 'buster') and ($::lsbdistcodename != 'stretch') {
+  if ($::lsbdistcodename != 'buster') {
     # Install lmod from g5kpackages (custom version that includes module-stats-wrapper)
-    # Otherwise, for debian 9 and 10, lmod is installed with g5k-meta-packages
+    # Otherwise, for debian 10, lmod is installed with g5k-meta-packages
     env::common::g5kpackages {
       "lmod":
         release => "${::lsbdistcodename}",
@@ -32,7 +32,7 @@ class env::nfs::install_and_configure_module_command () {
     }
   }
 
-  if ($::lsbdistcodename != 'buster') and ($::lsbdistcodename != 'stretch') {
+  if ($::lsbdistcodename != 'buster') {
     $req = [
       Env::Common::G5kpackages['g5k-meta-packages'],
       Env::Common::G5kpackages["lmod"]

@@ -16,12 +16,6 @@ class env::common::software_versions {
     'amd64': {
       $nvidia_driver_arch         = 'x86_64'
       case $lsbdistcodename {
-        'stretch': {
-          $nvidia_driver          = '450.119.04'
-          $nvidia_cuda            = '10.1.243_418.87.00_linux'
-          $datacenter_gpu_manager = '1:1.7.2'
-          $dcgm_exporter          = '2.0.0-rc.11'
-        }
         'buster': {
           $rocm_version           = '4.3.1'
           $nvidia_driver          = '460.91.03'
@@ -44,7 +38,7 @@ class env::common::software_versions {
       # See https://intranet.grid5000.fr/bugzilla/show_bug.cgi?id=12545
       $nvidia_driver_arch         = 'ppc64le'
       case $lsbdistcodename {
-        'stretch', 'buster': {
+        'buster': {
           $nvidia_driver          = '418.197.02'
           $nvidia_cuda            = '10.1.243_418.87.00_linux_ppc64le'
           $datacenter_gpu_manager = '1:1.7.2'

@@ -1,16 +1,5 @@
 class env::base::configure_ip_over_infiniband (){
 
-  if $::lsbdistcodename == 'stretch' {
-
-    $infiniband_packages = ['qlvnictools']
-
-    ensure_packages([$infiniband_packages], {'ensure' => 'installed'})
-
-    Package[$infiniband_packages]
-    ->Service['openibd']
-
-  }
-
   if $::lsbdistcodename != 'bullseye' {
     # En suivant la doc https://wiki.debian.org/RDMA, vous n'avez pas besoin d'installer opensm sur les environnements
     # Il risque de rentrer en conflit avec d'autres instances d'OpenSM présent sur du matériel réseau, ou bien sur des clusters externes à Grid5000 (exemple : https://intranet.grid5000.fr/bugzilla/show_bug.cgi?id=10747)
