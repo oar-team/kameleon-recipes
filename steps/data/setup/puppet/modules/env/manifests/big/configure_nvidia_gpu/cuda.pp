@@ -1,23 +1,14 @@
 class env::big::configure_nvidia_gpu::cuda () {
 
-  case "${::lsbdistcodename}" {
-    "stretch" : {
-      $driver_source = 'http://packages.grid5000.fr/other/cuda/cuda_9.0.176_384.81_linux-run'
+  $driver_source = "http://packages.grid5000.fr/other/cuda/cuda_$::env::common::software_versions::nvidia_cuda.run"
+  case "$env::deb_arch" {
+  "amd64": {
       $libcuda = '/usr/lib/x86_64-linux-gnu/libcuda.so'
       $cuda_args = '--silent'
     }
-    default: {
-      $driver_source = "http://packages.grid5000.fr/other/cuda/cuda_$::env::common::software_versions::nvidia_cuda.run"
-      case "$env::deb_arch" {
-        "amd64": {
-          $libcuda = '/usr/lib/x86_64-linux-gnu/libcuda.so'
-          $cuda_args = '--silent'
-        }
-        "ppc64el": {
-          $libcuda = '/usr/lib/powerpc64le-linux-gnu/libcuda.so'
-          $cuda_args = '--silent'
-        }
-      }
+    "ppc64el": {
+      $libcuda = '/usr/lib/powerpc64le-linux-gnu/libcuda.so'
+      $cuda_args = '--silent'
     }
   }
 

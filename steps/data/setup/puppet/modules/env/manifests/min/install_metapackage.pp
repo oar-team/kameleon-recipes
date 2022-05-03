@@ -12,9 +12,6 @@ class env::min::install_metapackage ( $variant ) {
         'buster': {
           $base = "g5k-meta-packages-debian10"
         }
-        'stretch': {
-          $base = "g5k-meta-packages-debian9"
-        }
         default: {
           $base = "g5k-meta-packages-${::lsbdistcodename}"
         }

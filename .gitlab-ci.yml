@@ -44,10 +44,6 @@ dryrun_all:
 
 ### Build
 ## x64
-# Debian 9
-build_debian9-x64-min:
-  <<: *defaults-build
-
 # Debian 10
 build_debian10-x64-std:
   <<: *defaults-build

@@ -7,9 +7,6 @@ class env::min::generate_etc_motd {
     'buster': {
       $userdistribname = "debian10"
     }
-    'stretch': {
-      $userdistribname = "debian9"
-    }
     default: {
       $userdistribname = "${::lsbdistcodename}"
     }

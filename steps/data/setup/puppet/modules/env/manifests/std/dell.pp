@@ -17,7 +17,7 @@ class env::std::dell (
   $_key = '42550ABD1E80D7C1BC0BAD851285491434D8786F'
 
   case $::lsbdistcodename {
-    'stretch', 'buster': {
+    'buster': {
       # No official Debian support since buster
       # $_location = "https://linux.dell.com/repo/community/openmanage/910/stretch"
       $_location = "http://packages.grid5000.fr/deb/openmanage/910/stretch"
@@ -65,7 +65,7 @@ class env::std::dell (
 
   case $::lsbdistcodename  {
     # OMSA <= 9.1.0
-    'stretch', 'buster': {
+    'buster': {
       service {
         'dataeng':
           enable  => true,

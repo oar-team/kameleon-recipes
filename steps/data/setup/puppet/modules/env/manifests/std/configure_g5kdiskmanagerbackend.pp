@@ -6,7 +6,7 @@ class env::std::configure_g5kdiskmanagerbackend {
   case $operatingsystem {
     'Debian': {
       case "${::lsbdistcodename}" {
-        "stretch", "buster", "bullseye" : {
+        "buster", "bullseye" : {
           file {
             '/etc/systemd/system/g5k-disk-manager-backend.service':
               source => 'puppet:///modules/env/std/g5k-manager/g5k-disk-manager-backend.service',
