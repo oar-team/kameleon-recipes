@@ -1,0 +1,1 @@
+<wait>e<wait><down><down><down><down><left><backspace><backspace><backspace><wait> autoinstall <shift-apostrophe>ds=nocloud-net;s=http://%LOCAL_IP%:%HTTP_PORT%/autoinstall/<shift-apostrophe><ctrl-x>

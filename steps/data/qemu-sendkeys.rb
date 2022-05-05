@@ -37,6 +37,7 @@ require "optparse"
 KEYS = {
   "%" => "shift-5",
   "/" => "slash",
+  ";" => "semicolon",
   ":" => "shift-semicolon",
   "=" => "equal",
   "." => "dot",
@@ -48,6 +49,7 @@ KEYS = {
   "+" => "shift-equal",
   "|" => "shift-backslash",
   "\\" => "backslash",
+  "\"" => "shift-apostrophe",
 }
 
 class Main

@@ -1,0 +1,5 @@
+# Ubuntu autoinstall/netplan/subiquity workaround
+# Clear hostname to get DHCP hostname @boot
+# See bug https://intranet.grid5000.fr/bugzilla/show_bug.cgi?id=13800
+- clear_hostname:
+  - exec_in: echo "" > /etc/hostname
