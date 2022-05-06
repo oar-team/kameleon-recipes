@@ -116,15 +116,24 @@ if __name__ == '__main__':
             target_regex = re.compile("^.*-netinst\.iso$")
             [visited,found] = url_find(set([args.mirror+"cdimage/"+v+"/" for v in ["release","archive"]]), set(), set())
         elif (args.distrib.lower() == "ubuntu"):
-            if args.mirror == None:
-                args.mirror = "http://(?:archive|old-releases).ubuntu.com/"
-                servers = set(["http://"+s+".ubuntu.com/ubuntu/" for s in ["old-releases","archive"]])
-            else:
-                servers = set([args.mirror])
             if not re.match("^\w+$",args.version):
                 raise Exception("please give the Ubuntu release name")
-            url_regex = re.compile("^"+args.mirror+"ubuntu/dists/(?:"+args.version+"(?:-updates)?/(?:main/(?:installer-"+args.arch+"/(?:current/(?:(?:legacy-)?images/(?:netboot/(?:mini\.iso)?)?)?)?)?)?)?$")
-            target_regex = re.compile("^.*/mini\.iso$")
+            if (args.version.lower() == "jammy"):
+              if (args.arch == "amd64"):
+                args.mirror = "https://releases.ubuntu.com/"
+              else:
+                args.mirror = "https://cdimage.ubuntu.com/releases/"
+              servers = set([args.mirror])
+              url_regex = re.compile("^"+args.mirror+args.version+"(?:/release)?/(?:ubuntu-\d+\.\d+(?:\.\d+)?-live-server-"+args.arch+"\.iso)?$")
+              target_regex = re.compile("^.*/ubuntu-.*-live-server-\w+\.iso$")
+            else:
+              if args.mirror == None:
+                args.mirror = "http://(?:archive|old-releases).ubuntu.com/"
+                servers = set(["http://"+s+".ubuntu.com/ubuntu/" for s in ["old-releases","archive"]])
+              else:
+                servers = set([args.mirror])
+              url_regex = re.compile("^"+args.mirror+"ubuntu/dists/(?:"+args.version+"(?:-updates)?/(?:main/(?:installer-"+args.arch+"/(?:current/(?:(?:legacy-)?images/(?:netboot/(?:mini\.iso)?)?)?)?)?)?)?$")
+              target_regex = re.compile("^.*/mini\.iso$")
             [visited,found] = url_find(servers, set(), set())
         elif (args.distrib.lower() == "centos"):
             if args.mirror == None:
