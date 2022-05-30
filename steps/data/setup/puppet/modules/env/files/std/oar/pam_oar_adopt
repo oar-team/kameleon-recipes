@@ -21,6 +21,10 @@ pam_account() {
 		exit 1
 	fi
 
+	if [ "${PAM_SERVICE}" = "su-l" ]; then
+		exit 0
+	fi
+
 	get_vars
 	test_pam_activation
 
