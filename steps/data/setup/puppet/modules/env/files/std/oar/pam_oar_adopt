@@ -21,6 +21,8 @@ pam_account() {
 		exit 1
 	fi
 
+	# We exit if the pam service is su, we don't want to have the error
+	# message when using su.
 	if [ "${PAM_SERVICE}" = "su-l" ]; then
 		exit 0
 	fi
