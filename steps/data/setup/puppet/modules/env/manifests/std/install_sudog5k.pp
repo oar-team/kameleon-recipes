@@ -7,6 +7,9 @@ class env::std::install_sudog5k {
       require env::commonpackages::rsyslog
 
       env::common::g5kpackages {
+        # See bug #13901
+        'ruby-net-ssh':
+          ensure => $::env::common::software_versions::ruby_net_ssh;
         'sudo-g5k':
           ensure => $::env::common::software_versions::sudo_g5k;
       }
