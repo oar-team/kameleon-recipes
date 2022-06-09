@@ -22,7 +22,7 @@ class env::big::configure_amd_gpu () {
       }
 
       package {
-        [ 'rock-dkms', 'hip-base', 'rocminfo', 'rocm-smi-lib', 'hip-rocclr', 'rocm-device-libs', 'libtinfo5' ]:
+        [ 'rock-dkms', 'hip-base', 'rocminfo', 'rocm-smi-lib', 'hip-rocclr', 'rocm-device-libs', 'libtinfo5', 'hsa-amd-aqlprofile' ]:
           ensure          => installed,
           install_options => ['--no-install-recommends'],
           require         => [Apt::Source['repo.radeon.com'], Exec['apt_update']];
@@ -96,7 +96,7 @@ class env::big::configure_amd_gpu () {
           ensure          => installed,
           install_options => ['--no-install-recommends'],
           require         => [Apt::Source['repo.radeon.com-amdgpu'], Exec['apt_update']];
-        [ 'hip-dev', 'rocminfo', 'rocm-smi-lib', 'rocm-device-libs', 'rocm-hip-runtime' ]:
+        [ 'hip-dev', 'rocminfo', 'rocm-smi-lib', 'rocm-device-libs', 'rocm-hip-runtime', 'hsa-amd-aqlprofile' ]:
           ensure          => installed,
           install_options => ['--no-install-recommends'],
           require         => [Apt::Source['repo.radeon.com-rocm'], Exec['apt_update'], Exec['build_and_install_rocm_llvm']];
