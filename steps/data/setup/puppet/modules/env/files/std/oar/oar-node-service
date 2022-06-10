@@ -13,14 +13,12 @@ OARNODECHECKRUN=/usr/lib/oar/oarnodecheckrun
 OARHOME=/var/lib/oar
 
 # retry settings
-MODSLEEP=20
-MINSLEEP=10
 MAXRETRY=300
 
 start_oar_node() {
     test -n "$OARREMOTE" || exit 0
     local retry=0
-    local sleep=0
+    local sleep
     local status=1
     until [ $status -eq 0 ]; do
       echo "oar-node: perform sanity checks"
@@ -37,13 +35,12 @@ start_oar_node() {
           echo "oar-node: FAILED"
           return 1
         fi
-	local random=$RANDOM
-        # Workaround for the case where dash is the default shell: dash does
-        # not provide $RANDOM
-        if [ "x$random" = "x" ]; then
-            random=$(bash -c 'echo $RANDOM')
-        fi
-        sleep=$(($random % $MODSLEEP + $MINSLEEP))
+	# We retry directly after the first fail
+	if [ -z $sleep ]; then
+	  sleep=0
+	else
+	  sleep=$(($sleep + 5))
+	fi
         echo "oar-node: retrying in $sleep seconds..."
         sleep $sleep
       }
