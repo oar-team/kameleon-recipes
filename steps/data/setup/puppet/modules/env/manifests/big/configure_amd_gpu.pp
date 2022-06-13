@@ -34,12 +34,6 @@ class env::big::configure_amd_gpu () {
           require => Package['rocm-smi-lib'];
       }
 
-      file_line {
-        'rocm_etc_profile_path':
-          path => '/etc/profile',
-          line => 'export PATH=$PATH:/opt/rocm/bin';
-      }
-
       file {
         '/usr/local/bin/rocm-smi':
           ensure  => link,
@@ -52,12 +46,6 @@ class env::big::configure_amd_gpu () {
           mode    => '0644',
           source  => 'puppet:///modules/env/big/amd_gpu/70-amdgpu.rules',
           require => Package['rock-dkms'];
-        '/etc/ld.so.conf.d/rocm.conf':
-          ensure  => present,
-          owner => root,
-          group => root,
-          mode  => '0644',
-          source => 'puppet:///modules/env/big/amd_gpu/rocm.conf';
       }
     }
 
@@ -119,12 +107,6 @@ class env::big::configure_amd_gpu () {
           require => Package['rocm-smi-lib'];
       }
 
-      file_line {
-        'rocm_etc_profile_path':
-          path => '/etc/profile',
-          line => 'export PATH=$PATH:/opt/rocm/bin';
-      }
-
       file {
         '/usr/local/bin/rocm-smi':
           ensure  => link,
@@ -137,13 +119,22 @@ class env::big::configure_amd_gpu () {
           mode    => '0644',
           source  => 'puppet:///modules/env/big/amd_gpu/70-amdgpu.rules',
           require => Package['amdgpu-dkms'];
-        '/etc/ld.so.conf.d/rocm.conf':
-          ensure  => present,
-          owner => root,
-          group => root,
-          mode  => '0644',
-          source => 'puppet:///modules/env/big/amd_gpu/rocm.conf';
       }
     }
+  }
+
+  file_line {
+    'rocm_etc_profile_path':
+      path => '/etc/profile',
+      line => 'export PATH=$PATH:/opt/rocm/bin';
+  }
+
+  file {
+    '/etc/ld.so.conf.d/rocm.conf':
+      ensure  => present,
+      owner => root,
+      group => root,
+      mode  => '0644',
+      source => 'puppet:///modules/env/big/amd_gpu/rocm.conf';
   }
 }
