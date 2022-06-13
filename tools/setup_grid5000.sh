@@ -26,6 +26,11 @@ fi
 # install other dependencies
 apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends linux-headers-$(uname -r) netcat eatmydata libguestfs-tools gnupg-agent
 
+# install dependencies if arm64, for Ubuntu iso autoinstall/cloud-init rebuild. See #13859
+if [ "$ARCH" = "arm64" ]; then
+        apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y xorriso p7zip-full
+fi
+
 mv /bin/gzip /bin/gzip.OLD
 ln -s /usr/bin/pigz /bin/gzip
 
