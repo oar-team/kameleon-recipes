@@ -40,6 +40,7 @@ global:
   # or give an helper script to find out the iso URL:
   installer_iso_finder_helper:
   installer_iso_finder_args:
+  installer_iso_rebuild: false
 
   # Otherwise, if qemu_kernel_path is set, boot from an kernel, initrd and
   # cmdline fetched from the URL defined below, and used directly in qemu:
