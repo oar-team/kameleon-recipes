@@ -14,7 +14,7 @@ class env::min::configure_network_and_install_drivers {
         source => "puppet:///modules/env/min/network/g5k-update-host-name";
   }
 
-  # Network driver for many dell server, arm pyxi cluster (qlogic), servan cluster ice (misc-nonfree)
+  # Network driver for many dell server, arm pyxis cluster (qlogic), servan cluster ice (misc-nonfree)
   case $operatingsystem {
     'Debian': {
       $drivers = ['firmware-bnx2x', 'firmware-bnx2', 'firmware-qlogic', 'firmware-misc-nonfree']
