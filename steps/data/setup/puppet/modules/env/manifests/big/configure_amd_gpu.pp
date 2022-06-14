@@ -22,7 +22,7 @@ class env::big::configure_amd_gpu () {
       }
 
       package {
-        [ 'rock-dkms', 'hip-base', 'rocminfo', 'rocm-smi-lib', 'hip-rocclr', 'rocm-device-libs', 'libtinfo5' ]:
+        [ 'rock-dkms', 'hip-base', 'rocminfo', 'rocm-smi-lib', 'hip-rocclr', 'rocm-device-libs', 'libtinfo5', 'hsa-amd-aqlprofile' ]:
           ensure          => installed,
           install_options => ['--no-install-recommends'],
           require         => [Apt::Source['repo.radeon.com'], Exec['apt_update']];
@@ -32,12 +32,6 @@ class env::big::configure_amd_gpu () {
         'add_rocm_symlink':
           command => "/bin/ln -s /opt/rocm-*/ /opt/rocm",
           require => Package['rocm-smi-lib'];
-      }
-
-      file_line {
-        'rocm_etc_profile_path':
-          path => '/etc/profile',
-          line => 'export PATH=$PATH:/opt/rocm/bin';
       }
 
       file {
@@ -96,7 +90,7 @@ class env::big::configure_amd_gpu () {
           ensure          => installed,
           install_options => ['--no-install-recommends'],
           require         => [Apt::Source['repo.radeon.com-amdgpu'], Exec['apt_update']];
-        [ 'hip-dev', 'rocminfo', 'rocm-smi-lib', 'rocm-device-libs', 'rocm-hip-runtime' ]:
+        [ 'hip-dev', 'rocminfo', 'rocm-smi-lib', 'rocm-device-libs', 'rocm-hip-runtime', 'hsa-amd-aqlprofile' ]:
           ensure          => installed,
           install_options => ['--no-install-recommends'],
           require         => [Apt::Source['repo.radeon.com-rocm'], Exec['apt_update'], Exec['build_and_install_rocm_llvm']];
@@ -113,12 +107,6 @@ class env::big::configure_amd_gpu () {
           require => Package['rocm-smi-lib'];
       }
 
-      file_line {
-        'rocm_etc_profile_path':
-          path => '/etc/profile',
-          line => 'export PATH=$PATH:/opt/rocm/bin';
-      }
-
       file {
         '/usr/local/bin/rocm-smi':
           ensure  => link,
@@ -133,5 +121,20 @@ class env::big::configure_amd_gpu () {
           require => Package['amdgpu-dkms'];
       }
     }
+  }
+
+  file_line {
+    'rocm_etc_profile_path':
+      path => '/etc/profile',
+      line => 'export PATH=$PATH:/opt/rocm/bin';
+  }
+
+  file {
+    '/etc/ld.so.conf.d/rocm.conf':
+      ensure  => present,
+      owner => root,
+      group => root,
+      mode  => '0644',
+      source => 'puppet:///modules/env/big/amd_gpu/rocm.conf';
   }
 }
