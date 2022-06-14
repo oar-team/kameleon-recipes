@@ -1,7 +1,34 @@
 - copy_autoinstall_script_to_http_directory:
   - test:
+    - exec_local: test "$${installer_iso_rebuild}" == "true"
+    # Rebuild iso for Autoinstall/cloud-init if qemu-sendkeys is not working (currently under arm64 arch)
+    - group:
+      - check_cmd_local: 7z
+      - check_cmd_local: xorriso
+      - check_cmd_local: fdisk
+      - exec_local: |
+          ISO_WORKING_DIR="iso-temp"
+          echo "Extract iso using 7z"
+          mkdir -p "${ISO_WORKING_DIR}"
+          7z x "$${qemu_iso_path}" -x'![BOOT]' "-o${ISO_WORKING_DIR}"
+          echo "Extract efi.img"
+          SECTOR_START=$(/sbin/fdisk -l "$${qemu_iso_path}" | grep iso2 | awk '{print $2}')
+          SECTOR_COUNT=$(/sbin/fdisk -l "$${qemu_iso_path}" | grep iso2 | awk '{print $4}')
+          dd if="$${qemu_iso_path}" bs=512 skip="${SECTOR_START}" count="${SECTOR_COUNT}" of="${ISO_WORKING_DIR}/boot/grub/efi.img"
+          echo "Update boot with cloud-init autoinstall"
+          sed -i "s|quiet \-\-\-|autoinstall \'ds=nocloud-net;s=http://$${local_ip}:8000/autoinstall/\' ---|" "${ISO_WORKING_DIR}/boot/grub/grub.cfg"
+          sed -i "s/^set timeout=.*/set timeout=3/" "${ISO_WORKING_DIR}/boot/grub/grub.cfg"
+          echo "Rebuild iso"
+          # "Disable" md5 checksum
+          md5sum "${ISO_WORKING_DIR}/.disk/info" | sed "s|${ISO_WORKING_DIR}/|./|" > "${ISO_WORKING_DIR}/md5sum.txt"
+          xorriso -as mkisofs -r -V 'Ubuntu_Server_Custom' -o "$${qemu_iso_path}-new" -J -joliet-long -e boot/grub/efi.img -no-emul-boot -append_partition 2 0xef "${ISO_WORKING_DIR}/boot/grub/efi.img" -partition_cyl_align all "${ISO_WORKING_DIR}"
+          # replace iso
+          mv "$${qemu_iso_path}-new" "$${qemu_iso_path}"
+          # cleaning
+          rm -rf "${ISO_WORKING_DIR}"
+  - test:
     - exec_local: test -n "$${base_autoinstall_path}"
-    # Autoinstall
+    # Autoinstall/cloud-init
     - group:
       - exec_local: mkdir -p $${http_directory}/autoinstall
       - exec_local: cp $${base_autoinstall_path} $${http_directory}/autoinstall/user-data
