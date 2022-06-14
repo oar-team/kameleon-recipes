@@ -2,8 +2,9 @@ class env::base::configure_omnipath(){
 
   case "${::lsbdistcodename}" {
     'bullseye': {
+      # opapackages depends on 'firmware-misc-nonfree' which is now installed on configure_network_and_install_drivers.pp for debian-min. 
       $opapackages = ['opa-address-resolution', 'opa-fastfabric', 'libopamgt0', 'libopasadb1',
-                      'opa-basic-tools', 'firmware-misc-nonfree']
+                      'opa-basic-tools']
 
       # Note: G5K libfabric1 packages installed in install_openmpi.pp
       $rdmapackages = ['qperf', 'libibverbs1', 'librdmacm1', 'libibmad5', 'libibumad3', 'ibverbs-providers',
@@ -36,8 +37,9 @@ class env::base::configure_omnipath(){
       }
     }
     'buster': {
+      # opapackages depends on 'firmware-misc-nonfree' which is now installed on configure_network_and_install_drivers.pp for debian-min.
       $opapackages = ['opa-address-resolution', 'opa-fastfabric', 'libopamgt0', 'libopasadb1',
-                      'opa-basic-tools', 'firmware-misc-nonfree']
+                      'opa-basic-tools']
 
       $rdmapackages = ['qperf', 'libibverbs1', 'librdmacm1', 'libibmad5', 'libibumad3', 'ibverbs-providers',
                       'rdmacm-utils', 'infiniband-diags', 'libfabric1', 'ibverbs-utils']
