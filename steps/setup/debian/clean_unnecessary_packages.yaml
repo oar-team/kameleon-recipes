@@ -1,4 +1,4 @@
-- default_packages_no_clean: gnupg linux-image-$${deb_arch} console-setup rsync locales firmware-bnx2 firmware-bnx2x firmware-qlogic
+- default_packages_no_clean: gnupg linux-image-$${deb_arch} console-setup rsync locales firmware-bnx2 firmware-bnx2x firmware-qlogic firmware-misc-nonfree
 - arch_packages_no_clean: grub-pc grub-efi-amd64-bin
 - other_packages_no_clean:
 
