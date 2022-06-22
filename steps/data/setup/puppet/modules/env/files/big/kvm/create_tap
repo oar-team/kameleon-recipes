@@ -11,3 +11,4 @@ ip link set $TAPDEV up
 echo $TAPDEV >> /var/lib/oar/tap_devices_for_user_$SUDO_USER
 chown oar:oar /var/lib/oar/tap_devices_for_user_$SUDO_USER
 echo $TAPDEV
+logger -p syslog.info -t createtap "create_tap was used"
