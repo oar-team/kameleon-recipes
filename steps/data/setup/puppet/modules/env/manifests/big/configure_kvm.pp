@@ -41,6 +41,12 @@ class env::big::configure_kvm () {
       group     => root,
       mode      => '0755',
       source    => 'puppet:///modules/env/big/kvm/create_tap';
+    '/etc/rsyslog.d/syslog_createtap.conf':
+      ensure    => present,
+      owner     => root,
+      group     => root,
+      mode      => '0644',
+      source    => 'puppet:///modules/env/big/kvm/syslog_createtap.conf';
     '/usr/lib/qemu/qemu-bridge-helper':
       ensure    => present,
       owner     => root,
