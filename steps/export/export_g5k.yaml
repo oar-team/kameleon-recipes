@@ -11,6 +11,7 @@
 - g5k_tar_compression: "gzip"
 - g5k_postinst_compression: "gzip"
 - g5k_no_chroot_for_grub: "false"
+- g5k_distrib: $${distrib}
 - g5k_description: $${distrib} $${release_number} ($${release}) for $${arch} - $${g5k_variant}
 - g5k_release_number: $${release_number}
 
@@ -30,8 +31,8 @@
       if [[ "x$${g5k_variant}" != "xxen" ]]; then
       cat << EOF > $${output}.dsc
       $${dashes}
-      name: $${distrib}$${g5k_release_number}-$${g5k_variant}
-      alias: $${distrib}$${g5k_release_number}-$${g5k_image_arch}-$${g5k_variant}
+      name: $${g5k_distrib}$${g5k_release_number}-$${g5k_variant}
+      alias: $${g5k_distrib}$${g5k_release_number}-$${g5k_image_arch}-$${g5k_variant}
       arch: $${arch}
       version: $${g5k_version}
       description: $${g5k_description}
@@ -58,8 +59,8 @@
       else
       cat << EOF > $${output}.dsc
       $${dashes}
-      name: $${distrib}$${g5k_release_number}-$${g5k_variant}
-      alias: $${distrib}$${g5k_release_number}-$${g5k_image_arch}-$${g5k_variant}
+      name: $${g5k_distrib}$${g5k_release_number}-$${g5k_variant}
+      alias: $${g5k_distrib}$${g5k_release_number}-$${g5k_image_arch}-$${g5k_variant}
       arch: $${arch}
       version: $${g5k_version}
       description: $${g5k_description}

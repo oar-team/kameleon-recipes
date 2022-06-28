@@ -18,6 +18,7 @@ global:
   g5k_version: 1111111111
   # Grid'5000 environment arch
   g5k_image_arch: x64
+  g5k_distrib: centosstream
   # Grid'5000 kadeploy environment parameters
   g5k_tar_path: server:///path/to/your/image
   g5k_tar_compression: "zstd"
