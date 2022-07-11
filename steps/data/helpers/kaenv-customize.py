@@ -28,7 +28,7 @@ class Environment:
                 p = subprocess.Popen(["ssh", remote ] + kaenv_cmd.split(), stdout=subprocess.PIPE)
             else:
                 p = subprocess.Popen(kaenv_cmd.split(), stdout=subprocess.PIPE)
-            self.desc = yaml.load(p.stdout)
+            self.desc = yaml.load(p.stdout, Loader=yaml.SafeLoader)
         except Exception as exc:
             raise Exception("Failed to import environment description with '{}'".format(kaenv_cmd))
         return self
