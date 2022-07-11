@@ -3,6 +3,7 @@
 - grid5000_environment_import_name: ""
 - grid5000_environment_import_user: ""
 - grid5000_environment_import_version: ""
+- grid5000_environment_import_arch: "x86_64"
 - grid5000_environment_export_name: "$${kameleon_recipe_name}"
 - grid5000_environment_export_format: "tar.gz"
 - grid5000_environment_export_image_file: "$${appliance_filename}.$${grid5000_environment_export_format}"
@@ -27,6 +28,9 @@
       fi
       if [ -n "$${grid5000_environment_import_version}" ]; then
         kaenv_import="$kaenv_import:$${grid5000_environment_import_version}"
+      fi
+      if [ -n "$${grid5000_environment_import_arch}" ]; then
+        kaenv_import="$kaenv_import%$${grid5000_environment_import_arch}"
       fi
       if [ -n "$${grid5000_frontend}" ]; then
         kaenv_frontend="--remote $${grid5000_frontend}"

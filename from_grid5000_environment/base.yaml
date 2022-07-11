@@ -25,10 +25,10 @@ env:
 # Global variables use by Kameleon engine and the steps
 global:
   # Architecture for the target system
-  arch: x86_64
+  arch: "$${grid5000_environment_import_arch}"
   # Distribution
   distrib: debian
-  release: 10
+  release: 11
 
   ## Grid'5000 environment information
   # Frontend to run kaenv3 on
@@ -36,9 +36,10 @@ global:
   # Site used in the build
   grid5000_site: "grenoble"
   # Environment to build from
-  grid5000_environment_import_name: "debian10-x64-min"
+  grid5000_environment_import_name: "debian10-min"
   grid5000_environment_import_user: "deploy"
   grid5000_environment_import_version: ""
+  grid5000_environment_import_arch: "x86_64"
   # New environment description
   grid5000_environment_export_name: "$${kameleon_recipe_name}"
   grid5000_environment_export_format: "tar.zst"

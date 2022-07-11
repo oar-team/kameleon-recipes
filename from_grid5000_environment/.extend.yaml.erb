@@ -29,9 +29,10 @@ global:
   #grid5000_site: "grenoble"
 
   ## Environment to build from
-  #grid5000_environment_import_name: "debian10-x64-min"
+  #grid5000_environment_import_name: "debian11-min"
   #grid5000_environment_import_user: "deploy"
   #grid5000_environment_import_version: ""
+  #grid5000_environment_import_arch: "x86_64"
 
   ## New environment description
   #grid5000_environment_export_name: "$${kameleon_recipe_name}"
@@ -56,11 +57,11 @@ global:
   #grid5000_environment_export_additional_postinstall_dir: "additional_postinstall"
 
   ### Target machine/CPU architecture
-  ## If building an environment for another architecture than x86_64, uncomment
-  ## and adapt the next lines.
-  ## The following works for ARM64 machines, just uncomment for such machines.
-  #arch: aarch64
-  #qemu_arch: aarch64
+  ## If building an environment for another architecture than x86_64, you may need to
+  ## uncomment and adapt the next lines, in order for qemu to function.
+  ## Set the qemu arch name: qemu uses ppc64, not ppc64le.
+  #qemu_arch: ppc64
+  ## Make qemu use UEFI (required for aarch64 and ppc64).
   #qemu_uefi: true
 
   ### You can add below any other global variable definition

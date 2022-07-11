@@ -17,12 +17,14 @@ class Environment:
         
     def import_from_kaenv(self, env, remote = None):
         """import a kadeploy environment from	a kadeploy database"""
-        env = re.match(r"^(?P<name>[-_.\w]+)(?:@(?P<user>[_.\w]+))?(:?:(?P<version>[_.\w]+))?$", env).groupdict("")
+        env = re.match(r"^(?P<name>[-_.\w]+)(?:@(?P<user>[_.\w]+))?(:?:(?P<version>[_.\w]+))?(:?%(?P<arch>[_.\w]+))?$", env).groupdict("")
         if env['user']:
             env['user'] = " -u " + env['user']
         if env['version']:
             env['version'] = " --env-version " + env['version']
-        kaenv_cmd = "kaenv3{user}{version} -p {name}".format(**env)
+        if env['arch']:
+            env['arch'] = " --env-arch " + env['arch']
+        kaenv_cmd = "kaenv3{user}{version}{arch} -p {name}".format(**env)
         try:
             if remote:
                 p = subprocess.Popen(["ssh", remote ] + kaenv_cmd.split(), stdout=subprocess.PIPE)
@@ -64,9 +66,13 @@ class Environment:
         return self
 
     def del_postinstall(self, index):
-        del(self.desv['postinstall'][index])
+        del(self.desc['postinstall'][index])
         return self
- 
+
+    def del_alias(self):
+        del(self.desc['alias'])
+        return self
+
     def export(self):
         print("---\n" + yaml.dump(self.desc, default_flow_style=False))
 		
@@ -104,6 +110,7 @@ if __name__ == '__main__':
             if not add_postinstall_args:
                 raise ValueError('--add-postinstall takes an argument in the form "path:compression:cmdline", got {}'.format(args.add_postinstall))
             env.add_postinstall(*add_postinstall_args.groups())
+        env.del_alias()
         env.export()
     except Exception as exc:
         sys.stderr.write("Error: {}\n".format(exc))
