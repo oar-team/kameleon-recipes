@@ -67,6 +67,8 @@ setup:
     - bash_set_-e:
       - exec_in: set -e
   - configure_system:
+    - console_prompt:
+      - exec_in: sed -i -e '1s/^/DeployMiniOS - /' /etc/issue
     - hosts:
       - write_in:
         - /etc/hosts
