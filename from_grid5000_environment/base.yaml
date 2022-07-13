@@ -50,6 +50,7 @@ global:
   grid5000_environment_export_additional_postinstall_dir: "additional_postinstall"
   grid5000_environment_export_dir: "$HOME/public/"
   grid5000_environment_export_baseurl: "local://$HOME/public/"
+  grid5000_environment_export_visibility: "shared"
 
   # output appliance options
   filesystem_type: ext4

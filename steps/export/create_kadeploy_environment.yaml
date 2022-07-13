@@ -16,6 +16,7 @@
 - grid5000_environment_export_additional_postinstall_script: ""
 - grid5000_environment_export_additional_postinstall_dir: "additional_postinstall"
 - grid5000_environment_export_version: ""
+- grid5000_environment_export_visibility: "shared"
 - grid5000_environment_export_author: ""
 - grid5000_environment_export_baseurl: ""
 - grid5000_environment_export_dir: ""
@@ -86,6 +87,7 @@
         --modify image_kind=$kaenv_kind \
         --modify image_compression=$kaenv_compression \
         --modify description="$${grid5000_environment_export_description}" \
+        --modify visibility="$${grid5000_environment_export_visibility}" \
         ${kaenv_postinstall_script:+--modify postinstalls_script0="$${grid5000_environment_export_postinstall_script}"} \
         ${kaenv_postinstall_archive:+--modify postinstalls_archive0="$${grid5000_environment_export_postinstall_archive}"} \
         ${kaenv_postinstall_compression:+--modify postinstalls_compression0="$${grid5000_environment_export_postinstall_compression}"} \
