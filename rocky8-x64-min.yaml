@@ -37,10 +37,6 @@ global:
   # password
   root_password: grid5000
 
-  include_steps:
-    - centos
-    - centos/$${release}
-
 bootstrap:
   - "@base"
 
