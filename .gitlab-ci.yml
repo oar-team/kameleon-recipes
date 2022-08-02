@@ -85,3 +85,6 @@ build_centosstream8-x64-min:
 # Rocky
 build_rocky8-x64-min:
   <<: *defaults-build
+
+build_rocky9-x64-min:
+  <<: *defaults-build
