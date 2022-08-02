@@ -1,0 +1,25 @@
+- create_kernel_symlinks_hook:
+  - exec_in: |
+      mkdir -p /etc/kernel/install.d/
+      cat <<'EOF' > /etc/kernel/install.d/01-symlinks.install
+      #!/bin/bash
+      ACTION=${1:-add}
+      KERNEL_VERSION="${2:-$(uname -r)}"
+      KERNEL_IMAGE="/boot/vmlinuz-${KERNEL_VERSION}"
+      INITRAMFS_IMAGE="/boot/initramfs-${KERNEL_VERSION}.img"
+      case $ACTION in
+        add)
+          echo "Create relative symlinks in /:"
+          ln -sfvn ${KERNEL_IMAGE#/} /vmlinuz
+          ln -sfvn ${INITRAMFS_IMAGE#/} /initramfs.img
+        ;;
+        remove)
+        ;;
+      esac
+      EOF
+      chmod 755 /etc/kernel/install.d/01-symlinks.install
+- force_create_kernel_symlinks:
+  - on_setup_clean:
+    - exec_in: |
+        KERNEL_PKG=$(rpm -q kernel --last | head -n1 | cut -d\  -f1)
+        /etc/kernel/install.d/01-symlinks.install add ${KERNEL_PKG#kernel-}
