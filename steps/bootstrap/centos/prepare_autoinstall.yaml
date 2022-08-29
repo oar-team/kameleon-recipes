@@ -4,3 +4,16 @@
 - customize_kickstart:
   - exec_local: sed -i s'|rootpw\(.*\)|rootpw $${root_password}|'g $${http_directory}/ks.cfg
   - exec_local: sed -i s'|url --url\(.*\)|url --url=$${mirror_url}|'g $${http_directory}/ks.cfg
+
+- modify_grub.cfg:
+  - test:
+    - exec_local: test "$${arch}" == "aarch64"
+    - group:
+      - check_cmd_local: xorriso
+      - exec_local: export TMP_ISO=tmp.iso
+      - exec_local: echo "Modifying grub.cfg for Centos-like distros on aarch64 architectures."
+      - exec_local: cp $${custom_grub_cfg} grub.cfg
+      - exec_local: sed -i "s/%LOCAL_IP%/$${local_ip}/g" grub.cfg
+      - exec_local: sed -i "s/%LOCAL_PORT%/$HTTP_PORT/g" grub.cfg
+      - exec_local: xorriso -indev $${qemu_iso_path} -outdev $TMP_ISO -compliance no_emul_toc -map grub.cfg /EFI/BOOT/grub.cfg -boot_image any replay
+      - exec_local: mv $TMP_ISO $${qemu_iso_path}
