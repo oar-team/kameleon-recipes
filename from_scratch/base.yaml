@@ -86,6 +86,7 @@ global:
 
   # GRUB
   grub_cmdline_linux: console=tty0 console=ttyS0,115200
+  custom_grub_cfg:
 
   http_directory: $${kameleon_cwd}/http_dir
   http_pid:  $${kameleon_cwd}/http.pid
