@@ -1,0 +1,43 @@
+#==============================================================================
+# vim: softtabstop=2 shiftwidth=2 expandtab fenc=utf-8 cc=81 tw=80
+#==============================================================================
+#
+# DESCRIPTION: Rocky Linux ARM64 generic recipe using the netinstall mechanism
+#
+# Uses the netinstall + kickstart mechanism
+#
+#==============================================================================
+---
+extend: base.yaml
+global:
+  distrib: rocky
+
+  release_number: 8
+  release: 8
+
+  mirror_base_url: http://mirror.in2p3.fr/linux/$${distrib}/
+  mirror_url: $${mirror_base_url}$${release}/BaseOS/$${arch}/os/
+
+  installer_iso_finder_helper: $${kameleon_data_dir}/helpers/netinstall_iso_finder.py
+  installer_iso_finder_mirror_url: $${mirror_base_url}
+  installer_iso_finder_args: $${distrib} $${release_number} $${arch} $${installer_iso_finder_mirror_url}
+
+  base_kickstart_path: $${kameleon_data_dir}/kickstart/$${distrib}$${release_number}-ks-$${arch}.cfg
+  qemu_sendkeys_commands: $${kameleon_data_dir}/qemu-sendkeys/netinst-$${distrib}
+
+  custom_grub_cfg: $${kameleon_data_dir}/grub/$${distrib}$${release}-$${arch}-grub.cfg
+
+  include_steps:
+    - $${distrib}/$${release_number}
+    - $${distrib}
+    - centos/$${release_number}
+    - centos
+
+bootstrap:
+  - "@base"
+
+setup:
+  - "@base"
+
+export:
+  - "@base"
