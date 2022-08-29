@@ -1,0 +1,56 @@
+#==============================================================================
+# vim: softtabstop=2 shiftwidth=2 expandtab fenc=utf-8 cc=81 tw=80
+#==============================================================================
+#
+# DESCRIPTION: Rocky Linux 8 arm64 min Grid'5000 environment
+#
+#==============================================================================
+---
+extend: from_scratch/aarch64/rocky-8.yaml
+
+global:
+  appliance_formats: qcow2 tar.zst
+  # Output base filename
+  output: "$${kameleon_cwd}/$${kameleon_recipe_name}"
+  # Grid'5000 environment variant
+  g5k_variant: min
+  # Grid'5000 environment version
+  g5k_version: 1111111111
+  # Grid'5000 environment arch
+  g5k_image_arch: arm64
+  # Grid'5000 kadeploy environment parameters
+  g5k_tar_path: server:///path/to/your/image
+  g5k_tar_compression: "zstd"
+  g5k_postinst_path: server:///grid5000/postinstalls/g5k-postinstall.tgz
+  g5k_postinst_compression: "gzip"
+  g5k_postinst_script: g5k-postinstall --net redhat --disk-aliases
+  g5k_kernel_params: "crashkernel=no"
+  g5k_kernel_path: "/vmlinuz"
+  g5k_initrd_path: "/initramfs.img"
+  g5k_no_chroot_for_grub: "true"
+  # Packages to install
+  packages: "zstd"
+  # locales
+  locales: POSIX C en_US.UTF8
+  lang: en_US.UTF8
+  timezone: Europe/Paris
+  # password
+  root_password: grid5000
+
+bootstrap:
+  - "@base"
+
+setup:
+  - create_kernel_symlinks
+  - "@base"
+  - configure_system
+  - install_packages
+  - disable_kdump
+  - set_g5k_release
+  - set_g5k_motd
+
+export:
+  - clean_dhcp_leases
+  - "@base"
+  - do_qcow2_finish_works
+  - export_g5k
