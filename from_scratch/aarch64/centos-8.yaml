@@ -10,10 +10,6 @@
 ---
 extend: centos-base.yaml
 global:
-  distrib: centos
-
-  release_number: 8
-  release: $${release_number}
 
 bootstrap:
   - "@base"
