@@ -15,5 +15,7 @@
       - exec_local: cp $${custom_grub_cfg} grub.cfg
       - exec_local: sed -i "s/%LOCAL_IP%/$${local_ip}/g" grub.cfg
       - exec_local: sed -i "s/%LOCAL_PORT%/$HTTP_PORT/g" grub.cfg
+      - exec_local: sed -i "s/%RELEASE%/$${release}/g" grub.cfg
+      - exec_local: sed -i "s/%ARCH%/$${arch}/g" grub.cfg
       - exec_local: xorriso -indev $${qemu_iso_path} -outdev $TMP_ISO -compliance no_emul_toc -map grub.cfg /EFI/BOOT/grub.cfg -boot_image any replay
       - exec_local: mv $TMP_ISO $${qemu_iso_path}
