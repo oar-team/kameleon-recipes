@@ -1,0 +1,46 @@
+#==============================================================================
+# vim: softtabstop=2 shiftwidth=2 expandtab fenc=utf-8 cc=81 tw=80
+#==============================================================================
+#
+# DESCRIPTION: Centos generic recipe using the netinstall mechanism
+#
+# Uses the netinstall + kickstart mechanism
+#
+#==============================================================================
+---
+extend: base.yaml
+global:
+  distrib: centos
+  
+  release_number: 8
+  release: $${release_number}
+
+  mirror_base_url: http://mirror.nsc.liu.se/centos-store/centos/
+  installer_iso_finder_mirror_url: $${mirror_base_url}$${release}/os/$${arch}/
+  mirror_url: $${mirror_base_url}$${release}/BaseOS/$${arch}/os/
+
+  installer_iso_finder_helper: $${kameleon_data_dir}/helpers/netinstall_iso_finder.py
+  installer_iso_finder_mirror_url: $${mirror_base_url}
+  installer_iso_finder_args: $${distrib} $${release_number} $${arch} $${installer_iso_finder_mirror_url}
+  qemu_iso_path: $${kameleon_cwd}/$${distrib}.iso
+
+  qemu_memory_size: 2G
+
+  base_kickstart_path: $${kameleon_data_dir}/kickstart/$${distrib}$${release_number}-$${arch}-ks.cfg
+
+  qemu_sendkeys_commands: $${kameleon_data_dir}/qemu-sendkeys/netinst-$${distrib}-grub
+
+  custom_grub_cfg: $${kameleon_data_dir}/grub/$${distrib}$${release_major}-grub.cfg
+
+  include_steps:
+    - $${distrib}/$${release_number}
+    - $${distrib}
+
+bootstrap:
+  - "@base"
+
+setup:
+  - "@base"
+
+export:
+  - "@base"
