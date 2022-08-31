@@ -169,9 +169,9 @@ if __name__ == '__main__':
             if args.mirror == None:
                 args.mirror = "https://mirror.in2p3.fr/linux/rocky/"
             if not re.match("^\d+$",args.version):
-                raise Exception("please give the Rocky Linux release number (e.g. 8 for Rocky Linux 8)")
-            if args.version != '8':
-                raise Exception("Only Rocky Linux 8 is supported !")
+                raise Exception("please give the Rocky Linux release number (e.g. 8 for Rocky Linux 8, or 9)")
+            if args.version not in ['8', '9']:
+                raise Exception("Unsupported version %s of Rocky Linux." % args.version)
             else:
                 url_regex = re.compile("^"+args.mirror+"(?:"+args.version+"/(?:isos/(?:"+args.arch+"/(?:Rocky-"+args.version+"\.\d+-"+args.arch+"-boot\.iso)?)?)?)?$")
                 target_regex = re.compile("^.*Rocky-\d+\.\d+-\w+-boot\.iso$")
