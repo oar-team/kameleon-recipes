@@ -1,5 +1,4 @@
 - copy_kickstart_file_to_http_directory:
-  - exec_local: mkdir -p $${http_directory}
   - exec_local: cp $${base_kickstart_path} $${http_directory}/ks.cfg
 
 - customize_kickstart:

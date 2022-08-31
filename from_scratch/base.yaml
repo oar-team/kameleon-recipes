@@ -108,8 +108,8 @@ bootstrap:
   - enable_checkpoint
   - download_installer
   - prepare_disk
-  - prepare_autoinstall
   - start_http_server
+  - prepare_autoinstall
   - start_qemu:
     - force_vm_shutdown: false
     - shutdown_vm_immediately: true
