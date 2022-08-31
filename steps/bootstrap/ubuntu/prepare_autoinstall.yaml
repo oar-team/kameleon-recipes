@@ -38,7 +38,6 @@
       - exec_local: sed -i -e "s|\(        passwd:\).*|\1 $CRYPTED_PASS|g" $${http_directory}/autoinstall/user-data
     # Preseed
     - group:
-      - exec_local: mkdir -p $${http_directory}
       - exec_local: cp $${base_preseed_path} $${http_directory}/preseed.cfg
       # Customize preseed
       - exec_local: sed -i -e 's|\(d-i passwd/root-password password \).*|\1$${root_password}|g' $${http_directory}/preseed.cfg
