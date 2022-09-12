@@ -16,7 +16,12 @@ VERSION=$(apt-cache policy $KERNEL | grep Installed: | awk '{print $2}')
 ARCH=$(dpkg --print-architecture)
 KERNEL_SHORT=$(uname -r | sed -re "s/^(.*)-[^-]*/\1/g")
 apt-get update
-apt-get install -y systemtap linux-image-$(uname -r)-dbg=$VERSION linux-headers-$(uname -r)=$VERSION linux-headers-$KERNEL_SHORT-common=$VERSION
+# Fix temporary dbg package revision diff (5.10.127-1 unavailable
+if [[ "$KERNEL_SHORT" == "5.10.0-16" ]]; then
+  apt-get install -y systemtap linux-image-$(uname -r)-dbg=5.10.127-2 linux-headers-$(uname -r)=$VERSION linux-headers-$KERNEL_SHORT-common=$VERSION
+else
+  apt-get install -y systemtap linux-image-$(uname -r)-dbg=$VERSION linux-headers-$(uname -r)=$VERSION linux-headers-$KERNEL_SHORT-common=$VERSION
+fi
 /tmp/environments-recipes/tools/nofsync.stp </dev/null >/dev/null 2>&1 &
 
 # if arm64 or ppc64, use backported package for libguestfs-tools. see #11432
