@@ -18,7 +18,12 @@ KERNEL_SHORT=$(uname -r | sed -re "s/^(.*)-[^-]*/\1/g")
 apt-get update
 # Fix temporary dbg package revision diff (5.10.127-1 unavailable)
 if [ "$KERNEL_SHORT" = "5.10.0-16" ]; then
-  apt-get install -y systemtap linux-image-$(uname -r)-dbg=5.10.127-2 linux-headers-$(uname -r)=$VERSION linux-headers-$KERNEL_SHORT-common=$VERSION
+  VERSION_ALT="5.10.127-2"
+  if [ "$ARCH" = "arm64" ]; then
+    apt-get install -y systemtap linux-image-$(uname -r)-dbg=$VERSION_ALT linux-headers-$(uname -r)=$VERSION_ALT linux-headers-$KERNEL_SHORT-common=$VERSION_ALT
+  else
+    apt-get install -y systemtap linux-image-$(uname -r)-dbg=$VERSION_ALT linux-headers-$(uname -r)=$VERSION linux-headers-$KERNEL_SHORT-common=$VERSION
+  fi
 else
   apt-get install -y systemtap linux-image-$(uname -r)-dbg=$VERSION linux-headers-$(uname -r)=$VERSION linux-headers-$KERNEL_SHORT-common=$VERSION
 fi
