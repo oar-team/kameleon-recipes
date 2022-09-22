@@ -6,11 +6,11 @@ class env::std::configure_oar_client {
     # Can specify oar client version below
     case "${::lsbdistcodename}" {
       'buster' : {
-        $oar_version       = "2.5.10~g5k28-1";
+        $oar_version       = "2.5.10~g5k29-1";
         $oar_repos         = "g5k"
       }
       'bullseye' : {
-        $oar_version       = "2.5.10~g5k28-1";
+        $oar_version       = "2.5.10~g5k29-1";
         $oar_repos         = "g5k"
       }
       default : {
@@ -170,19 +170,6 @@ class env::std::configure_oar_client {
       mode     => '0755',
       source   => 'puppet:///modules/env/std/oar/oar-node-service',
       require  => Package[$oar_packages];
-    '/etc/systemd/system/oar-node.service.d':
-      ensure   => directory,
-      owner    => root,
-      group    => root,
-      mode     => '0755',
-      require  => Package[$oar_packages];
-    '/etc/systemd/system/oar-node.service.d/override.conf':
-      ensure   => present,
-      owner    => root,
-      group    => root,
-      mode     => '0644',
-      source   => 'puppet:///modules/env/std/oar/oar-node.service.override',
-      require  => [Package[$oar_packages], File['/etc/systemd/system/oar-node.service.d']];
     '/etc/pam.d/common-session':
       ensure   => file,
       owner    => root,
