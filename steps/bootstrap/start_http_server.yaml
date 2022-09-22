@@ -1,5 +1,11 @@
 - http_script: $${kameleon_data_dir}/helpers/simple_http_server.py
 
+- create_http_dir:
+  - test:
+    - exec_local: test ! -d $${http_directory}
+    - group:
+      - exec_local: mkdir -p $${http_directory}
+
 - run_http_server:
   - exec_local: |
       HTTP_PORT=$(__find_free_port 8000 8100)

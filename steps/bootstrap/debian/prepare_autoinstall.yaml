@@ -1,5 +1,4 @@
 - copy_autoinstall_script_to_http_directory:
-  - exec_local: mkdir -p $${http_directory}
   - exec_local: cp $${base_preseed_path} $${http_directory}/preseed.cfg
 
 - customize_preseed:
