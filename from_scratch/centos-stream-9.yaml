@@ -10,7 +10,7 @@ extend: centos-stream-base.yaml
 
 global:
   release_number: 9
-  mirror_url: $${mirror_base_url}$${release}/BaseOS/$${arch}/os
+  mirror_base_url: http://mirror.in2p3.fr/linux/$${distrib}/
 
 bootstrap:
   - "@base"
