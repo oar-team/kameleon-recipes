@@ -9,7 +9,7 @@ class env::common::software_versions {
   $ganglia_monitor             = '3.6.0-7.1'
   $libguestfs_backport_arm64   = '1:1.40.2-7~bpog5k10+1'
   $libguestfs_backport_ppc64el = '1:1.40.2-7~bpog5k10+1'
-  $lmod                        = '6.6-0.4+g5k1.0.0'
+  $lmod                        = '6.6-0.4+g5k1.0.2'
   $g5k_jupyterlab              = '0.10'
 
   case "${env::deb_arch}" {
