@@ -123,15 +123,16 @@ function __download_kadeploy_environment_image() {
     local kaenv_name=$1
     local kaenv_user=$2
     local kaenv_version=$3
-    local remote=$4
-    local dest_dir=${5:-$kaenv_name}
+    local kaenv_arch=$4
+    local remote=$5
+    local dest_dir=${6:-$kaenv_name}
     mkdir -p $dest_dir
     echo "Retrieve image for Kadeploy environment $kaenv_name"
     ${remote:+ssh $remote }which kaenv3 > /dev/null || fail "kaenv3 command not found (${remote:-localhost})"
     # retrieve image[file], image[kind] and image[compression] from kaenv3
     declare -A image
-    __kaenv() { local k=${2%%:*}; image[$k]=${2#*:}; }
-    mapfile -s 1 -t -c1 -C __kaenv < <(${remote:+ssh $remote }kaenv3${kaenv_user:+ -u $kaenv_user}${kaenv_version:+ --env-version $kaenv_version} -p $kaenv_name | grep -A3 -e '^image:' | sed -e 's/ //g')
+    __callback() { local k=${2%%:*}; image[$k]=${2#*:}; }
+    mapfile -s 1 -t -c1 -C __callback < <(${remote:+ssh $remote }kaenv3${kaenv_user:+ -u $kaenv_user}${kaenv_version:+ --env-version $kaenv_version}${kaenv_arch:+ --env-arch $kaenv_arch} -p $kaenv_name | grep -A3 -e '^image:' | sed -e 's/ //g')
     [ -n "${image[file]}" ] || fail "Failed to retrieve environment $kaenv_name"
     if [ "${image[compression]}" == "gzip" ]; then
         image[compression]="gz"
@@ -177,7 +178,6 @@ function __find_linux_boot_device() {
 }
 
 export -f __find_linux_boot_device
-
 
 function __find_free_port() {
   local begin_port=$1

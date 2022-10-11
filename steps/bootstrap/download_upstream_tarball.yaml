@@ -9,6 +9,7 @@
 - kadeploy_environment_import_name: ""
 - kadeploy_environment_import_user: ""
 - kadeploy_environment_import_version: ""
+- kadeploy_environment_import_arch: ""
 - kadeploy_frontend: ""
 
 - download:
@@ -38,6 +39,7 @@
           - $${kadeploy_environment_import_name}
           - $${kadeploy_environment_import_user}
           - $${kadeploy_environment_import_version}
+          - $${kadeploy_environment_import_arch}
           - $${kadeploy_frontend}
           - $${upstream_store_dir}
         - exec_local: fail "Nothing to download ???"
