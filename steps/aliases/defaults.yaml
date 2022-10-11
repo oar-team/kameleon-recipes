@@ -160,7 +160,7 @@ download_recipe_build_local:
   - exec_local: __download_recipe_build "@1" "@2" "@3" "@4" "@5" "@6" "@7"
 
 download_grid5000_image_local:
-  - exec_local: __download_grid5000_image "@1" "@2" "@3" "@4" "@5"
+  - exec_local: __download_grid5000_image "@1" "@2" "@3" "@4" "@5" "@6"
 
 apt-get_in:
   - exec_in: DEBIAN_FRONTEND=noninteractive apt-get -y --force-yes @1 2>&1
