@@ -24,7 +24,7 @@ dryrun_all:
    - grid5000-docker
   image: ${CI_REGISTRY}/grid5000/docker/kameleon:2.10.7-bullseye
   script:
-   - for G5K_ENV in *.yaml kadeploy3-deploy-kernel/*.yaml; do echo "** kameleon dryrun $G5K_ENV **"; kameleon dryrun "$G5K_ENV"; done
+   - for G5K_ENV in *.yaml kadeploy3-deploy-kernel/*.yaml from_grid5000_environment/*.yaml; do echo "** kameleon dryrun $G5K_ENV **"; kameleon dryrun "$G5K_ENV"; done
   except:
    - tags
 
@@ -57,10 +57,6 @@ build_debian11-x64-std:
 build_debiantesting-x64-min:
   <<: *defaults-build
 
-# MiniOS Bullseye
-build_kadeploy3-deploy-kernel/kadeploy3-deploy-kernel-bullseye:
-  <<: *defaults-build
-
 # Ubuntu
 build_ubuntu1804-x64-min:
   <<: *defaults-build
@@ -91,3 +87,12 @@ build_rocky8-x64-min:
 
 build_rocky9-x64-min:
   <<: *defaults-build
+
+# MiniOS Bullseye
+build_kadeploy3-deploy-kernel/kadeploy3-deploy-kernel-bullseye:
+  <<: *defaults-build
+
+# from_grid5000_environment
+build_from_grid5000_environment/base:
+  <<: *defaults-build
+
