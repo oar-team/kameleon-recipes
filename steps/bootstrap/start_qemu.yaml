@@ -187,7 +187,7 @@
       VM_AVAILABLE=0
       if [ "$${vm_expected_service}" == "ssh" ]; then
         TIMEOUT=$(( $(date +%s) + $BOOT_TIMEOUT ))
-        until timeout 5 ssh -q -F $${ssh_config_file} -o ConnectionAttempts=1  $${kameleon_recipe_name} -t true && VM_AVAILABLE=1 || [ $(date +%s) -gt $TIMEOUT ];
+        until timeout 5 ssh -q -F $${ssh_config_file} -o ConnectionAttempts=1  $${kameleon_recipe_name} true > /dev/null && VM_AVAILABLE=1 || [ $(date +%s) -gt $TIMEOUT ];
         do
           echo -en "\rWaiting for SSH to become available in VM for out_context...($(( TIMEOUT - $(date +%s) ))s)"
           sleep 1
