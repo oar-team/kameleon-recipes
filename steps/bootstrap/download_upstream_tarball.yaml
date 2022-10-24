@@ -9,6 +9,7 @@
 - grid5000_environment_import_name: ""
 - grid5000_environment_import_user: ""
 - grid5000_environment_import_version: ""
+- grid5000_environment_import_arch: "x86_64"
 - grid5000_frontend: ""
 
 - download:
@@ -38,6 +39,7 @@
           - $${grid5000_environment_import_name}
           - $${grid5000_environment_import_user}
           - $${grid5000_environment_import_version}
+          - $${grid5000_environment_import_arch}
           - $${grid5000_frontend}
           - $${upstream_store_dir}
         - exec_local: fail "Nothing to download ???"

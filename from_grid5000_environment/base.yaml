@@ -36,7 +36,7 @@ global:
   # Site used in the build
   grid5000_site: "grenoble"
   # Environment to build from
-  grid5000_environment_import_name: "debian10-min"
+  grid5000_environment_import_name: "debian11-min"
   grid5000_environment_import_user: "deploy"
   grid5000_environment_import_version: ""
   grid5000_environment_import_arch: "x86_64"
