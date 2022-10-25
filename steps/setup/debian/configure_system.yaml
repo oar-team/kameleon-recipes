@@ -26,3 +26,6 @@
   - exec_in: sed -i 's|^\(GRUB_CMDLINE_LINUX=\).*|\1"$${grub_cmdline_linux}"|' /etc/default/grub
   - exec_in: update-grub
 
+- disable_automatic_apt_upgrades:
+  - exec_in: systemctl disable apt-daily.timer apt-daily.service
+  - exec_in: systemctl disable apt-daily-upgrade.timer apt-daily-upgrade.service
