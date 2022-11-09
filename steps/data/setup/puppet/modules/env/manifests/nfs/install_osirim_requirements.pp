@@ -44,7 +44,7 @@ class env::nfs::install_osirim_requirements () {
       owner   => root,
       group   => root,
       mode    => '0644',
-      content => '* -fstype=nfs,rw,nfsvers=3,hard,intr,async,noatime,nodev,nosuid,auto,rsize=32768,wsize=32768 osirim.toulouse.grid5000.fr:/ifs/grid5000/data/home/&',
+      content => '* -fstype=nfs,ro,nfsvers=3,hard,intr,async,noatime,nodev,nosuid,auto,rsize=32768,wsize=32768 osirim.toulouse.grid5000.fr:/ifs/grid5000/data/home/&',
       require => File['/srv/osirim'],
       notify  => Service['autofs'];
   }
