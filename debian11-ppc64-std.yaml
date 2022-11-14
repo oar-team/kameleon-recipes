@@ -11,6 +11,10 @@ extend: ./debian11-ppc64-common.yaml
 global:
   # Grid'5000 environment variant
   g5k_variant: std
+
+  # Generate only the appliance for bare-metal deployment, not for VMs.
+  appliance_formats: tar.zst
+
   # Grid'5000 Kadeploy environment parameters
   g5k_postinst_script: g5k-postinstall --net debian-bridged --net hpc --fstab nfs --restrict-user std --disk-aliases
   # Disable cgroup v2 and force cgroup v1 - Bug #12723
