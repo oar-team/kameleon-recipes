@@ -1,6 +1,6 @@
 [Unit]
 Description=Reset MIG configuration on GPU nvidia A100
-Before=dcgm-exporter.service prometheus-node-exporter.service ganglia-monitor.service
+Before=dcgm-exporter.service prometheus-node-exporter.service 
 After=nvidia-smi.service
 [Service]
 Type=oneshot

@@ -12,8 +12,6 @@ class env::big::configure_nvidia_gpu () {
   include 'env::big::configure_nvidia_gpu::fabricmanager'
   # Install cuda
   include 'env::big::configure_nvidia_gpu::cuda'
-  # Install nvidia ganglia plugins
-  include 'env::big::configure_nvidia_gpu::ganglia'
   # Install nvidia prometheus exporter
   include 'env::big::configure_nvidia_gpu::prometheus'
 

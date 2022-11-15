@@ -4,7 +4,6 @@ class env::base ( $variant = "base", $parent_parameters = {} ){
 
   $base_parameters = {
     misc_keep_tmp => true,
-    ganglia_enable => false
   }
 
   $parameters = merge ( $base_parameters, $parent_parameters )
@@ -28,11 +27,6 @@ class env::base ( $variant = "base", $parent_parameters = {} ){
   # Cpufreq. Not available on ppc64
   if $env::deb_arch != 'ppc64el' {
     class { 'env::base::enable_cpufreq_with_performance_governor': }
-  }
-  # Ganglia
-  class {
-    'env::base::install_and_disable_ganglia':
-      enable => $parameters['ganglia_enable']
   }
   #IbOverIP
   class { 'env::base::configure_ip_over_infiniband': }
