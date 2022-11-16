@@ -22,6 +22,8 @@ class env::nfs ( $variant = "nfs", $parent_parameters = {} ){
   class { 'env::nfs::configure_ldap': }
   # nfs
   class { 'env::nfs::install_nfs_requirements': }
+  # autofs
+  class { 'env::nfs::install_autofs_requirements': }
   # storage5k required
   class { 'env::nfs::install_storage5k_requirements': }
   # module spack
