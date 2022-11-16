@@ -10,7 +10,6 @@ class env::std ( $variant = "big", $parent_parameters = {} ){
   }
 
   $std_parameters = {
-    ganglia_enable => true,
     ntp_drift_file => true,
     misc_keep_tmp  => false,
     misc_root_pwd  => $root_pwd,
