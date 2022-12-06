@@ -33,7 +33,7 @@ pam_account() {
 		exit 0
 	fi
 
-	get_vars
+	get_vars $PAM_USER
 	test_pam_activation
 
 	# Four cases:
@@ -69,7 +69,8 @@ pam_session() {
 		exit 0
 	fi
 
-	get_vars
+	G5K_USER=${PAM_RUSER:=$PAM_USER}
+	get_vars $G5K_USER
 
 	# We could not find a running OAR job for this user on this node. It probably means that
 	# the user connecting is either root or oar (for example because of oarsh).
@@ -100,7 +101,7 @@ test_pam_activation() {
 }
 
 get_vars() {
-	USER_CGROUPS=$(get_user_cgroups $PAM_USER)
+	USER_CGROUPS=$(get_user_cgroups $1)
 	ALL_CPUSETS=$(cat ${OAR_CPUSETS_BASE}/cpuset.cpus 2> /dev/null || true)
 }
 
