@@ -8,7 +8,7 @@ global:
   image_format: qcow2
 
   qemu_enable_kvm: true
-  qemu_cpu: "$(($(nproc)-1))"
+  qemu_cpus: "$(($(nproc)-1))"
   qemu_memory_size: 1024
   qemu_monitor_socket: "/tmp/kameleon_qemu_monitor.$${kameleon_recipe_name}.$${kameleon_short_uuid}.socket"
   qemu_arch: $${arch}
