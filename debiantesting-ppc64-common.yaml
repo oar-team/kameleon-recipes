@@ -1,0 +1,68 @@
+#==============================================================================
+# vim: softtabstop=2 shiftwidth=2 expandtab fenc=utf-8 cc=81 tw=80
+#==============================================================================
+#
+# DESCRIPTION: Debian testing ppc64 common Grid'5000 environment
+#
+#==============================================================================
+---
+extend: from_scratch/ppc64le/debian-testing.yaml
+
+global:
+  # Export format to generate
+  appliance_formats: qcow2 tar.zst
+  # Output base filename
+  output: "$${kameleon_cwd}/$${kameleon_recipe_name}"
+  # Grid'5000 environment variant
+  g5k_variant: min
+  # Grid'5000 environment version
+  g5k_version: 1111111111
+  # Grid'5000 environment arch
+  g5k_image_arch: ppc64
+  g5k_release_number: testing
+  # Grid'5000 environment description
+  g5k_description: "debian testing (future debian 12 bookworm) for ppc64 - min"
+  # Grid'5000 kadeploy environment parameters
+  g5k_tar_path: server:///path/to/your/image
+  g5k_tar_compression: "zstd"
+  g5k_postinst_path: server:///grid5000/postinstalls/g5k-postinstall.tgz
+  g5k_postinst_compression: "gzip"
+  g5k_postinst_script: g5k-postinstall --net debian --disk-aliases
+  g5k_kernel_params: ""
+  g5k_kernel_path: "/boot/vmlinux"
+  g5k_initrd_path: "/boot/initrd.img"
+  # packages to install
+  # haveged is used to provide more entropy during boot
+  packages: "firmware-linux firmware-bnx2x firmware-qlogic powerpc-ibm-utils zstd"
+  # disable backports: they are not available for now
+  deb_backports: false
+  # locales
+  locales: POSIX C en_US.UTF8
+  lang: en_US.UTF8
+  timezone: Europe/Paris
+  # password
+  root_password: grid5000
+  # clean_unnecessary_packages step settings (packages debfoster must keep)
+  default_packages_no_clean: gnupg linux-image-powerpc64le console-setup rsync locales firmware-bnx2 firmware-bnx2x firmware-qlogic
+  arch_packages_no_clean: grub-ieee1275 grub-common
+  other_packages_no_clean:
+
+bootstrap:
+  - "@base"
+
+setup:
+  - "@base"
+  - configure_system
+  - configure_apt
+  - configure_g5k_apt_sources
+  - install_packages
+  - set_g5k_release
+  - set_g5k_dhclient_hook
+  - set_g5k_motd
+  - configure_ssh_server
+
+export:
+  - clean_dhcp_leases
+  - "@base"
+  - do_qcow2_finish_works
+  - export_g5k
