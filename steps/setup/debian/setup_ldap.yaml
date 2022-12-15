@@ -1,0 +1,13 @@
+- setup_ldap:
+  - local2in:
+    - ../../steps/data/setup/puppet/modules/env/files/nfs/ldap/ca2019.grid5000.fr.cert
+    - /etc/ldap/certificates/ca2019.grid5000.fr.cert
+  - local2in:
+    - ../../steps/data/setup/puppet/modules/env/files/nfs/ldap/ldap.conf
+    - /etc/ldap/ldap.conf
+  - local2in:
+    - ../../steps/data/setup/puppet/modules/env/files/nfs/ldap/nsswitch.conf
+    - /etc/nsswitch.conf
+  - local2in:
+    - ../../steps/data/setup/puppet/modules/env/files/nfs/ldap/nslcd.conf
+    - /etc/nslcd.conf
