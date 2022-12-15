@@ -41,7 +41,7 @@ bootstrap:
 setup:
   - "@base"
   - configure_system
-  - configure_apt_sources
+  - configure_apt
   - install_packages
   - setup_orchestrator
   - run_orchestrator

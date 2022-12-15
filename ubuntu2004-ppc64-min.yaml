@@ -45,7 +45,7 @@ setup:
   - "@base"
   - configure_system
   - fix_networkd
-  - configure_apt_sources
+  - configure_apt
   - configure_g5k_apt_sources
   - install_packages
   - set_g5k_release
