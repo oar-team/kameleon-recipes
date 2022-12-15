@@ -51,3 +51,7 @@
 - update_repositories:
   # Deactivate the check to make the cache system works after a while...
   - apt-get_in: -o Acquire::Check-Valid-Until=false update
+
+- disable_automatic_apt_upgrades:
+  - exec_in: systemctl disable apt-daily.timer apt-daily.service
+  - exec_in: systemctl disable apt-daily-upgrade.timer apt-daily-upgrade.service

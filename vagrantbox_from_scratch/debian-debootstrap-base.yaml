@@ -20,7 +20,7 @@ bootstrap:
 
 setup:
   - "@base"
-  - configure_apt_sources
+  - configure_apt
   - install_packages:
     - packages: >-
         linux-headers-amd64 nfs-common rsync wget
