@@ -12,7 +12,7 @@ global:
   # Grid'5000 environment variant
   g5k_variant: nfs
   # packages to install
-  packages: "$${packages} nfs-common autofs nslcd"
+  packages: "$${packages} nfs-common autofs nslcd ruby"
   # Grid'5000 Kadeploy environment parameters
   g5k_postinst_script: g5k-postinstall --net netplan --fstab nfs --restrict-user current --disk-aliases
 
@@ -21,6 +21,7 @@ bootstrap:
 
 setup:
   - "@base"
+  - setup_g5k_ca_certificate
   - setup_ldap
 
 export:
