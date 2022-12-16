@@ -23,6 +23,7 @@ setup:
   - "@base"
   - setup_g5k_ca_certificate
   - setup_ldap
+  - disable_nvme_multipath
 
 export:
   - "@base"
