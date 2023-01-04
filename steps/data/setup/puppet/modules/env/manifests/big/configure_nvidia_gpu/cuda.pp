@@ -74,8 +74,8 @@ class env::big::configure_nvidia_gpu::cuda () {
   # Install one or more fake (empty) package(s) to help satisfy libhwloc-contrib-plugins dependencies.
   # No need to force a particular version, newer versions of the package(s) should still be equally empty.
   # cf. bug #12877, #12861 and #13260
-  # Using hwloc G5K repository to avoid missing bullseye-backports packages
-  # cf. bug #13571
+  # Using hwloc bullseye-backports packages
+  # cf. bug #13571 and #14313
   case "${::lsbdistcodename}" {
     "bullseye" : {
       case "$env::deb_arch" {
@@ -87,8 +87,9 @@ class env::big::configure_nvidia_gpu::cuda () {
               ensure   => installed;
             'libcudart11.0':
               ensure   => installed;
-            'hwloc':
-              packages => ['hwloc', 'libhwloc-contrib-plugins'],
+          } -> package {
+            ['hwloc', 'libhwloc-contrib-plugins']:
+              install_options => ['-t', 'bullseye-backports'],
               ensure   => installed;
           }
         }
@@ -100,8 +101,9 @@ class env::big::configure_nvidia_gpu::cuda () {
               ensure   => installed;
             'libcudart11.0':
               ensure   => installed;
-            'hwloc':
-              packages => ['hwloc', 'libhwloc-contrib-plugins'],
+          } -> package {
+            ['hwloc', 'libhwloc-contrib-plugins']:
+              install_options => ['-t', 'bullseye-backports'],
               ensure   => installed;
           }
         }
