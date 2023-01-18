@@ -1,0 +1,13 @@
+[Unit]
+Description=Fix swap partition on aarch64 architecture
+
+[Service]
+User=root
+PrivateTmp=false
+Type=forking
+TimeoutStartSec=120
+
+ExecStart=/usr/sbin/swapon -a --fixpgsz
+
+[Install]
+WantedBy=multi-user.target

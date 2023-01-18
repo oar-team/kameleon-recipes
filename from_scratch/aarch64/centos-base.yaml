@@ -35,7 +35,6 @@ global:
   qemu_sendkeys_commands: $${kameleon_data_dir}/qemu-sendkeys/netinst-$${distrib}-grub
 
   custom_grub_cfg: $${kameleon_data_dir}/grub/$${distrib}$${release_major}-grub.cfg
-
   include_steps:
     - $${distrib}/$${release_number}
     - $${distrib}
@@ -45,6 +44,7 @@ bootstrap:
 
 setup:
   - "@base"
+  - fix-swap
 
 export:
   - "@base"
