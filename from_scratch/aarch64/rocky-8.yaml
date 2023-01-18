@@ -13,7 +13,7 @@ global:
   distrib: rocky
 
   release_major: 8
-  release_minor: 6
+  release_minor: 7
   release_date: 2205
   release: $${release_major}-$${release_minor}
 
