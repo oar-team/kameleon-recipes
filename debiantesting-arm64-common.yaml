@@ -32,6 +32,7 @@ global:
   g5k_kernel_path: "/boot/vmlinuz"
   g5k_initrd_path: "/boot/initrd.img"
   # packages to install
+  deb_components: main contrib non-free non-free-firmware
   # haveged is used to provide more entropy during boot
   packages: "firmware-linux firmware-qlogic grub-efi-arm64-bin zstd"
   # disable backports: they are not available for now
