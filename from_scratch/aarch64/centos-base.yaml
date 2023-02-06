@@ -34,7 +34,7 @@ global:
 
   qemu_sendkeys_commands: $${kameleon_data_dir}/qemu-sendkeys/netinst-$${distrib}-grub
 
-  custom_grub_cfg: $${kameleon_data_dir}/grub/$${distrib}$${release_major}-grub.cfg
+  custom_grub_cfg: $${kameleon_data_dir}/grub/$${distrib}-grub.cfg
   include_steps:
     - $${distrib}/$${release_number}
     - $${distrib}
