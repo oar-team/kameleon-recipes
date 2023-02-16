@@ -1,0 +1,30 @@
+- setup_ldap:
+  - local2in:
+    - ../../steps/data/setup/puppet/modules/env/files/nfs/ldap/ca2019.grid5000.fr.cert
+    - /etc/openldap/certs/ca2019.grid5000.fr.cert
+  - local2in:
+    - ../../steps/data/setup/puppet/modules/env/files/nfs/ldap/ldap.conf
+    - /etc/openldap/ldap.conf
+  - exec_in: |
+      sed -i 's|/etc/ldap/certificates/ca2019.grid5000.fr.cert|/etc/openldap/certs/ca2019.grid5000.fr.cert|' /etc/openldap/ldap.conf
+  - local2in:
+    - ../../steps/data/setup/puppet/modules/env/files/nfs/ldap/nsswitch.conf
+    - /etc/nsswitch.conf
+  - local2in:
+    - ../../steps/data/setup/puppet/modules/env/files/nfs/ldap/nslcd.conf
+    - /etc/nslcd.conf
+  - exec_in: |
+      sed -i 's/^gid nslcd/gid ldap/' /etc/nslcd.conf
+      sed -i 's|/etc/ldap/certificates/ca2019.grid5000.fr.cert|/etc/openldap/certs/ca2019.grid5000.fr.cert|' /etc/nslcd.conf
+      systemctl enable nslcd
+  - local2in:
+    - ../../steps/data/setup/puppet/modules/env/files/nfs/ldap/libnss-ldap.conf
+    - /etc/pam_ldap.conf
+  - local2in:
+    - ../../steps/data/setup/puppet/modules/env/files/nfs/ldap/common-auth
+    - /etc/pam.d/common-auth
+  - local2in:
+    - ../../steps/data/setup/puppet/modules/env/files/nfs/ldap/common-password
+    - /etc/pam.d/common-password
+  - exec_in: |
+      systemctl enable autofs
