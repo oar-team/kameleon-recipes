@@ -2,21 +2,27 @@
 # vim: softtabstop=2 shiftwidth=2 expandtab fenc=utf-8 cc=81 tw=80
 #==============================================================================
 #
-# DESCRIPTION: Rocky Linux 8 x64 min Grid'5000 environment
+# DESCRIPTION: Rocky Linux 8 x64 nfs Grid'5000 environment
 #
 #==============================================================================
 ---
-extend: rocky8-x64-common.yaml
+extend: ./rocky8-x64-common.yaml
 
 global:
   # Grid'5000 environment variant
-  g5k_variant: min
+  g5k_variant: nfs
+  # packages to install
+  packages: "$${packages} nfs-utils autofs openldap-clients nss-pam-ldapd ruby"
+  # Grid'5000 Kadeploy environment parameters
+  g5k_postinst_script: g5k-postinstall --net redhat --fstab nfs --restrict-user current --disk-aliases
 
 bootstrap:
   - "@base"
 
 setup:
   - "@base"
+  - setup_g5k_ca_certificate
+  - setup_ldap
 
 export:
   - "@base"
