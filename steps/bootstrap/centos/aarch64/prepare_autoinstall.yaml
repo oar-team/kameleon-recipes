@@ -9,7 +9,7 @@
   - test:
     - exec_local: test "$${arch}" == "aarch64"
     - group:
-      - check_cmd_local: xorrisoa
+      - check_cmd_local: xorriso
       - exec_local: export SOURCE_ISO=/tmp/source.iso
       - exec_local: export TMP_ISO=/tmp/modified.iso
       - exec_local: echo "Modifying grub.cfg for $${distrib_pretty_name} on aarch64 architectures."
