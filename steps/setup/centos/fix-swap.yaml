@@ -1,5 +1,8 @@
 - fix-swap:
-  - local2in:
-    - $${kameleon_data_dir}/setup/centos/fix-swap.service
-    - /etc/systemd/system/fix-swap.service
-  - exec_in: /usr/bin/systemctl enable fix-swap.service
+  - test:
+    - exec_local: test "$${release_major}" == "8"
+    - group:
+      - local2in:
+        - $${kameleon_data_dir}/setup/centos/fix-swap.service
+        - /etc/systemd/system/fix-swap.service
+      - exec_in: /usr/bin/systemctl enable fix-swap.service

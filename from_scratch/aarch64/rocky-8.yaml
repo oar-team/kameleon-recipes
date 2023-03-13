@@ -11,6 +11,7 @@
 extend: centos-base.yaml
 global:
   distrib: rocky
+  distrib_pretty_name: Rocky
 
   release_major: 8
   release_minor: 7
@@ -28,8 +29,10 @@ global:
   qemu_sendkeys_commands: $${kameleon_data_dir}/qemu-sendkeys/netinst-$${distrib}
 
   include_steps:
+    - $${distrib}/$${arch}
     - $${distrib}/$${release_major}
     - $${distrib}
+    - centos/$${arch}
     - centos/$${release_major}
     - centos
 

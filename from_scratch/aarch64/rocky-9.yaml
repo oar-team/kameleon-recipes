@@ -1,0 +1,25 @@
+#==============================================================================
+# vim: softtabstop=2 shiftwidth=2 expandtab fenc=utf-8 cc=81 tw=80
+#==============================================================================
+#
+# DESCRIPTION: Rocky Linux ARM64 generic recipe using the netinstall mechanism
+#
+# Uses the netinstall + kickstart mechanism
+#
+#==============================================================================
+---
+extend: rocky-8.yaml
+global:
+  distrib: rocky
+
+  release_major: 9
+  release_minor: 1
+  
+bootstrap:
+  - "@base"
+
+setup:
+  - "@base"
+
+export:
+  - "@base"
