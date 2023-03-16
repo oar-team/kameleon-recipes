@@ -11,7 +11,7 @@
   - test:
     - exec_local: test  "$${qemu_uefi}" == "true"
     - exec_local: |
-        python $${create_appliance_script} $UPSTREAM_TARBALL \
+        python3 $${create_appliance_script} $UPSTREAM_TARBALL \
           --uefi \
           --size $${image_size} \
           -o $${image_disk} \
@@ -19,7 +19,7 @@
           --format $${image_format}\
           --append "$${kernel_args}"
     - exec_local: |
-        python $${create_appliance_script} $UPSTREAM_TARBALL \
+        python3 $${create_appliance_script} $UPSTREAM_TARBALL \
           --size $${image_size} \
           -o $${image_disk} \
           --filesystem $${filesystem_type} \
