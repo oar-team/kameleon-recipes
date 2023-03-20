@@ -11,7 +11,6 @@
 extend: base.yaml
 global:
   distrib: centos
-  distrib_pretty_name: CentOS
 
   release_major: 8
   release_number: $${release_major}
@@ -34,7 +33,6 @@ global:
   base_kickstart_path: $${kameleon_data_dir}/kickstart/$${distrib}$${release_major}-$${arch}-ks.cfg
 
   qemu_sendkeys_commands: $${kameleon_data_dir}/qemu-sendkeys/netinst-$${distrib}-grub
-  grub_config_path: $${kameleon_data_dir}/aarch64/grub/grub.cfg
   include_steps:
     - $${distrib}/$${arch}
     - $${distrib}/$${release_number}

@@ -11,14 +11,11 @@
     - group:
       - check_cmd_local: xorriso
       - exec_local: export SOURCE_ISO=/tmp/source.iso
-      - exec_local: export TMP_ISO=/tmp/modified.iso
-      - exec_local: echo "Modifying grub.cfg for $${distrib_pretty_name} on aarch64 architectures."
-      - exec_local: cp $${grub_config_path} grub.cfg
-      - exec_local: sed -i "s/%LOCAL_IP%/$${local_ip}/g" grub.cfg
-      - exec_local: sed -i "s/%LOCAL_PORT%/$HTTP_PORT/g" grub.cfg
-      - exec_local: sed -i "s/%DISTRIB%/$${distrib_pretty_name}/g" grub.cfg
-      - exec_local: sed -i "s/%RELEASE%/$${release}/g" grub.cfg
-      - exec_local: sed -i "s/%ARCH%/$${arch}/g" grub.cfg
       - exec_local: mv $${qemu_iso_path} $SOURCE_ISO
-      - exec_local: xorriso -indev $SOURCE_ISO -outdev $TMP_ISO -compliance no_emul_toc -map grub.cfg /EFI/BOOT/grub.cfg -boot_image any replay
-      - exec_local: mv $TMP_ISO $${qemu_iso_path}
+      - exec_local: echo "Modifying grub.cfg."
+      - exec_local: osirrox -indev $SOURCE_ISO -extract /EFI/BOOT/grub.cfg grub.cfg
+      - exec_local: sed -i "s/set default=\"1\"/set default=\"0\"/g" grub.cfg
+      - exec_local: sed -i "s/set timeout=60/set timeout=10/g" grub.cfg
+      - exec_local: sed -i "s|vmlinuz|vmlinuz inst.ks=http://$${local_ip}:$HTTP_PORT/ks.cfg|g" grub.cfg
+      - exec_local: xorriso -indev $SOURCE_ISO -outdev /tmp/out.iso -compliance no_emul_toc -map grub.cfg /EFI/BOOT/grub.cfg -boot_image any replay
+      - exec_local: mv /tmp/out.iso $${qemu_iso_path}
