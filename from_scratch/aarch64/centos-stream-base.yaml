@@ -1,0 +1,37 @@
+#==============================================================================
+# vim: softtabstop=2 shiftwidth=2 expandtab fenc=utf-8 cc=81 tw=80
+#==============================================================================
+#
+# DESCRIPTION: Centos Stream 8 base recipe using the netinstall mechanism
+#
+#==============================================================================
+---
+extend: centos-base.yaml
+
+global:
+  distrib: centos-stream
+  distrib_pretty_name: CentOS-Stream
+  release_number: 8
+  release: $${release_number}
+  mirror_base_url: http://mirror.in2p3.fr/linux/CentOS/
+  mirror_url: $${mirror_base_url}$${release_number}-stream/BaseOS/$${arch}/os
+
+  qemu_sendkeys_commands: $${kameleon_data_dir}/qemu-sendkeys/netinst-centos-grub
+
+  include_steps:
+    - $${distrib}/$${arch}/$${release}
+    - $${distrib}/$${arch}
+    - $${distrib}/$${release}
+    - $${distrib}
+    - centos/$${arch}
+    - centos/$${release}
+    - centos
+
+bootstrap:
+  - "@base"
+
+setup:
+  - "@base"
+
+export:
+  - "@base"
