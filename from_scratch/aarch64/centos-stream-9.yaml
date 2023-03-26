@@ -1,0 +1,40 @@
+#==============================================================================
+# vim: softtabstop=2 shiftwidth=2 expandtab fenc=utf-8 cc=81 tw=80
+#==============================================================================
+#
+# DESCRIPTION: Centos Stream 9 base recipe using the netinstall mechanism
+#
+#==============================================================================
+---
+extend: centos-stream-base.yaml
+
+global:
+  release_major: 9
+  release_minor:
+  release_date:
+
+  release: $${release_major}-stream
+  mirror_base_url: http://mirror.in2p3.fr/linux/$${distrib}/
+  installer_iso_finder_mirror_url: $${mirror_base_url}
+  mirror_url: $${mirror_base_url}$${release}/BaseOS/$${arch}/os
+
+  installer_iso_finder_args: $${distrib} $${release_major} $${arch} $${installer_iso_finder_mirror_url}
+  qemu_sendkeys_commands: $${kameleon_data_dir}/qemu-sendkeys/netinst-centos-grub
+
+  include_steps:
+    - $${distrib}/$${arch}/$${release_major}
+    - $${distrib}/$${arch}
+    - $${distrib}/$${release_major}
+    - $${distrib}
+    - centos/$${arch}
+    - centos/$${release_major}
+    - centos
+
+bootstrap:
+  - "@base"
+
+setup:
+  - "@base"
+
+export:
+  - "@base"
