@@ -10,7 +10,6 @@ extend: centos-base.yaml
 
 global:
   distrib: centos-stream
-  distrib_pretty_name: CentOS-Stream
   release_number: 8
   release: $${release_number}
   mirror_base_url: http://mirror.in2p3.fr/linux/CentOS/
