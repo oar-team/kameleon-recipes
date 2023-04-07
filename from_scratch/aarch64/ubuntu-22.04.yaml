@@ -17,7 +17,7 @@ global:
   installer_initrd_url:
   qemu_kernel_path:
   qemu_iso_path: $${kameleon_cwd}/$${distrib}.iso
-  installer_iso_url: https://cdimage.ubuntu.com/releases/$${release_number}/release/$${distrib}-$${release_number}.1-live-server-$${deb_arch}.iso
+  installer_iso_url: https://cdimage.ubuntu.com/releases/$${release_number}/release/$${distrib}-$${release_number}.2-live-server-$${deb_arch}.iso
   # FIXME
   #installer_iso_finder_args: $${distrib} $${release} $${deb_arch}
   installer_iso_rebuild: true
