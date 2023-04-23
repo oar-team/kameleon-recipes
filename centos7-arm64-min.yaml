@@ -1,0 +1,22 @@
+#==============================================================================
+# vim: softtabstop=2 shiftwidth=2 expandtab fenc=utf-8 cc=81 tw=80
+#==============================================================================
+#
+# DESCRIPTION: Centos7 ARM64 min Grid'5000 environment
+#
+#==============================================================================
+---
+extend: centos7-arm64-common.yaml
+
+global:
+  # Grid'5000 environment variant
+  g5k_variant: min
+
+bootstrap:
+  - "@base"
+
+setup:
+  - "@base"
+
+export:
+  - "@base"

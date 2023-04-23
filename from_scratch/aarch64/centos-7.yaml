@@ -1,0 +1,30 @@
+#==============================================================================
+# vim: softtabstop=2 shiftwidth=2 expandtab fenc=utf-8 cc=81 tw=80
+#==============================================================================
+#
+# DESCRIPTION: CentOS 8 ARM64 generic recipe using the netinstall mechanism
+#
+# Uses the netinstall + kickstart mechanism
+#
+#==============================================================================
+---
+extend: centos-base.yaml
+global:
+  release_major: 7
+  release_number: $${release_major}
+
+  mirror_base_url: http://ftp.rz.uni-frankfurt.de/pub/mirrors/centos-altarch/
+  installer_iso_finder_mirror_url: $${mirror_base_url}$${release_major}/os/$${arch}
+  mirror_url: $${mirror_base_url}$${release_major}/os/$${arch}
+
+  installer_iso_finder_mirror_url: $${mirror_base_url}
+  installer_iso_finder_args: $${distrib} $${release_major} $${arch} $${installer_iso_finder_mirror_url}
+
+bootstrap:
+  - "@base"
+
+setup:
+  - "@base"
+
+export:
+  - "@base"
