@@ -11,28 +11,25 @@
 extend: centos-base.yaml
 global:
   distrib: rocky
-
-  release_major: 8
-  release_minor: 7
-  release_date: 2205
-  release: $${release_major}-$${release_minor}
+  release: Green Obsidian
+  release_number: 8
 
   mirror_base_url: http://mirror.in2p3.fr/linux/$${distrib}/
-  mirror_url: $${mirror_base_url}$${release_major}/BaseOS/$${arch}/os/
+  mirror_url: $${mirror_base_url}$${release_number}/BaseOS/$${arch}/os/
 
   installer_iso_finder_helper: $${kameleon_data_dir}/helpers/netinstall_iso_finder.py
   installer_iso_finder_mirror_url: $${mirror_base_url}
-  installer_iso_finder_args: $${distrib} $${release_major} $${arch} $${installer_iso_finder_mirror_url}
+  installer_iso_finder_args: $${distrib} $${release_number} $${arch} $${installer_iso_finder_mirror_url}
 
-  base_kickstart_path: $${kameleon_data_dir}/kickstart/$${distrib}$${release_major}-ks-$${arch}.cfg
+  base_kickstart_path: $${kameleon_data_dir}/kickstart/$${distrib}$${release_number}-ks-$${arch}.cfg
   qemu_sendkeys_commands: $${kameleon_data_dir}/qemu-sendkeys/netinst-$${distrib}
 
   include_steps:
     - $${distrib}/$${arch}
-    - $${distrib}/$${release_major}
+    - $${distrib}/$${release_number}
     - $${distrib}
     - centos/$${arch}
-    - centos/$${release_major}
+    - centos/$${release_number}
     - centos
 
 bootstrap:

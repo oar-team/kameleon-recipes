@@ -12,8 +12,8 @@ extend: rocky-8.yaml
 global:
   distrib: rocky
 
-  release_major: 9
-  release_minor: 1
+  release: Blue Onyx
+  release_number: 9
   
 bootstrap:
   - "@base"
