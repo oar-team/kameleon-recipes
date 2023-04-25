@@ -10,6 +10,7 @@ extend: rocky-base.yaml
 
 global:
   release_number: 9
+  release: Blue Onyx
 
 bootstrap:
   - "@base"
