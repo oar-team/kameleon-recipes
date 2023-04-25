@@ -2,16 +2,28 @@ enabled?:
   - exec_local: test -f $KAMELEON_WORKDIR/MAIN_CONTAINER_ID
 
 create:
-  - exec_local: docker commit $(cat $KAMELEON_WORKDIR/MAIN_CONTAINER_ID) $${docker_image}:@microstep_id
+  - exec_local: |
+      docker stop $(< $KAMELEON_WORKDIR/MAIN_CONTAINER_ID) > /dev/null || docker kill $(< $KAMELEON_WORKDIR/MAIN_CONTAINER_ID) > /dev/null
+      docker commit $(< $KAMELEON_WORKDIR/MAIN_CONTAINER_ID) $${docker_image}:@microstep_id > /dev/null
+      docker rm $(< $KAMELEON_WORKDIR/MAIN_CONTAINER_ID) > /dev/null
+      sed -i "/^$(< $KAMELEON_WORKDIR/MAIN_CONTAINER_ID)$/d" $KAMELEON_WORKDIR/CONTAINERS_TO_CLEAN
+      rm -f $KAMELEON_WORKDIR/MAIN_CONTAINER_ID
+      docker run -d -i -h $${docker_hostname} --cidfile $KAMELEON_WORKDIR/MAIN_CONTAINER_ID --privileged $${docker_image}:@microstep_id cat > /dev/null
+      while ! [ -s $KAMELEON_WORKDIR/MAIN_CONTAINER_ID ] || ! docker exec -i $(< $KAMELEON_WORKDIR/MAIN_CONTAINER_ID) true; do sleep 1; done
+      echo $(< $KAMELEON_WORKDIR/MAIN_CONTAINER_ID) >> $KAMELEON_WORKDIR/CONTAINERS_TO_CLEAN
+  - reload_context: out
+  - reload_context: in
 
 apply:
-  - exec_local: docker tag -f $${docker_image}:@microstep_id $${docker_image}:latest
+  - exec_local: |
+      rm -f $KAMELEON_WORKDIR/MAIN_CONTAINER_ID
+      docker run -d -i -h $${docker_hostname} --cidfile $KAMELEON_WORKDIR/MAIN_CONTAINER_ID --privileged $${docker_image}:@microstep_id cat > /dev/null
+      while ! [ -s $KAMELEON_WORKDIR/MAIN_CONTAINER_ID ] || ! docker exec -i $(< $KAMELEON_WORKDIR/MAIN_CONTAINER_ID) true; do sleep 1; done
+      echo $(< $KAMELEON_WORKDIR/MAIN_CONTAINER_ID) >> $KAMELEON_WORKDIR/CONTAINERS_TO_CLEAN
 
 list:
-  - exec_local: |
-      docker images | grep $${docker_image} | awk '{print $2}' || true
+  - exec_local: docker image ls --format "{{.Repository}}:{{.Tag}}" | grep -e '^$${docker_image}:' | cut -d':' -f2 || true
 
 clear:
   - exec_local: |
-      docker images | grep $${docker_image} | awk '{print $3}' \
-        | xargs -I {} bash -c "docker rmi {} | cat || true"
+      for i in $(docker image ls --format "{{.Repository}}:{{.Tag}}:{{.ID}}" | grep -e '^$${docker_image}:' | cut -d':' -f3); do docker image rm -f $i; done || true

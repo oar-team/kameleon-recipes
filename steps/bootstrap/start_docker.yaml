@@ -1,34 +1,30 @@
 - clean_containers:
   - on_checkpoint: redo
   - on_export_clean:
-    - exec_out: echo "Stopping trailing containers"
-    - exec_out: touch CONTAINERS_TO_CLEAN
-    - exec_out: cat CONTAINERS_TO_CLEAN | xargs -I {} docker kill {}
-    - exec_out: echo "Removing trailing containers"
-    - exec_out: cat CONTAINERS_TO_CLEAN | xargs -I {} docker rm {}
-    - exec_out: rm -f CONTAINERS_TO_CLEAN
+    - exec_local: echo "Stopping trailing containers"
+    - exec_local: touch CONTAINERS_TO_CLEAN
+    - exec_local: for c in $(< CONTAINERS_TO_CLEAN); do docker kill $c; done
+    - exec_local: echo "Removing trailing containers"
+    - exec_local: for c in $(< CONTAINERS_TO_CLEAN); do docker rm $c; done
+    - exec_local: rm -f CONTAINERS_TO_CLEAN
+    - exec_local: rm -f MAIN_CONTAINER_ID
 
-- fix_docker_resolvconf:
-  - on_setup_init:
-    - exec_in: cat /etc/resolv.conf > /tmp/resolv.conf-docker
-    - exec_in: umount /etc/resolv.conf
-    - exec_in: cat /tmp/resolv.conf-docker > /etc/resolv.conf
-
-- fix_docker_etc_hosts:
-  - on_setup_init:
-    - exec_in: cat /etc/hosts > /tmp/hosts-docker
-    - exec_in: umount /etc/hosts
-    - exec_in: cat /tmp/hosts-docker > /etc/hosts
+#- fix_docker_resolvconf:
+#  - on_setup_init:
+#    - exec_out: cat /etc/resolv.conf > /tmp/resolv.conf-docker
+#    - exec_out: umount /etc/resolv.conf
+#    - exec_out: cat /tmp/resolv.conf-docker > /etc/resolv.conf
+#
+#- fix_docker_etc_hosts:
+#  - on_setup_init:
+#    - exec_out: cat /etc/hosts > /tmp/hosts-docker
+#    - exec_out: umount /etc/hosts
+#    - exec_out: cat /tmp/hosts-docker > /etc/hosts
 
 - start_docker_container:
-  - on_checkpoint: redo
-  - exec_out: |
-      CID=$(docker run -d -i \
-              -h $${docker_hostname} \
-              --privileged "$${docker_image}:base" \
-              cat)
-      sleep 2
-  - exec_out: echo "$CID" >> CONTAINERS_TO_CLEAN
-  - exec_out: echo $CID > MAIN_CONTAINER_ID
+  - exec_local: rm -f MAIN_CONTAINER_ID
+  - exec_local: docker run -d -i -h $${docker_hostname} --cidfile MAIN_CONTAINER_ID --privileged "$${docker_image}:base" cat
+  - exec_local: while ! [ -s MAIN_CONTAINER_ID ] || ! docker exec -i $(< MAIN_CONTAINER_ID) true; do sleep 1; done
+  - exec_local: echo $(< MAIN_CONTAINER_ID) >> CONTAINERS_TO_CLEAN
   - on_export_clean:
-    - exec_out: rm -f MAIN_CONTAINER_ID
+    - exec_local: rm -f MAIN_CONTAINER_ID
