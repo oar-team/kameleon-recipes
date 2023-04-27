@@ -1,0 +1,38 @@
+# Requirements:
+# - ZFS must be available and configured:
+#   - By default `z/kameleon` is use as the root dataset for all ZFS datasets created by the Kameleon build run.
+#   - It must be created beforehand, for instance by running `sudo zfs create z/kameleon -o mountpoint=none`
+#   - ZFS commands must be executable without becoming root, thanks to a sudoer configuration as follows:
+# cat <<EOF >/etc/sudoers.d/kameleon_zfs
+#Cmnd_Alias C_KAMELEON_ZFS = \
+#  /sbin/zfs create z/kameleon/*, \
+#  /sbin/zfs clone z/kameleon/*, \
+#  /sbin/zfs rename z/kameleon/*, \
+#  /sbin/zfs promote z/kameleon/*, \
+#  /sbin/zfs snapshot z/kameleon/*, \
+#  /sbin/zfs rollback z/kameleon/*, \
+#  /sbin/zfs destroy z/kameleon/*, \
+#  /sbin/zfs get origin z/kameleon/*, \
+#  /sbin/zfs set mountpoint=none z/kameleon/*, \
+#  /sbin/zfs list z/kameleon/*, \
+#  /sbin/zfs send z/kameleon/*, \
+#  /sbin/zfs recv z/kameleon/*
+#
+#ALL ALL = (root) NOPASSWD: C_KAMELEON_ZFS
+#EOF
+
+- target_rootfs_dataset: $${zfs_kameleon_dataset}/$${kameleon_recipe_name}
+- zfs_cmd: sudo -k -n zfs
+- zfs_kameleon_dataset: z/kameleon
+- rootfs_work_dataset: $${zfs_kameleon_dataset}/$${docker_image}
+
+- export_rootfs:
+  - exec_local: |
+      set -e
+      unset j
+      $${zfs_cmd} create $${target_rootfs_dataset} -o mountpoint=/$${target_rootfs_dataset}
+      while $${zfs_cmd} list $${rootfs_work_dataset}/rootfs$j -H > /dev/null; do
+        $${zfs_cmd} snapshot $${rootfs_work_dataset}/rootfs$j@latest
+        $${zfs_cmd} send $${rootfs_work_dataset}/rootfs$j@latest | $${zfs_cmd} recv $${target_rootfs_dataset}/rootfs$j
+        j=$((${j:--1}+1))
+      done

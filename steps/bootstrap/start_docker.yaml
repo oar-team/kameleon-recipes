@@ -1,30 +1,24 @@
+- docker_image: $${kameleon_recipe_name}_$${kameleon_short_uuid}
+- docker_hostname: kameleon-$${kameleon_short_uuid}
+- rootfs_host_work_dir:
+- rootfs_container_work_dir:
+
 - clean_containers:
   - on_checkpoint: redo
   - on_export_clean:
-    - exec_local: echo "Stopping trailing containers"
-    - exec_local: touch CONTAINERS_TO_CLEAN
-    - exec_local: for c in $(< CONTAINERS_TO_CLEAN); do docker kill $c; done
-    - exec_local: echo "Removing trailing containers"
-    - exec_local: for c in $(< CONTAINERS_TO_CLEAN); do docker rm $c; done
-    - exec_local: rm -f CONTAINERS_TO_CLEAN
-    - exec_local: rm -f MAIN_CONTAINER_ID
-
-#- fix_docker_resolvconf:
-#  - on_setup_init:
-#    - exec_out: cat /etc/resolv.conf > /tmp/resolv.conf-docker
-#    - exec_out: umount /etc/resolv.conf
-#    - exec_out: cat /tmp/resolv.conf-docker > /etc/resolv.conf
-#
-#- fix_docker_etc_hosts:
-#  - on_setup_init:
-#    - exec_out: cat /etc/hosts > /tmp/hosts-docker
-#    - exec_out: umount /etc/hosts
-#    - exec_out: cat /tmp/hosts-docker > /etc/hosts
+    - exec_local: |
+        set -e
+        if [ -r MAIN_CONTAINER_ID ]; then
+          if docker ps --no-trunc -a -q | grep -q $(<MAIN_CONTAINER_ID); then
+            docker rm -f $(< MAIN_CONTAINER_ID) > /dev/null
+          fi
+          rm MAIN_CONTAINER_ID
+        fi
 
 - start_docker_container:
-  - exec_local: rm -f MAIN_CONTAINER_ID
-  - exec_local: docker run -d -i -h $${docker_hostname} --cidfile MAIN_CONTAINER_ID --privileged "$${docker_image}:base" cat
-  - exec_local: while ! [ -s MAIN_CONTAINER_ID ] || ! docker exec -i $(< MAIN_CONTAINER_ID) true; do sleep 1; done
-  - exec_local: echo $(< MAIN_CONTAINER_ID) >> CONTAINERS_TO_CLEAN
-  - on_export_clean:
-    - exec_local: rm -f MAIN_CONTAINER_ID
+  - exec_local: |
+      set -e
+      rm -f MAIN_CONTAINER_ID
+      KAMELEON_ROOTFS_HOST_DIR=$${rootfs_host_work_dir}
+      docker run -d -i -h $${docker_hostname} --cidfile MAIN_CONTAINER_ID --privileged ${KAMELEON_ROOTFS_HOST_DIR:+-v $KAMELEON_ROOTFS_HOST_DIR:$${rootfs_container_work_dir}} "$${docker_image}:base" cat
+      while ! [ -s MAIN_CONTAINER_ID ] || ! docker exec -i $(< MAIN_CONTAINER_ID) true; do sleep 1; done
