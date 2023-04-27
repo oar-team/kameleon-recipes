@@ -1,0 +1,134 @@
+#==============================================================================
+# vim: softtabstop=2 shiftwidth=2 expandtab fenc=utf-8 cc=81 tw=80
+#==============================================================================
+#
+# DESCRIPTION: Simple recipe that use a docker image directly.
+#
+# It is made to conserve docker layers for the exported image.  No setup section
+# is provided: You have to implement yours
+#
+#==============================================================================
+---
+extend: steps/backend/$${backend}.yaml
+
+# Loads some helpful aliases (this files are located in steps/aliases/ directory)
+aliases: defaults.yaml
+
+# Custom shell environement (this files are located in steps/env/ directory)
+env:
+  - bashrc
+  - functions.sh
+
+global:
+  ssh_config_file: $${kameleon_cwd}/ssh_config
+
+  backend: dockerchroot
+
+  # You should specify this in the global of your recipe
+  from_docker_image: "ubuntu:20.04"
+  chroot_arch: aarch64
+
+
+  to_docker_image: "$${kameleon_recipe_name}:latest"
+  rootfs_path: "$${l4t_path}/rootfs"
+  qemu_path: "/usr/bin/qemu-$${chroot_arch}-static"
+
+  workdir: "/nvidia"
+  l4t_path: "$${workdir}/Linux_for_Tegra"
+  nvidia_BSP_url: "https://developer.nvidia.com/downloads/jetson-linux-r3521-aarch64tbz2"
+  nvidia_rootfs_url: "https://developer.nvidia.com/downloads/linux-sample-root-filesystem-r3521aarch64tbz2"
+  cross_compilation_toolchain_url: "https://developer.nvidia.com/embedded/jetson-linux/bootlin-toolchain-gcc-93"
+  cross_compilation_toolchain_path: "$${workdir}/toolchain"
+  cti_BSP_url: "https://connecttech.com/ftp/Drivers/CTI-L4T-AGX-35.2.1-V001.tgz"
+  cti_kernel_sources_url: "https://www.usesintegrated.com/files/xavier/r35.2.1/13264_cti-l4t-src-agx-35.2.1-v001.tgz"
+  l4t_kernel_version: "5.10"
+  l4t_kernel_config_file: "cti_tegra_defconfig"
+  debian_kernel_pkg_url: "http://ftp.fr.debian.org/debian/pool/main/l/linux/linux-image-5.10.0-20-arm64-unsigned_5.10.158-2_arm64.deb"
+  kernel_src_path: $${l4t_path}/src/kernel/kernel-$${l4t_kernel_version}
+  kernel_make_cmd: "make -C $${kernel_src_path} -j $(nproc) ARCH=arm64 LOCALVERSION=-debian-l4t CROSS_COMPILE=$${cross_compilation_toolchain_path}/usr/bin/aarch64-buildroot-linux-gnu-"
+
+bootstrap:
+  - prepare_docker_image:
+    - pull_and_tag_image:
+      - exec_local: |
+          if ! docker image ls --format "{{.Repository}}:{{.Tag}}" | grep -q "$${from_docker_image}"; then
+            echo "Importing docker base image to build from"
+            docker pull $${from_docker_image}
+          fi
+          docker tag $${from_docker_image} "$${docker_image}:base"
+  - start_docker
+  - install_build_deps:
+    - update-apt-sources:
+      - exec_out: apt-get update
+    - install_dep_packages:
+      - exec_out: apt-get install -y wget
+  - install_nvidia_BSP:
+    - download_and_extract_nvidia_BSP:
+      - exec_out: mkdir -p $${workdir}
+      - exec_out: wget -O- -q "$${nvidia_BSP_url}" | tar -C $${workdir} -jxv
+  - install_chroot:
+    - download_rootfs:
+      - exec_out: wget -O- -q "$${nvidia_rootfs_url}" | tar -C $${rootfs_path} -jxv
+    - install_qemu:
+      - exec_out: apt-get install -y qemu-user-static binfmt-support
+    - setup_qemu_in_chroot:
+      - exec_out: cp $${qemu_path} $${rootfs_path}/$${qemu_path}
+setup:
+  - install_cti_BSP:
+    - download_and extract_cti_BSP:
+      - exec_out: wget -O- -q "$${cti_BSP_url}" | tar -C $${l4t_path} -zxv
+      - exec_out: cd $${l4t_path}/CTI-L4T && ./install.sh
+  - install_kernel_sources:
+    - install_cross_compilation_chain:
+      - exec_out: mkdir -p "$${cross_compilation_toolchain_path}"
+      - exec_out: wget -O- -q "$${cross_compilation_toolchain_url}" | tar -C $${cross_compilation_toolchain_path} -zxv
+    - download_and_extract_cti_kernel_sources:
+      - exec_out: mkdir -p $${l4t_path}/src
+      - exec_out: wget -O- -q "$${cti_kernel_sources_url}" | tar -C $${l4t_path}/src/ -zxv
+    - download_and_extract_debian_kernel_config:
+      - exec_out: mkdir -p $${workdir}/tmp
+      - exec_out: wget -O- -q $${debian_kernel_pkg_url} | dpkg -X - $${workdir}/tmp
+      - exec_out: cp $${workdir}/tmp/boot/config-* $${kernel_src_path}/arch/arm64/configs/debian_defconfig
+      - exec_out: rm -r $${workdir}/tmp
+  - build_kernel:
+    - install_tools:
+      - exec_out: apt-get install -y make gcc xxd flex bison python3 bc libelf-dev libssl-dev
+    - merge_kernel_configs:
+      - exec_out: |
+          cd $${kernel_src_path}/arch/arm64/configs
+          cat debian_defconfig $${l4t_kernel_config_file} > debian_l4t_defconfig
+      - exec_out: |
+          $${kernel_make_cmd} debian_l4t_defconfig
+          cp $${kernel_src_path}/.config $${kernel_src_path}/arch/arm64/configs/debian_l4t_defconfig
+          $${kernel_make_cmd} debian_l4t_defconfig
+          diff --brief $${kernel_src_path}/.config $${kernel_src_path}/arch/arm64/configs/debian_l4t_defconfig
+    - disable_bogus_configs:
+      - exec_out: |
+          cd $${kernel_src_path}
+          ./scripts/config --set-str SYSTEM_TRUSTED_KEYS ""
+          for c in DMA_BCM2835 DRM_TEGRA DMA_SUN6I FSL_EDMA FSL_QDMA QCOM_BAM_DMA K3_DMA SCSI_UFSHCD_PCI TEGRA_HOST1X DEBUG_INFO_BTF VIDEO_CX231XX_DVB; do
+            ./scripts/config --disable $c
+          done
+    - build_kernel_objects:
+      - exec_out: |
+          cd $${kernel_src_path}
+          $${kernel_make_cmd} Image
+      - exec_out: |
+          cd $${kernel_src_path}
+          $${kernel_make_cmd} dtbs
+      - exec_out: |
+          cd $${kernel_src_path}
+          $${kernel_make_cmd} modules
+    - install_kernel_objects:
+      - exec_out: |
+          cd $${kernel_src_path}
+          cp arch/arm64/boot/Image $${l4t_path}/kernel/
+          cp arch/arm64/boot/dts/nvidia/* $${l4t_path}/kernel/dtb/
+          KERNEL_RELEASE=$($${kernel_make_cmd} kernelrelease | grep -ve '^make')
+          $${kernel_make_cmd} INSTALL_HDR_PATH="$${rootfs_path}/usr/src/linux-headers-$KERNEL_RELEASE" headers_install
+          tar -C $${rootfs_path} -jcvf $${l4t_path}/kernel/kernel_headers.tbz2 usr/src/linux-headers-$KERNEL_RELEASE
+          $${kernel_make_cmd} INSTALL_MOD_PATH="$${rootfs_path} module_install
+          ln -sfn /usr/src/linux-headers-$KERNEL_RELEASE /lib/modules/$KERNEL_RELEASE/build
+          tar -C $${rootfs_path} -jcvf $${l4t_path}/kernel/kernel_supplements.tbz2 /lib/modules/$KERNEL_RELEASE
+export:
+  - "@base"
