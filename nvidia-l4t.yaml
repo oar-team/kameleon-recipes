@@ -22,7 +22,7 @@ env:
 global:
   ssh_config_file: $${kameleon_cwd}/ssh_config
 
-  backend: dockerchroot
+  backend: dockerzchroot
 
   # You should specify this in the global of your recipe
   from_docker_image: "ubuntu:20.04"
@@ -92,7 +92,7 @@ setup:
       - exec_out: rm -r $${workdir}/tmp
   - build_kernel:
     - install_tools:
-      - exec_out: apt-get install -y make gcc xxd flex bison python3 bc libelf-dev libssl-dev
+      - exec_out: apt-get install -y make gcc xxd flex bison python3 bc rsync kmod libelf-dev libssl-dev
     - merge_kernel_configs:
       - exec_out: |
           cd $${kernel_src_path}/arch/arm64/configs
@@ -121,14 +121,16 @@ setup:
           $${kernel_make_cmd} modules
     - install_kernel_objects:
       - exec_out: |
-          cd $${kernel_src_path}
-          cp arch/arm64/boot/Image $${l4t_path}/kernel/
-          cp arch/arm64/boot/dts/nvidia/* $${l4t_path}/kernel/dtb/
+          cp $${kernel_src_path}/arch/arm64/boot/Image $${l4t_path}/kernel/
+      - exec_out: |
+          cp $${kernel_src_path}/arch/arm64/boot/dts/nvidia/* $${l4t_path}/kernel/dtb/
+      - exec_out: |
           KERNEL_RELEASE=$($${kernel_make_cmd} kernelrelease | grep -ve '^make')
           $${kernel_make_cmd} INSTALL_HDR_PATH="$${rootfs_path}/usr/src/linux-headers-$KERNEL_RELEASE" headers_install
           tar -C $${rootfs_path} -jcvf $${l4t_path}/kernel/kernel_headers.tbz2 usr/src/linux-headers-$KERNEL_RELEASE
-          $${kernel_make_cmd} INSTALL_MOD_PATH="$${rootfs_path} module_install
-          ln -sfn /usr/src/linux-headers-$KERNEL_RELEASE /lib/modules/$KERNEL_RELEASE/build
-          tar -C $${rootfs_path} -jcvf $${l4t_path}/kernel/kernel_supplements.tbz2 /lib/modules/$KERNEL_RELEASE
+      - exec_out: |
+          $${kernel_make_cmd} INSTALL_MOD_PATH="$${rootfs_path}" modules_install
+          ln -sfn /usr/src/linux-headers-$KERNEL_RELEASE $${rootfs_path}/lib/modules/$KERNEL_RELEASE/build
+          tar -C $${rootfs_path} -jcvf $${l4t_path}/kernel/kernel_supplements.tbz2 lib/modules/$KERNEL_RELEASE
 export:
   - "@base"
