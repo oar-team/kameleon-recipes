@@ -9,25 +9,22 @@
 extend: centos-stream-base.yaml
 
 global:
-  release_major: 9
-  release_minor:
-  release_date:
+  release_number: 9 
 
-  release: $${release_major}-stream
   mirror_base_url: http://mirror.in2p3.fr/linux/$${distrib}/
   installer_iso_finder_mirror_url: $${mirror_base_url}
-  mirror_url: $${mirror_base_url}$${release}/BaseOS/$${arch}/os
+  mirror_url: $${mirror_base_url}$${release_number}-stream/BaseOS/$${arch}/os
 
-  installer_iso_finder_args: $${distrib} $${release_major} $${arch} $${installer_iso_finder_mirror_url}
+  installer_iso_finder_args: $${distrib} $${release_number} $${arch} $${installer_iso_finder_mirror_url}
   qemu_sendkeys_commands: $${kameleon_data_dir}/qemu-sendkeys/netinst-centos-grub
 
   include_steps:
-    - $${distrib}/$${arch}/$${release_major}
+    - $${distrib}/$${arch}/$${release_number}
     - $${distrib}/$${arch}
-    - $${distrib}/$${release_major}
+    - $${distrib}/$${release_number}
     - $${distrib}
     - centos/$${arch}
-    - centos/$${release_major}
+    - centos/$${release_number}
     - centos
 
 bootstrap:

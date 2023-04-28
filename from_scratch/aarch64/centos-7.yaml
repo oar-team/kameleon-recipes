@@ -10,15 +10,15 @@
 ---
 extend: centos-base.yaml
 global:
-  release_major: 7
-  release_number: $${release_major}
+  release: 7.9.2009
+  release_number: 7
 
   mirror_base_url: http://ftp.rz.uni-frankfurt.de/pub/mirrors/centos-altarch/
-  installer_iso_finder_mirror_url: $${mirror_base_url}$${release_major}/os/$${arch}
-  mirror_url: $${mirror_base_url}$${release_major}/os/$${arch}
+  installer_iso_finder_mirror_url: $${mirror_base_url}$${release}/os/$${arch}
+  mirror_url: $${mirror_base_url}$${release}/os/$${arch}
 
   installer_iso_finder_mirror_url: $${mirror_base_url}
-  installer_iso_finder_args: $${distrib} $${release_major} $${arch} $${installer_iso_finder_mirror_url}
+  installer_iso_finder_args: $${distrib} $${release_number} $${arch} $${installer_iso_finder_mirror_url}
 
 bootstrap:
   - "@base"

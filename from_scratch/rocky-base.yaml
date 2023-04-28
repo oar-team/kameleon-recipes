@@ -11,11 +11,11 @@
 extend: centos-base.yaml
 global:
   distrib: rocky
-
+  release: Green Obsidian
   release_number: 8
 
   mirror_base_url: http://mirror.in2p3.fr/linux/$${distrib}/
-  mirror_url: $${mirror_base_url}$${release}/BaseOS/$${arch}/os/
+  mirror_url: $${mirror_base_url}$${release_number}/BaseOS/$${arch}/os/
 
   base_kickstart_path: $${kameleon_data_dir}/kickstart/$${distrib}$${release_number}-ks.cfg
   qemu_sendkeys_commands: $${kameleon_data_dir}/qemu-sendkeys/netinst-$${distrib}
