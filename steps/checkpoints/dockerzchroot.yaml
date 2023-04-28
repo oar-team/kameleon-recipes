@@ -16,9 +16,7 @@ create:
 
 apply:
   - exec_local: |
-      FROM_MICROSTEP_CONTAINER_ID=$(docker inspect --format {{.ID}} $${docker_image}:@microstep_id)
-      function rec_rm_if_child_of_from_microstep_container { local i=$1; if [ -z "$i" ]; then false; elif [ "$i" == "$FROM_MICROSTEP_CONTAINER_ID" ]; then true; else local ii=$(docker inspect --format {{.Parent}} $i); if rec_rm_if_child_of_from_microstep_container $ii; then echo remove $i; docker image remove --force $i; true; else echo keep $i; false; fi; fi; }
-      for i in $(docker image ls --format "{{.ID}}" --filter reference=$${docker_image} --filter since=$${docker_image}:@microstep_id); do rec_rm_if_child_of_from_microstep_container $i; done
+      for i in $( docker image ls --filter reference=$${docker_image} --filter since=$${docker_image}:@microstep_id -q ); do docker image rm -f $i; done || true
       rm -f $KAMELEON_WORKDIR/MAIN_CONTAINER_ID
       docker run -d -i -h $${docker_hostname} --cidfile $KAMELEON_WORKDIR/MAIN_CONTAINER_ID --privileged $${docker_image}:@microstep_id cat > /dev/null
       while ! [ -s $KAMELEON_WORKDIR/MAIN_CONTAINER_ID ] || ! docker exec -i $(< $KAMELEON_WORKDIR/MAIN_CONTAINER_ID) true; do sleep 1; done
@@ -29,4 +27,4 @@ list:
 
 clear:
   - exec_local: |
-      for i in $(docker image ls --format "{{.ID}}" --filter reference=$${docker_image}); do docker image rm -f $i; done || true
+      for i in $( docker image ls --filter reference=$${docker_image} -q ); do docker image rm -f $i; done || true
