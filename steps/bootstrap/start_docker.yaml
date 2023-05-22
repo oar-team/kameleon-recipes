@@ -1,3 +1,6 @@
+- rootfs_host_dir:
+- rootfs_container_dir: $${rootfs}
+
 - clean_containers:
   - on_checkpoint: redo
   - on_export_clean:
@@ -23,7 +26,8 @@
 
 - start_docker_container:
   - exec_local: rm -f MAIN_CONTAINER_ID
-  - exec_local: docker run -d -i -h $${docker_hostname} --cidfile MAIN_CONTAINER_ID --privileged "$${docker_image}:base" cat
+  - exec_local: KAMELEON_ROOTFS_HOST_DIR=$${rootfs_host_dir}
+  - exec_local: docker run -d -i -h $${docker_hostname} --cidfile MAIN_CONTAINER_ID --privileged ${KAMELEON_ROOTFS_HOST_DIR:+-v $KAMELEON_ROOTFS_HOST_DIR:$${rootfs_container_dir}} "$${docker_image}:base" cat
   - exec_local: while ! [ -s MAIN_CONTAINER_ID ] || ! docker exec -i $(< MAIN_CONTAINER_ID) true; do sleep 1; done
   - exec_local: echo $(< MAIN_CONTAINER_ID) >> CONTAINERS_TO_CLEAN
   - on_export_clean:
