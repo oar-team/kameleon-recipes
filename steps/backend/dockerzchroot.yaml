@@ -1,4 +1,35 @@
-# Docker backend recipe
+# Dockerzroot backend recipe
+#
+# This backend uses docker for context out, and a zfs dataset mounted as an
+# external volume in the docker container, then chrooted in for context in.
+# Contexts in may be of a foreign arch (e.g. using qemu-user-static).
+#
+# Requirements:
+# - Docker must be available (and may optionaly use ZFS as storage backend).
+# - ZFS must be available and configured:
+#   - By default `z/kameleon` is use as the root dataset for all ZFS datasets created by the Kameleon build run.
+#   - It must be created beforehand, for instance by running `sudo zfs create z/kameleon -o mountpoint=none`
+#   - ZFS commands must be executable without becoming root, thanks to a sudoer configuration as follows:
+# cat <<EOF >/etc/sudoers.d/kameleon_zfs
+#Cmnd_Alias C_KAMELEON_ZFS = \
+#  /sbin/zfs create z/kameleon/*, \
+#  /sbin/zfs clone z/kameleon/*, \
+#  /sbin/zfs rename z/kameleon/*, \
+#  /sbin/zfs promote z/kameleon/*, \
+#  /sbin/zfs snapshot z/kameleon/*, \
+#  /sbin/zfs rollback z/kameleon/*, \
+#  /sbin/zfs destroy z/kameleon/*, \
+#  /sbin/zfs get origin z/kameleon/*, \
+#  /sbin/zfs set mountpoint=none z/kameleon/*, \
+#  /sbin/zfs list z/kameleon/*, \
+#  /sbin/zfs send z/kameleon/*, \
+#  /sbin/zfs recv z/kameleon/*
+#
+#ALL ALL = (root) NOPASSWD: C_KAMELEON_ZFS
+#EOF
+#
+# Checkpointing is functionnal, and allows to restart from any step that was previously checkpointed.
+#
 ---
 extend: chroot.yaml
 
@@ -6,17 +37,23 @@ checkpoint: dockerzchroot.yaml
 
 global:
 
-  ## ZFS options:
+  target_docker_image: $${kameleon_recipe_name}
+  target_rootfs_dataset: $${zfs_kameleon_dataset}/$${kameleon_recipe_name}
+
+  ## Should the build overwrite a previously built rootfs?
+  do_overwrite_rootfs: false
+
+  # ZFS options:
   zfs_cmd: sudo -k -n zfs
   zfs_kameleon_dataset: z/kameleon
-  ## Docker options
+  # Docker options
   docker_image: $${kameleon_recipe_name}_$${kameleon_short_uuid}
   docker_hostname: kameleon-$${kameleon_short_uuid}
 
   # rootfs options
-  rootfs_dataset: $${zfs_kameleon_dataset}/$${docker_image}
-  rootfs_host_dir: /$${rootfs_dataset}/rootfs
-  rootfs_container_dir: $${kameleon_cwd}/rootfs
+  rootfs_work_dataset: $${zfs_kameleon_dataset}/$${docker_image}
+  rootfs_work_host_dir: /$${rootfs_work_dataset}/rootfs
+  rootfs_work_container_dir: $${kameleon_cwd}/rootfs
 
   # Shell session from where we launch exec_out commands. There is often a
   # local bash session, but it can be a remote shell on other machines or on
@@ -30,19 +67,80 @@ global:
   # Shell session that allows us to connect to the building machine in order to
   # configure it and setup additional programs
   in_context:
-    cmd: test -s MAIN_CONTAINER_ID && LC_ALL=POSIX docker exec -i $(< MAIN_CONTAINER_ID) chroot $${rootfs_container_dir} /bin/bash
-    interactive_cmd: test -s MAIN_CONTAINER_ID && LC_ALL=POSIX docker exec -it $(cat MAIN_CONTAINER_ID) chroot $${rootfs_container_dir} /bin/bash
+    cmd: test -s MAIN_CONTAINER_ID && LC_ALL=POSIX docker exec -i $(< MAIN_CONTAINER_ID) chroot $${rootfs_work_container_dir} /bin/bash
+    interactive_cmd: test -s MAIN_CONTAINER_ID && LC_ALL=POSIX docker exec -it $(cat MAIN_CONTAINER_ID) chroot $${rootfs_work_container_dir} /bin/bash
     workdir: /
     proxy_cache: 172.17.0.1
 
 bootstrap:
-  - prepare_docker
-  - start_docker
+  - prepare_zfs_rootfs:
+    - handle_existing_target_rootfs_dataset:
+      - on_checkpoint: redo
+      - exec_local: |
+          set -e
+          if $${zfs_cmd} list $${target_rootfs_dataset} -H >& /dev/null; then
+            if ! $${do_overwrite_rootfs}; then
+            echo "$${target_rootfs_dataset} already exists. Destroy it beforehand or use '-g do_overwrite_rootfs:true'" 1>&2
+              exit 1
+            fi
+            $${zfs_cmd} destroy $${target_rootfs_dataset} -R -f
+          fi
+    - create_zfs_rootfs:
+      - on_checkpoint: redo
+      - on_export_clean:
+        - exec_local: |
+            ! $${zfs_cmd} list $${rootfs_work_dataset}/rootfs -H >& /dev/null || $${zfs_cmd} destroy $${rootfs_work_dataset}/rootfs -R -f
+      - exec_local: |
+          set -e
+          if $${checkpointing_enabled} && [ -r MAIN_CONTAINER_ID ] && docker ps --no-trunc -a -q | grep -q $(<MAIN_CONTAINER_ID); then
+            echo "$${rootfs_work_dataset}/rootfs already exists, because a previous checkpoint was applied/restored."
+          else
+            ! $${zfs_cmd} list $${rootfs_work_dataset}/rootfs -H >& /dev/null || $${zfs_cmd} destroy $${rootfs_work_dataset}/rootfs -R -f
+            $${zfs_cmd} create $${rootfs_work_dataset}/rootfs -o mountpoint=$${rootfs_work_host_dir} -p
+          fi
+  - prepare_docker_base_image:
+    - pull_and_tag_image:
+      - exec_local: |
+          set -e
+          if ! docker image ls --format "{{.Repository}}:{{.Tag}}" | grep -q $${from_docker_image}; then
+            echo "Importing docker base image: $${from_docker_image}, which recipe builds from."
+            docker pull $${from_docker_image}
+          fi
+          docker tag $${from_docker_image} $${docker_image}:base
+  - start_docker_context:
+    - start_docker_container:
+      - on_export_clean:
+        - exec_local: |
+            set -e
+            if [ -r MAIN_CONTAINER_ID ]; then
+              if docker ps --no-trunc -a -q | grep -q $(<MAIN_CONTAINER_ID); then
+                docker rm -f $(< MAIN_CONTAINER_ID) > /dev/null
+              fi
+              rm MAIN_CONTAINER_ID
+            fi
+      - exec_local: |
+          set -e
+          rm -f MAIN_CONTAINER_ID
+          KAMELEON_ROOTFS_HOST_DIR=$${rootfs_work_host_dir}
+          docker run -d -i -h $${docker_hostname} --cidfile MAIN_CONTAINER_ID --privileged ${KAMELEON_ROOTFS_HOST_DIR:+-v $KAMELEON_ROOTFS_HOST_DIR:$${rootfs_work_container_dir}} "$${docker_image}:base" cat
+          while ! [ -s MAIN_CONTAINER_ID ] || ! docker exec -i $(< MAIN_CONTAINER_ID) true; do sleep 1; done
 
 setup:
   - "@base"
 
 export:
-  - tag_docker_image:
+  - export_target_docker_image:
     - commit_container:
-      - exec_local: docker commit $(< MAIN_CONTAINER_ID) $${docker_image}:$${kameleon_short_uuid}
+      - exec_local: |
+          set -e
+          docker stop $(< MAIN_CONTAINER_ID)
+          docker commit $(< MAIN_CONTAINER_ID) $${docker_image}:latest
+          docker rm $(< MAIN_CONTAINER_ID)
+          rm MAIN_CONTAINER_ID
+          docker tag $${docker_image}:latest $${target_docker_image}
+  - export_target_rootfs:
+    - export_rootfs:
+      - exec_local: |
+          set -e
+          $${zfs_cmd} snapshot $${rootfs_work_dataset}/rootfs@latest
+          $${zfs_cmd} send $${rootfs_work_dataset}/rootfs@latest | $${zfs_cmd} recv $${target_rootfs_dataset}

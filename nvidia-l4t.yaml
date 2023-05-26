@@ -48,20 +48,8 @@ global:
   kernel_make_cmd: "make -C $${kernel_src_dir} -j $(nproc) ARCH=arm64 LOCALVERSION=-debian-l4t CROSS_COMPILE=$${cross_compilation_toolchain_dir}/usr/bin/aarch64-buildroot-linux-gnu-"
 
 bootstrap:
-  - prepare_zfs_rootfs:
-    - create_zfs_rootfs:
-      - exec_local: |
-          ! $${zfs_cmd} list $${rootfs_dataset}/rootfs -H >& /dev/null || $${zfs_cmd} destroy $${rootfs_dataset}/rootfs -f -R
-          $${zfs_cmd} create $${rootfs_dataset}/rootfs -o mountpoint=$${rootfs_host_dir} -p
-  - prepare_docker_image:
-    - pull_and_tag_image:
-      - exec_local: |
-          if ! docker image ls --format "{{.Repository}}:{{.Tag}}" | grep -q "$${from_docker_image}"; then
-            echo "Importing docker base image to build from"
-            docker pull $${from_docker_image}
-          fi
-          docker tag $${from_docker_image} "$${docker_image}:base"
-  - start_docker
+  - "@base"
+setup:
   - install_build_deps:
     - update-apt-sources:
       - exec_out: apt-get update
@@ -78,7 +66,6 @@ bootstrap:
       - exec_out: apt-get install -y qemu-user-static binfmt-support
     - setup_qemu_in_rootfs:
       - exec_out: cp $${qemu_file} $${rootfs_container_dir}/$${qemu_file}
-setup:
   - install_cti_BSP:
     - download_and extract_cti_BSP:
       - exec_out: wget -O- -q "$${cti_BSP_url}" | tar -C $${l4t_dir} -zxv

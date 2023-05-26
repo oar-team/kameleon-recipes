@@ -3,53 +3,63 @@ enabled?:
 
 create:
   - exec_local: |
+      set -e
       docker stop $(< $KAMELEON_WORKDIR/MAIN_CONTAINER_ID) > /dev/null || docker kill $(< $KAMELEON_WORKDIR/MAIN_CONTAINER_ID) > /dev/null
       docker commit $(< $KAMELEON_WORKDIR/MAIN_CONTAINER_ID) $${docker_image}:@microstep_id > /dev/null
       docker rm $(< $KAMELEON_WORKDIR/MAIN_CONTAINER_ID) > /dev/null
-      sed -i "/^$(< $KAMELEON_WORKDIR/MAIN_CONTAINER_ID)$/d" $KAMELEON_WORKDIR/CONTAINERS_TO_CLEAN
       rm -f $KAMELEON_WORKDIR/MAIN_CONTAINER_ID
   - exec_local: |
-      $${zfs_cmd} snapshot $${rootfs_dataset}/rootfs@@microstep_id
-      test "$( $${zfs_cmd} get origin $${rootfs_dataset}/rootfs -H -o value )" = '-' || $${zfs_cmd} promote $${rootfs_dataset}/rootfs
-      while $${zfs_cmd} list $${rootfs_dataset}/checkpoints -H >& /dev/null; do
-        $${zfs_cmd} destroy $${rootfs_dataset}/checkpoints -R -f || (echo "retring in 1s" 1>&2; sleep 1)
+      set -e
+      $${zfs_cmd} snapshot $${rootfs_work_dataset}/rootfs@@microstep_id
+      test "$( $${zfs_cmd} get origin $${rootfs_work_dataset}/rootfs -H -o value )" = '-' || $${zfs_cmd} promote $${rootfs_work_dataset}/rootfs
+      while $${zfs_cmd} list $${rootfs_work_dataset}/checkpoints -H >& /dev/null; do
+        $${zfs_cmd} destroy $${rootfs_work_dataset}/checkpoints -R -f || (echo "retring in 1s" 1>&2; sleep 1)
       done
-      $${zfs_cmd} set mountpoint=none $${rootfs_dataset}/rootfs
-      $${zfs_cmd} rename $${rootfs_dataset}/rootfs $${rootfs_dataset}/checkpoints
-      $${zfs_cmd} clone $${rootfs_dataset}/checkpoints@@microstep_id $${rootfs_dataset}/rootfs -o mountpoint=$${rootfs_host_dir}
+      $${zfs_cmd} set mountpoint=none $${rootfs_work_dataset}/rootfs
+      $${zfs_cmd} rename $${rootfs_work_dataset}/rootfs $${rootfs_work_dataset}/checkpoints
+      $${zfs_cmd} clone $${rootfs_work_dataset}/checkpoints@@microstep_id $${rootfs_work_dataset}/rootfs -o mountpoint=$${rootfs_work_host_dir}
   - exec_local: |
-      docker run -d -i -h $${docker_hostname} --cidfile $KAMELEON_WORKDIR/MAIN_CONTAINER_ID -v $${rootfs_host_dir}:$${rootfs_container_dir} --privileged $${docker_image}:@microstep_id cat > /dev/null
+      set -e
+      docker run -d -i -h $${docker_hostname} --cidfile $KAMELEON_WORKDIR/MAIN_CONTAINER_ID -v $${rootfs_work_host_dir}:$${rootfs_work_container_dir} --privileged $${docker_image}:@microstep_id cat > /dev/null
       while ! [ -s $KAMELEON_WORKDIR/MAIN_CONTAINER_ID ] || ! docker exec -i $(< $KAMELEON_WORKDIR/MAIN_CONTAINER_ID) true; do sleep 1; done
-      echo $(< $KAMELEON_WORKDIR/MAIN_CONTAINER_ID) >> $KAMELEON_WORKDIR/CONTAINERS_TO_CLEAN
   - reload_context: out
   - reload_context: in
 
 apply:
   - exec_local: |
-      for i in $( docker image ls --filter reference=$${docker_image} --filter since=$${docker_image}:@microstep_id -q ); do
-        docker image rm -f $i
+      set -e
+      for i in $( docker image ls --format "{{.Repository}}:{{.Tag}}" --filter reference=$${docker_image} --filter since=$${docker_image}:@microstep_id ); do
+        docker image rm -f $i #Just untag if image has sibblings, thanks to giving image Reporitory:Tag instead of ID
       done || true
-      rm -f $KAMELEON_WORKDIR/MAIN_CONTAINER_ID
+      if [ -r $KAMELEON_WORKDIR/MAIN_CONTAINER_ID ]; then
+        if docker ps --no-trunc -a -q | grep -q $(< $KAMELEON_WORKDIR/MAIN_CONTAINER_ID); then
+          docker rm -f $(< $KAMELEON_WORKDIR/MAIN_CONTAINER_ID) > /dev/null
+        fi
+        rm $KAMELEON_WORKDIR/MAIN_CONTAINER_ID
+      fi
   - exec_local: |
-      $${zfs_cmd} destroy $${rootfs_dataset}/rootfs
-      $${zfs_cmd} rollback $${rootfs_dataset}/checkpoints@@microstep_id -R -f
-      $${zfs_cmd} clone $${rootfs_dataset}/checkpoints@@microstep_id $${rootfs_dataset}/rootfs -o mountpoint=$${rootfs_host_dir}
+      set -e
+      ! $${zfs_cmd} list $${rootfs_work_dataset}/rootfs -H >& /dev/null || $${zfs_cmd} destroy $${rootfs_work_dataset}/rootfs -R -f
+      $${zfs_cmd} rollback $${rootfs_work_dataset}/checkpoints@@microstep_id -R -f
+      $${zfs_cmd} clone $${rootfs_work_dataset}/checkpoints@@microstep_id $${rootfs_work_dataset}/rootfs -o mountpoint=$${rootfs_work_host_dir}
   - exec_local: |
-      docker run -d -i -h $${docker_hostname} --cidfile $KAMELEON_WORKDIR/MAIN_CONTAINER_ID -v $${rootfs_host_dir}:$${rootfs_container_dir} --privileged $${docker_image}:@microstep_id cat > /dev/null
+      set -e
+      docker run -d -i -h $${docker_hostname} --cidfile $KAMELEON_WORKDIR/MAIN_CONTAINER_ID -v $${rootfs_work_host_dir}:$${rootfs_work_container_dir} --privileged $${docker_image}:@microstep_id cat > /dev/null
       while ! [ -s $KAMELEON_WORKDIR/MAIN_CONTAINER_ID ] || ! docker exec -i $(< $KAMELEON_WORKDIR/MAIN_CONTAINER_ID) true; do sleep 1; done
-      echo $(< $KAMELEON_WORKDIR/MAIN_CONTAINER_ID) >> $KAMELEON_WORKDIR/CONTAINERS_TO_CLEAN
 
 list:
   - exec_local: |
-      for i in $(docker image ls --format "{{.Tag}}" --filter reference=$${docker_image}); do
-        if $${zfs_cmd} list $${rootfs_dataset}/checkpoints@$i -H >& /dev/null; then
+      set -e
+      for i in $( docker image ls --format "{{.Tag}}" --filter reference=$${docker_image} ); do
+        if $${zfs_cmd} list $${rootfs_work_dataset}/checkpoints@$i -H >& /dev/null; then
           echo $i
         fi
       done || true
 
 clear:
   - exec_local: |
-      for i in $( docker image ls --filter reference=$${docker_image} -q ); do
-        docker image rm -f $i
+      set -e
+      for i in $( docker image ls --format "{{.Repository}}:{{.Tag}}" --filter reference=$${docker_image} ); do
+        docker image rm -f $i #Just untag if image has sibblings, thanks to giving image Reporitory:Tag instead of ID
       done || true
-      ! $${zfs_cmd} list $${rootfs_dataset} -H >& /dev/null || $${zfs_cmd} destroy $${rootfs_dataset} -f -R
+      ! $${zfs_cmd} list $${rootfs_work_dataset} -H >& /dev/null || $${zfs_cmd} destroy $${rootfs_work_dataset} -R -f
