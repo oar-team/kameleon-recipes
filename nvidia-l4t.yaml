@@ -154,22 +154,15 @@ export:
           set -e
           # Stop the current docker container so that we can configure the image
           docker stop $(< $KAMELEON_WORKDIR/MAIN_CONTAINER_ID) > /dev/null || docker kill $(< $KAMELEON_WORKDIR/MAIN_CONTAINER_ID) > /dev/null
-          # Create the temporary version of the image that we will modify
-          #docker image rm -f $${docker_image}:noflash &> /dev/null || true
-          docker commit $(< $KAMELEON_WORKDIR/MAIN_CONTAINER_ID) $${docker_image}:noflash > /dev/null
+          # Create the final version of the image, ready to flash
+          docker commit -c "ENV USER=root" -c "WORKDIR $${l4t_dir}" -c "ENTRYPOINT ./flash.sh" $(< $KAMELEON_WORKDIR/MAIN_CONTAINER_ID) $${target_docker_image} > /dev/null
           # Delete the container
           docker rm $(< $KAMELEON_WORKDIR/MAIN_CONTAINER_ID) > /dev/null
           rm -f $KAMELEON_WORKDIR/MAIN_CONTAINER_ID
-          # Create a new container with the new setup to enable flashing. It should stop immediateley after showing the flash usage.
-          docker run -e "USER=root" -w $${l4t_dir} --entrypoint ./flash.sh --cidfile $KAMELEON_WORKDIR/MAIN_CONTAINER_ID -i $${docker_image}:noflash || true
-          # Create the final version of the image, ready to flash
-          docker commit $(< $KAMELEON_WORKDIR/MAIN_CONTAINER_ID) $${target_docker_image} > /dev/null
-          # Remove the temporary version of the image
-          docker image rm -f $${docker_image}:noflash >& /dev/null
-          rm -f $KAMELEON_WORKDIR/MAIN_CONTAINER_ID
+      - exec_local: |
           echo 'You can now flash a Xavier module, using:'
           echo
           echo '$ docker run -it --rm --privileged -v /dev/bus/usb:/dev/bus/usb/ -v /dev:/dev -v /$${target_rootfs_dataset}/rootfs0:$${l4t_dir}/rootfs $${target_docker_image} -N $NFS_ROOT cti/xavier/rogue/base eth0'
           echo
-          echo 'Where for instance NFSROOT=172.16.127.3:/z/nodes/x-$N, with N the Xavier module number'.
+          echo 'Where for instance NFSROOT=172.16.127.3:/z/nodes/x-$N, with N the Xavier module #.'
           echo
