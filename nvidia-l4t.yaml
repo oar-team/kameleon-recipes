@@ -27,10 +27,11 @@ global:
   # You should specify this in the global of your recipe
   from_docker_image: "ubuntu:20.04"
   rootfs_arch: aarch64
+  docker_extra_volumes: "-v /grid5000:/grid5000:ro"
 
 
   to_docker_image: "$${kameleon_recipe_name}:latest"
-  rootfs_container_dir: "$${l4t_dir}/rootfs"
+  rootfs_container_work_dir: "$${l4t_dir}/rootfs"
   qemu_file: "/usr/bin/qemu-$${rootfs_arch}-static"
 
   workdir: "/nvidia"
@@ -46,6 +47,7 @@ global:
   debian_kernel_pkg_url: "http://ftp.fr.debian.org/debian/pool/main/l/linux/linux-image-5.10.0-20-arm64-unsigned_5.10.158-2_arm64.deb"
   kernel_src_dir: $${l4t_dir}/src/kernel/kernel-$${l4t_kernel_version}
   kernel_make_cmd: "make -C $${kernel_src_dir} -j $(nproc) ARCH=arm64 LOCALVERSION=-debian-l4t CROSS_COMPILE=$${cross_compilation_toolchain_dir}/usr/bin/aarch64-buildroot-linux-gnu-"
+  g5k_env_std_tarball_file: "/grid5000/images/debian11-arm64-std-2023010308.tar.zst"
 
 bootstrap:
   - "@base"
@@ -59,13 +61,13 @@ setup:
     - download_and_extract_nvidia_BSP:
       - exec_out: mkdir -p $${workdir}
       - exec_out: wget -O- -q "$${nvidia_BSP_url}" | tar -C $${workdir} -jxv
-  - install_rootfs:
+  - install_l4t_rootfs:
     - download_rootfs:
-      - exec_out: wget -O- -q "$${nvidia_rootfs_url}" | tar -C $${rootfs_container_dir} -jxv
+      - exec_out: wget -O- -q "$${nvidia_rootfs_url}" | tar -C $${rootfs_container_work_dir} -jxv
     - install_qemu:
       - exec_out: apt-get install -y qemu-user-static binfmt-support
     - setup_qemu_in_rootfs:
-      - exec_out: cp $${qemu_file} $${rootfs_container_dir}/$${qemu_file}
+      - exec_out: cp $${qemu_file} $${rootfs_container_work_dir}/$${qemu_file}
   - install_cti_BSP:
     - download_and extract_cti_BSP:
       - exec_out: wget -O- -q "$${cti_BSP_url}" | tar -C $${l4t_dir} -zxv
@@ -118,11 +120,19 @@ setup:
           cp $${kernel_src_dir}/arch/arm64/boot/dts/nvidia/* $${l4t_dir}/kernel/dtb/
       - exec_out: |
           KERNEL_RELEASE=$($${kernel_make_cmd} kernelrelease | grep -ve '^make')
-          $${kernel_make_cmd} INSTALL_HDR_PATH="$${rootfs_container_dir}/usr/src/linux-headers-$KERNEL_RELEASE" headers_install
-          tar -C $${rootfs_container_dir} -jcvf $${l4t_dir}/kernel/kernel_headers.tbz2 usr/src/linux-headers-$KERNEL_RELEASE
+          $${kernel_make_cmd} INSTALL_HDR_PATH="$${rootfs_container_work_dir}/usr/src/linux-headers-$KERNEL_RELEASE" headers_install
+          tar -C $${rootfs_container_work_dir}/usr/src -jcvf $${l4t_dir}/kernel/kernel_headers.tbz2 linux-headers-$KERNEL_RELEASE
       - exec_out: |
-          $${kernel_make_cmd} INSTALL_MOD_PATH="$${rootfs_container_dir}" modules_install
-          ln -sfn /usr/src/linux-headers-$KERNEL_RELEASE $${rootfs_container_dir}/lib/modules/$KERNEL_RELEASE/build
-          tar -C $${rootfs_container_dir} -jcvf $${l4t_dir}/kernel/kernel_supplements.tbz2 lib/modules/$KERNEL_RELEASE
+          $${kernel_make_cmd} INSTALL_MOD_PATH="$${rootfs_container_work_dir}" modules_install
+          ln -sfn /usr/src/linux-headers-$KERNEL_RELEASE $${rootfs_container_work_dir}/lib/modules/$KERNEL_RELEASE/build
+          tar -C $${rootfs_container_work_dir} -jcvf $${l4t_dir}/kernel/kernel_supplements.tbz2 lib/modules/$KERNEL_RELEASE
+  - create_new_zfs_rootfs
+  - deploy_g5k_env_std_in_rootfs:
+    - install_necessary_tools:
+      - exec_out: apt-get install -y zstd lbzip2
+    - extract_rootfs:
+      - exec_out: tar -C $${rootfs_container_work_dir} --zstd -xvf $${g5k_env_std_tarball_file}
+    - apply_l4t_binaries:
+      - exec_out: $${l4t_dir}/apply_binaries.sh -r $${rootfs_container_work_dir} --target-overlay
 export:
   - "@base"

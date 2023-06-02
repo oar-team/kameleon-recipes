@@ -49,11 +49,12 @@ global:
   # Docker options
   docker_image: $${kameleon_recipe_name}_$${kameleon_short_uuid}
   docker_hostname: kameleon-$${kameleon_short_uuid}
+  docker_extra_volumes:
 
   # rootfs options
   rootfs_work_dataset: $${zfs_kameleon_dataset}/$${docker_image}
-  rootfs_work_host_dir: /$${rootfs_work_dataset}/rootfs
-  rootfs_work_container_dir: $${kameleon_cwd}/rootfs
+  rootfs_host_work_dir: /$${rootfs_work_dataset}/rootfs
+  rootfs_container_work_dir: $${kameleon_cwd}/rootfs
 
   # Shell session from where we launch exec_out commands. There is often a
   # local bash session, but it can be a remote shell on other machines or on
@@ -67,8 +68,8 @@ global:
   # Shell session that allows us to connect to the building machine in order to
   # configure it and setup additional programs
   in_context:
-    cmd: test -s MAIN_CONTAINER_ID && LC_ALL=POSIX docker exec -i $(< MAIN_CONTAINER_ID) chroot $${rootfs_work_container_dir} /bin/bash
-    interactive_cmd: test -s MAIN_CONTAINER_ID && LC_ALL=POSIX docker exec -it $(cat MAIN_CONTAINER_ID) chroot $${rootfs_work_container_dir} /bin/bash
+    cmd: test -s MAIN_CONTAINER_ID && LC_ALL=POSIX docker exec -i $(< MAIN_CONTAINER_ID) chroot $${rootfs_container_work_dir} /bin/bash
+    interactive_cmd: test -s MAIN_CONTAINER_ID && LC_ALL=POSIX docker exec -it $(cat MAIN_CONTAINER_ID) chroot $${rootfs_container_work_dir} /bin/bash
     workdir: /
     proxy_cache: 172.17.0.1
 

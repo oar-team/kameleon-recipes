@@ -3,34 +3,48 @@ enabled?:
 
 create:
   - exec_local: |
+      # Docker part1: stop
       set -e
+      # Stop the current docker container, commit its image: that's the checkpointed image, remove the container
       docker stop $(< $KAMELEON_WORKDIR/MAIN_CONTAINER_ID) > /dev/null || docker kill $(< $KAMELEON_WORKDIR/MAIN_CONTAINER_ID) > /dev/null
       docker commit $(< $KAMELEON_WORKDIR/MAIN_CONTAINER_ID) $${docker_image}:@microstep_id > /dev/null
       docker rm $(< $KAMELEON_WORKDIR/MAIN_CONTAINER_ID) > /dev/null
       rm -f $KAMELEON_WORKDIR/MAIN_CONTAINER_ID
   - exec_local: |
+      # ZFS part
       set -e
+      # Create the snapshot of the checkpoint
       $${zfs_cmd} snapshot $${rootfs_work_dataset}/rootfs@@microstep_id
+      # Move the snapshot on top of the checkpoints dataset: to do so we have to swap the rootfs and checkpoints datasets.
+      # This involves the following operations: promote rootfs to hold all snapshots then remove the checkpoints dateset.
       test "$( $${zfs_cmd} get origin $${rootfs_work_dataset}/rootfs -H -o value )" = '-' || $${zfs_cmd} promote $${rootfs_work_dataset}/rootfs
       while $${zfs_cmd} list $${rootfs_work_dataset}/checkpoints -H >& /dev/null; do
+        # A race condition may happen here, harmless. Just retry.
         $${zfs_cmd} destroy $${rootfs_work_dataset}/checkpoints -R -f || (echo "retring in 1s" 1>&2; sleep 1)
       done
+      # Then unmount and rename the rootfs dataset to become the new checkpoints dataset
       $${zfs_cmd} set mountpoint=none $${rootfs_work_dataset}/rootfs
       $${zfs_cmd} rename $${rootfs_work_dataset}/rootfs $${rootfs_work_dataset}/checkpoints
-      $${zfs_cmd} clone $${rootfs_work_dataset}/checkpoints@@microstep_id $${rootfs_work_dataset}/rootfs -o mountpoint=$${rootfs_work_host_dir}
+      # Finaly, clone the snapshot of the checkpoints to become the new rootfs dataset
+      $${zfs_cmd} clone $${rootfs_work_dataset}/checkpoints@@microstep_id $${rootfs_work_dataset}/rootfs -o mountpoint=$${rootfs_host_work_dir}
   - exec_local: |
+      # Docker part2: start the docker container with the new docker image and ZFS rootfs
       set -e
-      docker run -d -i -h $${docker_hostname} --cidfile $KAMELEON_WORKDIR/MAIN_CONTAINER_ID -v $${rootfs_work_host_dir}:$${rootfs_work_container_dir} --privileged $${docker_image}:@microstep_id cat > /dev/null
+      docker run -d -i -h $${docker_hostname} --cidfile $KAMELEON_WORKDIR/MAIN_CONTAINER_ID -v $${rootfs_host_work_dir}:$${rootfs_container_work_dir} $${docker_extra_volumes} --privileged $${docker_image}:@microstep_id cat > /dev/null
       while ! [ -s $KAMELEON_WORKDIR/MAIN_CONTAINER_ID ] || ! docker exec -i $(< $KAMELEON_WORKDIR/MAIN_CONTAINER_ID) true; do sleep 1; done
+      # Finaly, kameleon's context out and in must be recreated to point to the new docker container
   - reload_context: out
   - reload_context: in
 
 apply:
   - exec_local: |
+      # Docker part1: stop
       set -e
+      # Untag images that are more recent than the checkpoint to apply.
       for i in $( docker image ls --format "{{.Repository}}:{{.Tag}}" --filter reference=$${docker_image} --filter since=$${docker_image}:@microstep_id ); do
-        docker image rm -f $i #Just untag if image has sibblings, thanks to giving image Reporitory:Tag instead of ID
+        docker image rm -f $i #Just untag if image has sibblings, thanks to giving image Reporitory:Tag instead of ID.
       done || true
+      # Stop and clean the container of context_out if running.
       if [ -r $KAMELEON_WORKDIR/MAIN_CONTAINER_ID ]; then
         if docker ps --no-trunc -a -q | grep -q $(< $KAMELEON_WORKDIR/MAIN_CONTAINER_ID); then
           docker rm -f $(< $KAMELEON_WORKDIR/MAIN_CONTAINER_ID) > /dev/null
@@ -38,28 +52,68 @@ apply:
         rm $KAMELEON_WORKDIR/MAIN_CONTAINER_ID
       fi
   - exec_local: |
+      # ZFS rootfs part
       set -e
+      # Destroy any existing rootfs dataset as it will be recreated from a snapshot.
       ! $${zfs_cmd} list $${rootfs_work_dataset}/rootfs -H >& /dev/null || $${zfs_cmd} destroy $${rootfs_work_dataset}/rootfs -R -f
-      $${zfs_cmd} rollback $${rootfs_work_dataset}/checkpoints@@microstep_id -R -f
-      $${zfs_cmd} clone $${rootfs_work_dataset}/checkpoints@@microstep_id $${rootfs_work_dataset}/rootfs -o mountpoint=$${rootfs_work_host_dir}
+      # Look for the snapshot that holds the checkpoint and roll it back
+      # If multiple rootfs are created, look within the checkpointsN (N≥0) datasets as well.
+      unset j
+      while $${zfs_cmd} list $${rootfs_work_dataset}/checkpoints$j -H >& /dev/null; do
+        if $${zfs_cmd} list $${rootfs_work_dataset}/checkpoints$j@@microstep_id -H >& /dev/null; then
+          # If $j≥0, this means that the checkpoint was in a checkpointsN with N=$j, not directly in the checkpoints dataset.
+          if [ -n "$j" ]; then
+            # Replace the current checkpoints dataset by the checkpointsN dataset.
+            $${zfs_cmd} destroy $${rootfs_work_dataset}/checkpoints -R -f
+            $${zfs_cmd} rename $${rootfs_work_dataset}/checkpoints$j $${rootfs_work_dataset}/checkpoints
+            # Remove any more recent checkpointsN datasets.
+            while $${zfs_cmd} list $${rootfs_work_dataset}/checkpoints$((++j)) -H >& /dev/null; do
+              $${zfs_cmd} destroy $${rootfs_work_dataset}/checkpoints$j -R -f
+            done
+          fi
+          # Rollback to the checkpoint's snapshot.
+          $${zfs_cmd} rollback $${rootfs_work_dataset}/checkpoints@@microstep_id -R -f
+          # Create the rootfs dataset as a clone of the checkpoint dataset.
+          $${zfs_cmd} clone $${rootfs_work_dataset}/checkpoints@@microstep_id $${rootfs_work_dataset}/rootfs -o mountpoint=$${rootfs_host_work_dir}
+          # We are done.
+          exit 0
+        fi
+        # Set $j to 0 if unset or increment it
+        j=$((${j:--1}+1))
+      done
+      # If we reach this point, that means that the checkpoint wasn't found. Should not happen!
+      echo "ZFS snapshot not found" 1>&2
+      exit 1
   - exec_local: |
+      # Docker part2: start the context_out docker container with the docker image and ZFS rootfs of the wanted checkpoint.
       set -e
-      docker run -d -i -h $${docker_hostname} --cidfile $KAMELEON_WORKDIR/MAIN_CONTAINER_ID -v $${rootfs_work_host_dir}:$${rootfs_work_container_dir} --privileged $${docker_image}:@microstep_id cat > /dev/null
+      docker run -d -i -h $${docker_hostname} --cidfile $KAMELEON_WORKDIR/MAIN_CONTAINER_ID -v $${rootfs_host_work_dir}:$${rootfs_container_work_dir} $${docker_extra_volumes} --privileged $${docker_image}:@microstep_id cat > /dev/null
       while ! [ -s $KAMELEON_WORKDIR/MAIN_CONTAINER_ID ] || ! docker exec -i $(< $KAMELEON_WORKDIR/MAIN_CONTAINER_ID) true; do sleep 1; done
 
 list:
   - exec_local: |
+      # List checkpoints: each identifier must match both a docker image and a ZFS snapshot.
       set -e
+      # First look at the docker images
       for i in $( docker image ls --format "{{.Tag}}" --filter reference=$${docker_image} ); do
-        if $${zfs_cmd} list $${rootfs_work_dataset}/checkpoints@$i -H >& /dev/null; then
-          echo $i
-        fi
+        # Look if a ZFS snapshot matches the checkpoint identifier
+        # If multiple rootfs are created, look within the checkpointsN (N≥0) datasets as well.
+        unset j
+        while $${zfs_cmd} list $${rootfs_work_dataset}/checkpoints$j -H >& /dev/null; do
+          if $${zfs_cmd} list $${rootfs_work_dataset}/checkpoints$j@$i -H >& /dev/null; then
+            echo $i
+            break
+          fi
+          j=$((${j:--1}+1))
+        done
       done || true
 
 clear:
   - exec_local: |
       set -e
+      # Clear docker images
       for i in $( docker image ls --format "{{.Repository}}:{{.Tag}}" --filter reference=$${docker_image} ); do
         docker image rm -f $i #Just untag if image has sibblings, thanks to giving image Reporitory:Tag instead of ID
       done || true
+      # Clear the ZFS dataset
       ! $${zfs_cmd} list $${rootfs_work_dataset} -H >& /dev/null || $${zfs_cmd} destroy $${rootfs_work_dataset} -R -f

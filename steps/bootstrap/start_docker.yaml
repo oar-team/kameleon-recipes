@@ -1,7 +1,7 @@
 - docker_image: $${kameleon_recipe_name}_$${kameleon_short_uuid}
 - docker_hostname: kameleon-$${kameleon_short_uuid}
-- rootfs_work_host_dir:
-- rootfs_work_container_dir:
+- rootfs_host_work_dir:
+- rootfs_container_work_dir:
 
 - clean_containers:
   - on_checkpoint: redo
@@ -19,6 +19,6 @@
   - exec_local: |
       set -e
       rm -f MAIN_CONTAINER_ID
-      KAMELEON_ROOTFS_HOST_DIR=$${rootfs_work_host_dir}
-      docker run -d -i -h $${docker_hostname} --cidfile MAIN_CONTAINER_ID --privileged ${KAMELEON_ROOTFS_HOST_DIR:+-v $KAMELEON_ROOTFS_HOST_DIR:$${rootfs_work_container_dir}} "$${docker_image}:base" cat
+      KAMELEON_ROOTFS_HOST_DIR=$${rootfs_host_work_dir}
+      docker run -d -i -h $${docker_hostname} --cidfile MAIN_CONTAINER_ID --privileged ${KAMELEON_ROOTFS_HOST_DIR:+-v $KAMELEON_ROOTFS_HOST_DIR:$${rootfs_container_work_dir}} "$${docker_image}:base" cat
       while ! [ -s MAIN_CONTAINER_ID ] || ! docker exec -i $(< MAIN_CONTAINER_ID) true; do sleep 1; done
