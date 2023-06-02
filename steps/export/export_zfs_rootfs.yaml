@@ -29,5 +29,10 @@
 - export_rootfs:
   - exec_local: |
       set -e
-      $${zfs_cmd} snapshot $${rootfs_work_dataset}/rootfs@latest
-      $${zfs_cmd} send $${rootfs_work_dataset}/rootfs@latest | $${zfs_cmd} recv $${target_rootfs_dataset}
+      unset j
+      $${zfs_cmd} create $${target_rootfs_dataset} -o mountpoint=/$${target_rootfs_dataset}
+      while $${zfs_cmd} list $${rootfs_work_dataset}/rootfs$j -H > /dev/null; do
+        $${zfs_cmd} snapshot $${rootfs_work_dataset}/rootfs$j@latest
+        $${zfs_cmd} send $${rootfs_work_dataset}/rootfs$j@latest | $${zfs_cmd} recv $${target_rootfs_dataset}/rootfs$j
+        j=$((${j:--1}+1))
+      done
