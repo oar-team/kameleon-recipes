@@ -26,12 +26,25 @@
 - zfs_kameleon_dataset: z/kameleon
 - rootfs_work_dataset: $${zfs_kameleon_dataset}/$${docker_image}
 
+- handle_existing_target_rootfs_dataset:
+  - on_checkpoint: disabled
+  - exec_local: |
+      set -e
+      if $${zfs_cmd} list $${target_rootfs_dataset} -H >& /dev/null; then
+        if ! $${do_overwrite_rootfs}; then
+        echo "$${target_rootfs_dataset} already exists. Destroy it beforehand or use '-g do_overwrite_rootfs:true'" 1>&2
+          exit 1
+        fi
+        $${zfs_cmd} destroy $${target_rootfs_dataset} -R -f
+      fi
+
 - export_rootfs:
   - exec_local: |
       set -e
       unset j
       $${zfs_cmd} create $${target_rootfs_dataset} -o mountpoint=/$${target_rootfs_dataset}
-      while $${zfs_cmd} list $${rootfs_work_dataset}/rootfs$j -H > /dev/null; do
+      while $${zfs_cmd} list $${rootfs_work_dataset}/rootfs$j -H >& /dev/null; do
+        ! $${zfs_cmd} list $${rootfs_work_dataset}/rootfs$j@latest -H >& /dev/null || $${zfs_cmd} destroy $${rootfs_work_dataset}/rootfs$j@latest -f -R
         $${zfs_cmd} snapshot $${rootfs_work_dataset}/rootfs$j@latest
         $${zfs_cmd} send $${rootfs_work_dataset}/rootfs$j@latest | $${zfs_cmd} recv $${target_rootfs_dataset}/rootfs$j
         j=$((${j:--1}+1))
