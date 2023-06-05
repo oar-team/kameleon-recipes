@@ -87,7 +87,7 @@ setup:
       - exec_out: rm -r $${workdir}/tmp
   - build_kernel:
     - install_tools:
-      - exec_out: apt-get install -y make gcc xxd flex bison python3 bc rsync kmod libelf-dev libssl-dev
+      - exec_out: apt-get install -y make gcc xxd flex bison python3 python-is-python3 bc rsync kmod libelf-dev libssl-dev
     - merge_kernel_configs:
       - exec_out: |
           cd $${kernel_src_dir}/arch/arm64/configs
