@@ -55,9 +55,9 @@ bootstrap:
 setup:
   - install_build_deps:
     - update-apt-sources:
-      - exec_out: apt-get update
+      - apt-get_out: update
     - install_dep_packages:
-      - exec_out: apt-get install -y wget
+      - apt-get_out: install wget
   - install_nvidia_BSP:
     - download_and_extract_nvidia_BSP:
       - exec_out: mkdir -p $${workdir}
@@ -66,7 +66,7 @@ setup:
     - download_rootfs:
       - exec_out: wget -O- -q "$${nvidia_rootfs_url}" | tar -C $${rootfs_container_work_dir} -jxv
     - install_qemu:
-      - exec_out: apt-get install -y qemu-user-static binfmt-support
+      - apt-get_out: install qemu-user-static binfmt-support
     - setup_qemu_in_rootfs:
       - exec_out: cp $${qemu_file} $${rootfs_container_work_dir}/$${qemu_file}
   - install_cti_BSP:
@@ -87,7 +87,7 @@ setup:
       - exec_out: rm -r $${workdir}/tmp
   - build_kernel:
     - install_tools:
-      - exec_out: apt-get install -y make gcc xxd flex bison python3 python-is-python3 bc rsync kmod libelf-dev libssl-dev
+      - apt-get_out: install make gcc xxd flex bison python3 python-is-python3 bc rsync kmod libelf-dev libssl-dev
     - merge_kernel_configs:
       - exec_out: |
           cd $${kernel_src_dir}/arch/arm64/configs
@@ -110,10 +110,10 @@ setup:
           ./scripts/config --enable NFS_V4
           ./scripts/config --enable NFS_V3
           ./scripts/config --enable NFS_V2
-    - dive_in:
-      - exec_local: |
-          echo "Kernel make command: $${kernel_make_cmd}"
-      - breakpoint
+    #- dive_in:
+    #  - exec_local: |
+    #      echo "Kernel make command: $${kernel_make_cmd}"
+    #  - breakpoint
     - build_kernel_objects:
       - exec_out: |
           cd $${kernel_src_dir}
@@ -139,11 +139,11 @@ setup:
           tar -C $${rootfs_container_work_dir} -jcvf $${l4t_dir}/kernel/kernel_supplements.tbz2 lib/modules/$KERNEL_RELEASE
   - setup_for_flashing:
     - install_required_debs:
-      - exec_out: DEBIAN_FRONTEND=noninteractive apt-get install -y usbutils udev python3-yaml lz4 cpio openssh-client libxml2-utils perl-modules-5.30 dosfstools
+      - apt-get_out: install usbutils udev python3-yaml lz4 cpio openssh-client libxml2-utils perl-modules-5.30 dosfstools
   - create_new_zfs_rootfs
   - deploy_g5k_env_std_in_rootfs:
     - install_necessary_debs:
-      - exec_out: DEBIAN_FRONTEND=noninteractive apt-get install -y zstd lbzip2 ruby iproute2
+      - apt-get_out: install zstd lbzip2 ruby iproute2
     - extract_rootfs:
       - exec_out: tar -C $${rootfs_container_work_dir} --zstd -xvf $${g5k_env_std_tarball_file}
     - apply_l4t_binaries:
