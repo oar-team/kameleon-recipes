@@ -21,7 +21,6 @@
 #ALL ALL = (root) NOPASSWD: C_KAMELEON_ZFS
 #EOF
 
-- target_rootfs_dataset: $${zfs_kameleon_dataset}/$${kameleon_recipe_name}
 ## Should the build overwrite a previously built rootfs?
 - do_overwrite_rootfs: false
 # ZFS options:
@@ -32,17 +31,6 @@
 - rootfs_host_work_dir: /$${rootfs_work_dataset}/rootfs
 - rootfs_container_work_dir: $${kameleon_cwd}/rootfs
 
-- handle_existing_target_rootfs_dataset:
-  - on_checkpoint: redo
-  - exec_local: |
-      set -e
-      if $${zfs_cmd} list $${target_rootfs_dataset} -H >& /dev/null; then
-        if ! $${do_overwrite_rootfs}; then
-        echo "$${target_rootfs_dataset} already exists. Destroy it beforehand or use '-g do_overwrite_rootfs:true'" 1>&2
-          exit 1
-        fi
-        $${zfs_cmd} destroy $${target_rootfs_dataset} -R -f
-      fi
 - create_zfs_rootfs:
   - on_checkpoint: redo
   - exec_local: |
@@ -53,3 +41,7 @@
         ! $${zfs_cmd} list $${rootfs_work_dataset}/rootfs -H >& /dev/null || $${zfs_cmd} destroy $${rootfs_work_dataset}/rootfs -R -f
         $${zfs_cmd} create $${rootfs_work_dataset}/rootfs -o mountpoint=$${rootfs_host_work_dir} -p
       fi
+      while rootfsj=$($${zfs_cmd} list $${rootfs_work_dataset} -r -t filesystem -o name -H | grep -o -E "$${rootfs_work_dataset}/rootfs[[:digit:]]+" -m 1); do
+          zfs destroy $rootfsj -R -f
+      done
+
