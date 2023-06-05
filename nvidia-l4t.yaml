@@ -159,7 +159,7 @@ setup:
 export:
   - export_zfs_rootfs
   - export_docker_image_ready_to_flash:
-    - configure_to_flash:
+    - commit_and_configure_to_flash:
       - exec_local: |
           set -e
           # Stop the current docker container so that we can configure the image
