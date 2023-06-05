@@ -104,6 +104,16 @@ setup:
           for c in DMA_BCM2835 DRM_TEGRA DMA_SUN6I FSL_EDMA FSL_QDMA QCOM_BAM_DMA K3_DMA SCSI_UFSHCD_PCI TEGRA_HOST1X DEBUG_INFO_BTF VIDEO_CX231XX_DVB; do
             ./scripts/config --disable $c
           done
+    - force_builtin_nfs_support:
+      - exec_out: |
+          cd $${kernel_src_dir}
+          ./scripts/config --enable NFS_V4
+          ./scripts/config --enable NFS_V3
+          ./scripts/config --enable NFS_V2
+    - dive_in:
+      - exec_local: |
+          echo "Kernel make command: $${kernel_make_cmd}"
+      - breakpoint
     - build_kernel_objects:
       - exec_out: |
           cd $${kernel_src_dir}
