@@ -3,27 +3,42 @@ enabled?:
 
 create:
   - exec_local: |
+      set -e
+      # Stop the current docker container, commit its image: that's the checkpointed image, remove the container
       docker stop $(< $KAMELEON_WORKDIR/MAIN_CONTAINER_ID) > /dev/null || docker kill $(< $KAMELEON_WORKDIR/MAIN_CONTAINER_ID) > /dev/null
       docker commit $(< $KAMELEON_WORKDIR/MAIN_CONTAINER_ID) $${docker_image}:@microstep_id > /dev/null
       docker rm $(< $KAMELEON_WORKDIR/MAIN_CONTAINER_ID) > /dev/null
-      sed -i "/^$(< $KAMELEON_WORKDIR/MAIN_CONTAINER_ID)$/d" $KAMELEON_WORKDIR/CONTAINERS_TO_CLEAN
       rm -f $KAMELEON_WORKDIR/MAIN_CONTAINER_ID
-      docker run -d -i -h $${docker_hostname} --cidfile $KAMELEON_WORKDIR/MAIN_CONTAINER_ID --privileged $${docker_image}:@microstep_id cat > /dev/null
-      while ! [ -s $KAMELEON_WORKDIR/MAIN_CONTAINER_ID ] || ! docker exec -i $(< $KAMELEON_WORKDIR/MAIN_CONTAINER_ID) true; do sleep 1; done
-      echo $(< $KAMELEON_WORKDIR/MAIN_CONTAINER_ID) >> $KAMELEON_WORKDIR/CONTAINERS_TO_CLEAN
+      docker run -d -u$${docker_user} -i -h $${docker_hostname} --cidfile $KAMELEON_WORKDIR/MAIN_CONTAINER_ID --privileged $${docker_image}:@microstep_id cat > /dev/null
+      while ! [ -s $KAMELEON_WORKDIR/MAIN_CONTAINER_ID ] || ! docker exec -u $${docker_user} -i $(< $KAMELEON_WORKDIR/MAIN_CONTAINER_ID) true; do sleep 1; done
   - reload_context: out
   - reload_context: in
 
 apply:
   - exec_local: |
-      rm -f $KAMELEON_WORKDIR/MAIN_CONTAINER_ID
-      docker run -d -i -h $${docker_hostname} --cidfile $KAMELEON_WORKDIR/MAIN_CONTAINER_ID --privileged $${docker_image}:@microstep_id cat > /dev/null
-      while ! [ -s $KAMELEON_WORKDIR/MAIN_CONTAINER_ID ] || ! docker exec -i $(< $KAMELEON_WORKDIR/MAIN_CONTAINER_ID) true; do sleep 1; done
-      echo $(< $KAMELEON_WORKDIR/MAIN_CONTAINER_ID) >> $KAMELEON_WORKDIR/CONTAINERS_TO_CLEAN
+      set -e
+      # Untag images that are more recent than the checkpoint to apply.
+      for i in $( docker image ls --format "{{.Repository}}:{{.Tag}}" --filter reference=$${docker_image} --filter since=$${docker_image}:@microstep_id ); do
+        docker image rm -f $i #Just untag if image has sibblings, thanks to giving image Reporitory:Tag instead of ID.
+      done || true
+      # Stop and clean the container of context_out if running.
+      if [ -r $KAMELEON_WORKDIR/MAIN_CONTAINER_ID ]; then
+        if docker ps --no-trunc -a -q | grep -q $(< $KAMELEON_WORKDIR/MAIN_CONTAINER_ID); then
+          docker rm -f $(< $KAMELEON_WORKDIR/MAIN_CONTAINER_ID) > /dev/null
+        fi
+        rm $KAMELEON_WORKDIR/MAIN_CONTAINER_ID
+      fi
+      docker run -d -u$${docker_user} -i -h $${docker_hostname} --cidfile $KAMELEON_WORKDIR/MAIN_CONTAINER_ID $${docker_extra_volumes} --privileged $${docker_image}:@microstep_id cat > /dev/null
+      while ! [ -s $KAMELEON_WORKDIR/MAIN_CONTAINER_ID ] || ! docker exec -u $${docker_user} -i $(< $KAMELEON_WORKDIR/MAIN_CONTAINER_ID) true; do sleep 1; done
 
 list:
-  - exec_local: docker image ls --format "{{.Repository}}:{{.Tag}}" | grep -e '^$${docker_image}:' | cut -d':' -f2 || true
+  - exec_local: |
+      docker image ls --format "{{.Tag}}" --filter reference=$${docker_image}
 
 clear:
   - exec_local: |
-      for i in $(docker image ls --format "{{.Repository}}:{{.Tag}}:{{.ID}}" | grep -e '^$${docker_image}:' | cut -d':' -f3); do docker image rm -f $i; done || true
+      set -e
+      # Clear docker images
+      for i in $( docker image ls --format "{{.Repository}}:{{.Tag}}" --filter reference=$${docker_image} ); do
+        docker image rm -f $i #Just untag if image has sibblings, thanks to giving image Reporitory:Tag instead of ID
+      done || true
