@@ -47,6 +47,7 @@ global:
   zfs_cmd: sudo -k -n zfs
   zfs_kameleon_dataset: z/kameleon
   # Docker options
+  docker_user: root
   docker_image: $${kameleon_recipe_name}_$${kameleon_short_uuid}
   docker_hostname: kameleon-$${kameleon_short_uuid}
   docker_extra_volumes:
@@ -60,16 +61,16 @@ global:
   # local bash session, but it can be a remote shell on other machines or on
   # any shell. (eg. bash, chroot, fakechroot, ssh, tmux, lxc...)
   out_context:
-    cmd: test -s MAIN_CONTAINER_ID && LC_ALL=POSIX docker exec -i $(< MAIN_CONTAINER_ID) /bin/bash
-    interactive_cmd: test -s MAIN_CONTAINER_ID && LC_ALL=POSIX docker exec -it $(< MAIN_CONTAINER_ID) /bin/bash
+    cmd: test -s MAIN_CONTAINER_ID && LC_ALL=POSIX docker exec -u $${docker_user} -i $(< MAIN_CONTAINER_ID) /bin/bash
+    interactive_cmd: test -s MAIN_CONTAINER_ID && LC_ALL=POSIX docker exec -u $${docker_user} -it $(< MAIN_CONTAINER_ID) /bin/bash
     workdir: $${kameleon_cwd}
     proxy_cache: localhost
 
   # Shell session that allows us to connect to the building machine in order to
   # configure it and setup additional programs
   in_context:
-    cmd: test -s MAIN_CONTAINER_ID && LC_ALL=POSIX docker exec -i $(< MAIN_CONTAINER_ID) chroot $${rootfs_container_work_dir} /bin/bash
-    interactive_cmd: test -s MAIN_CONTAINER_ID && LC_ALL=POSIX docker exec -it $(cat MAIN_CONTAINER_ID) chroot $${rootfs_container_work_dir} /bin/bash
+    cmd: test -s MAIN_CONTAINER_ID && LC_ALL=POSIX docker exec -u $${docker_user} -i $(< MAIN_CONTAINER_ID) chroot $${rootfs_container_work_dir} /bin/bash
+    interactive_cmd: test -s MAIN_CONTAINER_ID && LC_ALL=POSIX docker exec -u $${docker_user} -it $(cat MAIN_CONTAINER_ID) chroot $${rootfs_container_work_dir} /bin/bash
     workdir: /
     proxy_cache: 172.17.0.1
 

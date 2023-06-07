@@ -20,5 +20,5 @@
       set -e
       rm -f MAIN_CONTAINER_ID
       KAMELEON_ROOTFS_HOST_DIR=$${rootfs_host_work_dir}
-      docker run -d -i -h $${docker_hostname} --cidfile MAIN_CONTAINER_ID --privileged ${KAMELEON_ROOTFS_HOST_DIR:+-v $KAMELEON_ROOTFS_HOST_DIR:$${rootfs_container_work_dir}} "$${docker_image}:base" cat
-      while ! [ -s MAIN_CONTAINER_ID ] || ! docker exec -i $(< MAIN_CONTAINER_ID) true; do sleep 1; done
+      docker run -d -u$${docker_user} -i -h $${docker_hostname} --cidfile MAIN_CONTAINER_ID --privileged ${KAMELEON_ROOTFS_HOST_DIR:+-v $KAMELEON_ROOTFS_HOST_DIR:$${rootfs_container_work_dir}} "$${docker_image}:base" cat
+      while ! [ -s MAIN_CONTAINER_ID ] || ! docker exec -u $${docker_user} -i $(< MAIN_CONTAINER_ID) true; do sleep 1; done
