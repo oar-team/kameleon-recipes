@@ -1,0 +1,71 @@
+#==============================================================================
+# vim: softtabstop=2 shiftwidth=2 expandtab fenc=utf-8 cc=81 tw=80
+#==============================================================================
+#
+# DESCRIPTION: Simple recipe that use a docker image directly.
+#
+# It is made to conserve docker layers for the exported image.  No setup section
+# is provided: You have to implement yours
+#
+#==============================================================================
+---
+extend: steps/backend/$${backend}.yaml
+
+# Loads some helpful aliases (this files are located in steps/aliases/ directory)
+aliases: defaults.yaml
+
+# Custom shell environement (this files are located in steps/env/ directory)
+env:
+  - bashrc
+  - functions.sh
+
+global:
+  ssh_config_file: $${kameleon_cwd}/ssh_config
+
+  backend: docker
+
+  # You should specify this in the global of your recipe
+  from_docker_image: "jupyter/scipy-notebook"
+  #from_docker_image: "ubuntu:20.04"
+
+  to_docker_image: "$${kameleon_recipe_name}:latest"
+
+bootstrap:
+  - "@base"
+setup:
+  - setup_sudoers_jovyan:
+    - setup_sudoers:
+      - exec_out: |
+          echo "jovyan    ALL = NOPASSWD: ALL" >> /etc/sudoers
+  - install_conda_shits:
+    - mamba_installs:
+      - exec_out: |
+          mamba install -y -c conda-forge fitsio
+          mamba install -y -c bioconda snakemake
+  - install_gitguix_bits:
+    - apt_installs:
+      - apt-get_out: update
+      - apt-get_out: install git-annex
+      - apt-get_out: install guix
+      - apt-get_out: install daemonize
+  - configure_user_jovyan:
+    - configure_guix:
+      - exec_out: |
+          sudo -u jovyan mkdir -p /home/jovyan/.guix-profile
+      - exec_out: |
+          printf 'GUIX_PROFILE="/home/jovyan/.config/guix/current"\n. "$GUIX_PROFILE/etc/profile"' | \
+            sudo -u jovyan tee -a /home/jovyan/.bashrc
+  - configure_guix:
+    - guix_pull:
+      - exec_out: |
+          set -e
+          /etc/init.d/guix-daemon restart
+          guix pull
+          /etc/init.d/guix-daemon stop
+      - exec_out: |
+          set -e
+          /etc/init.d/guix-daemon restart
+          guix package -i python-numpy -i python -i coreutils -i hello
+          /etc/init.d/guix-daemon stop
+export:
+  - "@base"
