@@ -69,7 +69,7 @@ pam_session() {
 		exit 0
 	fi
 
-	G5K_USER=${PAM_RUSER:=$PAM_USER}
+	G5K_USER=${PAM_RUSER:-$PAM_USER}
 	get_vars $G5K_USER
 
 	# We could not find a running OAR job for this user on this node. It probably means that
