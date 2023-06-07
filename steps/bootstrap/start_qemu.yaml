@@ -41,7 +41,7 @@
   - on_bootstrap_clean:
     - test:
       - exec_local: test "$${shutdown_vm_immediately}" == "false" -a "$${vm_cleanup_section}" == "bootstrap"
-      - group: 
+      - group:
         - exec_local: &1 |
             if [ -f $${qemu_pidfile} ]; then
               _QEMU_PID=$(< $${qemu_pidfile})
