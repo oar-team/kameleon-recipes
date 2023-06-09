@@ -1,7 +1,7 @@
 - docker_image: $${kameleon_recipe_name}_$${kameleon_short_uuid}
 - docker_hostname: kameleon-$${kameleon_short_uuid}
 - rootfs_host_work_dir:
-- rootfs_container_work_dir:
+- rootfs_container_work_dir: $${rootfs}
 
 - clean_containers:
   - on_checkpoint: redo
