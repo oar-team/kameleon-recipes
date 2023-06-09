@@ -12,6 +12,15 @@ create:
       docker run -d -u$${docker_user} -i -h $${docker_hostname} --cidfile $KAMELEON_WORKDIR/MAIN_CONTAINER_ID --privileged $${docker_image}:@microstep_id cat > /dev/null
       while ! [ -s $KAMELEON_WORKDIR/MAIN_CONTAINER_ID ] || ! docker exec -u $${docker_user} -i $(< $KAMELEON_WORKDIR/MAIN_CONTAINER_ID) true; do sleep 1; done
   - reload_context: out
+  - exec_out: &1 |
+      set -e
+      if [ -e $KAMELEON_WORKDIR/MOUNT_SYSTEM_FS_IN_CHROOT ]; then
+          mkdir -p $${rootfs_container_work_dir}/{dev,dev/pts,proc,sys}
+          mount -t sysfs sysfs $${rootfs_container_work_dir}/sys
+          mount -t proc proc $${rootfs_container_work_dir}/proc
+          mount --bind /dev $${rootfs_container_work_dir}/dev
+          mount --bind /dev/pts $${rootfs_container_work_dir}/dev/pts
+      fi
   - reload_context: in
 
 apply:
@@ -30,6 +39,7 @@ apply:
       fi
       docker run -d -u$${docker_user} -i -h $${docker_hostname} --cidfile $KAMELEON_WORKDIR/MAIN_CONTAINER_ID $${docker_extra_volumes} --privileged $${docker_image}:@microstep_id cat > /dev/null
       while ! [ -s $KAMELEON_WORKDIR/MAIN_CONTAINER_ID ] || ! docker exec -u $${docker_user} -i $(< $KAMELEON_WORKDIR/MAIN_CONTAINER_ID) true; do sleep 1; done
+  - exec_out: *1
 
 list:
   - exec_local: |
