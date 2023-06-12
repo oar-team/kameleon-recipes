@@ -148,7 +148,8 @@ setup:
   - setup_for_flashing:
     - install_required_debs:
       - apt-get_out: install usbutils udev python-is-python3 python3-yaml lz4 cpio openssh-client libxml2-utils perl-modules-5.30 dosfstools
-  - create_new_zfs_rootfs
+  - create_new_zfs_rootfs:
+    - rootfs_backup_name: rootfs-l4t
   - deploy_g5k_env_std_in_rootfs:
     - install_necessary_debs:
       - apt-get_out: install zstd lbzip2 ruby iproute2
@@ -198,7 +199,8 @@ setup:
 #          echo KADEPLOY_CLUSTER="estats" KADEPLOY_DEPLOY_PART="/dev/sda3" KADEPLOY_BLOCK_DEVICE="/dev/sda" KADEPLOY_DEPLOY_PART_NUM="3" KADEPLOY_SWAP_PART_NUM="1" KADEPLOY_PROD_PART_NUM="2" KADEPLOY_TMP_PART_NUM="5" KADEPLOY_PREPOST_EXTRACTION_DIR="$${workdir}/tmp" KADEPLOY_TMP_DIR="/tmp" KADEPLOY_ENV="debian11-arm-std" KADEPLOY_ENV_KERNEL="/vmlinuz" KADEPLOY_ENV_INITRD="/initrd.img" KADEPLOY_ENV_KERNEL_PARAMS="console=tty0 console=ttyS0,38400n8 net.ifnames=0 biosdevname=0" KADEPLOY_ENV_HYPERVISOR="" KADEPLOY_ENV_HYPERVISOR_PARAMS="" KADEPLOY_OS_KIND="linux" KADEPLOY_PART_TYPE="83" KADEPLOY_FS_TYPE="ext4" KADEPLOY_ENV_EXTRACTION_DIR=/nvidia/Linux_for_Tegra/rootfs/ $${workdir}/tmp/g5k-postinstall --no-ref-api --fstab nfs --net debian
 #      - breakpoint
 export:
-  - export_zfs_rootfs
+  - export_zfs_rootfs:
+    - rootfs_add_exports: rootfs-l4t
   - export_docker_image_ready_to_flash:
     - commit_and_configure_to_flash:
       - exec_local: |
