@@ -1,3 +1,5 @@
+- rootfs_backup_name:
+
 - swap_to_the_new_zfs_rootfs:
   - exec_local: |
       set -e
@@ -17,19 +19,27 @@
         done
       fi
       $${zfs_cmd} set mountpoint=none $${rootfs_work_dataset}/rootfs
-      i=0
-      while $${zfs_cmd} list $${rootfs_work_dataset}/rootfs$i -H >& /dev/null; do
-        ((++i));
-      done
+      if [ -z "$${rootfs_backup_name}" ]; then
+        i=0
+        while $${zfs_cmd} list $${rootfs_work_dataset}/rootfs$i -H >& /dev/null; do
+          ((++i));
+        done
+        ROOTFS_BACKUP_NAME=rootfs$i
+      else
+        ROOTFS_BACKUP_NAME=$${rootfs_backup_name}
+        if $${zfs_cmd} list $${rootfs_work_dataset}/$ROOTFS_BACKUP_NAME -H >& /dev/null; then
+          $${zfs_cmd} destroy $${rootfs_work_dataset}/$ROOTFS_BACKUP_NAME -R -f
+        fi
+      fi
       if $${checkpointing_enabled}; then
         j=0
         while $${zfs_cmd} list $${rootfs_work_dataset}/checkpoints$j -H >& /dev/null; do
           ((++j));
         done
         $${zfs_cmd} rename $${rootfs_work_dataset}/rootfs $${rootfs_work_dataset}/checkpoints$j
-        $${zfs_cmd} clone $${rootfs_work_dataset}/checkpoints$j@switch $${rootfs_work_dataset}/rootfs$i
+        $${zfs_cmd} clone $${rootfs_work_dataset}/checkpoints$j@switch $${rootfs_work_dataset}/$ROOTFS_BACKUP_NAME
       else
-        $${zfs_cmd} rename $${rootfs_work_dataset}/rootfs $${rootfs_work_dataset}/rootfs$i
+        $${zfs_cmd} rename $${rootfs_work_dataset}/rootfs $${rootfs_work_dataset}/$ROOTFS_BACKUP_NAME
       fi
       $${zfs_cmd} create $${rootfs_work_dataset}/rootfs -o mountpoint=$${rootfs_host_work_dir}
   - exec_local: |

@@ -25,6 +25,7 @@
 - zfs_cmd: sudo -k -n zfs
 - zfs_kameleon_dataset: z/kameleon
 - rootfs_work_dataset: $${zfs_kameleon_dataset}/$${docker_image}
+- rootfs_add_exports:
 
 - handle_existing_target_rootfs_dataset:
   - on_checkpoint: disabled
@@ -41,11 +42,21 @@
 - export_rootfs:
   - exec_local: |
       set -e
-      unset j
+      if [ -n "$${rootfs_add_exports}" ]; then
+        if [ "$${rootfs_add_exports}" == "ANY" ]; then
+        ROOTFS_ADD_EXPORTS=$($${zfs_cmd} list $${rootfs_work_dataset} -o name -t filesystem -r -H | grep -v -e '^$${rootfs_work_dataset}\(\|/rootfs\|/checkpoints[[:digit:]]*\)$' | sed -e 's@^$${rootfs_work_dataset}/@@')
+        else
+          ROOTFS_ADD_EXPORTS="$${rootfs_add_exports}"
+        fi
+      fi
       $${zfs_cmd} create $${target_rootfs_dataset} -o mountpoint=/$${target_rootfs_dataset}
-      while $${zfs_cmd} list $${rootfs_work_dataset}/rootfs$j -H >& /dev/null; do
-        ! $${zfs_cmd} list $${rootfs_work_dataset}/rootfs$j@latest -H >& /dev/null || $${zfs_cmd} destroy $${rootfs_work_dataset}/rootfs$j@latest -f -R
-        $${zfs_cmd} snapshot $${rootfs_work_dataset}/rootfs$j@latest
-        $${zfs_cmd} send $${rootfs_work_dataset}/rootfs$j@latest | $${zfs_cmd} recv $${target_rootfs_dataset}/rootfs$j
-        j=$((${j:--1}+1))
+      for r in rootfs $ROOTFS_ADD_EXPORTS; do
+        if ! $${zfs_cmd} list $${rootfs_work_dataset}/$r -H >& /dev/null; then
+          echo "ZFS dataset $r does not exist, ignoring it!" 2>&1
+          continue
+        fi
+        ! $${zfs_cmd} list $${rootfs_work_dataset}/$r@latest -H >& /dev/null || $${zfs_cmd} destroy $${rootfs_work_dataset}/$r@latest -R -f
+        $${zfs_cmd} snapshot $${rootfs_work_dataset}/$r@latest
+        $${zfs_cmd} send $${rootfs_work_dataset}/$r@latest | $${zfs_cmd} recv $${target_rootfs_dataset}/$r
+        echo "Exported ZFS dataset $r to $${target_rootfs_dataset}/$r."
       done

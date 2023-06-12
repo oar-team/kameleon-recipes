@@ -41,7 +41,3 @@
         ! $${zfs_cmd} list $${rootfs_work_dataset}/rootfs -H >& /dev/null || $${zfs_cmd} destroy $${rootfs_work_dataset}/rootfs -R -f
         $${zfs_cmd} create $${rootfs_work_dataset}/rootfs -o mountpoint=$${rootfs_host_work_dir} -p
       fi
-      while rootfsj=$($${zfs_cmd} list $${rootfs_work_dataset} -r -t filesystem -o name -H | grep -o -E "$${rootfs_work_dataset}/rootfs[[:digit:]]+" -m 1); do
-        $${zfs_cmd} destroy $rootfsj -R -f
-      done
-
