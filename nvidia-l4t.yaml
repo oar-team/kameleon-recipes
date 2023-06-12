@@ -110,6 +110,10 @@ setup:
           ./scripts/config --enable NFS_V4
           ./scripts/config --enable NFS_V3
           ./scripts/config --enable NFS_V2
+    - force_module_for_dummy:
+      - exec_out: |
+          cd $${kernel_src_dir}
+          ./scripts/config --module DUMMY
     #- dive_in:
     #  - apt-get_out: install libncurses-dev
     #  - exec_local: |
