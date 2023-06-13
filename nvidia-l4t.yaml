@@ -173,7 +173,7 @@ setup:
       - exec_in: |
           set -e
           dpkg-divert --no-rename /etc/systemd/nvpmodel.sh
-          sed -i.distrib -e 's@^\([[:space:]]*/usr/sbin/nvpmodel\) -f /etc/nvpmodel.conf@&\n\1 -m 7@' /etc/systemd/nvpmodel.sh
+          sed -i.distrib -e 's@^\([[:space:]]*/usr/sbin/nvpmodel\) -f /etc/nvpmodel.conf@&\n\1 -m 3@' /etc/systemd/nvpmodel.sh
   - g5kify_os:
     - nfsrootify_dhclient_script:
       - exec_in: |
