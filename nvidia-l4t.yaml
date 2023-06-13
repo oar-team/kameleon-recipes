@@ -49,6 +49,7 @@ global:
   kernel_make_cmd: "make -C $${kernel_src_dir} -j $(nproc) ARCH=arm64 LOCALVERSION=-debian-l4t CROSS_COMPILE=$${cross_compilation_toolchain_dir}/usr/bin/aarch64-buildroot-linux-gnu-"
   g5k_env_std_tarball_file: "/grid5000/images/debian11-arm64-std-2023010308.tar.zst"
   g5k_postinstall_tarball_file: "/grid5000/postinstalls/g5k-postinstall.tgz"
+  g5k_check_deb_file: "../../g5k-checks_0.11.11_arm64.deb"
 
 bootstrap:
   - "@base"
@@ -173,6 +174,7 @@ setup:
           set -e
           dpkg-divert --no-rename /etc/systemd/nvpmodel.sh
           sed -i.distrib -e 's@^\([[:space:]]*/usr/sbin/nvpmodel\) -f /etc/nvpmodel.conf@&\n\1 -m 7@' /etc/systemd/nvpmodel.sh
+  - g5kify_os:
     - nfsrootify_dhclient_script:
       - exec_in: |
           set -e
@@ -183,21 +185,32 @@ setup:
           set -e
           dpkg-divert --rename /usr/bin/ipmitool
           ln -s /bin/true /usr/bin/ipmitool
-#  - do_remove_and_do_post_build:
-#    - g5k-postinstall:
-#      - exec_out: |
-#          set -e
-#          mkdir $${workdir}/tmp
-#          tar -C $${workdir}/tmp -zxf $${g5k_postinstall_tarball_file}
-#          sed -i -e 's/$myjson = {/$myjson = { "architecture" => {},/' $${workdir}/tmp/g5k-postinstall
-#          KADEPLOY_CLUSTER="estats" KADEPLOY_DEPLOY_PART="/dev/sda3" KADEPLOY_BLOCK_DEVICE="/dev/sda" KADEPLOY_DEPLOY_PART_NUM="3" KADEPLOY_SWAP_PART_NUM="1" KADEPLOY_PROD_PART_NUM="2" KADEPLOY_TMP_PART_NUM="5" KADEPLOY_PREPOST_EXTRACTION_DIR="$${workdir}/tmp" KADEPLOY_TMP_DIR="/tmp" KADEPLOY_ENV="debian11-arm-std" KADEPLOY_ENV_KERNEL="/vmlinuz" KADEPLOY_ENV_INITRD="/initrd.img" KADEPLOY_ENV_KERNEL_PARAMS="console=tty0 console=ttyS0,38400n8 net.ifnames=0 biosdevname=0" KADEPLOY_ENV_HYPERVISOR="" KADEPLOY_ENV_HYPERVISOR_PARAMS="" KADEPLOY_OS_KIND="linux" KADEPLOY_PART_TYPE="83" KADEPLOY_FS_TYPE="ext4" KADEPLOY_ENV_EXTRACTION_DIR=/nvidia/Linux_for_Tegra/rootfs/ $${workdir}/tmp/g5k-postinstall --no-ref-api --fstab nfs --net debian
-#          rm -r $${workdir}/tmp
-#    - dive_in:
-#    #  - apt-get_out: install libncurses-dev
-#      - exec_local: |
-#          echo "kadeploy command:"
-#          echo KADEPLOY_CLUSTER="estats" KADEPLOY_DEPLOY_PART="/dev/sda3" KADEPLOY_BLOCK_DEVICE="/dev/sda" KADEPLOY_DEPLOY_PART_NUM="3" KADEPLOY_SWAP_PART_NUM="1" KADEPLOY_PROD_PART_NUM="2" KADEPLOY_TMP_PART_NUM="5" KADEPLOY_PREPOST_EXTRACTION_DIR="$${workdir}/tmp" KADEPLOY_TMP_DIR="/tmp" KADEPLOY_ENV="debian11-arm-std" KADEPLOY_ENV_KERNEL="/vmlinuz" KADEPLOY_ENV_INITRD="/initrd.img" KADEPLOY_ENV_KERNEL_PARAMS="console=tty0 console=ttyS0,38400n8 net.ifnames=0 biosdevname=0" KADEPLOY_ENV_HYPERVISOR="" KADEPLOY_ENV_HYPERVISOR_PARAMS="" KADEPLOY_OS_KIND="linux" KADEPLOY_PART_TYPE="83" KADEPLOY_FS_TYPE="ext4" KADEPLOY_ENV_EXTRACTION_DIR=/nvidia/Linux_for_Tegra/rootfs/ $${workdir}/tmp/g5k-postinstall --no-ref-api --fstab nfs --net debian
-#      - breakpoint
+    - upgrade_g5k_check:
+      - local2in:
+        - $${g5k_check_deb_file}
+        - /tmp/g5k-check.deb
+      - exec_in: |
+          dpkg --force-confnew -i /tmp/g5k-check.deb
+  - install_g5k_postinstall:
+    - g5k_postinstall:
+      - exec_out: |
+          set -e
+          mkdir $${workdir}/g5k-postinstall
+          tar -C $${workdir}/g5k-postinstall -zxf $${g5k_postinstall_tarball_file}
+          sed -i -e 's/$myjson = {/$myjson = { "architecture" => {},/' $${workdir}/g5k-postinstall/g5k-postinstall
+          sed -i -e 's/$mynic, $myip, $mymac = get_net_cfg/if (e = ENV["KADEPLOY_PI_NET_CFG"])\n  e = e.split(",")\n  $mynic, $myip, $mymac = e\n  $logger.info("Net config forced to NIC=#{$mynic}, IP=#{$myip}, MAC=#{$mymac} by Kadeploy environment variable")\nelse\n  $mynic, $myip, $mymac = get_net_cfg\nend/' $${workdir}/g5k-postinstall/g5k-postinstall
+          for i in {2..12}; do
+            rm $${workdir}/g5k-postinstall/ssh_host_keys/toulouse/estats/172.16.121.$i
+            cp -a $${workdir}/g5k-postinstall/ssh_host_keys/toulouse/estats/172.16.121.{1,$i}
+          done
+          echo 'To apply the postinstall to a node rootfs, set the node #, e.g.:'
+          echo '$ N=6'
+          echo 'And create its rootfs:'
+          echo '$ sudo zfs clone $${target_rootfs_dataset}/rootfs@latest z/nodes/$N'
+          echo 'Then'
+          echo '$ docker run -it --rm --privileged -v /z/nodes/$N:$${l4t_dir}/rootfs --entrypoint bash $${target_docker_image}'
+          echo 'Then:'
+          echo '$ KADEPLOY_CLUSTER="estats" KADEPLOY_DEPLOY_PART="/dev/sda3" KADEPLOY_BLOCK_DEVICE="/dev/sda" KADEPLOY_DEPLOY_PART_NUM="3" KADEPLOY_SWAP_PART_NUM="1" KADEPLOY_PROD_PART_NUM="2" KADEPLOY_TMP_PART_NUM="5" KADEPLOY_PREPOST_EXTRACTION_DIR="$${workdir}/g5k-postinstall" KADEPLOY_TMP_DIR="/tmp" KADEPLOY_ENV="debian11-arm-std" KADEPLOY_ENV_KERNEL="/vmlinuz" KADEPLOY_ENV_INITRD="/initrd.img" KADEPLOY_ENV_KERNEL_PARAMS="console=tty0 console=ttyS0,38400n8 net.ifnames=0 biosdevname=0" KADEPLOY_ENV_HYPERVISOR="" KADEPLOY_ENV_HYPERVISOR_PARAMS="" KADEPLOY_OS_KIND="linux" KADEPLOY_PART_TYPE="83" KADEPLOY_FS_TYPE="ext4" KADEPLOY_ENV_EXTRACTION_DIR=$${l4t_dir}/rootfs/ $${workdir}/g5k-postinstall/g5k-postinstall KADEPLOY_PI_NET_CFG=eth0,172.16.121.$N,11:22:33:44:55:66 --no-ref-api --fstab nfs --net debian'
 export:
   - export_zfs_rootfs:
     - rootfs_add_exports: rootfs-l4t
