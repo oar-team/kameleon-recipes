@@ -1,0 +1,16 @@
+# Installed by puppet
+if (! $?loginsh) then
+    if ( -d /etc/profile.d ) then
+        set nonomatch
+        foreach i ( /etc/profile.d/*.csh )
+            if ( -r "$i" ) then
+                if ($?prompt) then
+                    source "$i"
+                else
+                    source "$i" >&/dev/null
+                endif
+            endif
+        end
+        unset i nonomatch
+    endif
+endif

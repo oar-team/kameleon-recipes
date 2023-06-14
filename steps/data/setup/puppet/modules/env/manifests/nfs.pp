@@ -28,4 +28,6 @@ class env::nfs ( $variant = "nfs", $parent_parameters = {} ){
   class { 'env::nfs::install_storage5k_requirements': }
   # module spack
   class { 'env::nfs::install_and_configure_module_command': }
+  # Souce profile by shell
+  class { 'env::nfs::source_profile_by_shell': }
 }
