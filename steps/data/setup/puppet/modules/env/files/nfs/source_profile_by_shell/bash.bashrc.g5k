@@ -1,0 +1,10 @@
+# Installed by puppet
+for i in /etc/profile.d/*.sh; do
+    if [ -r "$i" ]; then
+        if [ "$PS1" ]; then
+            . "$i"
+        else
+            . "$i" >/dev/null
+        fi
+    fi
+done
