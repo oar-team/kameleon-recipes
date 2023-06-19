@@ -1,0 +1,11 @@
+- target_docker_image: $${kameleon_recipe_name}
+- docker_image: $${kameleon_recipe_name}_$${kameleon_short_uuid}
+
+- commit_container:
+  - exec_local: |
+      set -e
+      docker stop $(< MAIN_CONTAINER_ID)
+      docker commit $(< MAIN_CONTAINER_ID) $${docker_image}:latest
+      docker rm $(< MAIN_CONTAINER_ID)
+      rm MAIN_CONTAINER_ID
+      docker tag $${docker_image}:latest $${target_docker_image}

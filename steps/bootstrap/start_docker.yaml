@@ -1,34 +1,24 @@
+- docker_image: $${kameleon_recipe_name}_$${kameleon_short_uuid}
+- docker_hostname: kameleon-$${kameleon_short_uuid}
+- rootfs_host_work_dir:
+- rootfs_container_work_dir: $${rootfs}
+
 - clean_containers:
   - on_checkpoint: redo
   - on_export_clean:
-    - exec_out: echo "Stopping trailing containers"
-    - exec_out: touch CONTAINERS_TO_CLEAN
-    - exec_out: cat CONTAINERS_TO_CLEAN | xargs -I {} docker kill {}
-    - exec_out: echo "Removing trailing containers"
-    - exec_out: cat CONTAINERS_TO_CLEAN | xargs -I {} docker rm {}
-    - exec_out: rm -f CONTAINERS_TO_CLEAN
-
-- fix_docker_resolvconf:
-  - on_setup_init:
-    - exec_in: cat /etc/resolv.conf > /tmp/resolv.conf-docker
-    - exec_in: umount /etc/resolv.conf
-    - exec_in: cat /tmp/resolv.conf-docker > /etc/resolv.conf
-
-- fix_docker_etc_hosts:
-  - on_setup_init:
-    - exec_in: cat /etc/hosts > /tmp/hosts-docker
-    - exec_in: umount /etc/hosts
-    - exec_in: cat /tmp/hosts-docker > /etc/hosts
+    - exec_local: |
+        set -e
+        if [ -r MAIN_CONTAINER_ID ]; then
+          if docker ps --no-trunc -a -q | grep -q $(<MAIN_CONTAINER_ID); then
+            docker rm -f $(< MAIN_CONTAINER_ID) > /dev/null
+          fi
+          rm MAIN_CONTAINER_ID
+        fi
 
 - start_docker_container:
-  - on_checkpoint: redo
-  - exec_out: |
-      CID=$(docker run -d -i \
-              -h $${docker_hostname} \
-              --privileged "$${docker_image}:base" \
-              cat)
-      sleep 2
-  - exec_out: echo "$CID" >> CONTAINERS_TO_CLEAN
-  - exec_out: echo $CID > MAIN_CONTAINER_ID
-  - on_export_clean:
-    - exec_out: rm -f MAIN_CONTAINER_ID
+  - exec_local: |
+      set -e
+      rm -f MAIN_CONTAINER_ID
+      KAMELEON_ROOTFS_HOST_DIR=$${rootfs_host_work_dir}
+      docker run -d -u$${docker_user} -i -h $${docker_hostname} --cidfile MAIN_CONTAINER_ID --privileged ${KAMELEON_ROOTFS_HOST_DIR:+-v $KAMELEON_ROOTFS_HOST_DIR:$${rootfs_container_work_dir}} "$${docker_image}:base" cat
+      while ! [ -s MAIN_CONTAINER_ID ] || ! docker exec -u $${docker_user} -i $(< MAIN_CONTAINER_ID) true; do sleep 1; done

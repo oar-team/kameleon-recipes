@@ -1,0 +1,62 @@
+# Requirements:
+# - ZFS must be available and configured:
+#   - By default `z/kameleon` is use as the root dataset for all ZFS datasets created by the Kameleon build run.
+#   - It must be created beforehand, for instance by running `sudo zfs create z/kameleon -o mountpoint=none`
+#   - ZFS commands must be executable without becoming root, thanks to a sudoer configuration as follows:
+# cat <<EOF >/etc/sudoers.d/kameleon_zfs
+#Cmnd_Alias C_KAMELEON_ZFS = \
+#  /sbin/zfs create z/kameleon/*, \
+#  /sbin/zfs clone z/kameleon/*, \
+#  /sbin/zfs rename z/kameleon/*, \
+#  /sbin/zfs promote z/kameleon/*, \
+#  /sbin/zfs snapshot z/kameleon/*, \
+#  /sbin/zfs rollback z/kameleon/*, \
+#  /sbin/zfs destroy z/kameleon/*, \
+#  /sbin/zfs get origin z/kameleon/*, \
+#  /sbin/zfs set mountpoint=none z/kameleon/*, \
+#  /sbin/zfs list z/kameleon/*, \
+#  /sbin/zfs send z/kameleon/*, \
+#  /sbin/zfs recv z/kameleon/*
+#
+#ALL ALL = (root) NOPASSWD: C_KAMELEON_ZFS
+#EOF
+
+- target_rootfs_dataset: $${zfs_kameleon_dataset}/$${kameleon_recipe_name}
+- zfs_cmd: sudo -k -n zfs
+- zfs_kameleon_dataset: z/kameleon
+- rootfs_work_dataset: $${zfs_kameleon_dataset}/$${docker_image}
+- rootfs_add_exports:
+
+- handle_existing_target_rootfs_dataset:
+  - on_checkpoint: disabled
+  - exec_local: |
+      set -e
+      if $${zfs_cmd} list $${target_rootfs_dataset} -H >& /dev/null; then
+        if ! $${do_overwrite_rootfs}; then
+        echo "$${target_rootfs_dataset} already exists. Destroy it beforehand or use '-g do_overwrite_rootfs:true'" 1>&2
+          exit 1
+        fi
+        $${zfs_cmd} destroy $${target_rootfs_dataset} -R -f
+      fi
+
+- export_rootfs:
+  - exec_local: |
+      set -e
+      if [ -n "$${rootfs_add_exports}" ]; then
+        if [ "$${rootfs_add_exports}" == "ANY" ]; then
+        ROOTFS_ADD_EXPORTS=$($${zfs_cmd} list $${rootfs_work_dataset} -o name -t filesystem -r -H | grep -v -e '^$${rootfs_work_dataset}\(\|/rootfs\|/checkpoints[[:digit:]]*\)$' | sed -e 's@^$${rootfs_work_dataset}/@@')
+        else
+          ROOTFS_ADD_EXPORTS="$${rootfs_add_exports}"
+        fi
+      fi
+      $${zfs_cmd} create $${target_rootfs_dataset} -o mountpoint=/$${target_rootfs_dataset}
+      for r in rootfs $ROOTFS_ADD_EXPORTS; do
+        if ! $${zfs_cmd} list $${rootfs_work_dataset}/$r -H >& /dev/null; then
+          echo "ZFS dataset $r does not exist, ignoring it!" 2>&1
+          continue
+        fi
+        ! $${zfs_cmd} list $${rootfs_work_dataset}/$r@latest -H >& /dev/null || $${zfs_cmd} destroy $${rootfs_work_dataset}/$r@latest -R -f
+        $${zfs_cmd} snapshot $${rootfs_work_dataset}/$r@latest
+        $${zfs_cmd} send $${rootfs_work_dataset}/$r@latest | $${zfs_cmd} recv $${target_rootfs_dataset}/$r
+        echo "Exported ZFS dataset $r to $${target_rootfs_dataset}/$r."
+      done

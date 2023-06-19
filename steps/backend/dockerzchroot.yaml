@@ -1,0 +1,87 @@
+# Dockerzroot backend recipe
+#
+# This backend uses docker for context out, and a zfs dataset mounted as an
+# external volume in the docker container, then chrooted in for context in.
+# Contexts in may be of a foreign arch (e.g. using qemu-user-static).
+#
+# Requirements:
+# - Docker must be available (and may optionaly use ZFS as storage backend).
+# - ZFS must be available and configured:
+#   - By default `z/kameleon` is use as the root dataset for all ZFS datasets created by the Kameleon build run.
+#   - It must be created beforehand, for instance by running `sudo zfs create z/kameleon -o mountpoint=none`
+#   - ZFS commands must be executable without becoming root, thanks to a sudoer configuration as follows:
+# cat <<EOF >/etc/sudoers.d/kameleon_zfs
+#Cmnd_Alias C_KAMELEON_ZFS = \
+#  /sbin/zfs create z/kameleon/*, \
+#  /sbin/zfs clone z/kameleon/*, \
+#  /sbin/zfs rename z/kameleon/*, \
+#  /sbin/zfs promote z/kameleon/*, \
+#  /sbin/zfs snapshot z/kameleon/*, \
+#  /sbin/zfs rollback z/kameleon/*, \
+#  /sbin/zfs destroy z/kameleon/*, \
+#  /sbin/zfs get origin z/kameleon/*, \
+#  /sbin/zfs set mountpoint=none z/kameleon/*, \
+#  /sbin/zfs list z/kameleon/*, \
+#  /sbin/zfs send z/kameleon/*, \
+#  /sbin/zfs recv z/kameleon/*
+#
+#ALL ALL = (root) NOPASSWD: C_KAMELEON_ZFS
+#EOF
+#
+# Checkpointing is functionnal, and allows to restart from any step that was previously checkpointed.
+#
+---
+extend: chroot.yaml
+
+checkpoint: dockerzchroot.yaml
+
+global:
+
+  target_docker_image: $${kameleon_recipe_name}
+  target_rootfs_dataset: $${zfs_kameleon_dataset}/$${kameleon_recipe_name}
+
+  ## Should the build overwrite a previously built rootfs?
+  do_overwrite_rootfs: false
+
+  # ZFS options:
+  zfs_cmd: sudo -k -n zfs
+  zfs_kameleon_dataset: z/kameleon
+  # Docker options
+  docker_user: root
+  docker_image: $${kameleon_recipe_name}_$${kameleon_short_uuid}
+  docker_hostname: kameleon-$${kameleon_short_uuid}
+  docker_extra_volumes:
+
+  # rootfs options
+  rootfs_work_dataset: $${zfs_kameleon_dataset}/$${docker_image}
+  rootfs_host_work_dir: /$${rootfs_work_dataset}/rootfs
+  rootfs_container_work_dir: $${kameleon_cwd}/rootfs
+
+  # Shell session from where we launch exec_out commands. There is often a
+  # local bash session, but it can be a remote shell on other machines or on
+  # any shell. (eg. bash, chroot, fakechroot, ssh, tmux, lxc...)
+  out_context:
+    cmd: test -s MAIN_CONTAINER_ID && LC_ALL=POSIX docker exec -u $${docker_user} -i $(< MAIN_CONTAINER_ID) /bin/bash
+    interactive_cmd: test -s MAIN_CONTAINER_ID && LC_ALL=POSIX docker exec -u $${docker_user} -it $(< MAIN_CONTAINER_ID) /bin/bash
+    workdir: $${kameleon_cwd}
+    proxy_cache: localhost
+
+  # Shell session that allows us to connect to the building machine in order to
+  # configure it and setup additional programs
+  in_context:
+    cmd: test -s MAIN_CONTAINER_ID && LC_ALL=POSIX docker exec -u $${docker_user} -i $(< MAIN_CONTAINER_ID) chroot $${rootfs_container_work_dir} /bin/bash
+    interactive_cmd: test -s MAIN_CONTAINER_ID && LC_ALL=POSIX docker exec -u $${docker_user} -it $(cat MAIN_CONTAINER_ID) chroot $${rootfs_container_work_dir} /bin/bash
+    workdir: /
+    proxy_cache: 172.17.0.1
+
+bootstrap:
+  - prepare_zfs_rootfs
+  - prepare_docker
+  - start_docker
+
+setup:
+  - "@base"
+
+export:
+  - export_docker_image
+  - export_zfs_rootfs

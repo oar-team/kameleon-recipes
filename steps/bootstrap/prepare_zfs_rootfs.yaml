@@ -1,0 +1,43 @@
+# Requirements:
+# - ZFS must be available and configured:
+#   - By default `z/kameleon` is use as the root dataset for all ZFS datasets created by the Kameleon build run.
+#   - It must be created beforehand, for instance by running `sudo zfs create z/kameleon -o mountpoint=none`
+#   - ZFS commands must be executable without becoming root, thanks to a sudoer configuration as follows:
+# cat <<EOF >/etc/sudoers.d/kameleon_zfs
+#Cmnd_Alias C_KAMELEON_ZFS = \
+#  /sbin/zfs create z/kameleon/*, \
+#  /sbin/zfs clone z/kameleon/*, \
+#  /sbin/zfs rename z/kameleon/*, \
+#  /sbin/zfs promote z/kameleon/*, \
+#  /sbin/zfs snapshot z/kameleon/*, \
+#  /sbin/zfs rollback z/kameleon/*, \
+#  /sbin/zfs destroy z/kameleon/*, \
+#  /sbin/zfs get origin z/kameleon/*, \
+#  /sbin/zfs set mountpoint=none z/kameleon/*, \
+#  /sbin/zfs list z/kameleon/*, \
+#  /sbin/zfs send z/kameleon/*, \
+#  /sbin/zfs recv z/kameleon/*
+#
+#ALL ALL = (root) NOPASSWD: C_KAMELEON_ZFS
+#EOF
+
+## Should the build overwrite a previously built rootfs?
+- do_overwrite_rootfs: false
+# ZFS options:
+- zfs_cmd: sudo -k -n zfs
+- zfs_kameleon_dataset: z/kameleon
+# rootfs options
+- rootfs_work_dataset: $${zfs_kameleon_dataset}/$${docker_image}
+- rootfs_host_work_dir: /$${rootfs_work_dataset}/rootfs
+- rootfs_container_work_dir: $${kameleon_cwd}/rootfs
+
+- create_zfs_rootfs:
+  - on_checkpoint: redo
+  - exec_local: |
+      set -e
+      if $${checkpointing_enabled} && [ -r MAIN_CONTAINER_ID ] && docker ps --no-trunc -a -q | grep -q $(<MAIN_CONTAINER_ID); then
+        echo "$${rootfs_work_dataset}/rootfs already exists, because a previous checkpoint was applied/restored."
+      else
+        ! $${zfs_cmd} list $${rootfs_work_dataset}/rootfs -H >& /dev/null || $${zfs_cmd} destroy $${rootfs_work_dataset}/rootfs -R -f
+        $${zfs_cmd} create $${rootfs_work_dataset}/rootfs -o mountpoint=$${rootfs_host_work_dir} -p
+      fi
