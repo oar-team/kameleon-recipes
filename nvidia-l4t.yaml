@@ -206,13 +206,6 @@ setup:
           tar -C $${workdir}/g5k-postinstall -zxf $${g5k_postinstall_tarball_file}
     - patch_g5k_postinstall:
       - exec_out: |
-          set -e
-          sed -i -e 's/$myjson = {/$myjson = { "architecture" => {},/' $${workdir}/g5k-postinstall/g5k-postinstall
-          sed -i -e 's/$mynic, $myip, $mymac = get_net_cfg/if (e = ENV["KADEPLOY_PI_NET_CFG"])\n  e = e.split(",")\n  $mynic, $myip, $mymac = e\n  $logger.info("Net config forced to NIC=#{$mynic}, IP=#{$myip}, MAC=#{$mymac} by Kadeploy environment variable")\nelse\n  $mynic, $myip, $mymac = get_net_cfg\nend/' $${workdir}/g5k-postinstall/g5k-postinstall
-          for i in {2..12}; do
-            rm $${workdir}/g5k-postinstall/ssh_host_keys/toulouse/estats/172.16.121.$i
-            cp -a $${workdir}/g5k-postinstall/ssh_host_keys/toulouse/estats/172.16.121.{1,$i}
-          done
           echo -e "#/ is nfsroot\nnfs:/export/grid5000  /grid5000 nfs _netdev,rw,hard,async,nodev,nosuid,auto 0 0" > $${workdir}/g5k-postinstall/fstab
     - explain_how_to_use_g5k_postinstall:
       - exec_local: |
