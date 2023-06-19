@@ -191,6 +191,13 @@ setup:
         - /tmp/g5k-check.deb
       - exec_in: |
           dpkg --force-confnew -i /tmp/g5k-check.deb
+  - copy_kernel_sources_in_rootfs:
+    - copy_files:
+      - exec_out: |
+          set -e
+          KERNEL_RELEASE=$($${kernel_make_cmd} kernelrelease | grep -ve '^make')
+          cp -a $${kernel_src_dir} $${rootfs_container_work_dir}/usr/src/linux-kbuild-$KERNEL_RELEASE
+          ln -sfn /usr/src/linux-kbuild-$KERNEL_RELEASE $${rootfs_container_work_dir}/lib/modules/$KERNEL_RELEASE/source
   - install_g5k_postinstall:
     - g5k_postinstall:
       - exec_out: |
