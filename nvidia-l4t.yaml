@@ -143,9 +143,9 @@ setup:
           $${kernel_make_cmd} INSTALL_MOD_PATH="$${rootfs_container_work_dir}" modules_install
           ln -sfn /usr/src/linux-headers-$KERNEL_RELEASE $${rootfs_container_work_dir}/lib/modules/$KERNEL_RELEASE/build
           tar -C $${rootfs_container_work_dir} -jcvf $${l4t_dir}/kernel/kernel_supplements.tbz2 lib/modules/$KERNEL_RELEASE
-    - clean_kernel_objects:
-      - exec_out: |
-          $${kernel_make_cmd} INSTALL_MOD_PATH="$${rootfs_container_work_dir}" mrproper
+      #- clean_kernel_objects:
+      #  - exec_out: |
+      #      $${kernel_make_cmd} INSTALL_MOD_PATH="$${rootfs_container_work_dir}" mrproper
   - setup_for_flashing:
     - install_required_debs:
       - apt-get_out: install usbutils udev python-is-python3 python3-yaml lz4 cpio openssh-client libxml2-utils perl-modules-5.30 dosfstools
