@@ -30,17 +30,11 @@ global:
   to_docker_image: "$${kameleon_recipe_name}:latest"
 
 bootstrap:
-  - prepare_docker_image:
-    - pull_and_tag_image:
-      - exec_local: |
-          if ! docker image ls --format "{{.Repository}}:{{.Tag}}" | grep -q "$${from_docker_image}"; then
-            echo "Importing docker base image to build from"
-            docker pull $${from_docker_image}
-          fi
-          docker tag $${from_docker_image} "$${docker_image}:base"
-  - start_docker
+  - "@base"
+
+setup:
+  - "@base"
 
 export:
-  - tag_docker_image:
-    - commit_container:
-      - exec_out: docker commit $(< MAIN_CONTAINER_ID) $${to_docker_image}
+  - "@base"
+
