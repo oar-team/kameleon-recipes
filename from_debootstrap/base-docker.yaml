@@ -50,14 +50,13 @@ global:
   gpg_keyserver: keyserver.ubuntu.com
 
   # Debootstrap config
-  bootstrap_script: $${kameleon_data_dir}/debootstrap.sh
   bootstrap_variant:
   bootstrap_packages: locales openssh-server linux-image-$${deb_kernel_arch}
   build_packages: debootstrap qemu-user-static curl parted e2fsprogs
 
   # Docker image to use for the out context with debootstrap
   out_context_distro: "debian"
-  out_context_release: "bullseye"
+  out_context_release: "bookworm"
   out_context_backports: false
   out_context_docker_image: "$${out_context_distro}:$${out_context_release}"
 

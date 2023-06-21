@@ -1,17 +1,32 @@
-- run_debootstrap_script:
-  - local2out:
-    - $${bootstrap_script}
-    - /tmp/debootstrap.sh
+- run_debootstrap:
   - exec_out: |
-      RELEASE=$${release} \
-      PACKAGES="$${bootstrap_packages}" \
-      DEB_MIRROR_URI="$${deb_mirror_uri}" \
-      ARCH="$${arch}" \
-      DEB_ARCH="$${deb_arch}" \
-      DEB_KERNEL_ARCH="$${deb_kernel_arch}" \
-      CHROOT_DIR="$${rootfs}" \
-      VARIANT="$${bootstrap_variant}" \
-      PROXY=$${proxy_out}
-      bash /tmp/debootstrap.sh
-  - on_setup_clean:
-    - exec_out: rm -f /tmp/debootstrap.sh
+      set -e
+      PROXY="$${proxy_out}"
+      if [ -n "$PROXY" ]; then
+        export http_proxy="http://$PROXY"
+        export https_proxy="$http_proxy"
+        export ftp_proxy="$http_proxy"
+        export rsync_proxy="$http_proxy"
+        export all_proxy="$http_proxy"
+        export HTTP_PROXY="$http_proxy"
+        export HTTPS_PROXY="$http_proxy"
+        export FTP_PROXY="$http_proxy"
+        export RSYNC_PROXY="$http_proxy"
+        export ALL_PROXY="$http_proxy"
+        export no_proxy="localhost,${PROXY%%:*},127.0.0.1,localaddress,.localdomain"
+        export NO_PROXY="$no_proxy"
+      fi
+      CURRENT_ARCH="$(uname -m)"
+      ARCH="$${arch}"
+      ARCH=${ARCH:-$CURRENT_ARCH}
+      DEB_ARCH="$${deb_arch}"
+      DEB_ARCH=${DEB_ARCH:-$(dpkg --print-architecture)}
+      VARIANT="$${bootstrap_variant}"
+      PACKAGES="$${bootstrap_packages}"
+      if [ $CURRENT_ARCH == $ARCH ]; then
+        debootstrap --arch=$DEB_ARCH --no-check-gpg ${VARIANT:+--variant=$VARIANT} ${PACKAGES:+--include="$PACKAGES"} $${release} $${rootfs} $${deb_mirror_uri}
+      else
+        DEBIAN_FRONTEND=noninteractive apt-get -y --force-yes install -y qemu-user-static binfmt-support
+        debootstrap --foreign --arch=$DEB_ARCH --no-check-gpg ${VARIANT:+--variant=$VARIANT} ${PACKAGES:+--include="$PACKAGES"} $${release} $${rootfs} $${deb_mirror_uri}
+        chroot $${rootfs} /debootstrap/debootstrap --second-stage
+      fi
