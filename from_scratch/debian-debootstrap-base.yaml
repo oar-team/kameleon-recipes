@@ -55,6 +55,7 @@ bootstrap:
   - prepare_ssh_to_out_context
   - start_qemu
   - install_build_packages
+  - prepare_partition_for_rootfs
   - debootstrap
   - start_chroot
 
