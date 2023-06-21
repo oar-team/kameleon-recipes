@@ -1,0 +1,74 @@
+#==============================================================================
+# vim: softtabstop=2 shiftwidth=2 expandtab fenc=utf-8 cc=81 tw=80
+#==============================================================================
+#
+# DESCRIPTION: A recipe that use a docker for the out context providing debootstrap
+#
+#==============================================================================
+---
+extend: ../steps/backend/$${backend}.yaml
+
+# Loads some helpful aliases (this files are located in steps/aliases/ directory)
+aliases: defaults.yaml
+
+# Custom shell environement (this files are located in steps/env/ directory)
+env:
+  - bashrc
+  - functions.sh
+
+# Global variables use by Kameleon engine and the steps
+global:
+  ## Select backend for in context isolation
+  backend: docker
+
+  # Include specific steps
+  include_steps:
+    - $${distrib}/$${release}
+    - $${distrib}
+
+  # Default hostname
+  hostname: kameleon-$${distrib}
+  # Default root password
+  root_password: kameleon
+  # Target system architecture
+  arch: x86_64
+  deb_arch: amd64
+  deb_kernel_arch: $${deb_arch}
+  # Target system distrib
+  distrib: debian
+  # Target system release
+  release: testing
+  # Deb mirror
+  deb_mirror_hostname: deb.debian.org
+  deb_mirror_uri: http://$${deb_mirror_hostname}/debian/
+
+  # APT config
+  apt_enable_contrib: true
+  apt_enable_nonfree: true
+
+  # GPG keyserver
+  gpg_keyserver: keyserver.ubuntu.com
+
+  # Debootstrap config
+  bootstrap_script: $${kameleon_data_dir}/debootstrap.sh
+  bootstrap_variant:
+  bootstrap_packages: locales openssh-server linux-image-$${deb_kernel_arch}
+  build_packages: debootstrap qemu-user-static curl parted e2fsprogs
+
+  # Docker image to use for the out context with debootstrap
+  out_context_distro: "debian"
+  out_context_release: "bullseye"
+  out_context_backports: false
+  out_context_docker_image: "$${out_context_distro}:$${out_context_release}"
+
+bootstrap:
+  - "@base"
+  - install_build_packages
+  - debootstrap
+  - prepare_system_fs_for_chroot
+  - debootstrap_post_config
+
+setup:
+
+export:
+
