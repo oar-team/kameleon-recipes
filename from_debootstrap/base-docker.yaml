@@ -51,8 +51,8 @@ global:
 
   # Debootstrap config
   bootstrap_variant:
-  bootstrap_packages: locales openssh-server linux-image-$${deb_kernel_arch}
-  build_packages: debootstrap qemu-user-static curl parted e2fsprogs
+  bootstrap_packages: locales
+  build_packages: debootstrap
 
   # Docker image to use for the out context with debootstrap
   out_context_distro: "debian"
