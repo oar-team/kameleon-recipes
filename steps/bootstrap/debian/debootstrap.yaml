@@ -23,10 +23,7 @@
       DEB_ARCH=${DEB_ARCH:-$(dpkg --print-architecture)}
       VARIANT="$${bootstrap_variant}"
       PACKAGES="$${bootstrap_packages}"
-      if [ $CURRENT_ARCH == $ARCH ]; then
-        debootstrap --arch=$DEB_ARCH --no-check-gpg ${VARIANT:+--variant=$VARIANT} ${PACKAGES:+--include="$PACKAGES"} $${release} $${rootfs} $${deb_mirror_uri}
-      else
+      if [ $CURRENT_ARCH != $ARCH ]; then
         DEBIAN_FRONTEND=noninteractive apt-get -y --force-yes install -y qemu-user-static binfmt-support
-        debootstrap --foreign --arch=$DEB_ARCH --no-check-gpg ${VARIANT:+--variant=$VARIANT} ${PACKAGES:+--include="$PACKAGES"} $${release} $${rootfs} $${deb_mirror_uri}
-        chroot $${rootfs} /debootstrap/debootstrap --second-stage
       fi
+      debootstrap --arch=$DEB_ARCH --no-check-gpg ${VARIANT:+--variant=$VARIANT} ${PACKAGES:+--include="$PACKAGES"} $${release} $${rootfs} $${deb_mirror_uri}
