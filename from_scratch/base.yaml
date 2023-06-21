@@ -109,7 +109,7 @@ global:
 bootstrap:
   - enable_checkpoint
   - download_installer
-  - prepare_disk
+  - prepare_qemu_disk
   - start_http_server
   - prepare_autoinstall
   - start_qemu:
