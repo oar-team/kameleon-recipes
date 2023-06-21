@@ -24,7 +24,7 @@ global:
 bootstrap:
   - enable_checkpoint
   - download_upstream_tarball
-  - prepare_chroot
+  - extract_upstream_tarball_in_rootfs
   - start_chroot
 
 export:
