@@ -1,0 +1,65 @@
+#==============================================================================
+# vim: softtabstop=2 shiftwidth=2 expandtab fenc=utf-8 cc=81 tw=80
+#==============================================================================
+#
+# DESCRIPTION: Debian generic recipe using the debootstrap mechanism
+#
+# USAGE:
+#   Select directly in this recipe:
+#
+#   - distribution: debian or ubuntu
+#   - release: wheezy, testing, sid...
+#   - architechture: default amd64
+#
+#   or, override the globals directly in CLI:
+#
+#   kameleon build --global distrib:debian --global release:wheezy
+#
+#   or extends this recipe with your own and override those variable in it.
+#
+#==============================================================================
+---
+extend: ../from_scratch/base.yaml
+
+global:
+  distrib: debian
+  release: testing
+  deb_arch: amd64
+  deb_kernel_arch: $${deb_arch}
+
+  # This ISO is use to create the OUT context and not image itself
+  out_context_debian_release: bullseye
+  installer_iso_filename: debian-$${out_context_debian_release}-$${installer_iso_arch}-live.iso
+  installer_iso_url: http://kameleon.imag.fr/iso/$${installer_iso_filename}
+  qemu_iso_path: $${kameleon_cwd}/$${installer_iso_filename}
+
+  bootstrap_variant:
+  deb_mirror_hostname: deb.debian.org
+  deb_mirror_uri: http://$${deb_mirror_hostname}/debian/
+
+  bootstrap_packages: locales openssh-server
+  build_packages: debootstrap curl parted e2fsprogs
+
+  apt_enable_contrib: true
+  apt_enable_nonfree: true
+
+  in_context:
+    cmd: ssh -F $${ssh_config_file} $${kameleon_recipe_name} -t chroot $${rootfs} /bin/bash
+    workdir: /root/kameleon_workdir
+    proxy_cache: $${local_ip}
+
+bootstrap:
+  - enable_checkpoint
+  - download_installer
+  - prepare_qemu_disk
+  - prepare_ssh_to_out_context
+  - start_qemu
+  - install_build_packages
+  - prepare_partition_for_rootfs
+  - debootstrap
+  - prepare_system_fs_for_chroot
+  - debootstrap_post_config
+
+setup:
+
+export:
