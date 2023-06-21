@@ -1,3 +1,4 @@
+- from_docker_image: $${out_context_docker_image}
 - docker_image: $${kameleon_recipe_name}_$${kameleon_short_uuid}
 
 - pull_and_tag_base_image:
