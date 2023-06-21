@@ -28,7 +28,7 @@ global:
   # Shell session that allows us to connect to the building machine in order to
   # configure it and setup additional programs
   in_context:
-    cmd: test -s MAIN_CONTAINER_ID && LC_ALL=POSIX docker exec -u$${docker_user} -i $(< MAIN_CONTAINER_ID) chroot {rootfs} /bin/bash
+    cmd: test -s MAIN_CONTAINER_ID && LC_ALL=POSIX docker exec -u$${docker_user} -i $(< MAIN_CONTAINER_ID) chroot $${rootfs} /bin/bash
     interactive_cmd: test -s MAIN_CONTAINER_ID && LC_ALL=POSIX docker exec -u$${docker_user} -it $(cat MAIN_CONTAINER_ID) chroot $${rootfs} /bin/bash
     workdir: /
     proxy_cache: 172.17.0.1
