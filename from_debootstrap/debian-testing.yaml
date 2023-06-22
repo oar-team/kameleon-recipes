@@ -2,14 +2,14 @@
 # vim: softtabstop=2 shiftwidth=2 expandtab fenc=utf-8 cc=81 tw=80
 #==============================================================================
 #
-# DESCRIPTION: Debian Sid (unstable) recipe using the debootstrap mechanism
+# DESCRIPTION: Debian Testing recipe using the debootstrap mechanism
 #
 #==============================================================================
 ---
-extend: debian-debootstrap-base.yaml
+extend: debian-base.yaml
 
 global:
-  release: sid
+  release: testing
 
 bootstrap:
   - "@base"

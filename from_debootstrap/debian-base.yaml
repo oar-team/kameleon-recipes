@@ -19,11 +19,11 @@
 #
 #==============================================================================
 ---
-extend: base.yaml
+extend: base-qemu.yaml
 
 global:
   distrib: debian
-  release: testing
+  release: stable
   deb_arch: amd64
   deb_kernel_arch: $${deb_arch}
 
@@ -32,13 +32,12 @@ global:
   installer_iso_url: http://kameleon.imag.fr/iso/$${installer_iso_filename}
   qemu_iso_path: $${kameleon_cwd}/$${installer_iso_filename}
 
-  bootstrap_script: $${kameleon_data_dir}/debootstrap.sh
   bootstrap_variant:
   deb_mirror_hostname: deb.debian.org
   deb_mirror_uri: http://$${deb_mirror_hostname}/debian/
 
   bootstrap_packages: locales openssh-server linux-image-$${deb_kernel_arch}
-  build_packages: debootstrap qemu-user-static curl parted e2fsprogs
+  build_packages: debootstrap curl parted e2fsprogs
 
   apt_enable_contrib: true
   apt_enable_nonfree: true
@@ -58,11 +57,10 @@ bootstrap:
   - prepare_partition_for_rootfs
   - debootstrap
   - prepare_system_fs_for_chroot
-  - prepare_resolv_conf_for_chroot
   - prepare_cpuset_for_chroot
+  - debootstrap_post_config
 
 setup:
-  - "@base"
 
 export:
-  - "@base"
+  - save_appliance_VM
