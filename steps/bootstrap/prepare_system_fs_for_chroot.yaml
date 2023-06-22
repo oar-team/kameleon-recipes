@@ -13,7 +13,7 @@
       mount --bind /dev/pts $${rootfs_container_work_dir}/dev/pts
   - on_setup_clean:
     - test:
-      - exec_local: test $${rootfs_system_fs_umount_section} == "setup"
+      - exec_out: test $${rootfs_system_fs_umount_section} == "setup"
       - exec_out: &1 |
           set -e
           if [ -e $KAMELEON_WORKDIR/.KAMELEON_MOUNT_SYSTEM_FS_IN_CHROOT ]; then
@@ -25,5 +25,5 @@
           fi
   - on_export_clean:
     - test:
-      - exec_local: test $${rootfs_system_fs_umount_section} == "export"
+      - exec_out: test $${rootfs_system_fs_umount_section} == "export"
       - exec_out: *1

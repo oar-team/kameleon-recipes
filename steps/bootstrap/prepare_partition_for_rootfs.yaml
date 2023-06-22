@@ -17,15 +17,15 @@
   - exec_out: mount $${disk_device}1 $${rootfs} || fail cannot mount /
   - on_bootstrap_clean:
     - test:
-      - exec_local: test "$${rootfs_umount_section}" == "bootstrap"
+      - exec_out: test "$${rootfs_umount_section}" == "bootstrap"
       - group: &1
         - exec_out: sync
         - umount_out: $${rootfs}
   - on_setup_clean:
     - test:
-      - exec_local: test "$${rootfs_umount_section}" == "setup"
+      - exec_out: test "$${rootfs_umount_section}" == "setup"
       - group: *1
   - on_export_clean:
     - test:
-      - exec_local: test "$${rootfs_umount_section}" == "export"
+      - exec_out: test "$${rootfs_umount_section}" == "export"
       - group: *1
