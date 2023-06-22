@@ -36,7 +36,7 @@ create:
   - reload_context: out
   - exec_out: &1 |
       set -e
-      if [ -e $KAMELEON_WORKDIR/MOUNT_SYSTEM_FS_IN_CHROOT ]; then
+      if [ -e $KAMELEON_WORKDIR/.KAMELEON_MOUNT_SYSTEM_FS_IN_CHROOT ]; then
           mkdir -p $${rootfs_container_work_dir}/{dev,dev/pts,proc,sys}
           mount -t sysfs sysfs $${rootfs_container_work_dir}/sys
           mount -t proc proc $${rootfs_container_work_dir}/proc

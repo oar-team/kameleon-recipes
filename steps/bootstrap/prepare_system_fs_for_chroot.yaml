@@ -1,22 +1,29 @@
 - rootfs:
 - rootfs_container_work_dir: $${rootfs}
+- rootfs_system_fs_umount_section: export
 
 - mount_system_fs_in_chroot:
   - exec_out: |
       set -e
-      touch $KAMELEON_WORKDIR/MOUNT_SYSTEM_FS_IN_CHROOT
+      touch $KAMELEON_WORKDIR/.KAMELEON_MOUNT_SYSTEM_FS_IN_CHROOT
       mkdir -p $${rootfs_container_work_dir}/{dev,dev/pts,proc,sys}
       mount -t sysfs sysfs $${rootfs_container_work_dir}/sys
       mount -t proc proc $${rootfs_container_work_dir}/proc
       mount --bind /dev $${rootfs_container_work_dir}/dev
       mount --bind /dev/pts $${rootfs_container_work_dir}/dev/pts
   - on_setup_clean:
-    - exec_out: |
-        set -e
-        if [ -e $KAMELEON_WORKDIR/MOUNT_SYSTEM_FS_IN_CHROOT ]; then
-          mountpoint -q $${rootfs_container_work_dir}/sys && umount -f -l $${rootfs_container_work_dir}/sys  || true
-          mountpoint -q $${rootfs_container_work_dir}/proc && umount  -f -l $${rootfs_container_work_dir}/proc  || true
-          mountpoint -q $${rootfs_container_work_dir}/dev/pts && umount -f -l $${rootfs_container_work_dir}/dev/pts  || true
-          mountpoint -q $${rootfs_container_work_dir}/dev && umount -f -l $${rootfs_container_work_dir}/dev  || true
-          rm $KAMELEON_WORKDIR/MOUNT_SYSTEM_FS_IN_CHROOT
-        fi
+    - test:
+      - exec_local: test $${rootfs_system_fs_umount_section} == "setup"
+      - exec_out: &1 |
+          set -e
+          if [ -e $KAMELEON_WORKDIR/.KAMELEON_MOUNT_SYSTEM_FS_IN_CHROOT ]; then
+            mountpoint -q $${rootfs_container_work_dir}/sys && umount -f -l $${rootfs_container_work_dir}/sys  || true
+            mountpoint -q $${rootfs_container_work_dir}/proc && umount  -f -l $${rootfs_container_work_dir}/proc  || true
+            mountpoint -q $${rootfs_container_work_dir}/dev/pts && umount -f -l $${rootfs_container_work_dir}/dev/pts  || true
+            mountpoint -q $${rootfs_container_work_dir}/dev && umount -f -l $${rootfs_container_work_dir}/dev  || true
+            rm $KAMELEON_WORKDIR/.KAMELEON_MOUNT_SYSTEM_FS_IN_CHROOT
+          fi
+  - on_export_clean:
+    - test:
+      - exec_local: test $${rootfs_system_fs_umount_section} == "export"
+      - exec_out: *1
