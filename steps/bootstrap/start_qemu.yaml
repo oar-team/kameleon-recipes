@@ -9,7 +9,6 @@
 - qemu_append_cmdline: ""
 # Else boot from disk.
 
-- vm_expected_service: ssh
 - boot_timeout: 100
 - shutdown_timeout: 100
 - debug: false
