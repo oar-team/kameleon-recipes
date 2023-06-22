@@ -2,20 +2,28 @@
 - docker_hostname: kameleon-$${kameleon_short_uuid}
 - rootfs_host_work_dir:
 - rootfs_container_work_dir: $${rootfs}
+- docker_cleanup_section: export
 
 - clean_containers:
-  - on_checkpoint: redo
+  - on_checkpoint: disabled
   - on_export_clean:
-    - exec_local: |
-        set -e
-        if [ -r MAIN_CONTAINER_ID ]; then
-          if docker ps --no-trunc -a -q | grep -q $(<MAIN_CONTAINER_ID); then
-            docker rm -f $(< MAIN_CONTAINER_ID) > /dev/null
+    - test:
+      - exec_local: test "$${docker_cleanup_section}" == "export"
+      - exec_local: &1 |
+          set -e
+          if [ -r MAIN_CONTAINER_ID ]; then
+            if docker ps --no-trunc -a -q | grep -q $(<MAIN_CONTAINER_ID); then
+              docker rm -f $(< MAIN_CONTAINER_ID) > /dev/null
+            fi
+            rm MAIN_CONTAINER_ID
           fi
-          rm MAIN_CONTAINER_ID
-        fi
+  - on_setup_clean:
+    - test:
+      - exec_local: test "$${docker_cleanup_section}" == "setup"
+      - exec_local: *1
 
 - start_docker_container:
+  - on_checkpoint: disabled
   - exec_local: |
       set -e
       rm -f MAIN_CONTAINER_ID
