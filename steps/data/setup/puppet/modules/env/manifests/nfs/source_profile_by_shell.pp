@@ -4,6 +4,7 @@ class env::nfs::source_profile_by_shell {
 
       file {
         '/etc/csh/cshrc.d':
+          require => Package['tcsh'],
           ensure => 'directory',
           owner  => root,
           group  => root,
@@ -19,7 +20,7 @@ class env::nfs::source_profile_by_shell {
           require => Package['zsh'],
           source  => 'puppet:///modules/env/nfs/source_profile_by_shell/zshenv.g5k';
         '/etc/csh/cshrc.d/csh.cshrc.g5k':
-          require => Package['tcsh'],
+          require => File['/etc/csh/cshrc.d'],
           source  => 'puppet:///modules/env/nfs/source_profile_by_shell/csh.cshrc.g5k';
       }
 
@@ -31,6 +32,7 @@ class env::nfs::source_profile_by_shell {
       }
 
       file_line { 'source /etc/zsh/zshenv.g5k file':
+          require => Package['zsh'],
           ensure => present,
           path   => '/etc/zsh/zshenv',
           line   => '. /etc/zsh/zshenv.g5k'
