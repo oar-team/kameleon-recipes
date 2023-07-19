@@ -59,11 +59,13 @@ class env::big::configure_nvidia_gpu::cuda () {
       target => '/etc/systemd/system/nvidia-persistenced.service';
   }
 
-  # Sounds dirty as fuck, but Augeas does not manage /etc/profile which is a bash file, and not a real configuration file (or I'm really bad with Augeas).
-  file_line {
-    'cuda_etc_profile_path':
-      path => '/etc/profile',
-      line => 'export PATH=$PATH:/usr/local/cuda/bin';
+  file {
+    '/etc/profile.d/cuda.sh':
+      ensure  => present,
+      owner => root,
+      group => root,
+      mode  => '0644',
+      content => 'export PATH=$PATH:/usr/local/cuda/bin';
   }
 
   package{

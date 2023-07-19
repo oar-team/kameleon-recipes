@@ -123,10 +123,13 @@ class env::big::configure_amd_gpu () {
     }
   }
 
-  file_line {
-    'rocm_etc_profile_path':
-      path => '/etc/profile',
-      line => 'export PATH=$PATH:/opt/rocm/bin';
+  file {
+    '/etc/profile.d/rocm.sh':
+      ensure  => present,
+      owner => root,
+      group => root,
+      mode  => '0644',
+      content => 'export PATH=$PATH:/opt/rocm/bin';
   }
 
   file {
