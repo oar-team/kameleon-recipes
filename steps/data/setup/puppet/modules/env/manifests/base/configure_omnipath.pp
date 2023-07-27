@@ -1,11 +1,9 @@
 class env::base::configure_omnipath(){
 
   # opapackages depends on 'firmware-misc-nonfree' which is now installed on configure_network_and_install_drivers.pp for debian-min. 
-  $opapackages = ['opa-address-resolution', 'opa-fastfabric', 'libopamgt0', 'libopasadb1',
-                  'opa-basic-tools']
+  $opapackages = ['opa-address-resolution', 'opa-fastfabric', 'libopamgt0']
 
-  $rdmapackages = ['qperf', 'libibverbs1', 'librdmacm1', 'libibmad5', 'libibumad3', 'ibverbs-providers',
-                  'rdmacm-utils', 'infiniband-diags', 'ibverbs-utils']
+  $rdmapackages = ['qperf', 'ibverbs-providers', 'rdmacm-utils', 'infiniband-diags', 'ibverbs-utils']
 
   if $env::deb_arch == 'amd64' {
 
