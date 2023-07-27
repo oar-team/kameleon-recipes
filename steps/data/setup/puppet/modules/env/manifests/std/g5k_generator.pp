@@ -20,7 +20,7 @@ class env::std::g5k_generator {
       }
     }
     default: {
-      err "${operatingsystem} not supported."
+      fail "${operatingsystem} not supported."
     }
   }
 }

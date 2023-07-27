@@ -35,6 +35,9 @@ class env::std::dell (
       $_packages_names = $packages_names - 'libssl1.0.0'
       $service_status = 'systemctl status dsm_sa_datamgrd.service dsm_sa_eventmgrd.service'
     }
+    default : {
+      fail "${::lsbdistcodename} not supported."
+    }
   }
 
   apt::source {
@@ -85,6 +88,9 @@ class env::std::dell (
           require => Package[$_packages_names];
       }
     }
+    default : {
+      fail "${::lsbdistcodename} not supported."
+    }
   }
 
   if ($::lsbdistcodename == 'buster') or ($::lsbdistcodename == 'bullseye') {
@@ -94,6 +100,8 @@ class env::std::dell (
         command => "/lib/systemd/systemd-sysv-install disable openipmi",
         require => Package[$packages, 'ipmitool'];
     }
+  } else {
+    fail "${::lsbdistcodename} not supported."
   }
 
   if ($::lsbdistcodename == 'bullseye') {

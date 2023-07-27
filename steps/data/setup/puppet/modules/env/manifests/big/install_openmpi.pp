@@ -37,5 +37,8 @@ class env::big::install_openmpi () {
         require => Package['openmpi-bin'];
       }
     }
+    default: {
+      fail "${::lsbdistcodename} not supported."
+    }
   }
 }

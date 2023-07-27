@@ -19,7 +19,7 @@ class env::min ( $variant = "min", $parent_parameters = {} ) {
       class { 'env::min::yum': }
     }
     default: {
-      err "${operatingsystem} not suported."
+      fail "${operatingsystem} not suported."
     }
   }
   # Install cpu microcode

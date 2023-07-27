@@ -121,6 +121,9 @@ class env::big::configure_amd_gpu () {
           require => Package['amdgpu-dkms'];
       }
     }
+    default: {
+      fail "${::lsbdistcodename} not supported."
+    }
   }
 
   file {

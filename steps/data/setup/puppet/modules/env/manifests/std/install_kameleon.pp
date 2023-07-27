@@ -10,12 +10,12 @@ class env::std::install_kameleon {
           }
         }
         default: {
-          err "${lsbdistcodename} not supported."
+          fail "${lsbdistcodename} not supported."
         }
       }
     }
     default: {
-      err "${operatingsystem} not supported."
+      fail "${operatingsystem} not supported."
     }
   }
 }

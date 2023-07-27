@@ -8,7 +8,7 @@ class env::min::generate_etc_motd {
       $userdistribname = "debian10"
     }
     default: {
-      $userdistribname = "${::lsbdistcodename}"
+      fail "${::lsbdistcodename} not supported."
     }
   }
 

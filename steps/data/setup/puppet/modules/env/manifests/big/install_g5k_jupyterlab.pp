@@ -10,7 +10,7 @@ class env::big::install_g5k_jupyterlab {
       }
     }
     default: {
-      err "${operatingsystem} not supported."
+      fail "${operatingsystem} not supported."
     }
   }
 }

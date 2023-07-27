@@ -11,5 +11,11 @@ class env::big::configure_initramfs () {
           content   => 'RESUME=none',
       }
     }
+    "bullseye" : {
+      # NOTHING
+    }
+    default: {
+      fail "${::lsbdistcodename} not supported."
+    }
   }
 }

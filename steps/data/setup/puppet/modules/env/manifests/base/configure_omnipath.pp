@@ -50,5 +50,11 @@ class env::base::configure_omnipath(){
           require => Package['rdma-core'];
       }
     }
+    'buster': {
+      # NOTHING
+    }
+    default : {
+      fail "${::lsbdistcodename} not supported."
+    }
   }
 }

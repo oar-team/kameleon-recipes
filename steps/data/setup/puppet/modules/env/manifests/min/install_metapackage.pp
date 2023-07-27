@@ -4,7 +4,7 @@ class env::min::install_metapackage ( $variant ) {
   include env::common::software_versions
 
   case $operatingsystem {
-    'Debian','Ubuntu': {
+    'Debian': {
       case "${::lsbdistcodename}" {
         'bullseye': {
           $base = "g5k-meta-packages-debian11"
@@ -13,12 +13,12 @@ class env::min::install_metapackage ( $variant ) {
           $base = "g5k-meta-packages-debian10"
         }
         default: {
-          $base = "g5k-meta-packages-${::lsbdistcodename}"
+          fail "${::lsbdistcodename} not supported."
         }
       }
     }
     default: {
-      err "${operatingsystem} not supported."
+      fail "${operatingsystem} not supported."
     }
   }
 

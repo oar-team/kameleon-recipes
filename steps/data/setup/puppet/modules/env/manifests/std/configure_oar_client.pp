@@ -14,7 +14,7 @@ class env::std::configure_oar_client {
         $oar_repos         = "g5k"
       }
       default : {
-        err "${::lsbdistcodename} not supported."
+        fail "${::lsbdistcodename} not supported."
       }
     }
   }
