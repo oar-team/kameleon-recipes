@@ -1,29 +1,23 @@
 class env::big::install_openmpi () {
 
+  $openmpi_packages = [ 'libopenmpi-dev', 'openmpi-bin' ]
+  $openmpi_deps_packages = [ 'libnuma1', 'libibverbs-dev' ]
+  $openmpi_opa_packages = [ 'libpsm2-dev', 'libopamgt-dev' ]
+
+  if $env::deb_arch == 'amd64' {
+    ensure_packages($openmpi_opa_packages, {
+      ensure => present,
+      require => Class['apt::update']
+    })
+  }
+
+  ensure_packages([$openmpi_deps_packages, $openmpi_packages], {
+    ensure => present,
+    require => Class['apt::update']
+  })
+
   case "${::lsbdistcodename}" {
-
     "buster" : {
-      $openmpi_packages = [ 'libopenmpi-dev', 'openmpi-bin' ]
-      $openmpi_deps_packages = [ 'libnuma1', 'libibverbs-dev' ]
-      $openmpi_opa_packages = [ 'libpsm2-dev', 'libopamgt-dev' ]
-
-      ensure_packages($openmpi_deps_packages, {
-        ensure => present,
-        require => Class['apt::update']
-      })
-
-      if $env::deb_arch == 'amd64' {
-        ensure_packages($openmpi_opa_packages, {
-          ensure => present,
-          require => Class['apt::update']
-        })
-      }
-
-      ensure_packages($openmpi_packages, {
-        ensure => present,
-        require => Class['apt::update']
-      })
-
       # The 'verbs' OFI provider is broken in OpenMPI 3.1.3. We disable it.
       # See https://intranet.grid5000.fr/bugzilla/show_bug.cgi?id=10918
       # and https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=941996
@@ -35,38 +29,8 @@ class env::big::install_openmpi () {
         line => 'mtl_ofi_provider_exclude = shm,sockets,tcp,udp,rstream,verbs',
         require => Package['openmpi-bin'];
       }
-
     }
-
     "bullseye" : {
-      $openmpi_packages = [ 'libopenmpi-dev', 'openmpi-bin', 'ucx-utils', 'libfabric-bin' ]
-      $openmpi_deps_packages = [ 'libnuma1', 'libibverbs-dev' ]
-      $openmpi_opa_packages = [ 'libpsm2-dev', 'libopamgt-dev' ]
-
-      ensure_packages($openmpi_deps_packages, {
-        ensure => present,
-        require => Class['apt::update']
-      })
-
-      if $env::deb_arch == 'amd64' {
-        ensure_packages($openmpi_opa_packages, {
-          ensure => present,
-          require => Class['apt::update']
-        })
-      }
-
-      ensure_packages($openmpi_packages, {
-        ensure => present,
-        require => Class['apt::update']
-      })
-
-      # libfabric packages : G5K rebuild with efa provider disabled
-      # See Bug #13260
-      env::common::g5kpackages {
-        'libfabric1':
-          packages => 'libfabric1';
-      }
-
       # Debian11 disables many providers by default. We restore UCX and Fabric,
       # while keeping openib disabled to avoid useless warnings
       file { '/etc/openmpi/openmpi-mca-params.conf':
@@ -75,5 +39,4 @@ class env::big::install_openmpi () {
       }
     }
   }
-
 }
