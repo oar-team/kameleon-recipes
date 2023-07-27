@@ -1,7 +1,7 @@
 class env::base::configure_ip_over_infiniband (){
 
   case "${::lsbdistcodename}" {
-    "buster": {
+    'buster': {
       # En suivant la doc https://wiki.debian.org/RDMA, vous n'avez pas besoin d'installer opensm sur les environnements
       # Il risque de rentrer en conflit avec d'autres instances d'OpenSM présent sur du matériel réseau, ou bien sur des clusters externes à Grid5000 (exemple : https://intranet.grid5000.fr/bugzilla/show_bug.cgi?id=10747)
       service {
@@ -15,10 +15,10 @@ class env::base::configure_ip_over_infiniband (){
 
       file {
         '/etc/infiniband':
-          ensure  => directory,
-          owner   => root,
-          group   => root,
-          mode    => '0644';
+          ensure => directory,
+          owner  => root,
+          group  => root,
+          mode   => '0644';
         '/etc/infiniband/openib.conf':
           ensure  => file,
           owner   => root,
@@ -33,21 +33,20 @@ class env::base::configure_ip_over_infiniband (){
           mode    => '0755',
           source  => 'puppet:///modules/env/base/infiniband/openibd';
         '/etc/systemd/system/openibd.service':
-          ensure  => file,
-          owner   => root,
-          group   => root,
-          mode    => '0644',
-          source  => 'puppet:///modules/env/base/infiniband/openibd.service';
+          ensure => file,
+          owner  => root,
+          group  => root,
+          mode   => '0644',
+          source => 'puppet:///modules/env/base/infiniband/openibd.service';
         '/lib/udev/rules.d/90-ib.rules':
-          ensure  => present,
-          owner   => root,
-          group   => root,
-          mode    => '0644',
-          source  => 'puppet:///modules/env/base/infiniband/90-ib.rules';
+          ensure => present,
+          owner  => root,
+          group  => root,
+          mode   => '0644',
+          source => 'puppet:///modules/env/base/infiniband/90-ib.rules';
       }
     }
-
-   "bullseye" {
+    'bullseye': {
       package {
         'rdma-core':
           ensure =>  installed;
