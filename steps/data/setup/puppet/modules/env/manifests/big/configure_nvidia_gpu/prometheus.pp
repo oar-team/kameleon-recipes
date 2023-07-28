@@ -34,7 +34,7 @@ class env::big::configure_nvidia_gpu::prometheus () {
       }
     }
     default: {
-      err "${operatingsystem} not supported."
+      fail "${operatingsystem} not supported."
     }
   }
 

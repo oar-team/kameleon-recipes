@@ -29,7 +29,7 @@ class env::std::install_g5kchecks {
       }
     }
     default: {
-      err "${operatingsystem} not supported."
+      fail "${operatingsystem} not supported."
     }
   }
 }

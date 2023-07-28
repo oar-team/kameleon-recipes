@@ -17,11 +17,14 @@ class env::std::install_libguestfs_backport {
         }
       }
       else {
-        err "${env::deb_arch} not supported"
+        fail "${env::deb_arch} not supported"
       }
     }
+    'bullseye': {
+      # NOTHING
+    }
     default: {
-      err "${lsbdistcodename} not supported."
+      fail "${lsbdistcodename} not supported."
     }
   }
 }

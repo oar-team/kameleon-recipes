@@ -16,7 +16,7 @@ class env::std::install_sudog5k {
 
     }
     default: {
-      err "${operatingsystem} not suported."
+      fail "${operatingsystem} not suported."
     }
   }
 

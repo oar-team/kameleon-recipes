@@ -1,16 +1,22 @@
 class env::nfs::install_autofs_requirements(){
 
-  if($::lsbdistcodename == 'bullseye') {
-    env::common::g5kpackages {
-      'autofs-g5k':
-        ensure => '5.1.2-4',
-        packages => ['autofs'],
-        release => $::lsbdistcodename;
+  case "${::lsbdistcodename}" {
+    "buster": {
+      package {
+        'autofs':
+          ensure => installed;
+      }
     }
-  } else {
-    package {
-      'autofs':
-        ensure => installed;
+    "bullseye" : {
+      env::common::g5kpackages {
+        'autofs-g5k':
+          ensure => '5.1.2-4',
+          packages => ['autofs'],
+          release => $::lsbdistcodename;
+      }
+    }
+    default : {
+      fail "${::lsbdistcodename} not supported."
     }
   }
 

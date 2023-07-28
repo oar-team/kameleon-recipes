@@ -111,7 +111,7 @@ class env::big::configure_nvidia_gpu::cuda () {
         }
       }
     }
-    default: {
+    'buster': {
       env::common::g5kpackages {
         'libcuda1':
           ensure    => installed;
@@ -119,6 +119,9 @@ class env::big::configure_nvidia_gpu::cuda () {
         'libhwloc-contrib-plugins':
           ensure    => installed;
       }
+    }
+    default: {
+      fail "${::lsbdistcodename} not supported."
     }
   }
 }

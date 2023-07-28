@@ -20,12 +20,12 @@ class env::std::configure_g5kpmemmanager {
           }
         }
         default : {
-          err "${::lsbdistcodename} not supported."
+          fail "${::lsbdistcodename} not supported."
         }
       }
     }
     default : {
-      err "${operatingsystem} not supported."
+      fail "${operatingsystem} not supported."
     }
   }
 }

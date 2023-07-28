@@ -11,6 +11,9 @@ class env::xen::configure_xen () {
         $hypervisor = "/boot/xen-4.14-${env::deb_arch}.gz"
         $xen_packages = [ 'xen-utils', 'debootstrap', 'xen-tools', 'sysfsutils', "xen-system-${env::deb_arch}" ]
       }
+      default: {
+        fail "${::lsbdistcodename} not supported."
+      }
     }
 
     file_line {
