@@ -38,6 +38,7 @@ global:
   timezone: Europe/Paris
   # puppet
   puppetlabs_apt_version: 6.3.0
+  puppetlabs-augeas_core_version: 1.3.0
 
 bootstrap:
   - "@base"
