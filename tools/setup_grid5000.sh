@@ -15,18 +15,7 @@ KERNEL=linux-image-$(uname -r)
 VERSION=$(apt-cache policy $KERNEL | grep Installed: | awk '{print $2}')
 ARCH=$(dpkg --print-architecture)
 KERNEL_SHORT=$(uname -r | sed -re "s/^(.*)-[^-]*/\1/g")
-apt-get update
-# Fix temporary dbg package revision diff (5.10.179-1 unavailable)
-if [ "$KERNEL_SHORT" = "5.10.0-23" ]; then
-  VERSION_ALT="5.10.179-2"
-  if [ "$ARCH" = "amd64" ] || [ "$ARCH" = "arm64" ]; then
-    apt-get install -y systemtap linux-image-$(uname -r)-dbg=$VERSION_ALT linux-headers-$(uname -r)=$VERSION_ALT linux-headers-$KERNEL_SHORT-common=$VERSION_ALT
-  else
-    apt-get install -y systemtap linux-image-$(uname -r)-dbg=$VERSION_ALT linux-headers-$(uname -r)=$VERSION linux-headers-$KERNEL_SHORT-common=$VERSION
-  fi
-else
-  apt-get install -y systemtap linux-image-$(uname -r)-dbg=$VERSION linux-headers-$(uname -r)=$VERSION linux-headers-$KERNEL_SHORT-common=$VERSION
-fi
+apt-get update && apt-get install -y systemtap linux-image-$(uname -r)-dbg=$VERSION linux-headers-$(uname -r)=$VERSION linux-headers-$KERNEL_SHORT-common=$VERSION
 /tmp/environments-recipes/tools/nofsync.stp </dev/null >/dev/null 2>&1 &
 
 # if arm64 or ppc64, use backported package for libguestfs-tools. see #11432
@@ -34,7 +23,7 @@ if [ "$ARCH" = "arm64" -o "$ARCH" = "ppc64el" ]; then
 	echo deb http://packages.grid5000.fr/deb/libguestfs-backport / > /etc/apt/sources.list.d/libguestfs-backport.list
 fi
 # install other dependencies
-apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends linux-headers-$(uname -r) netcat eatmydata libguestfs-tools gnupg-agent
+apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends netcat eatmydata libguestfs-tools gnupg-agent
 
 # install dependencies if arm64, for Ubuntu iso autoinstall/cloud-init rebuild. See #13859
 if [ "$ARCH" = "arm64" ]; then
