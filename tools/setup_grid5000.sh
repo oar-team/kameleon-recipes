@@ -15,8 +15,13 @@ KERNEL=linux-image-$(uname -r)
 VERSION=$(apt-cache policy $KERNEL | grep Installed: | awk '{print $2}')
 ARCH=$(dpkg --print-architecture)
 KERNEL_SHORT=$(uname -r | sed -re "s/^(.*)-[^-]*/\1/g")
-apt-get update && apt-get install -y systemtap linux-image-$(uname -r)-dbg=$VERSION linux-headers-$(uname -r)=$VERSION linux-headers-$KERNEL_SHORT-common=$VERSION
-/tmp/environments-recipes/tools/nofsync.stp </dev/null >/dev/null 2>&1 &
+apt-get update
+
+# When a kernel security update is released, the current kernel version is not available anymore on debian package repositories
+if apt-cache madison linux-image-$(uname -r)-dbg | grep -q "$VERSION"; then
+    apt-get install -y systemtap linux-image-$(uname -r)-dbg=$VERSION linux-headers-$(uname -r)=$VERSION linux-headers-$KERNEL_SHORT-common=$VERSION
+    /tmp/environments-recipes/tools/nofsync.stp </dev/null >/dev/null 2>&1 &
+fi
 
 # if arm64 or ppc64, use backported package for libguestfs-tools. see #11432
 if [ "$ARCH" = "arm64" -o "$ARCH" = "ppc64el" ]; then
