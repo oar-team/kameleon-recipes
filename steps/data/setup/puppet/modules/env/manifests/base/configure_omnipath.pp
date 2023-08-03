@@ -35,10 +35,10 @@ class env::base::configure_omnipath(){
       # See Bug #13260
       env::common::g5kpackages {
         'libfabric1':
-          packages => 'libfabric1';
+          packages => ['libfabric1', 'libfabric-bin'];
       }
 
-      ensure_packages(['ucx-utils', 'libfabric-bin'], {
+      ensure_packages(['ucx-utils'], {
         ensure => present
       })
 
