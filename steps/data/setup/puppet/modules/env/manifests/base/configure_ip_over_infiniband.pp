@@ -46,7 +46,7 @@ class env::base::configure_ip_over_infiniband (){
           source => 'puppet:///modules/env/base/infiniband/90-ib.rules';
       }
     }
-    'bullseye': {
+    'bullseye', 'bookworm': {
       package {
         'rdma-core':
           ensure =>  installed;

@@ -4,7 +4,7 @@ class env::nfs::install_and_configure_module_command () {
     "buster": {
       # NOTHING
     }
-    "bullseye" : {
+    "bullseye", "bookworm" : {
       # Install lmod from g5kpackages (custom version that includes module-stats-wrapper)
       # Otherwise, for debian 10, lmod is installed with g5k-meta-packages
       env::common::g5kpackages {
@@ -25,7 +25,7 @@ class env::nfs::install_and_configure_module_command () {
         "buster": {
           $modulespath = "/grid5000/spack/share/spack/modules/linux-debian9-x86_64\n/grid5000/spack/share/spack/modules/linux-debian10-x86_64\n"
         }
-        "bullseye" : {
+        "bullseye", "bookworm" : {
           # Bug 13590
           $modulespath = "/grid5000/spack/share/spack/modules/linux-debian10-x86_64\n/grid5000/spack/share/spack/modules/linux-debian11-x86_64\n"
         }

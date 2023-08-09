@@ -29,7 +29,7 @@ class env::base::configure_omnipath(){
   }
 
   case "${::lsbdistcodename}" {
-    'bullseye': {
+    'bullseye', 'bookworm': {
 
       # libfabric packages : G5K rebuild with efa provider disabled
       # See Bug #13260
