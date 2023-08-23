@@ -3,7 +3,6 @@ autoinstall:
   version: 1
   keyboard:
     layout: us
-    variant: us
   apt:
     geoip: false
     preserve_sources_list: true
