@@ -18,7 +18,7 @@ KERNEL_SHORT=$(uname -r | sed -re "s/^(.*)-[^-]*/\1/g")
 apt-get update
 
 # When a kernel security update is released, the current kernel version is not available anymore on debian package repositories
-if apt-cache madison linux-image-$(uname -r)-dbg | grep -q "$VERSION"; then
+if [ -z "$(apt-cache search linux-image-$(uname -r)-dbg)" ] && [ $(apt-cache madison linux-image-$(uname -r)-dbg | grep -q "$VERSION") -eq 1 ]; then
     apt-get install -y systemtap linux-image-$(uname -r)-dbg=$VERSION linux-headers-$(uname -r)=$VERSION linux-headers-$KERNEL_SHORT-common=$VERSION
     /tmp/environments-recipes/tools/nofsync.stp </dev/null >/dev/null 2>&1 &
 fi
