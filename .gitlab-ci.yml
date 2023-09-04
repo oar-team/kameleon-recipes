@@ -8,7 +8,7 @@ lint:
     - grid5000-docker
   image: debian:bullseye
   script:
-    - apt-get update && apt-get -y --no-install-recommends install rubygems
+    - apt-get update && apt-get -y --no-install-recommends install rubygems ruby-dev libffi-dev build-essential
     - gem install bundler
     - bundle install --gemfile=ci/Gemfile
     # Puppet manifests syntax check (equivalent to puppet parser validate) - The most important check
