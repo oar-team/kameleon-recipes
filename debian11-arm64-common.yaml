@@ -25,7 +25,7 @@ global:
   g5k_postinst_path: server:///grid5000/postinstalls/g5k-postinstall.tgz
   g5k_postinst_compression: "gzip"
   g5k_postinst_script: g5k-postinstall --net debian --disk-aliases
-  g5k_kernel_params: ""
+  g5k_kernel_params: "modprobe.blacklist=nouveau"
   deb_backports: true
   packages: ""
   # locales

@@ -24,7 +24,7 @@ global:
   g5k_postinst_path: server:///grid5000/postinstalls/g5k-postinstall.tgz
   g5k_postinst_script: g5k-postinstall --net redhat --disk-aliases
   g5k_postinst_compression: "gzip"
-  g5k_kernel_params: "biosdevname=0 crashkernel=no"
+  g5k_kernel_params: "biosdevname=0 crashkernel=no modprobe.blacklist=nouveau"
   g5k_kernel_path: "/vmlinuz"
   g5k_initrd_path: "/initramfs.img"
   # Packages to install

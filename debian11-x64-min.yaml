@@ -15,7 +15,6 @@ global:
   default_packages_no_clean: g5k-meta-packages-$${distrib}$${release_number}-$${g5k_variant} gnupg linux-image-$${deb_arch} console-setup rsync locales firmware-bnx2 firmware-bnx2x firmware-qlogic firmware-misc-nonfree amd64-microcode intel-microcode iucode-tool
   arch_packages_no_clean: grub-pc grub-efi-amd64-bin
   other_packages_no_clean:
-  g5k_kernel_params: "modprobe.blacklist=nouveau"
 bootstrap:
   - "@base"
 
