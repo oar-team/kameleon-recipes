@@ -15,7 +15,6 @@ global:
   default_packages_no_clean: g5k-meta-packages-$${distrib}$${release_number}-$${g5k_variant} gnupg linux-image-powerpc64le console-setup rsync locales firmware-bnx2 firmware-bnx2x firmware-qlogic
   arch_packages_no_clean: grub-ieee1275 grub-common
   other_packages_no_clean:
-  g5k_kernel_params: "modprobe.blacklist=nouveau"
 bootstrap:
   - "@base"
 
