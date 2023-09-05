@@ -29,7 +29,20 @@ class env::base::configure_omnipath(){
   }
 
   case "${::lsbdistcodename}" {
-    'bullseye', 'bookworm': {
+    'bookworm': {
+      ensure_packages(['ucx-utils'], {
+        ensure => present
+      })
+
+      file {
+        # Fix PSM2, see #13470 and https://sources.debian.org/src/libpsm2/11.2.185-2/debian/README.Debian/#L46
+        '/lib/udev/rules.d/60-rdma-persistent-naming.rules':
+          ensure  => 'file',
+          content => 'ACTION=="add", SUBSYSTEM=="infiniband", PROGRAM="rdma_rename %k NAME_KERNEL"',
+          require => Package['rdma-core'];
+      }
+    }
+    'bullseye': {
 
       # libfabric packages : G5K rebuild with efa provider disabled
       # See Bug #13260
