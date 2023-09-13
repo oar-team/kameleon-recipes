@@ -28,7 +28,6 @@ class env::common::software_versions {
           $nvidia_cuda            = '11.2.2_460.32.03_linux'
           $datacenter_gpu_manager = '1:2.1.4'
           $dcgm_exporter          = '2.3.0-1'
-          $libfabric1             = '1.11.0-2+g5k1'
         }
         default : {
           fail "${::lsbdistcodename} not supported."
@@ -53,7 +52,6 @@ class env::common::software_versions {
           $nvidia_cuda            = '11.2.2_460.32.03_linux_ppc64le'
           $datacenter_gpu_manager = '1:2.0.15'
           $dcgm_exporter          = '2.3.0-1'
-          $libfabric1             = '1.11.0-2+g5k1'
         }
         default : {
           fail "${::lsbdistcodename} not supported."
