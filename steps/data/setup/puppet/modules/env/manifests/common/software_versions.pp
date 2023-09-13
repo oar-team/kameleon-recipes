@@ -3,7 +3,7 @@
 class env::common::software_versions {
   $g5k_subnets                 = '1.4.2'
   $g5k_meta_packages           = '0.7.51'
-  $g5k_checks                  = '0.11.11'
+  $g5k_checks                  = '0.11.12'
   $sudo_g5k                    = '1.13'
   $ruby_net_ssh                = '1:6.1.0-2+deb11u1'
   $libguestfs_backport_arm64   = '1:1.40.2-7~bpog5k10+1'
