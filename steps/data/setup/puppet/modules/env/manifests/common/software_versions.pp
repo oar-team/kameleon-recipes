@@ -2,7 +2,7 @@
 
 class env::common::software_versions {
   $g5k_subnets                 = '1.4.2'
-  $g5k_meta_packages           = '0.7.49'
+  $g5k_meta_packages           = '0.7.51'
   $g5k_checks                  = '0.11.11'
   $sudo_g5k                    = '1.13'
   $ruby_net_ssh                = '1:6.1.0-2+deb11u1'
