@@ -35,7 +35,9 @@ class env::base::configure_omnipath(){
       # See Bug #13260
       env::common::g5kpackages {
         'libfabric1':
-          packages => ['libfabric1', 'libfabric-bin'];
+          ensure => $::env::common::software_versions::libfabric1,
+          packages => ['libfabric1', 'libfabric-bin'],
+          release => $::lsbdistcodename;
       }
 
       ensure_packages(['ucx-utils'], {
