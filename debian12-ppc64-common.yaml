@@ -1,0 +1,57 @@
+#==============================================================================
+# vim: softtabstop=2 shiftwidth=2 expandtab fenc=utf-8 cc=81 tw=80
+#==============================================================================
+#
+# DESCRIPTION: Debian bookworm (12) ppc64 common Grid'5000 environment
+#
+#==============================================================================
+---
+extend: from_scratch/ppc64le/debian-bookworm.yaml
+
+global:
+  # Override uncommon kernel path
+  g5k_kernel_path: "/vmlinux"
+  g5k_initrd_path: "/initrd.img"
+  # Export format to generate
+  appliance_formats: qcow2 tar.zst
+  # Output base filename
+  output: "$${kameleon_cwd}/$${kameleon_recipe_name}"
+  # Grid'5000 environment variant
+  g5k_variant: common
+  # Grid'5000 environment version
+  g5k_version: 1111111111
+  # Grid'5000 environment arch
+  g5k_image_arch: ppc64
+  # Grid'5000 kadeploy environment parameters
+  g5k_tar_path: server:///path/to/your/image
+  g5k_tar_compression: "zstd"
+  g5k_postinst_path: server:///grid5000/postinstalls/g5k-postinstall.tgz
+  g5k_postinst_compression: "gzip"
+  g5k_postinst_script: g5k-postinstall --net debian --disk-aliases
+  g5k_kernel_params: ""
+  deb_backports: true
+  deb_components: main contrib non-free non-free-firmware
+  packages: ""
+  # locales
+  locales: POSIX C en_US.UTF8
+  lang: en_US.UTF8
+  timezone: Europe/Paris
+  # puppet
+  puppetlabs_apt_version: 6.3.0
+
+bootstrap:
+  - "@base"
+
+setup:
+  - "@base"
+  - configure_system
+  - configure_apt
+  - install_packages
+  - setup_orchestrator
+  - run_orchestrator
+
+export:
+  - clean_dhcp_leases
+  - "@base"
+  - do_qcow2_finish_works
+  - export_g5k

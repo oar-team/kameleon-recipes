@@ -1,0 +1,27 @@
+#==============================================================================
+# vim: softtabstop=2 shiftwidth=2 expandtab fenc=utf-8 cc=81 tw=80
+#==============================================================================
+#
+# DESCRIPTION: Debian bookworm (12) ppc64 min Grid'5000 environment
+#
+#==============================================================================
+---
+extend: ./debian12-ppc64-common.yaml
+
+global:
+  # Grid'5000 environment variant
+  g5k_variant: min
+  # clean_unnecessary_packages step settings (packages debfoster must keep)
+  default_packages_no_clean: g5k-meta-packages-$${distrib}$${release_number}-$${g5k_variant} gnupg linux-image-powerpc64le console-setup rsync locales firmware-bnx2 firmware-bnx2x firmware-qlogic
+  arch_packages_no_clean: grub-ieee1275 grub-common
+  other_packages_no_clean:
+  g5k_kernel_params: "modprobe.blacklist=nouveau"
+bootstrap:
+  - "@base"
+
+setup:
+  - clean_unnecessary_packages
+  - "@base"
+
+export:
+  - "@base"
