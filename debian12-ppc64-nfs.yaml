@@ -1,0 +1,24 @@
+#==============================================================================
+# vim: softtabstop=2 shiftwidth=2 expandtab fenc=utf-8 cc=81 tw=80
+#==============================================================================
+#
+# DESCRIPTION: Debian bookworm (12) ppc64 nfs Grid'5000 environment
+#
+#==============================================================================
+---
+extend: ./debian12-ppc64-common.yaml
+
+global:
+  # Grid'5000 environment variant
+  g5k_variant: nfs
+  # Grid'5000 Kadeploy environment parameters
+  g5k_postinst_script: g5k-postinstall --net debian --net hpc --fstab nfs --restrict-user current --disk-aliases
+
+bootstrap:
+  - "@base"
+
+setup:
+  - "@base"
+
+export:
+  - "@base"

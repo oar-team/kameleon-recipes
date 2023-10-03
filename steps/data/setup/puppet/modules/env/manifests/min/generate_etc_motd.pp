@@ -1,6 +1,9 @@
 class env::min::generate_etc_motd {
 
   case "${::lsbdistcodename}" {
+    'bookworm': {
+      $userdistribname = "debian12"
+    }
     'bullseye': {
       $userdistribname = "debian11"
     }

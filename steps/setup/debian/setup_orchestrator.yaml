@@ -5,6 +5,7 @@
 
 - script_name: puppet_install.sh
 - script_path: /tmp
+- puppetlabs-augeas_core_version: "1.3.0"
 
 - get_standalone_puppet_script:
   - exec_in: apt-get install -y wget lsb-release puppet gnupg apt-transport-https
@@ -12,10 +13,17 @@
   # We force the version of puppetlabs-stdlib and puppetlabs-apt so that we use a version that works on our old version of puppet
   - exec_in: apt-get install -y ca-certificates ; puppet module install puppetlabs-stdlib --version 5.2.0
   - exec_in: puppet module install puppetlabs-apt --version $${puppetlabs_apt_version}
+  # Install the Puppet module for augeas_core since augeas is no longer included in the Debian Puppet package from Debian12
+  - test:
+    - exec_in: test "$${release}" == "bookworm"
+    - exec_in: puppet module install puppetlabs-augeas_core --version $${puppetlabs-augeas_core_version}
   - on_setup_clean:
     # module apt must be uninstalled BEFORE stdlib for dependency reasons
     - exec_in: puppet module uninstall puppetlabs-apt
     - exec_in: puppet module uninstall puppetlabs-stdlib
+    - test:
+      - exec_in: test "$${release}" == "bookworm"
+      - exec_in: puppet module uninstall puppetlabs-augeas_core
     # We tagged packet as "automatically installed" to auto-remove them at the end of the orchestration step
     - exec_in: apt-mark auto puppet lsb-release
     - exec_in: apt-get --yes autoremove --purge | tee /tmp/temp_purge

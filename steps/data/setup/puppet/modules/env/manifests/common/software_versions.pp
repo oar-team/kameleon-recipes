@@ -8,7 +8,6 @@ class env::common::software_versions {
   $ruby_net_ssh                = '1:6.1.0-2+deb11u1'
   $libguestfs_backport_arm64   = '1:1.40.2-7~bpog5k10+1'
   $libguestfs_backport_ppc64el = '1:1.40.2-7~bpog5k10+1'
-  $lmod                        = '6.6-0.4+g5k1.0.3'
   $g5k_jupyterlab              = '0.10'
 
   case "${env::deb_arch}" {
@@ -23,12 +22,16 @@ class env::common::software_versions {
           $dcgm_exporter          = '2.0.0-rc.11'
         }
         'bullseye': {
+          $lmod                   = '6.6-0.4+g5k1.0.3'
           $rocm_version           = '4.5'
           $nvidia_driver          = '460.91.03'
           $nvidia_cuda            = '11.2.2_460.32.03_linux'
           $datacenter_gpu_manager = '1:2.1.4'
           $dcgm_exporter          = '2.3.0-1'
           $libfabric1             = '1.11.0-2+g5k1'
+        }
+        'bookworm': {
+          $lmod                   = '8.6.19-1+g5k1.0.3'
         }
         default : {
           fail "${::lsbdistcodename} not supported."
@@ -48,12 +51,16 @@ class env::common::software_versions {
           $dcgm_exporter          = '2.0.0-rc.11'
         }
         'bullseye': {
+          $lmod                   = '6.6-0.4+g5k1.0.3'
           $nvidia_driver          = '418.197.02'
           $nvidia_user_driver     = '460.91.03'
           $nvidia_cuda            = '11.2.2_460.32.03_linux_ppc64le'
           $datacenter_gpu_manager = '1:2.0.15'
           $dcgm_exporter          = '2.3.0-1'
           $libfabric1             = '1.11.0-2+g5k1'
+        }
+        'bookworm': {
+          $lmod                   = '8.6.19-1+g5k1.0.3'
         }
         default : {
           fail "${::lsbdistcodename} not supported."

@@ -6,6 +6,9 @@ class env::min::install_metapackage ( $variant ) {
   case $operatingsystem {
     'Debian': {
       case "${::lsbdistcodename}" {
+        'bookworm': {
+          $base = "g5k-meta-packages-debian12"
+        }
         'bullseye': {
           $base = "g5k-meta-packages-debian11"
         }
