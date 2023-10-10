@@ -22,9 +22,9 @@ dryrun_all:
   stage: dryrun
   tags:
    - grid5000-docker
-  image: ${CI_REGISTRY}/grid5000/docker/kameleon:2.10.8.1-bullseye
+  image: ${CI_REGISTRY}/grid5000/docker/kameleon:2.10.11.1-bullseye
   script:
-   - for G5K_ENV in *.yaml kadeploy3-deploy-kernel/*.yaml from_grid5000_environment/*.yaml; do echo "** kameleon dryrun $G5K_ENV **"; kameleon dryrun "$G5K_ENV"; done
+   - for G5K_ENV in *.yaml kadeploy3-deploy-kernel/*.yaml from_grid5000_environment/*.yaml; do echo "** kameleon dryrun $G5K_ENV **"; kameleon build -d "$G5K_ENV"; done
   except:
    - tags
 
