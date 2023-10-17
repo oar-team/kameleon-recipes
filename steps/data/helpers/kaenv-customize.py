@@ -45,7 +45,7 @@ class Environment:
                 self.desc[key] = int(value)
             else:
                 try:
-                    key1, key2 = key.split('_')
+                    key1, key2 = key.split('_', 1)
                 except Exception as exc:
                     raise Exception("Unknown description field '{}'".format(key))
                 if ((key1 == 'boot' and key2 in ['initrd', 'kernel', 'kernel_params']) or
