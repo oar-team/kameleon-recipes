@@ -21,7 +21,7 @@ global:
   g5k_image_arch: x64
   g5k_release_number: testing
   # Grid'5000 environment description
-  g5k_description: "debian testing (future debian 13 trixie) for x64 - $${g5k_variant}"
+  g5k_description: "debian testing (future debian 13 trixie) for x86_64 - $${g5k_variant}"
   # Grid'5000 kadeploy environment parameters
   g5k_tar_path: server:///path/to/your/image
   g5k_tar_compression: "zstd"
