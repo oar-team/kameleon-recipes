@@ -1,0 +1,204 @@
+#==============================================================================
+#
+# DESCRIPTION: Base recipe to build a custom ARM64 Ubuntu 20.04 with L4T
+#
+#==============================================================================
+# This recipe extends another. To look at the step involed, run:
+#   kameleon dryrun debiantesting-arm64-custom.yaml
+# To see the variables that you can override, use the following command:
+#   kameleon info debiantesting-arm64-custom.yaml
+---
+extend: base.yaml
+
+global:
+  ### Grid'5000 environment information
+  ## (Uncomment and change any line if needed)
+
+  ## Frontend to run kaenv3 on
+  #grid5000_frontend: "frontend"
+
+  ## Site used in the build
+  grid5000_site: "toulouse"
+
+  ## Environment to build from
+  grid5000_environment_import_name: "ubuntu2004-nfs"
+  grid5000_environment_import_user: "deploy"
+  grid5000_environment_import_arch: "$${arch}"
+  #grid5000_environment_import_version: ""
+
+  ## New environment description
+  grid5000_environment_export_name: "ubuntu2004-nfsl4tcustom"
+  grid5000_environment_export_alias: "ubuntu-arm64-nfsl4tcustom"
+  grid5000_environment_export_format: "tar.zst"
+  grid5000_environment_export_description: "Custom $${grid5000_environment_import_name} augmented with Nvidia's L4T"
+  grid5000_environment_export_author: "deploy"
+  grid5000_environment_export_visibility: "shared"
+  grid5000_environment_export_boot_kernel: "/boot/Image"
+  grid5000_environment_export_boot_initrd: "/boot/initrd"
+  grid5000_environment_export_boot_kernel_params: ""
+  grid5000_environment_export_custom_variables: "BOOTLOADER_NO_GRUB_MKCONFIG_FROM_DEST=1"
+
+  ## Set where to store the environment and the assiated kadeploy URL base
+  #grid5000_environment_export_dir: "/grid5000/l4t/"
+  #grid5000_environment_export_baseurl: "server:///grid5000/l4t/"
+
+  ## Optionaly, the environment postinstall script can be changed, e.g. to
+  ## enable NFS homes, LDAP accounts, if not enabled in the imported env.
+  #grid5000_environment_export_postinstall_script: "g5k-postinstall --net debian --fstab nfs --restrict-user current"
+
+  ## Optionaly, an additional postinstall can be given, e.g. to do some custom
+  ## operations. Use the following variables to set the archive name and script.
+  #grid5000_environment_export_additional_postinstall_archive: "$${kameleon_recipe_name}-additional-postinstall.tar.gz"
+  #grid5000_environment_export_additional_postinstall_script: "additional_postinstall.sh"
+  ## The recipe will have to prepare the additional postinstall content in a
+  ## directory to create in the local context and name "additional_postinstall"
+  ## by default (next line to change it). The archive is created by the export.
+  #grid5000_environment_export_additional_postinstall_dir: "additional_postinstall"
+
+  ### Target machine/CPU architecture
+  ## If building an environment for another architecture than x86_64, uncomment
+  ## and adapt the next lines.
+  ## The following works for ARM64 machines, just uncomment for such machines.
+  arch: aarch64
+  #qemu_arch: aarch64
+
+  backend: docker
+  docker_cleanup_section: export
+  out_context_docker_image: "ubuntu:20.04"
+  l4t_version_major: "35"
+  l4t_version_minor: "3"
+  l4t_version_patch: "1"
+  cti_BSP_version: "001"
+  l4t_version: r$${l4t_version_major}.$${l4t_version_minor}.$${l4t_version_patch}-cti$${cti_BSP_version}
+  nvidia_BSP_url: "https://developer.download.nvidia.com/embedded/L4T/r$${l4t_version_major}_Release_v$${l4t_version_minor}.$${l4t_version_patch}/release/Jetson_Linux_R$${l4t_version_major}.$${l4t_version_minor}.$${l4t_version_patch}_aarch64.tbz2"
+  cti_BSP_url: "https://connecttech.com/ftp/Drivers/CTI-L4T-AGX-$${l4t_version_major}.$${l4t_version_minor}.$${l4t_version_patch}-V$${cti_BSP_version}.tgz"
+  workdir: "/nvidia"
+  l4t_dir: "$${workdir}/Linux_for_Tegra"
+  rootfs: "$${workdir}/g5k-rootfs"
+  rootfs_to_export: in_from_out
+  upstream_image: "$${kameleon_cwd}/g5k-image.tar"
+  extra_deb_packages: ""
+  extra_pip3_packages: ""
+  l4t_nvp_model: 3
+
+bootstrap:
+  - "@base"
+  - install_additional_necessary_packages_in_out_context:
+    - update_package_list:
+      - apt-get_out: update
+    - install_packages:
+      - apt-get_out: install zstd lbzip2 wget qemu-user-static
+setup:
+  - prepare_g5k_ubuntu_system:
+    - setup_rootfs_for_apt:
+      - on_checkpoint: disabled
+      - exec_out: &1 |
+          set -e
+          mv $${rootfs}/etc/resolv.conf{,.orig}
+          cp /etc/resolv.conf $${rootfs}/etc/resolv.conf
+          for d in dev dev/pts proc sys; do
+            mkdir -p $${rootfs}/$d
+            mount --bind /$d $${rootfs}/$d
+          done
+    - install_L4T_required_packages:
+      - apt-get_in: update
+      - apt-get_in: -q=2 remove --purge linux-image-* linux-modules-* linux-headers-*
+      - apt-get_in: install libegl1 python2 libcairo2 libegl1-mesa libgles2 libgtk-3-0 libwayland-egl1 libxkbcommon0 libasound2 libgstreamer1.0-0 libgstreamer-plugins-bad1.0-0 libgstreamer-plugins-base1.0-0 device-tree-compiler libdatrie1 libfontconfig1 libharfbuzz0b libpangoft2-1.0-0 libpixman-1-0 libxrender1 libfontconfig1 libpango-1.0-0 libpangocairo-1.0-0 libnl-route-3-200 libevdev2 libinput10 libjpeg-turbo8 libunwind8 libwayland-cursor0
+    - unsetup_rootfs_for_apt:
+      - on_checkpoint: disabled
+      - exec_out: &2 |
+          set -e
+          rm $${rootfs}/etc/resolv.conf
+          mv $${rootfs}/etc/resolv.conf{.orig,}
+          for d in $(findmnt -o TARGET -l -n | grep $${rootfs} | sort -r); do
+            umount $d
+          done
+  - install_L4T:
+    - install_nvidia_BSP:
+      - exec_out: |
+          set -e
+          mkdir -p $${l4t_dir}
+          wget --progress=dot:giga -O- $${nvidia_BSP_url} | tar -jx --strip-components=1 -C $${l4t_dir}
+    - mount_rootfs_in_BSP:
+      - on_checkpoint: redo
+      - exec_out: mount --bind $${rootfs} $${l4t_dir}/rootfs
+    - install_cti_BSP:
+      - exec_out: |
+          set -e
+          wget --progress=dot:giga -O- $${cti_BSP_url} | tar -zx -C $${l4t_dir}
+          cd $${l4t_dir}/CTI-L4T && ./install.sh
+    - fix_cti_BSP_kernel_console:
+      - exec_out: sed -i.bak -e 's/console=tty0 //' $${l4t_dir}/cti-agx.conf.common
+  - apply_L4T_overlay_over_g5k_ubuntu:
+    - apply_L4T:
+      - exec_out: $${l4t_dir}/apply_binaries.sh -r $${rootfs}
+    - fix_L4T_apt_sources:
+      - exec_in: |
+          # fix bug in CTI BSP 35.3.1 + enable t194 source
+          sed -i -e 's/r35.1/r35.3/;s/#deb/deb/;s/<SOC>/t194/' /etc/apt/sources.list.d/nvidia-l4t-apt-source.list
+    - disable_unwanted_L4T_services:
+      - exec_out: *1
+      - exec_in: |
+          set -e
+          systemctl disable nv-l4t-bootloader-config.service
+          systemctl disable nv-l4t-usb-device-mode.service
+      - exec_out: *2
+    - configure_nvpmodel:
+      - exec_in: |
+          set -e
+          mkdir -p /var/lib/nvpmodel
+          printf "/etc/nvpmodel.conf" > /var/lib/nvpmodel/conf_file_path
+          printf "pmode:%04d" $${l4t_nvp_model} > /var/lib/nvpmodel/status
+  - install_extra_packages:
+    - download_extra_packages:
+      - exec_out: *1
+      - apt-get_in: clean
+      - apt-get_in: update
+      - apt-get_in: install --download-only $${extra_deb_packages}
+      - exec_out: *2
+    - install_extra_deb_packages:
+      - exec_out: *1
+      - exec_in: |
+          set -e
+          # Workaround installation for nsight-system that requires running on target
+          deb=$(ls /var/cache/apt/archives | grep -o -e 'nsight-systems-[^_]\+' || true)
+          if [ -n "$deb" ]; then
+            echo "Workaround installation of $deb..."
+            DEBIAN_FRONTEND=noninteractive apt-get -y --force-yes install \
+              $(apt-cache depends $deb | awk '/Depends:/{print $2}')
+            dpkg --unpack /var/cache/apt/archives/$deb*.deb
+            sed -i.orig \
+                -e '4,7s/^/#/' \
+                -e '9,15s/^/#/' \
+                 /var/lib/dpkg/info/$deb.*postinst
+            dpkg --configure --pending
+            mv /var/lib/dpkg/info/$deb.*postinst.orig /var/lib/dpkg/info/$deb.*postinst
+          fi
+      - apt-get_in: install $${extra_deb_packages}
+      - apt-get_in: clean
+      - exec_out: *2
+    - install_extra_pip3_packages:
+      - exec_out: *1
+      - apt-get_in: install python3-pip
+      - exec_in: |
+          set -e
+          if [ -n "$${extra_pip3_packages}" ]; then
+            pip3 install $${extra_pip3_packages}
+          fi
+      - exec_out: *2
+    - clean_apt_cache:
+      - on_setup_clean:
+        - exec_out: *1
+        - apt-get_in: clean
+        - exec_out: *2
+    - fix_env_name:
+      - exec_in: |
+          sed -i -e '1s/-nfs-/-nfsl4t-/' /etc/grid5000/release
+    - change_motd:
+      - exec_in: |
+          sed -i \
+              -e 's/-nfs-/-nfsl4t-/' \
+              -e 's/\(based on .\+\))/\1 + Nvidia L4T $${l4t_version})/' \
+              /etc/motd
+export:
+  - "@base"
