@@ -1,1 +1,20 @@
-../base.yaml
+#==============================================================================
+# vim: softtabstop=2 shiftwidth=2 expandtab fenc=utf-8 cc=81 tw=80
+#==============================================================================
+#
+# DESCRIPTION: x86_64 base recipe
+#
+#==============================================================================
+---
+extend: ../base.yaml
+# Global variables use by Kameleon engine and the steps
+global:
+
+bootstrap:
+  - "@base"
+
+setup:
+  - "@base"
+
+export:
+  - "@base"
