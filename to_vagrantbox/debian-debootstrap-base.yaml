@@ -6,7 +6,7 @@
 #
 #==============================================================================
 ---
-extend: ../from_scratch/debian-debootstrap-base.yaml
+extend: ../from_debootstrap/debian-base.yaml
 # Global variables use by Kameleon engine and the steps
 global:
   user_name: vagrant
