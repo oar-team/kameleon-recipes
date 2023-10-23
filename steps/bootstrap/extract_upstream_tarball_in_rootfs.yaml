@@ -1,0 +1,28 @@
+- clean_rootfs:
+  - exec_out: rm -rf $${rootfs} && mkdir -p $${rootfs}
+- extract_image_in_rootfs:
+  - exec_local: |
+      echo "Upstream tarball: $UPSTREAM_TARBALL"
+      [ -n "$UPSTREAM_TARBALL" ] || fail "UPSTREAM_TARBALL is not defined"
+      [ -r "$UPSTREAM_TARBALL" ] || fail "UPSTREAM_TARBALL ($UPSTREAM_TARBALL) is not readable"
+  - pipe:
+    - exec_local: |
+         case $UPSTREAM_TARBALL in
+           *.tar.zst|*.tar.zstd|*.tzst)
+             zstdcat $UPSTREAM_TARBALL
+           ;;
+           *.tar.xz|*.txz)
+             xzcat $UPSTREAM_TARBALL
+           ;;
+           *.tar.bz2|*.tbz)
+             bzcat $UPSTREAM_TARBALL
+           ;;
+           *.tar.gz|*.tgz)
+             zcat $UPSTREAM_TARBALL
+           ;;
+           *)
+             echo "Unknown format for $UPSTREAM_TARBALL" 1>&2:
+             exit 1
+           ;;
+         esac
+    - exec_out: tar -C $${rootfs} -x
