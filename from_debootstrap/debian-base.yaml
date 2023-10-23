@@ -23,43 +23,18 @@ extend: base.yaml
 
 global:
   distrib: debian
-  release: testing
-  deb_arch: amd64
+  release: stable
   deb_kernel_arch: $${deb_arch}
 
-  # This ISO is use to create the OUT context and not image itself
-  installer_iso_filename: debian-bullseye-$${installer_iso_arch}-live.iso
-  installer_iso_url: http://kameleon.imag.fr/iso/$${installer_iso_filename}
-  qemu_iso_path: $${kameleon_cwd}/$${installer_iso_filename}
-
-  bootstrap_script: $${kameleon_data_dir}/debootstrap.sh
-  bootstrap_variant:
-  deb_mirror_hostname: deb.debian.org
-  deb_mirror_uri: http://$${deb_mirror_hostname}/debian/
-
   bootstrap_packages: locales openssh-server linux-image-$${deb_kernel_arch}
-  build_packages: debootstrap qemu-user-static curl parted e2fsprogs
 
   apt_enable_contrib: true
   apt_enable_nonfree: true
 
-  in_context:
-    cmd: ssh -F $${ssh_config_file} $${kameleon_recipe_name} -t chroot $${rootfs} /bin/bash
-    workdir: /root/kameleon_workdir
-    proxy_cache: $${local_ip}
-
 bootstrap:
-  - enable_checkpoint
-  - download_installer
-  - prepare_disk
-  - prepare_ssh_to_out_context
-  - start_qemu
-  - install_build_packages
-  - debootstrap
-  - start_chroot
+  - "@base"
 
 setup:
   - "@base"
-
 export:
   - "@base"
