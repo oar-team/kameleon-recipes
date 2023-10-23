@@ -1,0 +1,42 @@
+- rootfs_to_export: in
+
+- export_rootfs:
+  - test:
+    - exec_local: test '$${rootfs_to_export}' == 'in'
+    - pipe:
+      - exec_in: |
+          set -e
+          declare -a tar_cmd
+          tar_cmd=(tar --zstd -c)
+          for i in $${appliance_tar_excludes}; do
+            tar_cmd=("${tar_cmd[@]}" "--exclude='$i'")
+          done
+          tar_cmd=("${tar_cmd[@]}" .)
+          eval "${tar_cmd[@]}"
+      - exec_local: cat > $${appliance_filename}.$${grid5000_environment_export_format}
+  - test:
+    - exec_local: test '$${rootfs_to_export}' == 'out'
+    - pipe:
+      - exec_out: |
+          set -e
+          declare -a tar_cmd
+          tar_cmd=(tar --zstd -c)
+          for i in $${appliance_tar_excludes}; do
+            tar_cmd=("${tar_cmd[@]}" "--exclude='$i'")
+          done
+          tar_cmd=("${tar_cmd[@]}" .)
+          eval "${tar_cmd[@]}"
+      - exec_local: cat > $${appliance_filename}.$${grid5000_environment_export_format}
+  - test:
+    - exec_local: test '$${rootfs_to_export}' == 'in_from_out'
+    - pipe:
+      - exec_out: |
+          set -e
+          declare -a tar_cmd
+          tar_cmd=(tar -C $${rootfs} --zstd -c)
+          for i in $${appliance_tar_excludes}; do
+            tar_cmd=("${tar_cmd[@]}" "--exclude='$i'")
+          done
+          tar_cmd=("${tar_cmd[@]}" .)
+          eval "${tar_cmd[@]}"
+      - exec_local: cat > $${appliance_filename}.$${grid5000_environment_export_format}

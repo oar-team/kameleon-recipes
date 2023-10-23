@@ -1,0 +1,19 @@
+#==============================================================================
+# vim: softtabstop=2 shiftwidth=2 expandtab fenc=utf-8 cc=81 tw=80
+#==============================================================================
+#
+# DESCRIPTION: Debian generic recipe for X86_64 using debootstrap + qemu-user
+#
+#==============================================================================
+---
+extend: ../base-docker.yaml
+global:
+
+bootstrap:
+  - "@base"
+
+setup:
+  - "@base"
+
+export:
+  - "@base"
