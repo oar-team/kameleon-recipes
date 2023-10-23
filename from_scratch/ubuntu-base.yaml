@@ -27,7 +27,7 @@ global:
   deb_mirror_uri: http://$${deb_mirror_hostname}$${deb_mirror_directory}
   deb_security_hostname: security.ubuntu.com
   deb_security_directory: $${deb_mirror_directory}
-  dev_components: "main restricted"
+  deb_components: "main restricted"
 
   #installer_iso_location: $${release}-updates
   #installer_iso_url: $${deb_mirror_uri}/dists/$${installer_iso_location}/main/installer-$${deb_arch}/current/images/netboot/mini.iso
