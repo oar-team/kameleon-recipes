@@ -1,0 +1,38 @@
+- configure_resolv_conf:
+  - on_checkpoint: disabled
+  - on_setup_clean:
+    - exec_out: rm $${rootfs}/etc/resolv.conf
+  - exec_out: |
+      grep -e "^nameserver" /etc/resolv.conf > $${rootfs}/etc/resolv.conf
+
+- configure_hostname:
+  - on_checkpoint: disabled
+  - exec_in: |
+      set -e
+      echo localhost > /etc/hostname
+      hostname $(</etc/hostname)
+
+- configure_network_loopback:
+  - on_checkpoint: disabled
+  - exec_in: |
+      set -e
+      if ! [ -d "/etc/network" ]; then
+        mkdir -p /etc/network
+      fi
+      echo -e "\nauto lo\niface lo inet loopback\n\n" >> /etc/network/interfaces
+
+- configure_locales:
+  - on_checkpoint: disabled
+  - exec_in: |
+      set -e
+      LANG=${LANG:-en_US.UTF-8}
+      echo "LANG=$LANG" > /etc/locale.conf
+      if [ -f /etc/locale.gen ]; then
+        for l in ${LOCALES:-en_US.UTF-8}; do
+          sed -i -e "s/^#$l/$l/" /etc/locale.gen
+        done
+        /usr/sbin/locale-gen
+      fi
+- set_root_password:
+  - on_checkpoint: disabled
+  - exec_in: echo -n 'root:$${root_password}' | chpasswd
