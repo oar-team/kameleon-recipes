@@ -1,0 +1,113 @@
+#==============================================================================
+# vim: softtabstop=2 shiftwidth=2 expandtab fenc=utf-8 cc=81 tw=80
+#==============================================================================
+#
+# DESCRIPTION: Debian bullseye (11) arm64 std Grid'5000 environment
+#
+#==============================================================================
+---
+extend: ./debian11-arm64-common.yaml
+
+global:
+  # Grid'5000 environment variant
+  g5k_variant: std
+  # Setup Nvidia L4T kernel/initrd and make kadeploy not use update-grub to generate grub.cfg
+  g5k_kernel_path: "/boot/Image"
+  g5k_initrd_path: "/boot/initrd.img"
+  g5k_no_chroot_for_grub: true
+  # Generate only the appliance for bare-metal deployment, not for VMs.
+  appliance_formats: tar.zst
+
+  # Grid'5000 Kadeploy environment parameters
+  g5k_postinst_script: g5k-postinstall --net debian-bridged --net hpc --fstab nfs --restrict-user std --disk-aliases
+  # Disable cgroup v2 and force cgroup v1 - Bug #12723
+  g5k_kernel_params: "systemd.unified_cgroup_hierarchy=false systemd.legacy_systemd_cgroup_controller=true"
+  # QEMU options
+  qemu_image_size: 16G
+  # Visibility override
+  g5k_visibility: shared
+  g5k_l4t_version: r35.3.1-cti001-bullseye
+
+bootstrap:
+  - "@base"
+
+setup:
+  - "@base"
+  - add_l4t_overlay:
+    - fetch_g5k_l4t_package:
+      - on_checkpoint: disabled
+      - exec_in: wget -q http://packages.grid5000.fr/grid5000-archive-key.asc -O- | apt-key add -
+      - write_in:
+        - /etc/apt/sources.list.d/g5k-l4t.list
+        - "deb http://packages.grid5000.fr/deb/g5k-l4t /"
+      - apt-get_in: update
+      - apt-get_in: download g5k-l4t-$${g5k_l4t_version}
+    - unpack_g5k_l4t_files:
+      - exec_in: dpkg-deb -X g5k-l4t-*.deb g5k-l4t
+      - exec_out: tar -xvf g5k-l4t/grid5000/l4t/g5k-l4t-*.tgz
+      - apt-get_in: install lbzip2 qemu-user-static
+  - apply_g5k_l4t_overlay:
+    - run_apply_binaries:
+      - on_checkpoint: disabled
+      - exec_in: Linux_for_Tegra/apply_binaries.sh --root / --target-overlay
+    - clean_g5k_l4t:
+      - exec_out: rm -rf Linux_for_Tegra g5k-l4t*
+    - rebuild_ld_cache:
+      - on_checkpoint: disabled
+      - exec_in: ldconfig
+    - disable_nvidia_first_boot:
+      - on_checkpoint: disabled
+      - exec_in: rm /etc/nv/nvfirstboot
+    - disable_unwanted_l4t_services:
+      - on_checkpoint: disabled
+      - exec_in: systemctl disable nvargus-daemon.service
+      - exec_in: systemctl disable nv-l4t-usb-device-mode.service
+      - exec_in: systemctl disable nv-l4t-bootloader-config.service
+      - exec_in: systemctl disable nv_nvsciipc_init.service
+    - configure_nvpmodel_all_core:
+      - on_checkpoint: disabled
+      - exec_in: dpkg-divert --no-rename /etc/systemd/nvpmodel.sh
+      - exec_in: sed -i.distrib -e 's@^\([[:space:]]*/usr/sbin/nvpmodel\) -f /etc/nvpmodel.conf@&\n\1 -m 3@' /etc/systemd/nvpmodel.sh
+  - setup_linux_kernel_and_initrd:
+    - uninstall_debian_kernel:
+      - on_checkpoint: disabled
+      - exec_in: |
+          # stop apt timer so that it does not block the kernel uninstall
+          set -e
+          systemctl stop apt-daily.timer
+          systemctl stop apt-daily.service
+          systemctl stop apt-daily-upgrade.timer
+          systemctl stop apt-daily-upgrade.service
+          while pgrep apt > /dev/null; do
+            echo "Apt is running, waiting..."
+            sleep 1
+          done
+      - apt-get_in: -q=2 remove --purge linux-image-*
+    - generate_initramfs:
+      - exec_in: mkinitramfs -o /boot/initrd.img $(ls -d /lib/modules/*/kernel | cut -d/ -f4)
+    - add_kernel_symlinks:
+      - on_checkpoint: disabled
+      - exec_in: ln -sfn /boot/Image /vmlinuz
+      - exec_in: ln -sfn /boot/initrd.img /initrd.img
+  - other_adaptations:
+    - truify_ipmitool:
+      - on_checkpoint: disabled
+      - exec_in: dpkg-divert --rename /usr/bin/ipmitool
+      - exec_in: ln -s /bin/true /usr/bin/ipmitool
+    - fix_env_name:
+      - exec_in: |
+          sed -i -e '1s/-std-/-stdl4t-/' /etc/grid5000/release
+    - change_motd:
+      - exec_in: |
+          sed -i \
+              -e 's/-std-/-stdl4t-/' \
+              -e 's/\(based on .\+\))/\1 + Nvidia L4T $${g5k_l4t_version})/' \
+              /etc/motd
+  - set_and_clear_var_log
+
+export:
+  - clean_dhcp_leases
+  - save_appliance_VM
+  - export_g5k:
+    - g5k_variant: stdl4t
+    - g5k_description: "debian 11 (bullseye) for arm64 - std + Nvidia L4T overlay"
