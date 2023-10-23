@@ -6,18 +6,17 @@
 #
 #==============================================================================
 ---
-extend: ../from_scratch/debian-debootstrap-base.yaml
+extend: ../from_debootstrap/base-qemu.yaml
 
 global:
-  release: jessie
+  release: bullseye
   # force use of busybox rather than klibc-utils (which breaks the mount)
-  bootstrap_packages: initramfs-tools busybox
+  bootstrap_packages: initramfs-tools busybox gnupg
   bootstrap_variant: minbase
   enable_lighten: true
   root_authorized_keys: $${kameleon_data_dir}/kadeploy_root_authorized_keys
   arch_specific_packages: kexec-tools grub-pc grub-efi-amd64-bin
   use_backports: true
-  security_release: $${release}
   hwraid_release: $${release}
   #deb_kernel: default
   # -> other option: bpo - e.g. set on command line using "-g deb_kernel:bpo"
@@ -26,10 +25,10 @@ global:
   tmpfs_size: 1G
   firmware_packages: firmware-linux firmware-bnx2 firmware-bnx2x firmware-qlogic
   # haveged is used to provide more entropy during boot
-  system_packages: ash systemd systemd-sysv haveged
+  system_packages: ash systemd systemd-sysv haveged gnupg
   net_packages: ifupdown ntpdate isc-dhcp-client openssh-client openssh-server taktuk netcat
   linux_fs_packages: e2fsprogs xfsprogs btrfs-progs
-  other_fs_packages: dosfstools #ntfs-3g 
+  other_fs_packages: dosfstools #ntfs-3g
   archive_file_packages: tar bzip2 xz-utils zstd
   disk_packages: hdparm parted fdisk
   ruby_packages: ruby ruby-net-ssh ruby-net-ssh-multi ruby-daemons
@@ -37,15 +36,15 @@ global:
   to_remove_packages:
   target_directory: /grid5000/kadeploy-kernels
   # xz is greedy in memory
-  qemu_memory_size: 2G
-  out_context_use_backports: true
+  qemu_memory_size: 8G
+  out_context_debian_backports: false
 
 bootstrap:
   - enable_checkpoint
   - check_root_authorized_keys:
     - check_file_exist:
       - exec_local: |
-          if ! [ -n "$${root_authorized_keys}" -a -r "$${root_authorized_keys}" ]; then 
+          if ! [ -n "$${root_authorized_keys}" -a -r "$${root_authorized_keys}" ]; then
             pwd
             ls -l "$${root_authorized_keys}"
             echo "File: '$${root_authorized_keys}' is not readable from $PWD" 1>&2
@@ -53,23 +52,22 @@ bootstrap:
             exit 1
           fi
   - download_installer
-  - prepare_disk
+  - prepare_qemu_disk
   - prepare_ssh_to_out_context
   - start_qemu:
     - vm_cleanup_section: export
   - install_build_packages
-  - debootstrap:
-    - chroot_umount_section: export
-  - start_chroot
+  - prepare_partition_for_rootfs:
+    - rootfs_umount_section: export
+  - debootstrap
+  - prepare_system_fs_for_chroot
+  - prepare_cpuset_for_chroot
+  - debootstrap_post_config
 
 setup:
-  - force_exit_on_errors:
-    - bash_set_-e:
-      - exec_in: set -e
   - configure_system:
-    - console_prompt:
-      - exec_in: sed -i -e '1s/^/DeployMiniOS - /' /etc/issue
     - hosts:
+      - on_checkpoint: disabled
       - write_in:
         - /etc/hosts
         - |
@@ -81,6 +79,7 @@ setup:
           ff02::2 ip6-allrouters
           ff02::3 ip6-allhosts
     - network_interfaces:
+      - on_checkpoint: disabled
       - write_in:
         - /etc/network/interfaces
         - |
@@ -90,6 +89,7 @@ setup:
           iface dhcp inet dhcp
   - configure_debian:
     - lighten_packages:
+      - on_checkpoint: disabled
       - write_in:
         - /etc/dpkg/dpkg.cfg.d/01lighten
         - |
@@ -110,37 +110,42 @@ setup:
           APT::Install-Recommends "0" ;
           APT::Install-Suggests "0" ;
     - configure_source_list:
-      - exec_in: sed -i -e 's/^/#/' /etc/apt/sources.list
-      - write_in:
-        - /etc/apt/sources.list.d/$${release}.list
-        - |
-          deb $${deb_mirror_uri} $${release} main contrib non-free
+      - on_checkpoint: disabled
       - exec_in: |
-          if [ "$${release}" != "sid" ] && [ "$${release}" != "jessie" ]; then
+          set -e
+          sed -i -e 's/^/#/' /etc/apt/sources.list
+          if [ "$${release}" == "bookworm" ]; then
+            echo "deb $${deb_mirror_uri} $${release} main contrib non-free non-free-firmware" >> /etc/apt/sources.list.d/$${release}.list
+          else
+            echo "deb $${deb_mirror_uri} $${release} main contrib non-free" >> /etc/apt/sources.list.d/$${release}.list
+          fi
+          if [ "$${release}" == "bookworm" ]; then
+            echo "deb $${deb_mirror_uri} $${release}-updates main contrib non-free non-free-firmware" >> /etc/apt/sources.list.d/$${release}.list
+          elif [ "$${release}" != "sid" ]; then
             echo "deb $${deb_mirror_uri} $${release}-updates main contrib non-free" >> /etc/apt/sources.list.d/$${release}.list
           fi
-          if [ "$${release}" != "sid" ] && [ "$${release}" != "jessie" -o "$${deb_arch}" == "amd64" ]; then
-            # https://www.lucas-nussbaum.net/blog/?p=947 -> not available for jessie on arm64, ppc64*...
-            echo "deb http://security.debian.org/ $${security_release}/updates main contrib non-free" >> /etc/apt/sources.list.d/$${release}.list
+          if [ "$${release}" == bookworm ]; then
+            echo "deb http://security.debian.org/ $${release}-security main contrib non-free non-free-firmware" >> /etc/apt/sources.list.d/$${release}.list
+          elif [ "$${release}" == "bullseye" ]; then
+            echo "deb http://security.debian.org/ $${release}-security main contrib non-free" >> /etc/apt/sources.list.d/$${release}.list
+          elif [ "$${release}" == "buster" ]; then
+            echo "deb http://security.debian.org/ $${release}/updates main contrib non-free" >> /etc/apt/sources.list.d/$${release}.list
           fi
-      - exec_in: |
           if [ "$${use_backports}" == "true" ]; then
-            echo "deb $${deb_mirror_uri} $${release}-backports main contrib non-free" > /etc/apt/sources.list.d/$${release}-backports.list
-            if [ "$${release}" == "jessie" ]; then
-              # https://www.lucas-nussbaum.net/blog/?p=947
-              echo 'Acquire::Check-Valid-Until no;' > /etc/apt/apt.conf.d/99no-check-valid-until
+            if [ "$${release}" == "bookworm" ]; then
+              echo "deb $${deb_mirror_uri} $${release}-backports main contrib non-free non-free-firmware" > /etc/apt/sources.list.d/$${release}-backports.list
+            elif ! [[ "$${release}" =~ sid|testing ]]; then
+              echo "deb $${deb_mirror_uri} $${release}-backports main contrib non-free" > /etc/apt/sources.list.d/$${release}-backports.list
             fi
           fi
-      - exec_in: |
           if [ "$${deb_arch}" == "amd64" ]; then
-            cat <<EOF >/etc/apt/sources.list.d/hwraid.list
-          deb http://hwraid.le-vert.net/debian $${hwraid_release} main
-          EOF
+            echo "deb http://hwraid.le-vert.net/debian $${hwraid_release} main" >/etc/apt/sources.list.d/hwraid.list
             apt-key adv --keyserver $${gpg_keyserver} --recv-key 6005210E23B3D3B4
           fi
-      - exec_in: apt-get update
     - debconf-noninteractive:
+      - on_checkpoint: disabled
       - exec_in: |
+          set -e
           debconf-set-selections <<'EOF'
           # Interface to use:
           # Choices: Dialog, Readline, Gnome, Kde, Editor, Noninteractive
@@ -150,6 +155,7 @@ setup:
           export DEBCONF_NONINTERACTIVE_SEEN=true
     - set_time:
       - exec_in: |
+          set -e
           debconf-set-selections <<'EOF'
           tzdata tzdata/Areas select Europe
           tzdata tzdata/Zones/Europe select Paris
@@ -157,47 +163,66 @@ setup:
           rm -f /etc/localtime /etc/timezone
           dpkg-reconfigure tzdata
   - install_packages:
-    - install_kernel_packages:
-      - exec_in: |
-          if [ "$${use_backports}" == "true" -a "$${deb_kernel}" == "bpo" ]; then
-            KERNEL_BPO=$(apt-cache search "^linux-image.[[:digit:].-]+bpo[[:digit:].]+-$${deb_kernel_arch}$" | sort -h | tail -n1 | cut -f1 -d\ )
-            apt-get install -y --force-yes -t $${release}-backports $KERNEL_BPO $${firmware_packages}
-          else
-            apt-get install -y --force-yes linux-image-$${deb_kernel_arch} $${firmware_packages}
-          fi
+    - update_apt:
+      - apt-get_in: update
     - install_arch_specific_packages:
       - exec_in: |
+          set -e
           if [ -n "$${arch_specific_packages}" ]; then
             apt-get install -y --force-yes $${arch_specific_packages}
           fi
     - install_other_packages:
       - exec_in: |
+          set -e
           echo "Installing other required packages"
-          apt-get install -y --force-yes $${firmware_packages} $${system_packages} $${net_packages} $${linux_fs_packages} $${other_fs_packages} $${archive_file_packages} $${disk_packages} $${ruby_packages} 
+          apt-get install -y --force-yes $${firmware_packages} $${system_packages} $${net_packages} $${linux_fs_packages} $${other_fs_packages} $${archive_file_packages} $${disk_packages} $${ruby_packages}
           if [ "$${use_backports}" == "true" -a -n "$${ruby_packages_bpo}" ]; then
             apt-get install -y --force-yes -t $${release}-backports $${ruby_packages_bpo}
           fi
-    - fix_ntp:
-      - exec_in: sed -i -e 's/\(NTPSERVERS=\).*/\1="ntp1.grid5000.fr ntp2.grid5000.fr"/;s/\(NTPDATE_USE_NTP_CONF=\).*/\1=no/' /etc/default/ntpdate
+    - install_kernel_packages:
+      - exec_in: |
+          set -e
+          if [ "$${use_backports}" == "true" -a "$${deb_kernel}" == "bpo" ]; then
+            KERNEL_BPO=$(apt-cache search "^linux-image.[[:digit:].-]+deb[[:digit:].]+-$${deb_kernel_arch}$" | sort -h | tail -n1 | cut -f1 -d\ )
+            [ -n "$KERNEL_BPO" ] || echo "No bpo kernel found, install the default one" 1>&2
+          elif [ "$${deb_kernel}" == "other" ]; then
+            KERNEL_OTHER=true
+            echo "Requested to not install any kernel now."
+          fi
+          if [ -n "$KERNEL_BPO" ]; then
+            apt-get install -y --force-yes -t $${release}-backports $KERNEL_BPO $${firmware_packages}
+          elif [ -z "$KERNEL_OTHER" ]; then
+            apt-get install -y --force-yes linux-image-$${deb_kernel_arch} $${firmware_packages}
+          fi
     - remove_some_packages:
       - exec_in: |
+          set -e
           if [ -n "$${to_remove_packages}" ]; then
             apt-get remove --purge -y --force-yes $${to_remove_packages}
           else
             echo "No package to remove"
           fi
   - kadeploy_customization:
+    - set_console_prompt:
+      - on_checkpoint: disabled
+      - exec_in: sed -i -e '1s/^/DeployMiniOS - /' /etc/issue
     - set_motd:
+      - on_checkpoint: disabled
       - write_in:
         - /etc/motd
         - |
-          Welcome to Kadeploy3 deployment ramdisk OS
+          Welcome to Kadeploy3 DeployMiniOS
           Generated from $${kameleon_recipe_name} (Debian $${release}, $${deb_kernel} kernel, $${deb_arch}) on $(date +'%F %T')
+    - fix_ntp:
+      - on_checkpoint: disabled
+      - exec_in: sed -i -e 's/\(NTPSERVERS=\).*/\1="ntp1.grid5000.fr ntp2.grid5000.fr"/;s/\(NTPDATE_USE_NTP_CONF=\).*/\1=no/' /etc/default/ntpdate
     - set_root_authorized_keys:
+      - on_checkpoint: disabled
       - exec_in: mkdir -p /root/.ssh
       - exec_in: chmod 755 /root/.ssh
       - pipe:
         - exec_local: |
+            set -e
             if [ -r $${root_authorized_keys} ]; then
               cat $${root_authorized_keys}
             else
@@ -206,9 +231,12 @@ setup:
         - exec_in: cat > /root/.ssh/authorized_keys
       - exec_in: chmod 644 /root/.ssh/authorized_keys
     - set_root_passwordless:
+      - on_checkpoint: disabled
       - exec_in: passwd -d root
     - set_root_bashrc:
+      - on_checkpoint: disabled
       - exec_in: |
+          set -e
           cat <<'EOF' > /root/.bashrc
           export PS1='$? \h:\w \$'
           umask 022
@@ -224,33 +252,64 @@ setup:
           export LANG="C"
           EOF
     - set_rc_local:
+      - on_checkpoint: disabled
       - exec_in: |
+          set -e
           cat <<'EOF' > /etc/rc.local
           #!/bin/bash -e
+          exec >& /dev/kmsg
           # parse kadeploy-specific kernel command line arguments
-          if [ -f /sys/module/drm_kms_helper/parameters/poll ]; then
-            echo 'Desactivate drm_kms_helper poll...'
-            echo 0 > /sys/module/drm_kms_helper/parameters/poll
-          fi
-          eth_dev=eth0
-          timeout=60
           for p in $(< /proc/cmdline); do
             case "$p" in
+              DEBUG=*)
+                set -x
+                debug_cmd=${p#DEBUG=}
+                eval "${debug_cmd//_/ }"
+              ;;
               ETH_DEV=*)
                 eth_dev=${p#ETH_DEV=}
               ;;
               LINK_UP_TOUT=*)
-                timeout=${p#LINK_UP_TOUT=}
+                eth_timeout=${p#LINK_UP_TOUT=}
+              ;;
+              DISK_DEV=*)
+                disk_dev=${p#DISK_DEV=}
+              ;;
+              DISK_TOUT=*)
+                disk_timeout=${p#DISK_TOUT=}
+              ;;
+              NTP)
+                do_ntp=1
               ;;
             esac
           done
+          echo "eth_dev: ${eth_dev:=eth0}"
+          echo "eth_timeout: ${eth_timeout:=60}"
+          echo "disk_dev: ${disk_dev:=""}"
+          echo "disk_timeout: ${disk_timeout:=5}"
+          if [ -w /sys/module/drm_kms_helper/parameters/poll ]; then
+            echo 'Desactivate drm_kms_helper poll...'
+            echo 0 > /sys/module/drm_kms_helper/parameters/poll
+          fi
+          if [ -n "$disk_dev" ]; then
+            echo "Waiting for disk device: /dev/$disk_dev"
+            while ! [ -e "/dev/$disk_dev" ] && [ $((disk_timeout--)) -gt 0 ]; do
+              echo -n .
+              sleep 1
+            done
+            if ! [ -e "/dev/$disk_dev" ]; then
+              echo "!!! Disk device not found: /dev/$disk_dev !!!"
+              reboot -f
+            fi
+            echo
+          fi
           echo -n "Wait for ${eth_dev} link to be ready."
-          while ( [ ! -r "/sys/class/net/${eth_dev}/operstate" ] || [ "$(</sys/class/net/${eth_dev}/operstate)" != "up" ] ) && [ $((timeout--)) -gt 0 ]; do
+          while ( [ ! -r "/sys/class/net/${eth_dev}/operstate" ] || [ "$(</sys/class/net/${eth_dev}/operstate)" != "up" ] ) && [ $((eth_timeout--)) -gt 0 ]; do
             ip link set dev ${eth_dev} up || true
             echo -n .
             sleep 1
           done
-          if [ $timeout -le 0 ]; then
+          if [ $eth_timeout -le 0 ]; then
             echo "failed: $eth_dev link is not ready."
             exit 1
           else
@@ -263,6 +322,10 @@ setup:
             echo "failed: no DHCP lease for $eth_dev."
             exit 1
           fi
+          if [ -n "$do_ntp" ]; then
+            echo "Call ntpdate."
+            ntpdate-debian
+          fi
           mkdir -p /rambin /mnt/dest /mnt/tmp
           echo "Listen on TCP port 25300 for kadeploy3 server."
           (while true; do nc -l -p 25300; done) &
@@ -270,7 +333,9 @@ setup:
           EOF
           chmod 755 /etc/rc.local
     - add_dhcp_hostname_script:
+      - on_checkpoint: disabled
       - exec_in: |
+          set -e
           mkdir -p /etc/dhcp/dhclient-enter-hooks.d
           cat <<'EOF' > /etc/dhcp/dhclient-enter-hooks.d/hostname
           if [ -n $new_host_name ] && [ -n $new_domain_name ]; then
@@ -287,12 +352,14 @@ setup:
 export:
   - create_ramdisk:
     - clean_apt:
-      - exec_in: apt-get -y --force-yes autoremove
-      - exec_in: apt-get -y --force-yes autoclean
-      - exec_in: apt-get -y --force-yes purge
-      - exec_in: apt-get -y --force-yes clean
+      - apt-get_in: autoremove
+      - apt-get_in: autoclean
+      - apt-get_in: purge
+      - apt-get_in: clean
     - create_rootfs:
+      - apt-get_out: install cpio xz-utils pixz
       - exec_out: |
+          set -e
           cd $${rootfs} # use out context: quicker if foreign arch
           find . -path './boot/*' -prune \
               -o -path './usr/share/locale/*' -prune \
@@ -306,9 +373,11 @@ export:
               -o -path './root/kameleon_workdir' -prune \
               -o -path './$${kernel_filename}' -prune \
               -o -path './initrd.img' -prune \
-              -o -xdev -print | cpio -o -H newc  | xz -9 > $${rootfs}/boot/root.cxz
+              -o -xdev -print | cpio -o -H newc  | pixz -9 > $${rootfs}/boot/root.cxz
     - add_initramfs_hook:
+      - on_checkpoint: disabled
       - exec_in: |
+          set -e
           cat <<'EOF' > /etc/initramfs-tools/hooks/copy-root-archive
           #!/bin/sh
           PREREQ=""
@@ -328,7 +397,9 @@ export:
           EOF
           chmod 755 /etc/initramfs-tools/hooks/copy-root-archive
     - add_initramfs_scripts:
+      - on_checkpoint: disabled
       - exec_in: |
+          set -e
           cat <<'EOS' > /etc/initramfs-tools/scripts/local-premount/create-root-tmpfs
           #!/bin/sh
           PREREQ="lvm"
@@ -354,9 +425,8 @@ export:
              panic "Failed to create tmpfs"
           fi
           log_end_msg
-          
           log_begin_msg "Populate rootfs"
-          cd ${rootmnt}.tmp 
+          cd ${rootmnt}.tmp
           xzcat /root.cxz | cpio -i
           if [ $? -ne 0 ]; then
              panic "Failed to populate"
@@ -383,7 +453,7 @@ export:
           cat <<EOF > ${rootmnt}.tmp/etc/fstab
           rootfs / tmpfs size=$${tmpfs_size} 0 0
           EOF
-          umount ${rootmnt}.tmp 
+          umount ${rootmnt}.tmp
           if [ $? -ne 0 ]; then
             panic "Failed to umount"
           fi
@@ -391,20 +461,22 @@ export:
           EOS
           chmod 755 /etc/initramfs-tools/scripts/local-bottom/remove-root-tmpfs
     - configure_initramfs:
+      - on_checkpoint: disabled
       - exec_in: |
           sed -i -e 's/^MODULES=.*/MODULES=list/' \
             /etc/initramfs-tools/initramfs.conf
     - generate_new_initramfs:
       - exec_in: update-initramfs -u
   - move_files_to_out:
-    - on_checkpoint: redo
     - copy_files:
       - exec_out: |
+          set -e
           mkdir -p /tmp
           cp $${rootfs}/boot/$${kernel_filename}* /tmp/$${kernel_filename}
           cp $${rootfs}/boot/initrd.img* /tmp/initrd.img
   - export_kernel_initrd:
     - create_directory:
+      - on_checkpoint: disabled
       - exec_local: mkdir -p $${kameleon_recipe_name}
     - kernel:
       - out2local:
@@ -416,18 +488,18 @@ export:
         - $${kameleon_recipe_name}/$${kameleon_recipe_name}.initrd.img
   - create_deb_package:
     - create_debian_files:
+      - on_checkpoint: disabled
       - check_cmd_local: dch
       - exec_local: |
-           rm -rf $${kameleon_recipe_name}/debian
-           mkdir -p $${kameleon_recipe_name}/debian
-      - exec_local: |
+          set -e
+          rm -rf $${kameleon_recipe_name}/debian
+          mkdir -p $${kameleon_recipe_name}/debian
           export DEBEMAIL="Grid'5000 team <support-staff@lists.grid5000.fr>"
           (cd $${kameleon_recipe_name} && \
            dch --create \
                --package $${kameleon_recipe_name} \
                --newversion 1.$(date +%Y%m%d) \
                "Generated with kameleon using recipe $${kameleon_recipe_name}")
-      - exec_local: |
           cat > $${kameleon_recipe_name}/debian/control <<EOF
           Source: $${kameleon_recipe_name}
           Section: admin
@@ -442,14 +514,12 @@ export:
           Description: kadeploy3 deploy kernel
            Deploymenet kernel used by kadeploy3
           EOF
-      - exec_local: echo 9 > $${kameleon_recipe_name}/debian/compat
-      - exec_local: |
+          echo 9 > $${kameleon_recipe_name}/debian/compat
           cat > $${kameleon_recipe_name}/debian/copyright <<EOF
           Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
           Upstream-Name: $${kameleon_recipe_name}
           Source: https://github.com/oar-team/kameleon-recipes/tree/master/kadeploy3_deploy_kernel_from_scratch
           EOF
-      - exec_local: |
           cat > $${kameleon_recipe_name}/debian/rules <<'EOF'
           #!/usr/bin/make -f
           
@@ -457,14 +527,12 @@ export:
           	dh $@
           EOF
           chmod +x $${kameleon_recipe_name}/debian/rules
-      - exec_local: |
           mkdir -p $${kameleon_recipe_name}/debian/source
           echo "3.0 (native)" > $${kameleon_recipe_name}/debian/source/format
-      - exec_local: |
           cat > $${kameleon_recipe_name}/debian/install <<EOF
           $${kameleon_recipe_name}.$${kernel_filename} $${target_directory}
           $${kameleon_recipe_name}.initrd.img $${target_directory}
           EOF
     - generate_deb_package:
       - check_cmd_local: dpkg-buildpackage
-      - exec_local: (cd $${kameleon_recipe_name} && dpkg-buildpackage -uc -us)
+      - exec_local: (cd $${kameleon_recipe_name} && dpkg-buildpackage -uc -us -Zgzip -zfast)

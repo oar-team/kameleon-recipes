@@ -18,11 +18,6 @@ global:
   qemu_arch: x86_64
   arch_specific_packages:
 
-  in_context:
-    cmd: ssh -F $${ssh_config_file} $${kameleon_recipe_name} -t chroot $${rootfs} /usr/bin/qemu-$${arch}-static /bin/bash
-    workdir: /root/kameleon_workdir
-    proxy_cache: $${local_ip}
-
 bootstrap:
   - "@base"
 
