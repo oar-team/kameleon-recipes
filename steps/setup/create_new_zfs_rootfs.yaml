@@ -44,7 +44,7 @@
       $${zfs_cmd} create $${rootfs_work_dataset}/rootfs -o mountpoint=$${rootfs_host_work_dir}
   - exec_local: |
       set -e
-      docker run -d -u $${docker_user} -i -h $${docker_hostname} --cidfile $KAMELEON_WORKDIR/MAIN_CONTAINER_ID -v $${rootfs_host_work_dir}:$${rootfs_container_work_dir} $${docker_extra_volumes} --privileged $${docker_image}:switch cat > /dev/null
+      docker run -d -u $${docker_user} -i -h $${docker_hostname} --cidfile $KAMELEON_WORKDIR/MAIN_CONTAINER_ID -v $${rootfs_host_work_dir}:$${rootfs_container_work_dir} $${docker_extra_volumes} --privileged --entrypoint cat $${docker_image}:switch > /dev/null
       while ! [ -s $KAMELEON_WORKDIR/MAIN_CONTAINER_ID ] || ! docker exec -u $${docker_user} -i $(< $KAMELEON_WORKDIR/MAIN_CONTAINER_ID) true; do sleep 1; done
   - reload_context: out
   - reload_context: in

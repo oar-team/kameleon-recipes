@@ -1,4 +1,5 @@
 enabled?:
+  - exec_local: test ! -f $${checkpoint_disabled_file}
   - exec_local: test -f $KAMELEON_WORKDIR/MAIN_CONTAINER_ID
 
 create:
@@ -30,13 +31,13 @@ create:
   - exec_local: |
       # Docker part2: start the docker container with the new docker image and ZFS rootfs
       set -e
-      docker run -d -u $${docker_user} -i -h $${docker_hostname} --cidfile $KAMELEON_WORKDIR/MAIN_CONTAINER_ID -v $${rootfs_host_work_dir}:$${rootfs_container_work_dir} $${docker_extra_volumes} --privileged $${docker_image}:@microstep_id cat > /dev/null
+      docker run -d -u $${docker_user} -i -h $${docker_hostname} --cidfile $KAMELEON_WORKDIR/MAIN_CONTAINER_ID -v $${rootfs_host_work_dir}:$${rootfs_container_work_dir} $${docker_extra_volumes} --privileged --entrypoint cat $${docker_image}:@microstep_id > /dev/null
       while ! [ -s $KAMELEON_WORKDIR/MAIN_CONTAINER_ID ] || ! docker exec -u $${docker_user} -i $(< $KAMELEON_WORKDIR/MAIN_CONTAINER_ID) true; do sleep 1; done
       # Finaly, kameleon's context out and in must be recreated to point to the new docker container
   - reload_context: out
   - exec_out: &1 |
       set -e
-      if [ -e $KAMELEON_WORKDIR/MOUNT_SYSTEM_FS_IN_CHROOT ]; then
+      if [ -e $KAMELEON_WORKDIR/.KAMELEON_MOUNT_SYSTEM_FS_IN_CHROOT ]; then
           mkdir -p $${rootfs_container_work_dir}/{dev,dev/pts,proc,sys}
           mount -t sysfs sysfs $${rootfs_container_work_dir}/sys
           mount -t proc proc $${rootfs_container_work_dir}/proc
@@ -96,7 +97,7 @@ apply:
   - exec_local: |
       # Docker part2: start the context_out docker container with the docker image and ZFS rootfs of the wanted checkpoint.
       set -e
-      docker run -d -u $${docker_user} -i -h $${docker_hostname} --cidfile $KAMELEON_WORKDIR/MAIN_CONTAINER_ID -v $${rootfs_host_work_dir}:$${rootfs_container_work_dir} $${docker_extra_volumes} --privileged $${docker_image}:@microstep_id cat > /dev/null
+      docker run -d -u $${docker_user} -i -h $${docker_hostname} --cidfile $KAMELEON_WORKDIR/MAIN_CONTAINER_ID -v $${rootfs_host_work_dir}:$${rootfs_container_work_dir} $${docker_extra_volumes} --privileged --entrypoint cat $${docker_image}:@microstep_id > /dev/null
       while ! [ -s $KAMELEON_WORKDIR/MAIN_CONTAINER_ID ] || ! docker exec -u $${docker_user} -i $(< $KAMELEON_WORKDIR/MAIN_CONTAINER_ID) true; do sleep 1; done
   - exec_out: *1
 
