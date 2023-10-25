@@ -51,6 +51,7 @@ global:
   docker_image: $${kameleon_recipe_name}_$${kameleon_short_uuid}
   docker_hostname: kameleon-$${kameleon_short_uuid}
   docker_extra_volumes:
+  docker_export_image: false
 
   # rootfs options
   rootfs_work_dataset: $${zfs_kameleon_dataset}/$${docker_image}
@@ -78,10 +79,13 @@ bootstrap:
   - prepare_zfs_rootfs
   - prepare_docker
   - start_docker
+  - download_upstream_tarball
+  - extract_upstream_tarball_in_rootfs
 
 setup:
   - "@base"
 
 export:
-  - export_docker_image
+  - disable_checkpoint
   - export_zfs_rootfs
+  - export_docker_image
