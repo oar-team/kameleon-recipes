@@ -14,7 +14,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 tar_formats = ('tar', 'tar.gz', 'tgz', 'tar.bz2', 'tbz', 'tar.xz', 'txz',
-               'tar.lzo', 'tzo')
+               'tar.lzo', 'tzo', 'tar.zst')
 
 
 def which(command):
@@ -54,14 +54,17 @@ def tar_convert(directory, output, excludes, compression_level):
         compr = "| %s %s -c -" % (which("xz"), compression_level_opt)
     elif output.endswith(('tar.lzo', 'tzo')):
         compr = "| %s %s -c -" % (which("lzop"), compression_level_opt)
+    elif output.endswith(('tar.zst')):
+        compr = "| %s %s -c -" % (which("zstdmt"), compression_level_opt)
 
-    tar_options_list = ["--numeric-owner", "--one-file-system"
+    tar_options_list = ["--numeric-owner", "--one-file-system",
                         ' '.join(('--exclude="%s"' % s for s in excludes))]
     tar_options = ' '.join(tar_options_list)
-    cmd = which("tar") + " -cf - %s -C %s $(cd %s; ls -A) %s > %s"
+    cmd = "set -eo pipefail ; "
+    cmd += which("tar") + " -cf - %s -C %s $(cd %s; ls -A) %s > %s"
     cmd = cmd % (tar_options, directory, directory, compr, output)
     logger.debug(cmd)
-    proc = subprocess.Popen(cmd, env=os.environ.copy(), shell=True)
+    proc = subprocess.Popen(cmd, env=os.environ.copy(), shell=True, executable='/bin/bash')
     proc.communicate()
     if proc.returncode:
         raise subprocess.CalledProcessError(proc.returncode, cmd)
