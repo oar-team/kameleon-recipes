@@ -1,45 +1,91 @@
-- upstream_store_dir: "$${kameleon_cwd}/upstream_build/"
-- upstream_tarball: ""
+- upstream_store_dir: "$${kameleon_cwd}/upstream_build"
+- upstream_tarball: "upstream.tar"
 - upstream_recipe: ""
-- upstream_version: ""
-- upstream_checksum: ""
-- upstream_checksign: ""
-- upstream_cache: ""
-- upstream_url: ""
-- kadeploy_environment_import_name: ""
-- kadeploy_environment_import_user: ""
-- kadeploy_environment_import_version: ""
-- kadeploy_environment_import_arch: ""
-- kadeploy_frontend: ""
+- upstream_version: "latest"
+- upstream_checksum: "true"
+- upstream_checksign: "false"
+- upstream_cache: "false"
+- upstream_url: "http://kameleon.imag.fr/builds"
+- grid5000_environment_import_name: ""
+- grid5000_environment_import_user: ""
+- grid5000_environment_import_version: ""
+- grid5000_environment_import_arch: "x86_64"
+- grid5000_frontend: ""
 
 - download:
+  - on_checkpoint: disabled
   - on_bootstrap_clean:
     - exec_local: rm -rf $${upstream_store_dir}
   - test:
-    - exec_local: test -n "$${upstream_tarball}"
+    - exec_local: test -z "$${upstream_recipe}" -a -z "$${grid5000_environment_import_name}"
     - group:
       - exec_local: echo "Download tarball..."
       - download_file_local:
         - $${upstream_url}/$${upstream_tarball}
         - $${upstream_store_dir}/$${upstream_tarball}
-      - exec_local: export UPSTREAM_TARBALL="$${upstream_store_dir}/$${upstream_tarball}"
     - test:
       - exec_local: test -n "$${upstream_recipe}"
-      - download_recipe_build_local:
-        - $${upstream_recipe}
-        - $${upstream_version}
-        - $${upstream_checksum}
-        - $${upstream_checksign}
-        - $${upstream_cache}
-        - $${upstream_url}
-        - $${upstream_store_dir}
+      - exec_local: |
+          set -e
+          mkdir -p $${upstream_store_dir}
+          pushd $${upstream_store_dir} > /dev/null
+          echo "Downloading $${upstream_recipe} ($${upstream_version}):"
+          __download $${upstream_url}/$${upstream_recipe}_$${upstream_version}.manifest
+          if [ "$${upstream_checksign}" == "true" ]; then
+              __download $${upstream_url}/$${upstream_recipe}_$${upstream_version}.manifest.sign
+              gpg --verify $${upstream_recipe}_$${upstream_version}.manifest{.sign,} || fail "Cannot verify signature"
+          fi
+          for f in $(< $${upstream_recipe}_$${upstream_version}.manifest); do
+              if [[ $f =~ ^$${upstream_recipe}-cache_ ]] && [ "$${upstream_cache}" != "true" ]; then
+                  continue
+              fi
+              if [[ $f =~ \.sha[[:digit:]]+sum$ ]]; then
+                  if [ "$${upstream_checksum}" == "true" ]; then
+                      __download $${upstream_url}/$f
+                      ${f##*.} -c $f || fail "Cannot verify checksum"
+                      if [ "$${upstream_checksign}" == "true" ]; then
+                          __download $${upstream_url}/$f.sign
+                          gpg --verify $f{.sign,} || fail "Cannot verify signature"
+                      fi
+                  fi
+              else
+                  __download $${upstream_url}/$f
+                  echo -n "Link to $f to $${upstream_tarball}."
+                  ln -fv $f $${upstream_tarball}
+              fi
+          done
+          popd > /dev/null
       - test:
-        - exec_local: test -n "$${kadeploy_environment_import_name}"
-        - download_kadeploy_environment_image_local:
-          - $${kadeploy_environment_import_name}
-          - $${kadeploy_environment_import_user}
-          - $${kadeploy_environment_import_version}
-          - $${kadeploy_environment_import_arch}
-          - $${kadeploy_frontend}
-          - $${upstream_store_dir}
-        - exec_local: fail "Nothing to download ???"
+        - exec_local: test -n "$${grid5000_environment_import_name}"
+        - exec_local: |
+            set -e
+            kaenv_name=$${grid5000_environment_import_name}
+            kaenv_user=$${grid5000_environment_import_user}
+            kaenv_version=$${grid5000_environment_import_version}
+            kaenv_arch=$${grid5000_environment_import_arch}
+            kaenv_frontend=$${grid5000_frontend}
+            mkdir -p $${upstream_store_dir}
+            echo "Retrieve image from Grid'5000 environment '$kaenv_name'"
+            ${kaenv_frontend:+ssh $kaenv_frontend }which kaenv3 > /dev/null || fail "kaenv3 command not found on kaenv_frontend:-localhost}"
+            # retrieve kaenv_dsc[file], kaenv_dsc[kind] and kaenv_dsc[compression] from kaenv3
+            declare -A kaenv_dsc
+            __callback() { local k=${2%%:*}; kaenv_dsc[$k]=${2#*:}; }
+            mapfile -s 1 -t -c1 -C __callback < <(${kaenv_frontend:+ssh $kaenv_frontend }kaenv3${kaenv_user:+ -u $kaenv_user}${kaenv_version:+ --env-version $kaenv_version}${kaenv_arch:+ --env-arch $kaenv_arch} -p $kaenv_name | grep -A3 -e '^image:' | sed -e 's/ //g')
+            [ -n "${kaenv_dsc[file]}" ] || fail "Failed to retrieve environment $kaenv_name"
+            kaenv_dsc[protocol]=${kaenv_dsc[file]%%:*}
+            kaenv_dsc[path]=${kaenv_dsc[file]#*://}
+            kaenv_dsc[filename]=${kaenv_dsc[path]##*/}
+            if [ "${kaenv_dsc[kind]}" == "tar" ]; then
+                if [ "${kaenv_dsc[protocol]}" == "http" -o "${kaenv_dsc[protocol]}" == "https" ]; then
+                    __download ${kaenv_dsc[file]} $${upstream_store_dir}/$${upstream_tarball}
+                else
+                    if  [ "${kaenv_dsc[protocol]}" == "server" ]; then
+                        # If server:// => see if available locally (NFS) or fail, same as if local:// <=> ""
+                        echo "Image is server side, try and fetch it from local file ${kaenv_dsc[path]}"
+                    fi
+                    [ -r ${kaenv_dsc[path]} ] || fail "Cannot retrieve ${kaenv_dsc[file]}"
+                    cp -v ${kaenv_dsc[path]} $${upstream_store_dir}/$${upstream_tarball}
+                fi
+            else # dd or whatever
+                fail "Image format${kaenv_dsc[kind]:+ ${kaenv_dsc[kind]}} is not supported"
+            fi
