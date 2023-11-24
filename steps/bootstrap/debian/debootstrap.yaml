@@ -1,49 +1,29 @@
-- chroot_umount_section: setup
-- partition_disk:
-  - check_cmd_out: parted
+- run_debootstrap:
   - exec_out: |
-      echo "Partitioning disk..."
-      parted -s $${disk_device} mklabel msdos
-      parted -s -a none $${disk_device} mkpart primary 64s 100%
-      parted -s $${disk_device} set 1 boot on
-  - exec_out: |
-      echo Creating root partition...
-      mkfs.$${filesystem_type} -q $${disk_device}1 || fail cannot create / ext4
-
-- mount_mountdir:
-  - on_checkpoint: redo
-  - exec_out: mkdir -p $${rootfs}
-  - exec_out: echo Mounting root partition...
-  - exec_out: mount $${disk_device}1 $${rootfs} || fail cannot mount /
-  - on_bootstrap_clean:
-    - test:
-      - exec_local: test "$${chroot_umount_section}" == "bootstrap"
-      - group: &1
-        - exec_out: sync
-        - umount_out: $${rootfs}
-  - on_setup_clean:
-    - test:
-      - exec_local: test "$${chroot_umount_section}" == "setup"
-      - group: *1
-  - on_export_clean:
-    - test:
-      - exec_local: test "$${chroot_umount_section}" == "export"
-      - group: *1
-
-- run_debootstrap_script:
-  - local2out:
-    - $${bootstrap_script}
-    - /tmp/debootstrap.sh
-  - exec_out: |
-      RELEASE=$${release} \
-      PACKAGES="$${bootstrap_packages}" \
-      DEB_MIRROR_URI="$${deb_mirror_uri}" \
-      ARCH="$${arch}" \
-      DEB_ARCH="$${deb_arch}" \
-      DEB_KERNEL_ARCH="$${deb_kernel_arch}" \
-      CHROOT_DIR="$${rootfs}" \
-      VARIANT="$${bootstrap_variant}" \
-      PROXY=$${proxy_out}
-      bash /tmp/debootstrap.sh
-  - on_setup_clean:
-    - exec_out: rm -f /tmp/debootstrap.sh
+      set -e
+      PROXY="$${proxy_out}"
+      if [ -n "$PROXY" ]; then
+        export http_proxy="http://$PROXY"
+        export https_proxy="$http_proxy"
+        export ftp_proxy="$http_proxy"
+        export rsync_proxy="$http_proxy"
+        export all_proxy="$http_proxy"
+        export HTTP_PROXY="$http_proxy"
+        export HTTPS_PROXY="$http_proxy"
+        export FTP_PROXY="$http_proxy"
+        export RSYNC_PROXY="$http_proxy"
+        export ALL_PROXY="$http_proxy"
+        export no_proxy="localhost,${PROXY%%:*},127.0.0.1,localaddress,.localdomain"
+        export NO_PROXY="$no_proxy"
+      fi
+      CURRENT_ARCH="$(uname -m)"
+      ARCH="$${arch}"
+      ARCH=${ARCH:-$CURRENT_ARCH}
+      DEB_ARCH="$${deb_arch}"
+      DEB_ARCH=${DEB_ARCH:-$(dpkg --print-architecture)}
+      VARIANT="$${bootstrap_variant}"
+      PACKAGES="$${bootstrap_packages}"
+      if [ $CURRENT_ARCH != $ARCH ]; then
+        DEBIAN_FRONTEND=noninteractive apt-get -y --force-yes install -y qemu-user-static binfmt-support
+      fi
+      debootstrap --arch=$DEB_ARCH --no-check-gpg ${VARIANT:+--variant=$VARIANT} ${PACKAGES:+--include="$PACKAGES"} $${release} $${rootfs} $${deb_mirror_uri}

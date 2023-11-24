@@ -1,5 +1,5 @@
 - setup_g5k_ca_certificate:
   - local2in:
-    - ../../steps/data/setup/puppet/modules/env/files/nfs/ldap/ca2019.grid5000.fr.cert
+    - $${kameleon_data_dir}/setup/puppet/modules/env/files/nfs/ldap/ca2019.grid5000.fr.cert
     - /usr/share/pki/ca-trust-source/anchors/ca2019.grid5000.fr.crt
   - exec_in: update-ca-trust

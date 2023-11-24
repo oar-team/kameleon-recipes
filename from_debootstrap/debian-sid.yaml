@@ -1,0 +1,21 @@
+#==============================================================================
+# vim: softtabstop=2 shiftwidth=2 expandtab fenc=utf-8 cc=81 tw=80
+#==============================================================================
+#
+# DESCRIPTION: Debian Sid (unstable) recipe using the debootstrap mechanism
+#
+#==============================================================================
+---
+extend: debian-base.yaml
+
+global:
+  release: sid
+
+bootstrap:
+  - "@base"
+
+setup:
+  - "@base"
+
+export:
+  - "@base"

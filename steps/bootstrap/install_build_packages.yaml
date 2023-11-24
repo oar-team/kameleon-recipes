@@ -1,13 +1,14 @@
-- out_context_use_backports: false
+- out_context_debian_release: bullseye
+- out_context_debian_backports: false
 - apt_install:
   - test:
-    - exec_local: test "$${out_context_use_backports}" == "true"
+    - exec_local: test "$${out_context_debian_backports}" == "true"
     - group:
       - append_out:
         - /etc/apt/sources.list
-        - deb http://deb.debian.org/debian bullseye-backports main
+        - deb http://deb.debian.org/debian $${out_context_debian_release}-backports main
       - apt-get_out: update
-      - apt-get_out: -t bullseye-backports install $${build_packages}
+      - apt-get_out: -t $${out_context_debian_release}-backports install $${build_packages}
     - group:
       - apt-get_out: update
       - apt-get_out: install $${build_packages}

@@ -1,0 +1,44 @@
+- upstream_store_dir: "$${kameleon_cwd}/upstream_build"
+- upstream_tarball: "upstream.tar"
+- rootfs_context: out
+- clean_rootfs:
+  - on_checkpoint: disabled
+  - exec_out: rm -rf $${rootfs} && mkdir -p $${rootfs}
+- extract_image_in_rootfs:
+  - exec_local: |
+      echo "Upstream tarball: $${upstream_store_dir}/$${upstream_tarball}"
+      [ -n "$${upstream_store_dir}/$${upstream_tarball}" ] || fail "Upstream tarball is not defined"
+      [ -r "$${upstream_store_dir}/$${upstream_tarball}" ] || fail "Upstream tarball ($${upstream_store_dir}/$${upstream_tarball}) is not readable"
+  - test:
+    - exec_local: test "$${rootfs_context}" == "local"
+    - pipe:
+      - exec_local: &1 |
+         case "$(file $${upstream_store_dir}/$${upstream_tarball})" in
+           *Zstandard*)
+             zstdcat $${upstream_store_dir}/$${upstream_tarball}
+           ;;
+           *XZ*)
+             xzcat $${upstream_store_dir}/$${upstream_tarball}
+           ;;
+           *bz2*)
+             bzcat $${upstream_store_dir}/$${upstream_tarball}
+           ;;
+           *gzip*)
+             zcat $${upstream_store_dir}/$${upstream_tarball}
+           ;;
+           *)
+             echo "Unknown format for $${upstream_store_dir}/$${upstream_tarball}" 1>&2:
+             exit 1
+           ;;
+         esac
+      - exec_local: tar -C $${rootfs} -x
+  - test:
+    - exec_local: test "$${rootfs_context}" == "out"
+    - pipe:
+      - exec_local: *1
+      - exec_out: tar -C $${rootfs} -x
+  - test:
+    - exec_local: test "$${rootfs_context}" == "in"
+    - pipe:
+      - exec_local: *1
+      - exec_in: tar -C $${rootfs} -x

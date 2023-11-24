@@ -1,0 +1,130 @@
+#==============================================================================
+#
+# DESCRIPTION: Base recipe to build a custom ARM64 Ubuntu 20.04 with L4T
+#
+#==============================================================================
+# This recipe extends another. To look at the step involed, run:
+#   kameleon dryrun debiantesting-arm64-custom.yaml
+# To see the variables that you can override, use the following command:
+#   kameleon info debiantesting-arm64-custom.yaml
+---
+extend: base.yaml
+
+global:
+  ### Grid'5000 environment information
+  ## (Uncomment and change any line if needed)
+
+  ## Frontend to run kaenv3 on
+  #grid5000_frontend: "frontend"
+
+  ## Site used in the build
+  grid5000_site: "toulouse"
+
+  ## Environment to build from
+  grid5000_environment_import_name: "ubuntu2004-nfsl4t"
+  grid5000_environment_import_user: "deploy"
+  grid5000_environment_import_arch: "$${arch}"
+  #grid5000_environment_import_version: ""
+
+  ## New environment description
+  grid5000_environment_export_name: "ubuntu2004-nfsl4tcustom"
+  grid5000_environment_export_alias: "ubuntu-arm64-nfsl4tcustom"
+  grid5000_environment_export_format: "tar.zst"
+  grid5000_environment_export_description: "Custom $${grid5000_environment_import_name} (Ubuntu augmented with Nvidia's L4T)"
+  grid5000_environment_export_author: "deploy"
+  grid5000_environment_export_visibility: "shared"
+  grid5000_environment_export_boot_kernel: "/boot/Image"
+  grid5000_environment_export_boot_initrd: "/boot/initrd"
+  grid5000_environment_export_boot_kernel_params: ""
+  grid5000_environment_export_custom_variables: "BOOTLOADER_NO_GRUB_MKCONFIG_FROM_DEST=1"
+
+  ## Set where to store the environment and the assiated kadeploy URL base
+  #grid5000_environment_export_dir: "$HOME/public/"
+  #grid5000_environment_export_baseurl: "local://$HOME/public/"
+
+  ## Optionaly, the environment postinstall script can be changed, e.g. to
+  ## enable NFS homes, LDAP accounts, if not enabled in the imported env.
+  #grid5000_environment_export_postinstall_script: "g5k-postinstall --net debian --fstab nfs --restrict-user current"
+
+  ## Optionaly, an additional postinstall can be given, e.g. to do some custom
+  ## operations. Use the following variables to set the archive name and script.
+  #grid5000_environment_export_additional_postinstall_archive: "$${kameleon_recipe_name}-additional-postinstall.tar.gz"
+  #grid5000_environment_export_additional_postinstall_script: "additional_postinstall.sh"
+  ## The recipe will have to prepare the additional postinstall content in a
+  ## directory to create in the local context and name "additional_postinstall"
+  ## by default (next line to change it). The archive is created by the export.
+  #grid5000_environment_export_additional_postinstall_dir: "additional_postinstall"
+
+  ### Target machine/CPU architecture
+  ## If building an environment for another architecture than x86_64, uncomment
+  ## and adapt the next lines.
+  ## The following works for ARM64 machines, just uncomment for such machines.
+  arch: aarch64
+  #qemu_arch: aarch64
+
+  backend: docker
+  docker_cleanup_section: export
+  out_context_docker_image: "ubuntu:20.04"
+  rootfs_to_export: in_from_out
+  extra_deb_packages: ""
+  extra_pip3_packages: ""
+  l4t_nvp_model: 3
+
+bootstrap:
+  - "@base"
+  - install_additional_necessary_packages_in_out_context:
+    - update_package_list:
+      - apt-get_out: update
+    - install_packages:
+      - apt-get_out: install zstd lbzip2 wget qemu-user-static
+setup:
+  - setup_rootfs:
+    - setup:
+      - on_checkpoint: redo
+      - exec_out: |
+          set -e
+          mv $${rootfs}/etc/resolv.conf{,.orig}
+          cp /etc/resolv.conf $${rootfs}/etc/resolv.conf
+          for d in dev dev/pts proc sys; do
+            mkdir -p $${rootfs}/$d
+            mount --bind /$d $${rootfs}/$d
+          done
+    - unsetup:
+      - on_checkpoint: redo
+      - on_setup_clean:
+        - exec_out: &2 |
+            set -e
+            rm $${rootfs}/etc/resolv.conf
+            mv $${rootfs}/etc/resolv.conf{.orig,}
+            for d in $(findmnt -o TARGET -l -n | grep $${rootfs} | sort -r); do
+              umount $d
+            done
+  - change_env_name:
+    - change_release_info:
+      - exec_in: |
+          sed -i -e '1s/-nfsl4t-/-nfsl4tcustom-/' /etc/grid5000/release
+    - change_motd:
+      - exec_in: |
+          sed -i \
+              -e 's/-nfsl4t-/-nfsl4tcustom-/' \
+              /etc/motd
+  - configure_nvp_model:
+    - add_nvp_status:
+      - exec_in: |
+          set -e
+          mkdir -p /var/lib/nvpmodel
+          printf "/etc/nvpmodel.conf" > /var/lib/nvpmodel/conf_file_path
+          printf "pmode:%04d" $${l4t_nvp_model} > /var/lib/nvpmodel/status
+  - install_extra_packages:
+    - install_deb_packages:
+      - apt-get_in: clean
+      - apt-get_in: update
+      - apt-get_in: install python3-pip $${extra_deb_packages}
+    - install_pip3_packages:
+      - exec_in: |
+          set -e
+          if [ -n "$${extra_pip3_packages}" ]; then
+            pip3 install $${extra_pip3_packages}
+          fi
+export:
+  - "@base"

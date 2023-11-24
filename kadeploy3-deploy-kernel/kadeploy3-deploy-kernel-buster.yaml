@@ -6,7 +6,7 @@
 #
 #==============================================================================
 ---
-extend: kadeploy3-deploy-kernel-debian-base.yaml
+extend: kadeploy3-deploy-kernel-base.yaml
 # Global variables use by Kameleon engine and the steps
 global:
   release: buster

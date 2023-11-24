@@ -1,27 +1,33 @@
+- installer_iso_url: ""
+- installer_iso_finder_helper: ""
+- installer_iso_finder_args: ""
+- installer_kernel_url: ""
+- installer_initrd_url: ""
+
 - download_installer:
   - test:
-     - exec_local: test -n "$${installer_iso_url}" -o -n "$${installer_iso_finder_helper}"
-     - group:
-       - test:
-          - exec_local: test -z "$${installer_iso_url}"
-          - exec_local: |
-              echo "Looking for the netinstall iso URL for $${installer_iso_finder_args}"
-              DOWNLOAD_SRC_URL=$($${installer_iso_finder_helper} $${installer_iso_finder_args})
-       - download_file_local:
-         - $${installer_iso_url}
-         - $${qemu_iso_path}
-       - exec_local: unset DOWNLOAD_SRC_URL
-     - group:
-       - test:
-         - exec_local: test -n "$${installer_kernel_url}"
-         - download_file_local:
-           - $${installer_kernel_url}
-           - $${qemu_kernel_path}
-       - test:
-         - exec_local: test -n "$${installer_initrd_url}"
-         - download_file_local:
-           - $${installer_initrd_url}
-           - $${qemu_initrd_path}
+    - exec_local: test -n "$${installer_iso_url}" -o -n "$${installer_iso_finder_helper}"
+    - group:
+      - test:
+         - exec_local: test -z "$${installer_iso_url}"
+         - exec_local: |
+             echo "Looking for the netinstall iso URL for $${installer_iso_finder_args}"
+             DOWNLOAD_SRC_URL=$($${installer_iso_finder_helper} $${installer_iso_finder_args})
+      - download_file_local:
+        - $${installer_iso_url}
+        - $${qemu_iso_path}
+      - exec_local: unset DOWNLOAD_SRC_URL
+    - group:
+      - test:
+        - exec_local: test -n "$${installer_kernel_url}"
+        - download_file_local:
+          - $${installer_kernel_url}
+          - $${qemu_kernel_path}
+      - test:
+        - exec_local: test -n "$${installer_initrd_url}"
+        - download_file_local:
+          - $${installer_initrd_url}
+          - $${qemu_initrd_path}
 
 - delete_installer:
   - on_checkpoint: skip

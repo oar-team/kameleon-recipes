@@ -1,0 +1,35 @@
+#==============================================================================
+# vim: softtabstop=2 shiftwidth=2 expandtab fenc=utf-8 cc=81 tw=80
+#==============================================================================
+#
+# DESCRIPTION: Debian 9 (Stretch) recipe using the netinstall mechanism
+#
+#==============================================================================
+---
+extend: ../from_debootstrap/debian-base.yaml
+# Global variables use by Kameleon engine and the steps
+global:
+  user_name: vagrant
+  appliance_formats: vdi
+  # Puppet: use stretch version by default since there is no version for 
+  # Debian testing or sid
+  puppet_deb_url: http://apt.puppetlabs.com/puppet-release-stretch.deb
+
+bootstrap:
+  - "@base"
+
+setup:
+  - "@base"
+  - configure_apt
+  - install_packages:
+    - packages: >-
+        linux-headers-amd64 nfs-common rsync wget
+  - create_user:
+    - name: $${user_name}
+    - password: $${user_name}
+    - groups: sudo
+  - setup_vagrant_box
+
+export:
+  - "@base"
+  - export_vagrant_box

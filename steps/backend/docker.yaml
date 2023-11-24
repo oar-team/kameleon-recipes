@@ -11,9 +11,9 @@ global:
   docker_image: $${kameleon_recipe_name}_$${kameleon_short_uuid}
   docker_hostname: kameleon-$${kameleon_short_uuid}
   docker_extra_volumes:
+  docker_export_image: false
 
   # rootfs options
-  rootfs: $${kameleon_cwd}/rootfs
   rootfs_container_work_dir: $${rootfs}
 
   # Shell session from where we launch exec_out commands. There is often a
@@ -28,7 +28,7 @@ global:
   # Shell session that allows us to connect to the building machine in order to
   # configure it and setup additional programs
   in_context:
-    cmd: test -s MAIN_CONTAINER_ID && LC_ALL=POSIX docker exec -u$${docker_user} -i $(< MAIN_CONTAINER_ID) chroot {rootfs} /bin/bash
+    cmd: test -s MAIN_CONTAINER_ID && LC_ALL=POSIX docker exec -u$${docker_user} -i $(< MAIN_CONTAINER_ID) chroot $${rootfs} /bin/bash
     interactive_cmd: test -s MAIN_CONTAINER_ID && LC_ALL=POSIX docker exec -u$${docker_user} -it $(cat MAIN_CONTAINER_ID) chroot $${rootfs} /bin/bash
     workdir: /
     proxy_cache: 172.17.0.1
@@ -36,8 +36,13 @@ global:
 bootstrap:
   - prepare_docker
   - start_docker
+  - download_upstream_tarball
+  - extract_upstream_tarball_in_rootfs
 
 setup:
+  - "@base"
 
 export:
+  - disable_checkpoint
+  - export_docker_rootfs
   - export_docker_image

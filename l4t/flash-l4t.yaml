@@ -1,0 +1,95 @@
+#==============================================================================
+#
+# DESCRIPTION: Base recipe to build a docker image to flash L4T
+#
+#==============================================================================
+---
+extend: ../steps/backend/$${backend}.yaml
+
+# Loads some helpful aliases (this files are located in steps/aliases/ directory)
+aliases: defaults.yaml
+
+# Custom shell environement (this files are located in steps/env/ directory)
+env:
+  - bashrc
+  - functions.sh
+
+# Global variables use by Kameleon engine and the steps
+global:
+  arch: aarch64
+  backend: docker
+  docker_cleanup_section: export
+  out_context_docker_image: "ubuntu:20.04"
+
+  l4t_version_major: "35"
+  l4t_version_minor: "3"
+  l4t_version_patch: "1"
+  cti_BSP_version: "001"
+  l4t_version: r$${l4t_version_major}.$${l4t_version_minor}.$${l4t_version_patch}-cti$${cti_BSP_version}
+  nvidia_BSP_url: "https://developer.download.nvidia.com/embedded/L4T/r$${l4t_version_major}_Release_v$${l4t_version_minor}.$${l4t_version_patch}/release/Jetson_Linux_R$${l4t_version_major}.$${l4t_version_minor}.$${l4t_version_patch}_aarch64.tbz2"
+  nvidia_sample_rootfs_url: "https://developer.nvidia.com/downloads/embedded/l4t/r$${l4t_version_major}_release_v$${l4t_version_minor}.$${l4t_version_patch}/release/tegra_linux_sample-root-filesystem_r$${l4t_version_major}.$${l4t_version_minor}.$${l4t_version_patch}_aarch64.tbz2"
+  cti_BSP_url: "https://connecttech.com/ftp/Drivers/CTI-L4T-AGX-$${l4t_version_major}.$${l4t_version_minor}.$${l4t_version_patch}-V$${cti_BSP_version}.tgz"
+  cti_uefi_beta_url: "https://cloud.dist.usesxtensor.com/index.php/s/zrP5mdQFLCfcnMM/download"
+  l4t_dir: "/nvidia/Linux_for_Tegra"
+
+  rootfs: "$${l4t_dir}/rootfs"
+  target_docker_image: "$${kameleon_recipe_name}-$${l4t_version_major}.$${l4t_version_minor}.$${l4t_version_patch}-CTI$${cti_BSP_version}"
+
+bootstrap:
+  - prepare_docker
+  - start_docker
+  - install_additional_necessary_packages_in_out_context:
+    - update_package_list:
+      - apt-get_out: update
+    - install_packages:
+      - apt-get_out: install lbzip2 wget qemu-user-static
+setup:
+  - install_L4T:
+    - install_nvidia_BSP:
+      - exec_out: |
+          set -e
+          mkdir -p $${l4t_dir}
+          wget --progress=dot:giga -O- $${nvidia_BSP_url} | tar -jx --strip-components=1 -C $${l4t_dir}
+    - install_nvidia_sample_rootfs:
+      - exec_out: wget --progress=dot:giga -O- $${nvidia_sample_rootfs_url} | tar -jx -C $${l4t_dir}/rootfs
+    - install_cti_BSP:
+      - exec_out: |
+          set -e
+          wget --progress=dot:giga -O- $${cti_BSP_url} | tar -zx -C $${l4t_dir}
+          cd $${l4t_dir}/CTI-L4T && ./install.sh
+    - fix_cti_BSP_kernel_console:
+      - exec_out: sed -i.bak -e 's/console=tty0 //' $${l4t_dir}/cti-agx.conf.common
+    - fix_L4T_apt_sources:
+      - exec_in: |
+          # fix bug in CTI BSP 35.3.1 + enable t194 source
+          sed -i -e 's/r35.1/r35.3/;s/#deb/deb/;s/<SOC>/t194/' /etc/apt/sources.list.d/nvidia-l4t-apt-source.list
+    - install_cti_uefi_beta:
+      - exec_out: wget --progress=dot:giga -O $${l4t_dir}/bootloader/uefi_jetson.bin $${cti_uefi_beta_url}
+  - setup_for_flashing:
+    - install_required_debs:
+      - apt-get_out: install binutils usbutils udev python-is-python3 python3-yaml lz4 cpio openssh-client libxml2-utils perl-modules-5.30 dosfstools
+    - prebuild_flash_image:
+      - exec_out: |
+          set -e
+          cd $${l4t_dir}
+          ./flash.sh --no-flash cti/xavier/rogue/base mmcblk0p1
+export:
+  - export_docker_image_ready_to_flash:
+    - commit_and_configure_to_flash:
+      - exec_local: |
+          set -e
+          # Stop the current docker container so that we can configure the image
+          docker stop $(< $KAMELEON_WORKDIR/MAIN_CONTAINER_ID) > /dev/null || docker kill $(< $KAMELEON_WORKDIR/MAIN_CONTAINER_ID) > /dev/null
+          # Create the final version of the image, ready to flash
+          docker commit -c 'ENV USER=root' -c 'WORKDIR $${l4t_dir}' -c 'ENTRYPOINT ["./flash.sh"]' $(< $KAMELEON_WORKDIR/MAIN_CONTAINER_ID) $${target_docker_image} > /dev/null
+          # Delete the container
+          docker rm $(< $KAMELEON_WORKDIR/MAIN_CONTAINER_ID) > /dev/null
+          rm -f $KAMELEON_WORKDIR/MAIN_CONTAINER_ID
+    - explain_how_to_flash:
+      - exec_local: |
+          echo 'You can now flash a Xavier module with the Kadeploy miniOS, using:'
+          echo
+          echo '$ docker run -it --rm --privileged -v /dev/bus/usb:/dev/bus/usb/ -v /dev:/dev $${target_docker_image} cti/xavier/rogue/g5k mmcblk0p1'
+          echo
+          echo 'To test a kernel/initrd with grub, copy to a node:'
+          echo '$ scp rootfs/boot/Image rootfs/boot/initrd root@estats-9.toulouse.grid5000.fr:'

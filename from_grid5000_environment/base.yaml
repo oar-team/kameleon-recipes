@@ -92,4 +92,4 @@ setup:
 
 export:
   - "@base"
-  - create_kadeploy_environment
+  - export_modified_g5k_env

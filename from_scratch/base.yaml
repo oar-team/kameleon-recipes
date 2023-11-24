@@ -6,8 +6,8 @@
 #
 #==============================================================================
 ---
-# Load qemu checkpoint
-checkpoint: simple.yaml
+extend: ../steps/backend/$${backend}.yaml
+
 # Loads some helpful aliases (this files are located in steps/aliases/ directory)
 aliases: defaults.yaml
 
@@ -27,6 +27,8 @@ global:
   # Default root password
   root_password: kameleon
 
+  ## Select backend for in context isolation
+  backend: qemu
   ## System variables. Required by kameleon engine
   # Include specific steps
   include_steps:
@@ -56,7 +58,6 @@ global:
   qemu_uefi: false
   qemu_cpus: 8
   qemu_memory_size: 16G
-  qemu_monitor_socket: $${kameleon_cwd}/qemu_monitor.socket
   qemu_arch: $${arch}
   qemu_image_size: 17G
   qemu_pidfile: $${kameleon_cwd}/qemu.pid
@@ -106,22 +107,19 @@ global:
 
 # Bootstrap the new system and create the 'in_context'
 bootstrap:
-  - enable_checkpoint
   - download_installer
-  - prepare_disk
+  - prepare_qemu_disk
   - start_http_server
   - prepare_autoinstall
   - start_qemu:
-    - force_vm_shutdown: false
-    - shutdown_vm_immediately: true
-    - vm_cleanup_section: bootstrap
+    - shutdown_vm_synchrone: true
     - vm_expected_service:
     - boot_timeout: $${boot_timeout_installer}
+    - start_vm_synchrone
   - prepare_ssh_to_out_context
   - prepare_appliance
   - start_qemu:
-    - force_vm_shutdown: true
-    - shutdown_vm_immediately: false
+    - shutdown_vm_synchrone: false
     - vm_cleanup_section: setup
     - vm_expected_server: ssh
     - boot_timeout: $${boot_timeout_setupvm}
@@ -129,6 +127,7 @@ bootstrap:
     - qemu_iso_path: ""
     - qemu_kernel_path: ""
     - qemu_sendkeys_commands: ""
+    - start_vm
 
 # Install and configuration steps
 setup:
