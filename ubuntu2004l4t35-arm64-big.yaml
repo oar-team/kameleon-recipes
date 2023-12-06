@@ -1,6 +1,9 @@
 #==============================================================================
 #
 # DESCRIPTION: Ubuntu 20.04 arm64 nfs Grid'5000 environment
+# AUTHOR: Pierre Neyron
+# COPYRIGHT: CNRS
+# LICENSE: GPLv3
 #
 #==============================================================================
 ---
@@ -8,7 +11,7 @@ extend: ubuntu2004-arm64-nfs.yaml
 
 global:
   # Grid'5000 environment variant
-  g5k_variant: nfsl4t
+  g5k_variant: big
   # Setup Nvidia L4T kernel/initrd and make kadeploy not use update-grub to generate grub.cfg
   g5k_kernel_path: "/boot/Image"
   g5k_initrd_path: "/boot/initrd"

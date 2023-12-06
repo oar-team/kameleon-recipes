@@ -1,8 +1,9 @@
 #==============================================================================
-# vim: softtabstop=2 shiftwidth=2 expandtab fenc=utf-8 cc=81 tw=80
-#==============================================================================
 #
-# DESCRIPTION: Debian bullseye (11) arm64 std Grid'5000 environment
+# DESCRIPTION: Debian bullseye (11) arm64 with L4T 35 std Grid'5000 environment
+# AUTHOR: Pierre Neyron
+# COPYRIGHT: CNRS
+# LICENSE: GPLv3
 #
 #==============================================================================
 ---
@@ -96,11 +97,11 @@ setup:
       - exec_in: ln -s /bin/true /usr/bin/ipmitool
     - fix_env_name:
       - exec_in: |
-          sed -i -e '1s/-std-/-stdl4t-/' /etc/grid5000/release
+          sed -i -e '1s/^debian11-/debian11l4t-/' /etc/grid5000/release
     - change_motd:
       - exec_in: |
           sed -i \
-              -e 's/-std-/-stdl4t-/' \
+              -e 's/^Debian11-/Debian11L4T-/' \
               -e 's/\(based on .\+\))/\1 + Nvidia L4T $${g5k_l4t_version})/' \
               /etc/motd
   - set_and_clear_var_log
@@ -109,5 +110,5 @@ export:
   - clean_dhcp_leases
   - save_appliance_VM
   - export_g5k:
-    - g5k_variant: stdl4t
-    - g5k_description: "debian 11 (bullseye) for arm64 - std + Nvidia L4T overlay"
+    - g5k_variant: std
+    - g5k_description: "debian 11 (bullseye) + nvidia L4T 35 for arm64 - std"

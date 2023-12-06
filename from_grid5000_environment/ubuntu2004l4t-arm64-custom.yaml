@@ -21,16 +21,17 @@ global:
   grid5000_site: "toulouse"
 
   ## Environment to build from
-  grid5000_environment_import_name: "ubuntu2004-nfsl4t"
+  grid5000_environment_import_name: "ubuntu2004l4t-big"
   grid5000_environment_import_user: "deploy"
   grid5000_environment_import_arch: "$${arch}"
   #grid5000_environment_import_version: ""
 
   ## New environment description
-  grid5000_environment_export_name: "ubuntu2004-nfsl4tcustom"
-  grid5000_environment_export_alias: "ubuntu-arm64-nfsl4tcustom"
+  grid5000_environment_export_description: "Custom $${grid5000_environment_import_name}"
+  grid5000_environment_export_suffix: "custom"
+  grid5000_environment_export_name: "ubuntu2004l4t-$${grid5000_environment_export_suffix}"
+  grid5000_environment_export_alias: "ubuntu2004l4t-arm64-$${grid5000_environment_export_suffix}"
   grid5000_environment_export_format: "tar.zst"
-  grid5000_environment_export_description: "Custom $${grid5000_environment_import_name} (Ubuntu augmented with Nvidia's L4T)"
   grid5000_environment_export_author: "deploy"
   grid5000_environment_export_visibility: "shared"
   grid5000_environment_export_boot_kernel: "/boot/Image"
@@ -102,11 +103,11 @@ setup:
   - change_env_name:
     - change_release_info:
       - exec_in: |
-          sed -i -e '1s/-nfsl4t-/-nfsl4tcustom-/' /etc/grid5000/release
+          sed -i -e 's/[^-]\+\(-[[:digit:]]\+\)$/$${grid5000_environment_export_suffix}\1/' /etc/grid5000/release
     - change_motd:
       - exec_in: |
           sed -i \
-              -e 's/-nfsl4t-/-nfsl4tcustom-/' \
+              -e 's/[^-]\+\(-[[:digit:]]\+\)$/$${grid5000_environment_export_suffix}\1/' \
               /etc/motd
   - configure_nvp_model:
     - add_nvp_status:
