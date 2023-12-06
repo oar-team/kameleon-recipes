@@ -8,7 +8,7 @@ class env::common::software_versions {
   $ruby_net_ssh                = '1:6.1.0-2+deb11u1'
   $libguestfs_backport_arm64   = '1:1.40.2-7~bpog5k10+1'
   $libguestfs_backport_ppc64el = '1:1.40.2-7~bpog5k10+1'
-  $g5k_jupyterlab              = '0.10'
+  $g5k_jupyterlab              = '0.11'
 
   case "${env::deb_arch}" {
     'amd64': {
