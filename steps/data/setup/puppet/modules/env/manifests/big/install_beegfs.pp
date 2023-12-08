@@ -37,7 +37,7 @@ class env::big::install_beegfs {
       }
     }
 
-    'bullseye' : {
+    'bullseye', 'bookworm' : {
       # Official beegfs-client does not build for now (kernel 5.10)
       # cf. Bug #13077
 

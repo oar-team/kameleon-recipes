@@ -32,6 +32,12 @@ class env::common::software_versions {
         }
         'bookworm': {
           $lmod                   = '8.6.19-1+g5k1.0.3'
+          $rocm_version           = '4.5'
+          $nvidia_driver          = '535.129.03'
+          $nvidia_cuda            = '12.2.2_535.104.05_linux'
+          $datacenter_gpu_manager = '1:2.1.4'
+          $dcgm_exporter          = '2.3.0-1'
+          $libfabric1             = '1.11.0-2+g5k1'
         }
         default : {
           fail "${::lsbdistcodename} not supported."
@@ -61,6 +67,11 @@ class env::common::software_versions {
         }
         'bookworm': {
           $lmod                   = '8.6.19-1+g5k1.0.3'
+          $nvidia_driver          = '418.197.02'
+          $nvidia_cuda            = '12.2.2_535.104.05_linux_ppc64le'
+          $datacenter_gpu_manager = '1:2.0.15'
+          $dcgm_exporter          = '2.3.0-1'
+          $libfabric1             = '1.11.0-2+g5k1'
         }
         default : {
           fail "${::lsbdistcodename} not supported."
