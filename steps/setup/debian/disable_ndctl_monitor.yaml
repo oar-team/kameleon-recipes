@@ -1,0 +1,10 @@
+# Disable ndctl-monitor.service
+#
+# based on Puppet class env::base::disable_ndctl_monitor
+
+- disable_ndctl_monitor:
+  - exec_in: systemctl disable ndctl-monitor.service
+  - exec_in: mkdir -pm 755 /etc/systemd/system-preset
+  - local2in:
+    - $${kameleon_data_dir}/setup/puppet/modules/env/files/base/ndctl/ndctl.preset
+    - /etc/systemd/system-preset/10-ndctl.preset
