@@ -89,5 +89,5 @@ export:
       - exec_local: |
           echo 'You can now flash AGX Xavier modules using a command line such as:'
           echo
-          echo '$ docker run -it --rm --privileged -v /dev/bus/usb:/dev/bus/usb/ -v /dev:/dev $${target_docker_image} cti/xavier/rogue/base mmcblk0p1'
+          echo '$ docker run -it --rm --privileged -v /dev/bus/usb:/dev/bus/usb/ -v /dev:/dev -r $${target_docker_image} cti/xavier/rogue/base mmcblk0p1'
           echo
