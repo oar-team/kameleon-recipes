@@ -11,10 +11,13 @@ extend: ./debiantesting-x64-common.yaml
 global:
   # Grid'5000 environment variant
   g5k_variant: nfs
+  g5k_deb_repositories: "g5k-meta-packages"
   # packages to install
-  packages: "$${packages} nfs-common autofs nslcd ruby"
+  packages: "$${packages} nfs-common autofs nslcd ruby g5k-meta-packages-$${distrib}$${g5k_release_number}-$${g5k_variant}"
   # Grid'5000 Kadeploy environment parameters
   g5k_postinst_script: g5k-postinstall --net debian --fstab nfs --restrict-user current --disk-aliases
+  # clean_unnecessary_packages step settings (packages debfoster must keep)
+  default_packages_no_clean: g5k-meta-packages-$${distrib}$${g5k_release_number}-$${g5k_variant} gnupg linux-image-$${deb_arch} console-setup rsync locales firmware-bnx2 firmware-bnx2x firmware-qlogic firmware-misc-nonfree amd64-microcode intel-microcode iucode-tool openssh-server sudo autofs ndctl discover nfs-common ldap-utils nslcd nslcd-utils python3.12
 
 bootstrap:
   - "@base"
@@ -24,6 +27,7 @@ setup:
   - setup_g5k_ca_certificate
   - setup_ldap
   - disable_nvme_multipath
+  - disable_ndctl_monitor
 
 export:
   - "@base"
