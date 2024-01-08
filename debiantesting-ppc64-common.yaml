@@ -50,7 +50,6 @@ bootstrap:
   - "@base"
 
 setup:
-  - clean_unnecessary_packages
   - "@base"
   - configure_system
   - configure_apt

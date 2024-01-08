@@ -16,8 +16,6 @@ global:
   packages: "$${packages} nfs-common autofs nslcd ruby g5k-meta-packages-$${distrib}$${g5k_release_number}-$${g5k_variant}"
   # Grid'5000 Kadeploy environment parameters
   g5k_postinst_script: g5k-postinstall --net debian --fstab nfs --restrict-user current --disk-aliases
-  # clean_unnecessary_packages step settings (packages debfoster must keep)
-  default_packages_no_clean: g5k-meta-packages-$${distrib}$${g5k_release_number}-$${g5k_variant} gnupg linux-image-$${deb_arch} console-setup rsync locales firmware-bnx2 firmware-bnx2x firmware-qlogic firmware-misc-nonfree amd64-microcode intel-microcode iucode-tool openssh-server sudo autofs ndctl discover nfs-common ldap-utils nslcd nslcd-utils python3.12
 
 bootstrap:
   - "@base"
