@@ -54,7 +54,7 @@ global:
   cross_compilation_toolchain_url: "https://developer.nvidia.com/embedded/jetson-linux/bootlin-toolchain-gcc-93"
   cross_compilation_toolchain_dir: "$${workdir}/toolchain"
   cti_BSP_url: "https://connecttech.com/ftp/Drivers/CTI-L4T-AGX-$${l4t_version_major}.$${l4t_version_minor}.$${l4t_version_patch}-V$${cti_BSP_version}.tgz"
-  cti_kernel_sources_url: "http://www.connecttech.com/ftp/dropbox/82429_cti-l4t-src-agx-$${l4t_version_major}.$${l4t_version_minor}.$${l4t_version_patch}-v$${cti_BSP_version}.tgz" 
+  cti_kernel_sources_url: "http://www.connecttech.com/ftp/dropbox/82429_cti-l4t-src-agx-$${l4t_version_major}.$${l4t_version_minor}.$${l4t_version_patch}-v$${cti_BSP_version}.tgz"
   l4t_kernel_config_file: "cti_tegra_defconfig"
   debian_kernel_pkg_url: "http://ftp.fr.debian.org/debian/pool/main/l/linux/linux-image-5.10.0-20-arm64-unsigned_5.10.158-2_arm64.deb"
   src_dir: $${workdir}/src
@@ -64,7 +64,8 @@ global:
   kernel_make_cmd: "make -C $${kernel_src_dir} -j $(nproc) ARCH=arm64 LOCALVERSION=$${kernel_version_suffix} CROSS_COMPILE=$${cross_compilation_toolchain_dir}/usr/bin/aarch64-buildroot-linux-gnu-"
 
 bootstrap:
-  - "@base"
+  - prepare_docker
+  - start_docker
   - prepare_out_system:
     - on_checkpoint: disable
     - update_lists:
