@@ -10,7 +10,10 @@
 extend: ubuntu2004-arm64-nfs.yaml
 
 global:
-  g5k_distrib: ubuntu2004l4t35
+  g5k_distrib: $${distrib}l4t
+  # Must force 2004, because release_number is "20.04".
+  g5k_release_number: 2004$${l4t_version_major}
+  g5k_description: $${distrib} $${release_number} ($${release}) with L4T $${l4t_version} for $${arch} - $${g5k_variant}
   # Grid'5000 environment variant
   g5k_variant: big
   # Setup Nvidia L4T kernel/initrd and make kadeploy not use update-grub to generate grub.cfg

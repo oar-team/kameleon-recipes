@@ -10,7 +10,9 @@
 extend: ./debian11-arm64-common.yaml
 
 global:
-  g5k_distrib: debian11l4t35
+  g5k_distrib: $${distrib}l4t
+  g5k_release_number: $${release_number}$${l4t_version_major}
+  g5k_description: $${distrib} $${release_number} ($${release}) with L4T $${l4t_version} for $${arch} - $${g5k_variant}
   # Grid'5000 environment variant
   g5k_variant: std
   # Setup Nvidia L4T kernel/initrd and make kadeploy not use update-grub to generate grub.cfg
@@ -28,7 +30,14 @@ global:
   qemu_image_size: 16G
   # Visibility override
   g5k_visibility: shared
-  g5k_l4t_version: r35.3.1-cti001-bullseye
+  # L4T information
+  l4t_version_major: "35"
+  l4t_version_minor: "3"
+  l4t_version_patch: "1"
+  cti_BSP_version: "001"
+  l4t_version: r$${l4t_version_major}.$${l4t_version_minor}.$${l4t_version_patch}-cti$${cti_BSP_version}
+  # g5k-l4t package version
+  g5k_l4t_version: $${l4t_version}-$${release}
 
 bootstrap:
   - "@base"
@@ -110,6 +119,4 @@ setup:
 export:
   - clean_dhcp_leases
   - save_appliance_VM
-  - export_g5k:
-    - g5k_variant: std
-    - g5k_description: "debian 11 (bullseye) + nvidia L4T 35 for arm64 - std"
+  - export_g5k
