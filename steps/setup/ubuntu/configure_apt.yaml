@@ -11,7 +11,7 @@
 
 - disable_automatic_apt_upgrades:
   - test:
-    - exec_local: test "$${g5k_release_number}" -ge "2204"
+    - exec_in: RELEASE_NUMBER='$${release_number}' test "${RELEASE_NUMBER/./}" -ge "2204"
     - group:
       - exec_in: systemctl disable apt-daily.timer apt-daily.service
       - exec_in: systemctl disable apt-daily-upgrade.timer apt-daily-upgrade.service
