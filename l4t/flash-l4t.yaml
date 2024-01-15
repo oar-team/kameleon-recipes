@@ -29,6 +29,8 @@ global:
   nvidia_BSP_url: "https://developer.download.nvidia.com/embedded/L4T/r$${l4t_version_major}_Release_v$${l4t_version_minor}.$${l4t_version_patch}/release/Jetson_Linux_R$${l4t_version_major}.$${l4t_version_minor}.$${l4t_version_patch}_aarch64.tbz2"
   nvidia_sample_rootfs_url: "https://developer.nvidia.com/downloads/embedded/l4t/r$${l4t_version_major}_release_v$${l4t_version_minor}.$${l4t_version_patch}/release/tegra_linux_sample-root-filesystem_r$${l4t_version_major}.$${l4t_version_minor}.$${l4t_version_patch}_aarch64.tbz2"
   cti_BSP_url: "https://connecttech.com/ftp/Drivers/CTI-L4T-AGX-$${l4t_version_major}.$${l4t_version_minor}.$${l4t_version_patch}-V$${cti_BSP_version}.tgz"
+  # As of r35.4.1, still need to use a beta version of the UEFI firmware in order to get a working PXE - version r35.3.1-5e812e4-dirty
+  cti_uefi_beta_url: "https://cloud.dist.usesxtensor.com/index.php/s/zrP5mdQFLCfcnMM/download"
   l4t_dir: "/nvidia/Linux_for_Tegra"
 
   rootfs: "$${l4t_dir}/rootfs"
@@ -58,6 +60,8 @@ setup:
           cd $${l4t_dir}/CTI-L4T && ./install.sh
     - fix_cti_BSP_kernel_console:
       - exec_out: sed -i.bak -e 's/console=tty0 //' $${l4t_dir}/cti-agx.conf.common
+    - install_cti_uefi_beta:
+      - exec_out: wget --progress=dot:giga -O $${l4t_dir}/bootloader/uefi_jetson.bin $${cti_uefi_beta_url}
   - setup_for_flashing:
     - install_required_debs:
       - apt-get_out: install binutils usbutils udev python-is-python3 python3-yaml lz4 cpio openssh-client libxml2-utils perl-modules-5.30 dosfstools
@@ -82,5 +86,5 @@ export:
       - exec_local: |
           echo 'You can now flash AGX Xavier modules using a command line such as:'
           echo
-          echo '$ docker run -it --rm --privileged -v /dev/bus/usb:/dev/bus/usb/ -v /dev:/dev -r $${target_docker_image} cti/xavier/rogue/base mmcblk0p1'
+          echo '$ docker run -it --rm --privileged -v /dev/bus/usb:/dev/bus/usb/ -v /dev:/dev $${target_docker_image} -r cti/xavier/rogue/base mmcblk0p1'
           echo
