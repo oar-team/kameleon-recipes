@@ -107,12 +107,12 @@ setup:
       - exec_in: ln -s /bin/true /usr/bin/ipmitool
     - fix_env_name:
       - exec_in: |
-          sed -i -e '1s/^debian11-/debian11l4t-/' /etc/grid5000/release
+          sed -i -e '1s/^$${distrib}$${release_number}-/$${g5k_distrib}$${g5k_release_number}-/' /etc/grid5000/release
     - change_motd:
       - exec_in: |
           sed -i \
-              -e 's/^Debian11-/Debian11L4T-/' \
-              -e 's/\(based on .\+\))/\1 + Nvidia L4T $${g5k_l4t_version})/' \
+              -e 's/^Debian$${release_number}-/DebianL4T$${g5k_release_number}-/' \
+              -e 's/\(based on .\+\))/\1 + Nvidia L4T $${l4t_version})/' \
               /etc/motd
   - set_and_clear_var_log
 
