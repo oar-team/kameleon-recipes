@@ -4,9 +4,9 @@
 #
 #==============================================================================
 # This recipe extends another. To look at the step involed, run:
-#   kameleon dryrun debiantesting-arm64-custom.yaml
+#   kameleon build ubuntul4t200435-arm64-custom.yaml -d
 # To see the variables that you can override, use the following command:
-#   kameleon info debiantesting-arm64-custom.yaml
+#   kameleon info ubuntul4t200435-arm64-custom.yaml
 ---
 extend: base.yaml
 
@@ -21,7 +21,7 @@ global:
   grid5000_site: "toulouse"
 
   ## Environment to build from
-  grid5000_environment_import_name: "ubuntu2004l4t-big"
+  grid5000_environment_import_name: "ubuntul4t200435-big"
   grid5000_environment_import_user: "deploy"
   grid5000_environment_import_arch: "$${arch}"
   #grid5000_environment_import_version: ""
@@ -29,8 +29,8 @@ global:
   ## New environment description
   grid5000_environment_export_description: "Custom $${grid5000_environment_import_name}"
   grid5000_environment_export_suffix: "custom"
-  grid5000_environment_export_name: "ubuntu2004l4t-$${grid5000_environment_export_suffix}"
-  grid5000_environment_export_alias: "ubuntu2004l4t-arm64-$${grid5000_environment_export_suffix}"
+  grid5000_environment_export_name: "ubuntul4t200435-$${grid5000_environment_export_suffix}"
+  grid5000_environment_export_alias: "ubuntul4t200435-arm64-$${grid5000_environment_export_suffix}"
   grid5000_environment_export_format: "tar.zst"
   grid5000_environment_export_author: "deploy"
   grid5000_environment_export_visibility: "shared"
