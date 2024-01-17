@@ -32,7 +32,7 @@ global:
   g5k_visibility: shared
   # L4T information
   l4t_version_major: "35"
-  l4t_version_minor: "3"
+  l4t_version_minor: "4"
   l4t_version_patch: "1"
   cti_BSP_version: "001"
   l4t_version: r$${l4t_version_major}.$${l4t_version_minor}.$${l4t_version_patch}-cti$${cti_BSP_version}
