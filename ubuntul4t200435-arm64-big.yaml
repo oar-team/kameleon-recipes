@@ -26,7 +26,7 @@ global:
 
   # L4T information
   l4t_version_major: "35"
-  l4t_version_minor: "3"
+  l4t_version_minor: "4"
   l4t_version_patch: "1"
   cti_BSP_version: "001"
   l4t_version: r$${l4t_version_major}.$${l4t_version_minor}.$${l4t_version_patch}-cti$${cti_BSP_version}
@@ -48,7 +48,7 @@ setup:
     - install_L4T_required_packages:
       - apt-get_in: update
       - apt-get_in: -q=2 remove --purge linux-image-* linux-modules-* linux-headers-*
-      - apt-get_in: install libegl1 python2 libcairo2 libegl1-mesa libgles2 libgtk-3-0 libwayland-egl1 libxkbcommon0 libasound2 libgstreamer1.0-0 libgstreamer-plugins-bad1.0-0 libgstreamer-plugins-base1.0-0 device-tree-compiler libdatrie1 libfontconfig1 libharfbuzz0b libpangoft2-1.0-0 libpixman-1-0 libxrender1 libfontconfig1 libpango-1.0-0 libpangocairo-1.0-0 libnl-route-3-200 libevdev2 libinput10 libjpeg-turbo8 libunwind8 libwayland-cursor0 qemu-user-static
+      - apt-get_in: install libegl1 python2 libcairo2 libegl1-mesa libgles2 libgtk-3-0 libwayland-egl1 libxkbcommon0 libasound2 libgstreamer1.0-0 libgstreamer-plugins-bad1.0-0 libgstreamer-plugins-base1.0-0 device-tree-compiler libdatrie1 libfontconfig1 libharfbuzz0b libpangoft2-1.0-0 libpixman-1-0 libxrender1 libfontconfig1 libpango-1.0-0 libpangocairo-1.0-0 libnl-route-3-200 libevdev2 libinput10 libjpeg-turbo8 libunwind8 libwayland-cursor0 qemu-user-static bridge-utils python3-tk python3-matplotlib gir1.2-appindicator3-0.1
 
     - install_nvidia_BSP:
       - on_setup_clean:
@@ -78,10 +78,6 @@ setup:
             $${l4t_dir}/nv_tegra/nv-apply-debs.sh
     - apply_L4T:
       - exec_in: $${l4t_dir}/apply_binaries.sh -r $${rootfs}
-    - fix_L4T_apt_sources:
-      - exec_in: |
-          # fix bug in CTI BSP 35.3.1 + enable t194 source
-          sed -i -e 's/r35.1/r35.3/;s/#deb/deb/;s/<SOC>/t194/' /etc/apt/sources.list.d/nvidia-l4t-apt-source.list
     - disable_unwanted_L4T_services:
       - exec_in: |
           set -e
