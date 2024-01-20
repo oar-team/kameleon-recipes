@@ -28,6 +28,7 @@ global:
 bootstrap:
   - download_upstream_tarball
   - extract_upstream_tarball_in_rootfs
+  - prepare_system_fs_for_chroot
   - start_chroot
 
 setup:

@@ -15,12 +15,19 @@ create:
   - reload_context: out
   - exec_out: &1 |
       set -e
-      if [ -e $KAMELEON_WORKDIR/.KAMELEON_MOUNT_SYSTEM_FS_IN_CHROOT ]; then
-          mkdir -p $${rootfs_container_work_dir}/{dev,dev/pts,proc,sys}
-          mount -t sysfs sysfs $${rootfs_container_work_dir}/sys
-          mount -t proc proc $${rootfs_container_work_dir}/proc
-          mount --bind /dev $${rootfs_container_work_dir}/dev
-          mount --bind /dev/pts $${rootfs_container_work_dir}/dev/pts
+      if [ -e $KAMELEON_WORKDIR/.KAMELEON_SETUP_ROOTFS_SYSTEM ]; then
+        for d in dev dev/pts proc sys; do
+          mkdir -p $${rootfs_container_work_dir}/$d
+          mount --bind /$d $${rootfs_container_work_dir}/$d
+        done
+        if [ -e $${rootfs_container_work_dir}/etc/resolv.conf -o -h $${rootfs_container_work_dir}/etc/resolv.conf ]; then
+          if ! [ -e $${rootfs_container_work_dir}/etc/.resolv.conf.kameleon -o -h $${rootfs_container_work_dir}/etc/.resolv.conf.kameleon ]; then
+            mv -v $${rootfs_container_work_dir}/etc/resolv.conf $${rootfs_container_work_dir}/etc/.resolv.conf.kameleon
+          else
+            rm $${rootfs_container_work_dir}/etc/resolv.conf
+          fi
+        fi
+        cp -v /etc/resolv.conf $${rootfs_container_work_dir}/etc/resolv.conf
       fi
   - reload_context: in
 
