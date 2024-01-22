@@ -61,7 +61,8 @@ global:
   out_context_docker_image: "$${out_context_distrib}:$${out_context_release}"
 
 bootstrap:
-  - "@base"
+  - prepare_docker
+  - start_docker
   - install_build_packages
   - debootstrap
   - prepare_system_fs_for_chroot
