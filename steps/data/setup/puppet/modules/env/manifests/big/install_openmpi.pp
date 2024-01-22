@@ -29,8 +29,8 @@ class env::big::install_openmpi () {
         require => Package['openmpi-bin'];
       }
     }
-    "bullseye" : {
-      # Debian11 disables many providers by default. We restore UCX and Fabric,
+    "bullseye", "bookworm" : {
+      # Debian11|12 disable many providers by default. We restore UCX and Fabric,
       # while keeping openib disabled to avoid useless warnings
       file { '/etc/openmpi/openmpi-mca-params.conf':
         content => "#Managed by Grid'5000 environments recipes\nbtl_base_warn_component_unused=0\nbtl = ^openib",

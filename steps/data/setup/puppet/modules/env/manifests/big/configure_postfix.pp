@@ -17,12 +17,17 @@ class env::big::configure_postfix () {
       # concatening the hostname found in /etc/hostname and domain extracted from
       # /etc/resolv.conf.  This domain MAY have a trailing dot (.grid5000.fr.)
       # Sadly, after this, newaliases is called on this /etc/postfix/main.cfg and
-      # doesn't digest any trailing dot for attribute myhostname.  This is fixed
-      # in Debian bookworm:
-      # https://salsa.debian.org/postfix-team/postfix-dev/-/commit/a1d904dc162dfb810fc5b44b0f3efc45b07c12f8
+      # doesn't digest any trailing dot for attribute myhostname.
       'fix_resolv_conf':
         command  => "/bin/sed -e 's/\\.\\(\\s\\|$\\)/\\1/g' -i /etc/resolv.conf";
     }
+  } else {
+      # For bookworm, no need for the patch above since it is fixed.
+      # See https://salsa.debian.org/postfix-team/postfix-dev/-/commit/a1d904dc162dfb810fc5b44b0f3efc45b07c12f8
+      exec {
+        'fix_resolv_conf':
+          command  => "/bin/true";
+      }
   }
   exec {
     'fix_hostname':

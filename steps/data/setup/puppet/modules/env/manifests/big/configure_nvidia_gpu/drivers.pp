@@ -49,19 +49,23 @@ class env::big::configure_nvidia_gpu::drivers () {
     $nvidia_installer = "$nvidia_runfile"
   }
 
-  exec{
-    'install_nvidia_driver':
-      command   => "/tmp/$nvidia_installer -qa --no-cc-version-check --ui=none --dkms -k ${installed_kernelreleases[-1]}",
-      timeout   => 1200, # 20 min,
-      user      => root,
-      # The nvidia installer tries to load the nvidia-drm module at the end, but it fails because
-      # the building machine has no GPU. Make sure that modprobe doesn't actually try to load the module.
-      environment => ['MODPROBE_OPTIONS=--dry-run'],
-      require   => [Exec['prepare_kernel_module_build'], File["/tmp/$nvidia_runfile"]];
-    'cleanup_nvidia':
-      command   => "/bin/rm /tmp/$nvidia_runfile",
-      user      => root,
-      require   => Exec['install_nvidia_driver'];
+  # not install nvidia_driver for ppc64el bookworm
+  # see https://intranet.grid5000.fr/bugzilla/show_bug.cgi?id=15183
+  unless ("$env::deb_arch" == 'ppc64el' and "$lsbdistcodename" == 'bookworm') {
+    exec{
+      'install_nvidia_driver':
+        command   => "/tmp/$nvidia_installer -qa --no-cc-version-check --ui=none --dkms -k ${installed_kernelreleases[-1]}",
+        timeout   => 1200, # 20 min,
+        user      => root,
+        # The nvidia installer tries to load the nvidia-drm module at the end, but it fails because
+        # the building machine has no GPU. Make sure that modprobe doesn't actually try to load the module.
+        environment => ['MODPROBE_OPTIONS=--dry-run'],
+        require   => [Exec['prepare_kernel_module_build'], File["/tmp/$nvidia_runfile"]];
+      'cleanup_nvidia':
+        command   => "/bin/rm /tmp/$nvidia_runfile",
+        user      => root,
+        require   => Exec['install_nvidia_driver'];
+    }
   }
 
   if ($::env::common::software_versions::nvidia_user_driver != undef) {

@@ -11,7 +11,7 @@ class env::big::configure_initramfs () {
           content   => 'RESUME=none',
       }
     }
-    "bullseye" : {
+    "bullseye", "bookworm" : {
       # NOTHING
     }
     default: {
