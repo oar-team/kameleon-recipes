@@ -36,11 +36,11 @@ global:
   to_remove_packages:
   target_directory: /grid5000/kadeploy-kernels
   out_context_debian_backports: false
+  rootfs_system_unsetup_section: export
 
 bootstrap:
   - check_root_authorized_keys:
     - check_file_exist:
-      - on_checkpoint: disabled
       - exec_local: |
           set -e
           if ! [ -n "$${root_authorized_keys}" -a -r "$${root_authorized_keys}" ]; then
