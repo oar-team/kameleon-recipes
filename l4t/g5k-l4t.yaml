@@ -56,7 +56,6 @@ global:
   cti_BSP_url: "https://connecttech.com/ftp/Drivers/CTI-L4T-AGX-$${l4t_version_major}.$${l4t_version_minor}.$${l4t_version_patch}-V$${cti_BSP_version}.tgz"
   cti_kernel_sources_url: "https://www.usesintegrated.com/files/xavier/r35.4.1/53120_cti-l4t-src-agx-35.4.1-v001.tar"
   l4t_kernel_config_file: "cti_tegra_defconfig"
-  debian_kernel_pkg_url: "http://security.debian.org/debian-security/pool/updates/main/l/linux/linux-image-5.10.0-25-arm64-unsigned_5.10.191-1_arm64.deb"
   src_dir: $${workdir}/src
   kernel_src_dir: $${src_dir}/kernel/kernel-$${l4t_kernel_version}
   kernel_build_dir: $${src_dir}/build
