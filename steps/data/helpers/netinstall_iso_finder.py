@@ -106,7 +106,7 @@ if __name__ == '__main__':
         found = set([])
         if (args.distrib.lower() == "debian"):
             if args.mirror == None:
-                args.mirror = "http://cdimage.debian.org/"
+                args.mirror = "https://cdimage.debian.org/"
             if not re.match("^\d+$",args.version):
                 raise Exception("please give the Debian release number (e.g. 8 for Jessie)")
             if args.version == '12':
