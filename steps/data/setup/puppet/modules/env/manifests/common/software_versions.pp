@@ -3,7 +3,7 @@
 class env::common::software_versions {
   $g5k_subnets                 = '1.4.2'
   $g5k_meta_packages           = '0.7.52'
-  $g5k_checks                  = '0.11.13'
+  $g5k_checks                  = '0.11.14'
   $sudo_g5k                    = '1.13'
   $ruby_net_ssh                = '1:6.1.0-2+deb11u1'
   $libguestfs_backport_arm64   = '1:1.40.2-7~bpog5k10+1'
@@ -24,7 +24,7 @@ class env::common::software_versions {
         'bullseye': {
           $lmod                   = '6.6-0.4+g5k1.0.3'
           $rocm_version           = '4.5'
-          $nvidia_driver          = '460.91.03'
+          $nvidia_driver          = '535.129.03'
           $nvidia_cuda            = '11.2.2_460.32.03_linux'
           $datacenter_gpu_manager = '1:2.1.4'
           $dcgm_exporter          = '2.3.0-1'
