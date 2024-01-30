@@ -25,7 +25,7 @@ class env::big::configure_nvidia_gpu::prometheus () {
           source  => "puppet:///modules/env/big/nvidia/dcgm-exporter.service";
       }
       service {
-        'dcgm.service':
+        'nvidia-dcgm.service':
           enable => false,
           require => Package['datacenter-gpu-manager'];
         'dcgm-exporter.service':
