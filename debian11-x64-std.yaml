@@ -20,7 +20,7 @@ global:
   # Disable cgroup v2 and force cgroup v1 - Bug #12723
   g5k_kernel_params: "systemd.unified_cgroup_hierarchy=false systemd.legacy_systemd_cgroup_controller=true"
   # QEMU options
-  qemu_image_size: 22G
+  qemu_image_size: 25G
   # Visibility override
   g5k_visibility: shared
 

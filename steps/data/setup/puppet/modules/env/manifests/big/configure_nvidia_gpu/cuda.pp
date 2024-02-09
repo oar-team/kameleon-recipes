@@ -60,6 +60,11 @@ class env::big::configure_nvidia_gpu::cuda () {
       '/etc/systemd/system/multi-user.target.wants/nvidia-persistenced.service':
         ensure => link,
         target => '/etc/systemd/system/nvidia-persistenced.service';
+      '/var/log/nvidia-dcgm':
+        ensure    => directory,
+        owner     => root,
+        group     => root,
+        require   => Exec['install_nvidia_cuda'];
     }
 
     file {
