@@ -54,7 +54,7 @@ build_debian11-x64-std:
   <<: *defaults-build
 
 # Debian 12
-build_debian12-x64-min:
+build_debian12-x64-big:
   <<: *defaults-build
 
 # Debian testing
