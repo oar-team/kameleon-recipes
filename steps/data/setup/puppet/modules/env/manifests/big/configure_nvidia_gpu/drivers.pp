@@ -24,7 +24,7 @@ class env::big::configure_nvidia_gpu::drivers () {
   }
   exec{
     'retrieve_nvidia_drivers':
-      command => "/usr/bin/wget -q $driver_source -O /tmp/$nvidia_runfile; chmod u+x /tmp/$nvidia_runfile",
+      command => "/usr/bin/wget -q $driver_source -O /tmp/$nvidia_runfile && chmod u+x /tmp/$nvidia_runfile",
       timeout => 1200, # 20 min
       creates => "/tmp/$nvidia_runfile";
   }
