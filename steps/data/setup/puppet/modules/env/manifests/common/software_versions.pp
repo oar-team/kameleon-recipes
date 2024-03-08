@@ -33,7 +33,7 @@ class env::common::software_versions {
         'bookworm': {
           $lmod                   = '8.6.19-1+g5k1.0.3'
           $rocm_version           = '4.5'
-          $nvidia_driver          = '535.129.03'
+          $nvidia_driver          = '550.54.14'
           $nvidia_cuda            = '12.2.2_535.104.05_linux'
           $datacenter_gpu_manager = '1:2.1.4'
           $dcgm_exporter          = '2.3.0-1'
