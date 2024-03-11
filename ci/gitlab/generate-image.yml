@@ -1,0 +1,25 @@
+spec:
+  inputs:
+    autostart:
+      type: boolean
+    environment-name:
+---
+
+"gen-$[[ inputs.environment-name ]]":
+  stage: generate
+  variables:
+    AUTOSTART: $[[ inputs.autostart ]]
+    ENV_NAME: $[[ inputs.environment-name ]]
+  rules:
+    # We start the job automatically if we're told to do so, otherwise we put
+    # the job in manual mode.
+    - if: '$AUTOSTART == "true"'
+    - when: manual
+  needs:
+    - pipeline: $ROOT_PIPELINE_ID
+      job: clone-refrepo
+  tags:
+    - grid5000-shell
+  script:
+    - echo "Generating ${ENV_NAME}"
+    - RUBYLIB=/srv/jenkins-scripts/lib ci/gitlab/run_job.rb --job build --env ${ENV_NAME}

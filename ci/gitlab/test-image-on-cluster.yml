@@ -1,0 +1,30 @@
+spec:
+  inputs:
+    site:
+    cluster:
+    autostart:
+      type: boolean
+    environment-name:
+---
+
+"$[[ inputs.cluster ]]":
+  stage: $[[ inputs.site ]]
+  variables:
+    AUTOSTART: $[[ inputs.autostart ]]
+    CLUSTER: $[[ inputs.cluster ]]
+    ENV_NAME: $[[ inputs.environment-name ]]
+    SITE: $[[ inputs.site ]]
+  rules:
+    # We start the job automatically if we're told to do so, otherwise we put
+    # the job in manual mode.
+    - if: '$AUTOSTART == "true"'
+    - when: manual
+  needs:
+    - pipeline: $ROOT_PIPELINE_ID
+      job: clone-refrepo
+    - job: "gen-$[[ inputs.environment-name ]]"
+  tags:
+    - grid5000-shell
+  script:
+    - echo "Testing ${ENV_NAME} on ${CLUSTER}"
+    - RUBYLIB=/srv/jenkins-scripts/lib ci/gitlab/run_job.rb --job test --env ${ENV_NAME} --cluster ${SITE}-${CLUSTER}

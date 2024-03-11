@@ -1,99 +1,84 @@
-stages:
- - dryrun
- - build
+workflow:
+  # NOTE: only run the pipeline when pushing a commit/tag/branch, or when
+  # creating the pipeline in the UI.
+  # This allows to avoid duplicated pipelines in merge requests.
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "push" || $CI_PIPELINE_SOURCE == "web"
 
-lint:
-  stage: .pre
+stages:
+  - dryrun
+  - setup
+  - environments
+
+# NOTE: the general workflow for changing this is to manually create a pipeline.
+# See https://www.grid5000.fr/w/TechTeam:Environment-recipes.
+# Alternatively you can *temporarily* hardcode some values here, while working
+# on something specific. Remember to remove the commit ;)
+variables:
+  REFREPO_BRANCH:
+    description: The refrepo branch you want to use for the pipeline
+    value: master
+  ENVIRONMENTS:
+    description: A regexp of environments to build
+  CLUSTERS:
+    description: The coma separated list of clusters to test automatically
+  ENABLE_UNUSED_GEN_JOBS:
+    description: Should non-matching generation job be created? Leave blank to avoid generation.
+  ENABLE_UNUSED_TEST_JOBS:
+    description: Should non-matching test job be created? Leave blank to avoid generation.
+
+clone-refrepo:
+  stage: setup
+  image: ${CI_REGISTRY}/grid5000/docker/g5k-debian:bullseye
   tags:
     - grid5000-docker
-  image: debian:bullseye
+  needs: []
+  rules:
+    # If variables are filled then just start, otherwise wait for user input.
+    - if: '$ENVIRONMENTS != "" || $CLUSTERS != ""'
+    # There is no alternative, we don't show up the job if these variables are
+    # not set. Read the documentation in TechTeam:Environment-recipes to learn
+    # about manually creating a pipeline for this.
   script:
-    - apt-get update && apt-get -y --no-install-recommends install rubygems ruby-dev libffi-dev build-essential
-    - gem install bundler
-    - bundle install --gemfile=ci/Gemfile
-    # Puppet manifests syntax check (equivalent to puppet parser validate) - The most important check
-    - BUNDLE_GEMFILE=ci/Gemfile bundle exec rake --rakefile ci/rakefile_syntax syntax:manifests
-    - BUNDLE_GEMFILE=ci/Gemfile bundle exec rake --rakefile ci/rakefile_syntax syntax:templates
-    - BUNDLE_GEMFILE=ci/Gemfile bundle exec rake --rakefile ci/rakefile_syntax syntax:hiera
-    # Puppet style check
-    - BUNDLE_GEMFILE=ci/Gemfile bundle exec rake --rakefile ci/rakefile_lint lint
+    - echo ${REFREPO_BRANCH}
+    - git clone https://gitlab-ci-token:$CI_JOB_TOKEN@gitlab.inria.fr/grid5000/reference-repository.git --depth 1 -b ${REFREPO_BRANCH}
+  artifacts:
+    paths:
+      - reference-repository
 
-dryrun_all:
-  stage: dryrun
+# NOTE: this is a standalone job because gitlab requires <5MB artifacts for
+# dynamic child pipelines.
+gen-child-pipelines:
+  stage: setup
+  image: ${CI_REGISTRY}/grid5000/docker/g5k-debian:bullseye
   tags:
-   - grid5000-docker
-  image: ${CI_REGISTRY}/grid5000/docker/kameleon:2.10.11.1-bullseye
+    - grid5000-docker
+  needs:
+    - clone-refrepo
+  rules:
+    - if: '$ENVIRONMENTS != "" || $CLUSTERS != ""'
+  variables:
+    RUBYLIB: reference-repository/lib
   script:
-   - for G5K_ENV in *.yaml kadeploy3-deploy-kernel/*.yaml from_grid5000_environment/*.yaml; do echo "** kameleon dryrun $G5K_ENV **"; kameleon build -d "$G5K_ENV"; done
-  except:
-   - tags
+    - rm -rf generated && mkdir generated
+    - ruby ci/gitlab/gen_jobs.rb -o generated
+  artifacts:
+    paths:
+      - generated
 
-.defaults-build: &defaults-build
-  stage: build
-  tags:
-   - grid5000-shell
-  script:
-   - /srv/ci-runner-scripts/bin/test-environment-recipes ${CI_JOB_NAME#build_}
-  except:
-   - tags
-#  artifacts:
-#   paths:
-#    - build/*dsc
-#    - build/*tar.gz
-#   expire_in: '1 week'
+environments-pipeline:
+  stage: environments
+  needs:
+    - gen-child-pipelines
+  rules:
+    - if: '$ENVIRONMENTS != "" || $CLUSTERS != ""'
+  variables:
+    PARENT_PIPELINE_ID: $CI_PIPELINE_ID
+  trigger:
+    strategy: depend
+    include:
+      - artifact: generated/main.yml
+        job: gen-child-pipelines
 
-### Build
-## x64
-# Debian 10
-build_debian10-x64-std:
-  <<: *defaults-build
-
-# Debian 11
-  <<: *defaults-build
-build_debian11-x64-std:
-  <<: *defaults-build
-
-# Debian 12
-build_debian12-x64-big:
-  <<: *defaults-build
-
-# Debian testing
-build_debiantesting-x64-min:
-  <<: *defaults-build
-
-# Ubuntu
-build_ubuntu2004-x64-min:
-  <<: *defaults-build
-
-build_ubuntu2204-x64-nfs:
-  <<: *defaults-build
-
-# Centos
-build_centos7-x64-min:
-  <<: *defaults-build
-
-build_centos8-x64-min:
-  <<: *defaults-build
-
-# Centos Stream
-build_centosstream8-x64-min:
-  <<: *defaults-build
-
-build_centosstream9-x64-min:
-  <<: *defaults-build
-
-# Rocky
-build_rocky8-x64-min:
-  <<: *defaults-build
-
-build_rocky9-x64-min:
-  <<: *defaults-build
-
-# MiniOS Bullseye
-build_kadeploy3-deploy-kernel/kadeploy3-deploy-kernel-bullseye:
-  <<: *defaults-build
-
-# from_grid5000_environment
-build_from_grid5000_environment/base:
-  <<: *defaults-build
-
+include:
+  - 'ci/gitlab/sanity.yml'

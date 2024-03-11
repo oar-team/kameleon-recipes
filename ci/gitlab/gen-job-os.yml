@@ -1,0 +1,22 @@
+spec:
+  inputs:
+    os:
+    version:
+    arch:
+    variant:
+---
+
+"$[[ inputs.os ]]$[[ inputs.version ]]-$[[ inputs.arch ]]-$[[ inputs.variant ]]":
+  stage: $[[ inputs.os ]]
+  needs:
+    - gen-child-child-pipelines
+  variables:
+    ROOT_PIPELINE_ID: $PARENT_PIPELINE_ID
+  trigger:
+    strategy: depend
+    include:
+      # NOTE: it seems that including through artifacts or local doesn't behave
+      # the same regarding the handling of inputs variables!
+      # Therefore I generated all the config...
+      - artifact: generated/$[[ inputs.os ]]-$[[ inputs.version ]]-$[[ inputs.arch ]]-$[[ inputs.variant ]].yml
+        job: gen-child-child-pipelines
