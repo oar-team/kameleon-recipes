@@ -22,7 +22,7 @@ class env::common::software_versions {
           $dcgm_exporter          = '2.0.0-rc.11'
         }
         'bullseye': {
-          $lmod                   = '6.6-0.4+g5k1.0.3'
+          $lmod                   = '8.6.19-1+g5k1.0.3'
           $rocm_version           = '4.5'
           $nvidia_driver          = '535.129.03'
           $nvidia_cuda            = '11.2.2_460.32.03_linux'
@@ -57,7 +57,7 @@ class env::common::software_versions {
           $dcgm_exporter          = '2.0.0-rc.11'
         }
         'bullseye': {
-          $lmod                   = '6.6-0.4+g5k1.0.3'
+          $lmod                   = '8.6.19-1+g5k1.0.3'
           $nvidia_driver          = '418.197.02'
           $nvidia_user_driver     = '460.91.03'
           $nvidia_cuda            = '11.2.2_460.32.03_linux_ppc64le'
