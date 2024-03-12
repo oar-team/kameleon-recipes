@@ -42,5 +42,7 @@ class env::big ( $variant = "big", $parent_parameters = {} ){
   class { 'env::big::install_g5k_jupyterlab': }
   # smartd
   class { 'env::big::install_smartd': }
+  # disable unattended-upgrades
+  class { 'env::big::disable_unattended_upgrades': }
 
 }
