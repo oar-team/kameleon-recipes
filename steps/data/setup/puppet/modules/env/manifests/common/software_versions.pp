@@ -26,7 +26,8 @@ class env::common::software_versions {
           $rocm_version           = '4.5'
           $nvidia_driver          = '535.129.03'
           $nvidia_cuda            = '11.2.2_460.32.03_linux'
-          $datacenter_gpu_manager = '1:2.1.4'
+          $datacenter_gpu_manager = '1:3.3.3'
+          $nvidia_fabricmanager   = '535_535.129.03-1'
           $dcgm_exporter          = '2.3.0-1'
           $libfabric1             = '1.11.0-2+g5k1'
         }
@@ -35,7 +36,8 @@ class env::common::software_versions {
           $rocm_version           = '4.5'
           $nvidia_driver          = '550.54.14'
           $nvidia_cuda            = '12.2.2_535.104.05_linux'
-          $datacenter_gpu_manager = '1:2.1.4'
+          $datacenter_gpu_manager = '1:3.3.3'
+          $nvidia_fabricmanager   = '535_535.129.03-1'
           $dcgm_exporter          = '2.3.0-1'
           $libfabric1             = '1.11.0-2+g5k1'
         }

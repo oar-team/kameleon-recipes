@@ -12,6 +12,16 @@ class env::big::configure_nvidia_gpu::cuda () {
     }
   }
 
+  if ($::env::common::software_versions::nvidia_fabricmanager) {
+    file{
+      '/var/log/nvidia-dcgm':
+        ensure    => directory,
+        owner     => root,
+        group     => root,
+        require   => Package['datacenter-gpu-manager'];
+    }
+  }
+
   # ncursesw5 is needed for cuda-gdb
   $extra_packages = ['ocl-icd-libopencl1', 'opencl-headers', 'libncursesw5']
 
