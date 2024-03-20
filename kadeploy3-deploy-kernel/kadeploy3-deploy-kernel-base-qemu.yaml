@@ -207,7 +207,7 @@ setup:
           Generated from $${kameleon_recipe_name} (Debian $${release}, $${deb_kernel} kernel, $${deb_arch}) on $(date +'%F %T')
     - fix_ntp:
       - on_checkpoint: disabled
-      - exec_in: sed -i -e 's/\(NTPSERVERS=\).*/\1="ntp1.grid5000.fr ntp2.grid5000.fr"/;s/\(NTPDATE_USE_NTP_CONF=\).*/\1=no/' /etc/default/ntpdate
+      - exec_in: sed -i -e 's/\(NTPSERVERS=\).*/\1="ntp1.grid5000.fr ntp2.grid5000.fr"/;s/\(NTPDATE_USE_NTP_CONF=\).*/\1=no/' /etc/default/*ntpdate
     - set_root_authorized_keys:
       - on_checkpoint: disabled
       - exec_in: mkdir -p /root/.ssh
