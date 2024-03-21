@@ -17,7 +17,7 @@ global:
   deb_kernel_arch: $${deb_arch}
   qemu_arch: x86_64
   arch_specific_packages: kexec-tools grub-efi-arm64 
-  use_backports: yes
+  use_backports: no
 
 bootstrap:
   - "@base"
