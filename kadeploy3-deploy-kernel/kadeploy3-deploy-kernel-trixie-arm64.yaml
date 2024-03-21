@@ -1,0 +1,29 @@
+#==============================================================================
+# vim: softtabstop=2 shiftwidth=2 expandtab fenc=utf-8 cc=81 tw=80
+#==============================================================================
+#
+# DESCRIPTION: Kadeploy3 ramdisk OS (used in the deployment phase) for ARM64
+#
+# Notes:
+# - force use of busybox rather than klibc-utils (which breaks the mount)
+#
+#==============================================================================
+---
+extend: kadeploy3-deploy-kernel-trixie.yaml
+
+global:
+  arch: aarch64
+  deb_arch: arm64
+  deb_kernel_arch: $${deb_arch}
+  qemu_arch: x86_64
+  arch_specific_packages: kexec-tools grub-efi-arm64 
+  use_backports: yes
+
+bootstrap:
+  - "@base"
+
+setup:
+  - "@base"
+
+export:
+  - "@base"

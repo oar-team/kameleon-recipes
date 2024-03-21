@@ -106,17 +106,17 @@ setup:
       - exec_in: |
           set -e
           sed -i -e 's/^/#/' /etc/apt/sources.list
-          if [ "$${release}" == "bookworm" ]; then
+          if [ "$${release}" == "trixie" ]; then
             echo "deb $${deb_mirror_uri} $${release} main contrib non-free non-free-firmware" >> /etc/apt/sources.list.d/$${release}.list
           else
             echo "deb $${deb_mirror_uri} $${release} main contrib non-free" >> /etc/apt/sources.list.d/$${release}.list
           fi
-          if [ "$${release}" == "bookworm" ]; then
+          if [ "$${release}" == "trixie" ]; then
             echo "deb $${deb_mirror_uri} $${release}-updates main contrib non-free non-free-firmware" >> /etc/apt/sources.list.d/$${release}.list
           elif [ "$${release}" != "sid" ]; then
             echo "deb $${deb_mirror_uri} $${release}-updates main contrib non-free" >> /etc/apt/sources.list.d/$${release}.list
           fi
-          if [ "$${release}" == bookworm ]; then
+          if [ "$${release}" == "trixie" ]; then
             echo "deb http://security.debian.org/ $${release}-security main contrib non-free non-free-firmware" >> /etc/apt/sources.list.d/$${release}.list
           elif [ "$${release}" == "bullseye" ]; then
             echo "deb http://security.debian.org/ $${release}-security main contrib non-free" >> /etc/apt/sources.list.d/$${release}.list
@@ -130,7 +130,7 @@ setup:
               echo "deb $${deb_mirror_uri} $${release}-backports main contrib non-free" > /etc/apt/sources.list.d/$${release}-backports.list
             fi
           fi
-          if [ "$${deb_arch}" == "amd64" ]; then
+          if [ "$${deb_arch}" == "amd64" ] && [ "$${release}" != "trixie" ]; then
             echo "deb http://hwraid.le-vert.net/debian $${hwraid_release} main" >/etc/apt/sources.list.d/hwraid.list
             apt-key adv --keyserver $${gpg_keyserver} --recv-key 6005210E23B3D3B4
           fi
