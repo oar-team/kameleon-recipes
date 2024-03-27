@@ -37,7 +37,7 @@ class env::common::software_versions {
           $nvidia_driver          = '550.54.14'
           $nvidia_cuda            = '12.2.2_535.104.05_linux'
           $datacenter_gpu_manager = '1:3.3.3'
-          $nvidia_fabricmanager   = '535_535.129.03-1'
+          $nvidia_fabricmanager   = '550_550.54.14-1'
           $dcgm_exporter          = '2.3.0-1'
           $libfabric1             = '1.11.0-2+g5k1'
         }
