@@ -49,8 +49,68 @@ class env::big::configure_amd_gpu () {
       }
     }
 
-    'bullseye', 'bookworm' : {
+    'bullseye' : {
       include env::big::configure_amd_gpu_bullseye_bookworm_common
+
+      apt::source {
+        'repo.radeon.com-amdgpu':
+          comment      => 'Repo for AMDGPU packages',
+          location     => 'https://repo.radeon.com/amdgpu/21.40/ubuntu/',
+          release      => 'focal',
+          repos        => 'main',
+          key          => {
+            'id'     => '1A693C5C',
+            'source' => 'https://repo.radeon.com/rocm/rocm.gpg.key',
+          },
+          include      => {
+            'deb' => true,
+            'src' => false
+          },
+          notify       => Exec['apt_update'],
+      }
+
+      apt::source {
+        'repo.radeon.com-rocm':
+          comment      => 'Repo for AMD ROCM packages',
+          location     => "https://repo.radeon.com/rocm/apt/${::env::common::software_versions::rocm_version}/",
+          release      => 'ubuntu',
+          repos        => 'main',
+          architecture => 'amd64',
+          key          => {
+            'id'     => '1A693C5C',
+            'source' => 'https://repo.radeon.com/rocm/rocm.gpg.key',
+          },
+          include      => {
+            'deb' => true,
+            'src' => false
+          },
+          notify       => Exec['apt_update'],
+      }
+    }
+
+    'bookworm' : {
+      include env::big::configure_amd_gpu_bullseye_bookworm_common
+
+      # Debian12: apt-key is deprecated. Manage keyring files in trusted.gpg.d instead. See bug 15510.
+      unless defined(Exec['retrieve_rocm_key']) {
+        exec {
+        'retrieve_rocm_key':
+          command     => "/usr/bin/wget https://repo.radeon.com/rocm/rocm.gpg.key -O - | gpg --dearmor | sudo tee /usr/share/keyrings/rocm.gpg > /dev/null";
+        }
+      }
+
+      file {
+        '/etc/apt/sources.list.d/repo.radeon.com-amdgpu.list':
+          ensure  => present,
+          content => "deb [signed-by=/usr/share/keyrings/rocm.gpg] https://repo.radeon.com/amdgpu/23.20.00.48/ubuntu/ jammy main\n",
+          require => Exec['retrieve_rocm_key'],
+          notify  => Exec['apt_update'];
+        '/etc/apt/sources.list.d/repo.radeon.com-rocm.list':
+          ensure  => present,
+          content => "deb [signed-by=/usr/share/keyrings/rocm.gpg] https://repo.radeon.com/rocm/apt/${::env::common::software_versions::rocm_version}/ ubuntu main\n",
+          require => Exec['retrieve_rocm_key'],
+          notify  => Exec['apt_update'];
+      }
     }
 
     default: {
@@ -78,58 +138,26 @@ class env::big::configure_amd_gpu () {
 }
 
 class env::big::configure_amd_gpu_bullseye_bookworm_common () {
-  apt::source {
-    'repo.radeon.com-amdgpu':
-      comment      => 'Repo for AMDGPU packages',
-      location     => $::lsbdistcodename ? {
-                        'bullseye' => 'https://repo.radeon.com/amdgpu/21.40/ubuntu/',
-                        'bookworm' => 'https://repo.radeon.com/amdgpu/23.20.00.48/ubuntu/',
-                        default    => '',
-                      },
-      release      =>  $::lsbdistcodename ? {
-                        'bullseye' => 'focal',
-                        'bookworm' => 'jammy',
-                        default    => '',
-                      },
-      repos        => 'main',
-      key          => {
-        'id'     => '1A693C5C',
-        'source' => 'https://repo.radeon.com/rocm/rocm.gpg.key',
-      },
-      include      => {
-        'deb' => true,
-        'src' => false
-      },
-      notify       => Exec['apt_update'],
+
+  $rocm_repo_source = $::lsbdistcodename ? {
+    'bookworm' => 'File[/etc/apt/sources.list.d/repo.radeon.com-rocm.list]',
+    default    => 'Apt::Source[repo.radeon.com-rocm]',
   }
 
-  apt::source {
-    'repo.radeon.com-rocm':
-      comment      => 'Repo for AMD ROCM packages',
-      location     => "https://repo.radeon.com/rocm/apt/${::env::common::software_versions::rocm_version}/",
-      release      => 'ubuntu',
-      repos        => 'main',
-      architecture => 'amd64',
-      key          => {
-        'id'     => '1A693C5C',
-        'source' => 'https://repo.radeon.com/rocm/rocm.gpg.key',
-      },
-      include      => {
-        'deb' => true,
-        'src' => false
-      },
-      notify       => Exec['apt_update'],
+  $amdgpu_repo_source = $::lsbdistcodename ? {
+    'bookworm' => 'File[/etc/apt/sources.list.d/repo.radeon.com-amdgpu.list]',
+    default    => 'Apt::Source[repo.radeon.com-amdgpu]',
   }
 
   package {
     'amdgpu-dkms':
       ensure          => installed,
       install_options => ['--no-install-recommends'],
-      require         => [Apt::Source['repo.radeon.com-amdgpu'], Exec['apt_update']];
+      require         => [$amdgpu_repo_source, Exec['apt_update']];
     [ 'hip-dev', 'rocminfo', 'rocm-smi-lib', 'rocm-device-libs', 'rocm-hip-runtime', 'hsa-amd-aqlprofile' ]:
       ensure          => installed,
       install_options => ['--no-install-recommends'],
-      require         => [Apt::Source['repo.radeon.com-rocm'], Exec['apt_update'], Exec['build_and_install_rocm_llvm']];
+      require         => [$rocm_repo_source, Exec['apt_update'], Exec['build_and_install_rocm_llvm']];
   }
 
   exec {
@@ -137,7 +165,7 @@ class env::big::configure_amd_gpu_bullseye_bookworm_common () {
       command  => "mkdir /tmp/rocm && cd /tmp/rocm && apt download rocm-llvm && dpkg-deb -x rocm-llvm_*.deb rocm-llvm && dpkg-deb --control rocm-llvm_*.deb rocm-llvm/DEBIAN && sed -i 's/^Depends: .*/Depends: libc6/g' rocm-llvm/DEBIAN/control && dpkg -b rocm-llvm/ rocm-llvm.deb && apt install -y ./rocm-llvm.deb && rm -fr /tmp/rocm",
       provider => shell,
       timeout  => 1800,
-      require  => [Apt::Source['repo.radeon.com-rocm'], Exec['apt_update']];
+      require  => [$rocm_repo_source, Exec['apt_update']];
     'add_rocm_symlink':
       command => "/bin/ln -s /opt/rocm-*/ /opt/rocm",
       require => Package['rocm-smi-lib'];
