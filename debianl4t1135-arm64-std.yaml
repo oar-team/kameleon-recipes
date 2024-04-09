@@ -75,6 +75,7 @@ setup:
       - exec_in: systemctl disable nv-l4t-usb-device-mode.service
       - exec_in: systemctl disable nv-l4t-bootloader-config.service
       - exec_in: systemctl disable nv_nvsciipc_init.service
+      - exec_in: systemctl disable nv.service
     - configure_nvpmodel_all_core:
       - on_checkpoint: disabled
       - exec_in: dpkg-divert --no-rename /etc/systemd/nvpmodel.sh
