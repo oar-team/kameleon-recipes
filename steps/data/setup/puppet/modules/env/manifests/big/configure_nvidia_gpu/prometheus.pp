@@ -27,7 +27,7 @@ class env::big::configure_nvidia_gpu::prometheus () {
       service {
         'nvidia-dcgm.service':
           enable => false,
-          require => Package['datacenter-gpu-manager'];
+          require => [Package['datacenter-gpu-manager'], File['/var/log/nvidia-dcgm']];
         'dcgm-exporter.service':
           enable => true,
           require => [File['/etc/systemd/system/dcgm-exporter.service'], Package['dcgm-exporter']];
