@@ -1,0 +1,40 @@
+#cloud-config
+autoinstall:
+  version: 1
+  keyboard:
+    layout: us
+  apt:
+    geoip: false
+    preserve_sources_list: true
+    primary:
+      - arches: [i386, amd64]
+        uri: http://archive.ubuntu.com/ubuntu
+      - arches: [default]
+        uri: http://ports.ubuntu.com/ubuntu-ports
+  storage:
+    layout:
+      name: lvm
+  identity:
+    hostname: localhost
+    realname: Kameleon
+    username: kameleon
+    password: $6$6F.02ySDYUsxIOHp$ddRMcWWv4jRNd0RJJCn0RDok9H9DZ9/d27CySiEmFFveq8wy732WlsN8PO.XRY9KDQTTdNU6R0G9njlVb/Son1
+  ssh:
+    install-server: yes
+    allow-pw: yes
+  user-data:
+    disable_root: false
+    users:
+      - name: root
+        lock-passwd: false
+        passwd: $6$6F.02ySDYUsxIOHp$ddRMcWWv4jRNd0RJJCn0RDok9H9DZ9/d27CySiEmFFveq8wy732WlsN8PO.XRY9KDQTTdNU6R0G9njlVb/Son1
+        primary_group: root
+  packages:
+    - bzip2
+    - rsync
+  debconf-selections: |
+    popularity-contest popularity-contest/participate boolean false
+  late-commands:
+    - curtin in-target --target=/target -- apt-get update
+    - curtin in-target --target=/target -- apt-get upgrade -y
+    - curtin in-target --target /target update-grub2
