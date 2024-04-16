@@ -118,7 +118,7 @@ if __name__ == '__main__':
         elif (args.distrib.lower() == "ubuntu"):
             if not re.match("^\w+$",args.version):
                 raise Exception("please give the Ubuntu release name")
-            if (args.version.lower() == "jammy"):
+            if (args.version.lower() == "jammy" or args.version.lower() == "noble"):
               if (args.arch == "amd64"):
                 args.mirror = "https://releases.ubuntu.com/"
               else:
