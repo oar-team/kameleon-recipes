@@ -124,7 +124,9 @@ if __name__ == '__main__':
               else:
                 args.mirror = "https://cdimage.ubuntu.com/releases/"
               servers = set([args.mirror])
-              url_regex = re.compile("^"+args.mirror+args.version+"(?:/beta)?(?:/release)?/(?:ubuntu-\d+\.\d+(?:\.\d+)?(-beta)?-live-server-"+args.arch+"\.iso)?$")
+              # regexp to also use beta releases (useful to prepare for an upcoming release)
+              # url_regex = re.compile("^"+args.mirror+args.version+"(?:/beta)?(?:/release)?/(?:ubuntu-\d+\.\d+(?:\.\d+)?(-beta)?-live-server-"+args.arch+"\.iso)?$")
+              url_regex = re.compile("^"+args.mirror+args.version+"(?:/release)?/(?:ubuntu-\d+\.\d+(?:\.\d+)?-live-server-"+args.arch+"\.iso)?$")
               target_regex = re.compile("^.*/ubuntu-.*-live-server-\w+\.iso$")
             else:
               if args.mirror == None:
