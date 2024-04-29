@@ -162,10 +162,10 @@
             if [ ! -f $${kameleon_cwd}/qemu_uefi_vars.fd ]; then
               qemu-img convert -O qcow2 $${qemu_uefi_vars_path} $${kameleon_cwd}/qemu_uefi_vars.fd
             fi
-            QEMU_BOOT="-drive if=pflash,format=raw,readonly,file=$${qemu_uefi_code_path} -drive if=pflash,format=qcow2,file=$${kameleon_cwd}/qemu_uefi_vars.fd"
+            QEMU_BOOT="-drive if=pflash,format=raw,readonly=on,file=$${qemu_uefi_code_path} -drive if=pflash,format=qcow2,file=$${kameleon_cwd}/qemu_uefi_vars.fd"
           fi
           if [ -n "$${qemu_iso_path}" ]; then
-            QEMU_DRIVES="-drive file=$${qemu_iso_path},readonly,media=cdrom $QEMU_DRIVES"
+            QEMU_DRIVES="-drive file=$${qemu_iso_path},readonly=on,media=cdrom $QEMU_DRIVES"
             if [ "$${qemu_iso_boot}" == "true" ]; then
               QEMU_BOOT="$QEMU_BOOT -boot order=d"
             fi
