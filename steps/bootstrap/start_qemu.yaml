@@ -23,7 +23,6 @@
 - qemu_cpus: 2
 - qemu_memory_size: 1024
 - qemu_arch: $${arch}
-- qemu_image_size: 10G
 - qemu_pidfile: $${kameleon_cwd}/qemu.pid
 - qemu_uefi: false
 - qemu_uefi_code_path: /usr/share/AAVMF/AAVMF_CODE.fd
@@ -155,7 +154,7 @@
             SERIAL_TELNET="telnet:localhost:$${telnet_port},server"
           fi
           # Select disk
-          QEMU_DRIVES="-drive file=$${image_disk}.$${image_format},cache=$${disk_cache},media=disk,if=virtio,id=drive0"
+          QEMU_DRIVES="-drive file=$${image_disk}.$${image_format},format=$${image_format},cache=$${disk_cache},media=disk,if=virtio,id=drive$((DRIVE_ID++))"
           QEMU_BOOT=
           QEMU_APPEND_CMDLINE=
           if [ "$${qemu_uefi}" == "true" ]; then

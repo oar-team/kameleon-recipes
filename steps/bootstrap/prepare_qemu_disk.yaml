@@ -2,7 +2,7 @@
   - check_cmd_local: qemu-img
   - exec_local: |
       rm -f $${image_disk}.$${image_format}
-      qemu-img create -f qcow2 $${image_disk}.$${image_format} $${qemu_image_size}
+      qemu-img create -f $${image_format} $${image_disk}.$${image_format} $${qemu_image_size}
 
 - delete_initial_image:
   - on_checkpoint: skip
