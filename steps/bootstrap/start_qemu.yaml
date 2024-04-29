@@ -28,6 +28,7 @@
 - qemu_uefi_code_path: /usr/share/AAVMF/AAVMF_CODE.fd
 - qemu_uefi_vars_path: /usr/share/AAVMF/AAVMF_VARS.fd
 - qemu_netdev_user_options:
+- qemu_additional_disks:
 - disk_cache: unsafe
 
 - start_vm:
@@ -154,7 +155,13 @@
             SERIAL_TELNET="telnet:localhost:$${telnet_port},server"
           fi
           # Select disk
+          DRIVE_ID=0
           QEMU_DRIVES="-drive file=$${image_disk}.$${image_format},format=$${image_format},cache=$${disk_cache},media=disk,if=virtio,id=drive$((DRIVE_ID++))"
+          QEMU_ADDITIONAL_DISKS="$${qemu_additional_disks}"
+          for DISK in ${QEMU_ADDITIONAL_DISKS//,/ }; do
+            DISK=(${DISK//:/ })
+            QEMU_DRIVES="$QEMU_DRIVES -drive file=${DISK[0]}.${DISK[2]:-$${image_format}},format=${DISK[2]:-$${image_format}},cache=$${disk_cache},media=disk,if=virtio,id=drive$((DRIVE_ID++))"
+          done
           QEMU_BOOT=
           QEMU_APPEND_CMDLINE=
           if [ "$${qemu_uefi}" == "true" ]; then

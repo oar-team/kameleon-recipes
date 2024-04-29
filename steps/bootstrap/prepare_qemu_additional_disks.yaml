@@ -1,0 +1,21 @@
+- create_additional_images:
+  - check_cmd_local: qemu-img
+  - exec_local: |
+      set -e
+      QEMU_ADDITIONAL_DISKS=$${qemu_additional_disks}
+      for DISK in ${QEMU_ADDITIONAL_DISKS//,/ }; do
+        DISK=(${DISK//:/ })
+        rm -f ${DISK[0]}.${DISK[2]:-$${image_format}}
+        qemu-img create -f ${DISK[2]:-$${image_format}} ${DISK[0]}.${DISK[2]:-$${image_format}} ${DISK[1]:-$${qemu_image_size}}
+      done
+
+- delete_initial_image:
+  - on_checkpoint: skip
+  - on_export_clean:
+    - exec_local: |
+        set -e
+        QEMU_ADDITIONAL_DISKS=$${qemu_additional_disks}
+        for DISK in ${qemu_additional_disks//,/ }; do
+          DISK=(${DISK//:/ })
+          rm -f ${DISK[0]}.${DISK[2]:-$${image_format}}
+        done
