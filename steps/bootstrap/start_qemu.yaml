@@ -197,7 +197,7 @@
             QEMU_BOOT="-drive if=pflash,format=raw,readonly=on,file=$QEMU_UEFI_CODE -drive if=pflash,format=qcow2,file=$${kameleon_cwd}/qemu_uefi_vars.fd"
           fi
           if [ -n "$${qemu_iso_path}" ]; then
-            QEMU_DRIVES="-drive file=$${qemu_iso_path},readonly=on,media=cdrom $QEMU_DRIVES"
+            QEMU_DRIVES="-drive file=$${qemu_iso_path},readonly=on,index=2,media=cdrom $QEMU_DRIVES"
             if [ "$${qemu_iso_boot}" == "true" ]; then
               QEMU_BOOT="$QEMU_BOOT -boot order=d"
             fi
