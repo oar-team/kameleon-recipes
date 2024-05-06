@@ -1,0 +1,41 @@
+- update_packages_lists:
+  - apt-get_in: update
+- install_arch_specific_packages:
+  - exec_in: |
+      set -e
+      if [ -n "$${arch_specific_packages}" ]; then
+        apt-get install -y --force-yes $${arch_specific_packages}
+      fi
+- install_other_packages:
+  - exec_in: |
+      set -e
+      echo "Installing other required packages"
+      apt-get install -y --force-yes $${firmware_packages} $${system_packages} $${net_packages} $${linux_fs_packages} $${other_fs_packages} $${archive_file_packages} $${disk_packages}
+- install_kernel_packages:
+  - exec_in: |
+      set -e
+      if [ "$${use_backports}" == "true" -a "$${deb_kernel}" == "bpo" ]; then
+        KERNEL_BPO=$(apt-cache search "^linux-image.[[:digit:].-]+deb[[:digit:].]+-$${deb_kernel_arch}$" | sort -h | tail -n1 | cut -f1 -d\ )
+        [ -n "$KERNEL_BPO" ] || echo "No bpo kernel found, install the default one" 1>&2
+      elif [ "$${deb_kernel}" == "other" ]; then
+        KERNEL_OTHER=true
+        echo "Requested to not install any kernel now."
+      fi
+      if [ -n "$KERNEL_BPO" ]; then
+        apt-get install -y --force-yes -t $${release}-backports $KERNEL_BPO $${firmware_packages}
+      elif [ -z "$KERNEL_OTHER" ]; then
+        apt-get install -y --force-yes linux-image-$${deb_kernel_arch} $${firmware_packages}
+      fi
+- remove_some_packages:
+  - exec_in: |
+      set -e
+      if [ -n "$${to_remove_packages}" ]; then
+        apt-get remove --purge -y --force-yes $${to_remove_packages}
+      else
+        echo "No package to remove"
+      fi
+- clean_apt:
+  - apt-get_in: autoremove
+  - apt-get_in: autoclean
+  - apt-get_in: purge
+  - apt-get_in: clean

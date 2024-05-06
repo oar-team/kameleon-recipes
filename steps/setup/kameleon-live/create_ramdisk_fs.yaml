@@ -1,0 +1,19 @@
+- install_required_packages:
+  - apt-get_out: install cpio xz-utils pixz
+- create_ramdisk_archive:
+  - exec_out: |
+      set -e
+      cd $${rootfs} # use out context: quicker if foreign arch
+      find . -path './boot/*' -prune \
+          -o -path './usr/share/locale/*' -prune \
+          -o -path './usr/share/man/*' -prune \
+          -o -path './usr/share/doc/*' -prune \
+          -o -path './var/tmp/*' -prune \
+          -o -path './var/cache/*' -prune \
+          -o -path './var/lib/apt/lists/*' -prune \
+          -o -path './var/lib/dhcp/*' -prune \
+          -o -path './tmp/*' -prune \
+          -o -path './root/kameleon_workdir' -prune \
+          -o -path './$${kernel_filename}' -prune \
+          -o -path './initrd.img' -prune \
+          -o -xdev -print | cpio -o -H newc  | pixz -9 > $${rootfs}/boot/root.cxz

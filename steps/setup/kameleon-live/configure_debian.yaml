@@ -1,0 +1,95 @@
+- configure_hosts:
+  - on_checkpoint: disabled
+  - write_in:
+    - /etc/hosts
+    - |
+      127.0.0.1       localhost
+      ::1     ip6-localhost ip6-loopback
+      fe00::0 ip6-localnet
+      ff00::0 ip6-mcastprefix
+      ff02::1 ip6-allnodes
+      ff02::2 ip6-allrouters
+      ff02::3 ip6-allhosts
+- configure_network_interfaces:
+  - on_checkpoint: disabled
+  - write_in:
+    - /etc/network/interfaces
+    - |
+      auto lo
+      iface lo inet loopback
+
+      iface dhcp inet dhcp
+- configure_lighten_packages:
+  - on_checkpoint: disabled
+  - write_in:
+    - /etc/dpkg/dpkg.cfg.d/01lighten
+    - |
+      path-exclude=/usr/share/locale/*
+      path-exclude=/usr/share/man/*
+      path-exclude=/usr/share/doc/*
+      path-exclude=/usr/lib/ruby/*/rdoc/*
+      #path-exclude=/lib/modules/*/kernel/drivers/net/*
+      #path-exclude=/lib/modules/*/kernel/drivers/staging/*
+      #path-exclude=/lib/modules/*/kernel/drivers/media/*
+      #path-exclude=/lib/modules/*/kernel/drivers/gpu/*
+      #path-exclude=/lib/modules/*/kernel/drivers/usb/*
+      #path-exclude=/lib/modules/*/kernel/drivers/infiniband/*
+      #path-include=/lib/modules/*/kernel/drivers/net/ethernet/*
+  - write_in:
+    - /etc/apt/apt.conf.d/01lighten
+    - |
+      APT::Install-Recommends "0" ;
+      APT::Install-Suggests "0" ;
+- configure_source_list:
+  - on_checkpoint: disabled
+  - exec_in: |
+      set -e
+      sed -i -e 's/^/#/' /etc/apt/sources.list
+      if [ "$${release}" == "bookworm" ]; then
+        echo "deb $${deb_mirror_uri} $${release} main contrib non-free non-free-firmware" >> /etc/apt/sources.list.d/$${release}.list
+      else
+        echo "deb $${deb_mirror_uri} $${release} main contrib non-free" >> /etc/apt/sources.list.d/$${release}.list
+      fi
+      if [ "$${release}" == "bullseye" ]; then
+        echo "deb $${deb_mirror_uri} $${release}-updates main contrib non-free non-free-firmware" >> /etc/apt/sources.list.d/$${release}.list
+      elif [ "$${release}" != "sid" ]; then
+        echo "deb $${deb_mirror_uri} $${release}-updates main contrib non-free" >> /etc/apt/sources.list.d/$${release}.list
+      fi
+      if [ "$${release}" == bookworm ]; then
+        echo "deb http://security.debian.org/ $${release}-security main contrib non-free non-free-firmware" >> /etc/apt/sources.list.d/$${release}.list
+      elif [ "$${release}" == "bullseye" ]; then
+        echo "deb http://security.debian.org/ $${release}-security main contrib non-free" >> /etc/apt/sources.list.d/$${release}.list
+      elif [ "$${release}" == "buster" ]; then
+        echo "deb http://security.debian.org/ $${release}/updates main contrib non-free" >> /etc/apt/sources.list.d/$${release}.list
+      fi
+      if [ "$${use_backports}" == "true" ]; then
+        if [ "$${release}" == "bookworm" ]; then
+          echo "deb $${deb_mirror_uri} $${release}-backports main contrib non-free non-free-firmware" > /etc/apt/sources.list.d/$${release}-backports.list
+        elif ! [[ "$${release}" =~ sid|testing ]]; then
+          echo "deb $${deb_mirror_uri} $${release}-backports main contrib non-free" > /etc/apt/sources.list.d/$${release}-backports.list
+        fi
+      fi
+      if [ "$${deb_arch}" == "amd64" ]; then
+        echo "deb http://hwraid.le-vert.net/debian $${hwraid_release} main" >/etc/apt/sources.list.d/hwraid.list
+        apt-key adv --keyserver $${gpg_keyserver} --recv-key 6005210E23B3D3B4
+      fi
+- debconf-noninteractive:
+  - on_checkpoint: disabled
+  - exec_in: |
+      set -e
+      debconf-set-selections <<'EOF'
+      # Interface to use:
+      # Choices: Dialog, Readline, Gnome, Kde, Editor, Noninteractive
+      debconf debconf/frontend select Noninteractive
+      EOF
+      export DEBIAN_FRONTEND=noninteractive
+      export DEBCONF_NONINTERACTIVE_SEEN=true
+- set_time:
+  - exec_in: |
+      set -e
+      debconf-set-selections <<'EOF'
+      tzdata tzdata/Areas select Europe
+      tzdata tzdata/Zones/Europe select Paris
+      EOF
+      rm -f /etc/localtime /etc/timezone
+      dpkg-reconfigure tzdata

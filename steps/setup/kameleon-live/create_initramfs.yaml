@@ -1,0 +1,93 @@
+- configure_initramfs:
+  - on_checkpoint: disabled
+  - exec_in: |
+      sed -i -e 's/^MODULES=.*/MODULES=list/' \
+        /etc/initramfs-tools/initramfs.conf
+- add_initramfs_scripts:
+  - on_checkpoint: disabled
+  - exec_in: |
+      set -e
+      cat <<'EOS' > /etc/initramfs-tools/scripts/local-premount/create-root-tmpfs
+      #!/bin/sh
+      PREREQ="lvm"
+      prereqs()
+      {
+           echo "$PREREQ"
+      }
+      case $1 in
+      prereqs)
+           prereqs
+           exit 0
+           ;;
+      esac
+      . /scripts/functions
+      # Begin real processing below this line
+      log_begin_msg "Mount temporary rootfs"
+      cat <<EOF > /etc/fstab
+      ${rootmnt}.tmp ${rootmnt} root-tmpfs bind 0 0
+      EOF
+      mkdir -p ${rootmnt}.tmp
+      mount -t tmpfs -o size=$${tmpfs_size} root-tmpfs ${rootmnt}.tmp
+      if [ $? -ne 0 ]; then
+         panic "Failed to create tmpfs"
+      fi
+      log_end_msg
+      log_begin_msg "Populate rootfs"
+      cd ${rootmnt}.tmp
+      xzcat /root.cxz | cpio -i
+      if [ $? -ne 0 ]; then
+         panic "Failed to populate"
+      fi
+      log_end_msg
+      EOS
+      chmod 755 /etc/initramfs-tools/scripts/local-premount/create-root-tmpfs
+      cat <<'EOS' > /etc/initramfs-tools/scripts/local-bottom/remove-root-tmpfs
+      #!/bin/sh
+      PREREQ="lvm"
+      prereqs()
+      {
+           echo "$PREREQ"
+      }
+      case $1 in
+      prereqs)
+           prereqs
+           exit 0
+           ;;
+      esac
+      . /scripts/functions
+      # Begin real processing below this line
+      log_begin_msg "Umount temporary rootfs"
+      cat <<EOF > ${rootmnt}.tmp/etc/fstab
+      rootfs / tmpfs size=$${tmpfs_size} 0 0
+      EOF
+      umount ${rootmnt}.tmp
+      if [ $? -ne 0 ]; then
+        panic "Failed to umount"
+      fi
+      log_end_msg
+      EOS
+      chmod 755 /etc/initramfs-tools/scripts/local-bottom/remove-root-tmpfs
+- add_initramfs_hook:
+  - on_checkpoint: disabled
+  - exec_in: |
+      set -e
+      cat <<'EOF' > /etc/initramfs-tools/hooks/copy-ramdisk-archive
+      #!/bin/sh
+      PREREQ=""
+      prereqs()
+      {
+           echo "$PREREQ"
+      }
+      case $1 in
+      prereqs)
+           prereqs
+           exit 0
+           ;;
+      esac
+      . /usr/share/initramfs-tools/hook-functions
+      # Begin real processing below this line
+      cp -v /boot/root.cxz $DESTDIR
+      EOF
+      chmod 755 /etc/initramfs-tools/hooks/copy-ramdisk-archive
+- generate_new_initramfs:
+  - exec_in: update-initramfs -u

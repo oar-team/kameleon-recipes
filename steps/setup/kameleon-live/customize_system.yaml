@@ -1,0 +1,128 @@
+- set_console_prompt:
+  - on_checkpoint: disabled
+  - exec_in: sed -i -e '1s/^/Kameleon-live - /' /etc/issue
+- set_motd:
+  - on_checkpoint: disabled
+  - write_in:
+    - /etc/motd
+    - |
+      Welcome to Kameleon ramdisk OS
+      Generated from $${kameleon_recipe_name} (Debian $${release}, $${deb_kernel} kernel, $${deb_arch}) on $(date +'%F %T')
+- set_root_passwordless:
+  - on_checkpoint: disabled
+  - exec_in: passwd -d root
+  - exec_in: echo "PermitEmptyPasswords yes" >> /etc/ssh/sshd_config
+  - exec_in: echo "PermitRootLogin yes" >> /etc/ssh/sshd_config
+- set_root_bashrc:
+  - on_checkpoint: disabled
+  - exec_in: |
+      set -e
+      cat <<'EOF' > /root/.bashrc
+      export PS1='$? \h:\w \$'
+      umask 022
+      export LS_OPTIONS='--color=auto'
+      eval "$(dircolors)"
+      alias ls='ls $LS_OPTIONS'
+      alias ll='ls $LS_OPTIONS -l'
+      alias l='ls $LS_OPTIONS -lA'
+      alias rm='rm -i'
+      alias cp='cp -i'
+      alias mv='mv -i'
+      export LC_ALL="C"
+      export LANG="C"
+      EOF
+- set_rc_local:
+  - on_checkpoint: disabled
+  - exec_in: |
+      set -e
+      cat <<'EOF' > /etc/rc.local
+      #!/bin/bash -e
+      exec >& /dev/kmsg
+      # parse kadeploy-specific kernel command line arguments
+      for p in $(< /proc/cmdline); do
+        case "$p" in
+          DEBUG=*)
+            set -x
+            debug_cmd=${p#DEBUG=}
+            eval "${debug_cmd//_/ }"
+          ;;
+          ETH_DEV=*)
+            eth_dev=${p#ETH_DEV=}
+          ;;
+          LINK_UP_TOUT=*)
+            eth_timeout=${p#LINK_UP_TOUT=}
+          ;;
+          DISK_DEV=*)
+            disk_dev=${p#DISK_DEV=}
+          ;;
+          DISK_TOUT=*)
+            disk_timeout=${p#DISK_TOUT=}
+          ;;
+          NTP)
+            do_ntp=1
+          ;;
+        esac
+      done
+      echo "eth_dev: ${eth_dev:=eth0}"
+      echo "eth_timeout: ${eth_timeout:=60}"
+      echo "disk_dev: ${disk_dev:=""}"
+      echo "disk_timeout: ${disk_timeout:=5}"
+      if [ -w /sys/module/drm_kms_helper/parameters/poll ]; then
+        echo 'Desactivate drm_kms_helper poll...'
+        echo 0 > /sys/module/drm_kms_helper/parameters/poll
+      fi
+      if [ -n "$disk_dev" ]; then
+        echo "Waiting for disk device: /dev/$disk_dev"
+        while ! [ -e "/dev/$disk_dev" ] && [ $((disk_timeout--)) -gt 0 ]; do
+          echo -n .
+          sleep 1
+        done
+        if ! [ -e "/dev/$disk_dev" ]; then
+          echo "!!! Disk device not found: /dev/$disk_dev !!!"
+          reboot -f
+        fi
+        echo
+      fi
+      echo -n "Wait for ${eth_dev} link to be ready."
+      while ( [ ! -r "/sys/class/net/${eth_dev}/operstate" ] || [ "$(</sys/class/net/${eth_dev}/operstate)" != "up" ] ) && [ $((eth_timeout--)) -gt 0 ]; do
+        ip link set dev ${eth_dev} up || true
+        echo -n .
+        sleep 1
+      done
+      if [ $eth_timeout -le 0 ]; then
+        echo "failed: $eth_dev link is not ready."
+        exit 1
+      else
+        echo
+      fi
+      echo "Call dhclient on ${eth_dev}."
+      ifup "$eth_dev"=dhcp
+      if [ ! -f "/var/lib/dhcp/dhclient.${eth_dev}.leases" ]
+      then
+        echo "failed: no DHCP lease for $eth_dev."
+        exit 1
+      fi
+      if [ -n "$do_ntp" ]; then
+        echo "Call ntpdate."
+        ntpdate-debian
+      fi
+      exit 0
+      EOF
+      chmod 755 /etc/rc.local
+- add_dhcp_hostname_script:
+  - on_checkpoint: disabled
+  - exec_in: |
+      set -e
+      mkdir -p /etc/dhcp/dhclient-enter-hooks.d
+      cat <<'EOF' > /etc/dhcp/dhclient-enter-hooks.d/hostname
+      if [ -n "$new_host_name" ] && [ -n "$new_domain_name" ]; then
+        echo "$new_host_name.$new_domain_name" > /etc/hostname
+        /bin/hostname "$new_host_name.$new_domain_name"
+        if [ -n $new_ip_address ]; then
+          echo "$new_ip_address $new_host_name.$new_domain_name $new_host_name" >> /etc/hosts
+        fi
+      fi
+      EOF
+      chmod 755 /etc/dhcp/dhclient-enter-hooks.d/hostname
+- remove_udev_persistent-net_rules:
+  - exec_in: rm -f /etc/udev/rules.d/*-persistent-net.rules
