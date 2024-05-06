@@ -168,9 +168,9 @@
           QEMU_UEFI_VARS=$${qemu_uefi_vars_path}
           if [ "$${qemu_uefi}" == "true" ]; then
             if [ -z "$QEMU_UEFI_CODE" ]; then
-              if [ "$$qemu_arch" == "aarch64" ]; then
+              if [ "$${qemu_arch}" == "aarch64" ]; then
                 QEMU_UEFI_CODE=/usr/share/AAVMF/AAVMF_CODE.fd
-              elif [ "$$qemu_arch" == "x86_64" ]; then
+              elif [ "$${qemu_arch}" == "x86_64" ]; then
                 QEMU_UEFI_CODE=/usr/share/OVMF/OVMF_CODE.fd
               else
                 echo "No UEFI CODE file is defined" 1>&2
@@ -178,9 +178,9 @@
               fi
             fi
             if [ -z "$QEMU_UEFI_VARS" ]; then
-              if [ "$$qemu_arch" == "aarch64" ]; then
+              if [ "$${qemu_arch}" == "aarch64" ]; then
                 QEMU_UEFI_VARS=/usr/share/AAVMF/AAVMF_VARS.fd
-              elif [ "$$qemu_arch" == "x86_64" ]; then
+              elif [ "$${qemu_arch}" == "x86_64" ]; then
                 QEMU_UEFI_VARS=/usr/share/OVMF/OVMF_VARS.fd
               else
                 echo "No UEFI CODE file is defined" 1>&2
