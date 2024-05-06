@@ -34,7 +34,7 @@
       log_end_msg
       log_begin_msg "Populate rootfs"
       cd ${rootmnt}.tmp
-      pzstd -dcf /root.cpio.zstd | cpio -i
+      time pzstd -dcf /root.cpio.zstd | cpio -i
       if [ $? -ne 0 ]; then
          panic "Failed to populate"
       fi
@@ -87,10 +87,15 @@
       . /usr/share/initramfs-tools/hook-functions
       # Begin real processing below this line
       cp -v /boot/root.cpio.zstd $DESTDIR
-      cp -v /lib/x86_64-linux-gnu/libz.so.1 $DESTDIR/lib64
-      cp -v /lib/x86_64-linux-gnu/liblzma.so.5 $DESTDIR/lib64
-      cp -v /lib/x86_64-linux-gnu/liblz4.so.1 $DESTDIR/lib64/
-      cp -v /usr/bin/zstd $DESTDIR/bin
+      ## Add the zstd tool with libs it depends on
+      #cp -v /lib/x86_64-linux-gnu/libz.so.1 $DESTDIR/lib
+      #cp -v /lib/x86_64-linux-gnu/liblzma.so.5 $DESTDIR/lib
+      #cp -v /lib/x86_64-linux-gnu/liblz4.so.1 $DESTDIR/lib
+      #cp -v /usr/bin/zstd $DESTDIR/bin
+      # Add the pzstd tool with libs it depends on
+      cp -v /lib/x86_64-linux-gnu/libstdc++.so.6 $DESTDIR/lib
+      cp -v /lib/x86_64-linux-gnu/libgcc_s.so.1 $DESTDIR/lib
+      cp -v /lib/x86_64-linux-gnu/libm.so.6 $DESTDIR/lib
       cp -v /usr/bin/pzstd $DESTDIR/bin
       EOF
       chmod 755 /etc/initramfs-tools/hooks/copy-ramdisk-archive-and-tools
