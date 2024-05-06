@@ -1,0 +1,43 @@
+#==============================================================================
+# vim: softtabstop=2 shiftwidth=2 expandtab fenc=utf-8 cc=81 tw=80
+#==============================================================================
+#
+# DESCRIPTION: Kadeploy3 ramdisk OS (used in the deployment phase) for ARM64
+#
+# Notes:
+# - force use of busybox rather than klibc-utils (which breaks the mount)
+#
+#==============================================================================
+---
+extend: kadeploy3-deploy-kernel-bookworm-arm64.yaml
+
+global:
+  deb_kernel: other
+  firmware_packages:
+  qemu_memory_size: 16G
+  tmpfs_size: 8G
+
+  # FIXME: xz is very slow during Hydra's boot, for unknown reasons !
+  # The variables below override the default compression mode of
+  # the ram filesystem of the MiniOS, so that we use zstd instead
+  # of xz. That way, Hydra's MiniOS boot significantly faster.
+  compression_tools_packages: zstd
+  compression_tool: pzstd
+  decompression_tool: pzstd
+  root_archive: root.cpio.zstd
+  compression_cmd: $${compression_tool} -vvv -19 -o $${rootfs}/boot/$${root_archive}
+  decompression_cmd: $${decompression_tool} -dcf /$${root_archive} --stdout
+
+bootstrap:
+  - "@base"
+
+setup:
+  - "@base"
+  - install_backport_kernel:
+    - update_apt:
+      - apt-get_in: update
+    - install_linux_image:
+      - apt-get_in: install -t bookworm-backports linux-image-arm64
+
+export:
+  - "@base"
