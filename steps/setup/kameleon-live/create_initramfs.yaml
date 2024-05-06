@@ -34,7 +34,7 @@
       log_end_msg
       log_begin_msg "Populate rootfs"
       cd ${rootmnt}.tmp
-      xzcat /root.cxz | cpio -i
+      pzstd -dcf /root.cpio.zstd | cpio -i
       if [ $? -ne 0 ]; then
          panic "Failed to populate"
       fi
@@ -71,7 +71,7 @@
   - on_checkpoint: disabled
   - exec_in: |
       set -e
-      cat <<'EOF' > /etc/initramfs-tools/hooks/copy-ramdisk-archive
+      cat <<'EOF' > /etc/initramfs-tools/hooks/copy-ramdisk-archive-and-tools
       #!/bin/sh
       PREREQ=""
       prereqs()
@@ -86,8 +86,13 @@
       esac
       . /usr/share/initramfs-tools/hook-functions
       # Begin real processing below this line
-      cp -v /boot/root.cxz $DESTDIR
+      cp -v /boot/root.cpio.zstd $DESTDIR
+      cp -v /lib/x86_64-linux-gnu/libz.so.1 $DESTDIR/lib64
+      cp -v /lib/x86_64-linux-gnu/liblzma.so.5 $DESTDIR/lib64
+      cp -v /lib/x86_64-linux-gnu/liblz4.so.1 $DESTDIR/lib64/
+      cp -v /usr/bin/zstd $DESTDIR/bin
+      cp -v /usr/bin/pzstd $DESTDIR/bin
       EOF
-      chmod 755 /etc/initramfs-tools/hooks/copy-ramdisk-archive
+      chmod 755 /etc/initramfs-tools/hooks/copy-ramdisk-archive-and-tools
 - generate_new_initramfs:
   - exec_in: update-initramfs -u

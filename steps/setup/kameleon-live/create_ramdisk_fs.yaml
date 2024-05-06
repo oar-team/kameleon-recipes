@@ -1,5 +1,5 @@
 - install_required_packages:
-  - apt-get_out: install cpio xz-utils pixz
+  - apt-get_out: install cpio zstd
 - create_ramdisk_archive:
   - exec_out: |
       set -e
@@ -16,4 +16,4 @@
           -o -path './root/kameleon_workdir' -prune \
           -o -path './$${kernel_filename}' -prune \
           -o -path './initrd.img' -prune \
-          -o -xdev -print | cpio -o -H newc  | pixz -9 > $${rootfs}/boot/root.cxz
+          -o -xdev -print | cpio -o -H newc  | pzstd > $${rootfs}/boot/root.cpio.zstd
