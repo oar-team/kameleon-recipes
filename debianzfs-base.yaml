@@ -19,7 +19,7 @@
 #
 #==============================================================================
 ---
-extend: base-qemu.yaml
+extend: from_debootstrap/base-qemu.yaml
 
 global:
   distrib: debian
