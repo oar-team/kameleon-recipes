@@ -1,14 +1,18 @@
-- out_context_debian_release: bullseye
+- out_context_distrib: debian
+- out_context_release: bullseye
 - out_context_debian_backports: false
 - apt_install:
   - test:
-    - exec_local: test "$${out_context_debian_backports}" == "true"
-    - group:
-      - append_out:
-        - /etc/apt/sources.list
-        - deb http://deb.debian.org/debian $${out_context_debian_release}-backports main
-      - apt-get_out: update
-      - apt-get_out: -t $${out_context_debian_release}-backports install $${build_packages}
-    - group:
-      - apt-get_out: update
-      - apt-get_out: install $${build_packages}
+    - exec_local: test "$${out_context_distrib}" == "debian"
+    - test:
+      - exec_local: test "$${out_context_debian_backports}" == "true"
+      - group:
+        - append_out:
+          - /etc/apt/sources.list
+          - deb http://deb.debian.org/debian $${out_context_release}-backports main
+        - apt-get_out: update
+        - apt-get_out: -t $${out_context_release}-backports install $${build_packages}
+      - group:
+        - apt-get_out: update
+        - apt-get_out: install $${build_packages}
+    - exec_local: echo "out context $${out_context_distrib} is not supported" 1>&2 && exit 1

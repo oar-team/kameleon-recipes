@@ -49,12 +49,18 @@ global:
     - $${distrib}
 
   # This ISO is used to create the OUT context and not image itself
-  out_context_debian_release: bullseye
+  out_context_distrib: debian
+  out_context_release: bookworm
   boot_timeout_installer: 5
-  installer_iso_arch: x86_64
-  installer_iso_filename: debian-$${out_context_debian_release}-$${installer_iso_arch}-live.iso
-  installer_iso_url: http://kameleon.imag.fr/iso/$${installer_iso_filename}
-  qemu_iso_path: $${kameleon_cwd}/$${installer_iso_filename}
+  installer_arch: $${deb_arch}
+  installer_kernel_filename: kameleon-live-$${out_context_distrib}-$${out_context_release}-$${installer_arch}.vmlinuz
+  installer_initrd_filename: kameleon-live-$${out_context_distrib}-$${out_context_release}-$${installer_arch}.initrd.img
+  installer_url: http://kameleon.imag.fr/live/
+  installer_kernel_url: $${installer_url}/$${installer_kernel_filename}
+  installer_initrd_url: $${installer_url}/$${installer_initrd_filename}
+  qemu_kernel_path: $${kameleon_cwd}/$${installer_kernel_filename}
+  qemu_initrd_path: $${kameleon_cwd}/$${installer_initrd_filename}
+  qemu_append_cmdline: root=/root.tmp rw ETH_DEV=ens3
 
   ## GPG keyserver (Waring: not all servers are reliable)
   gpg_keyserver: keyserver.ubuntu.com
