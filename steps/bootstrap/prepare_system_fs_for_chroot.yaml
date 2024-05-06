@@ -11,6 +11,7 @@
         mkdir -p $${rootfs_container_work_dir}/$d
         mount --bind /$d $${rootfs_container_work_dir}/$d
       done
+      mkdir -p $${rootfs_container_work_dir}/etc
       if [ -e $${rootfs_container_work_dir}/etc/resolv.conf -o -h $${rootfs_container_work_dir}/etc/resolv.conf ]; then
         ls -l $${rootfs_container_work_dir}/etc/resolv.conf
         if ! [ -e $${rootfs_container_work_dir}/etc/.resolv.conf.kameleon ]; then
