@@ -1,0 +1,164 @@
+#==============================================================================
+# vim: softtabstop=2 shiftwidth=2 expandtab fenc=utf-8 cc=81 tw=80
+#==============================================================================
+#
+# DESCRIPTION: A recipe that use a docker for the out context providing debootstrap
+#
+#==============================================================================
+---
+extend: ../steps/backend/$${backend}.yaml
+
+# Loads some helpful aliases (this files are located in steps/aliases/ directory)
+aliases: defaults.yaml
+
+# Custom shell environement (this files are located in steps/env/ directory)
+env:
+  - bashrc
+  - functions.sh
+
+# Global variables use by Kameleon engine and the steps
+global:
+  ## Select backend for in context isolation
+  backend: docker
+
+  # Include specific steps
+  include_steps:
+    - kameleon-live
+    - $${distrib}/$${release}
+    - $${distrib}
+
+  # Docker image to use for the out context with debootstrap
+  out_context_distrib: "debian"
+  out_context_release: "bookworm"
+  out_context_docker_image: "$${out_context_distrib}:$${out_context_release}"
+  out_context_debian_backports: false
+
+  # Default hostname
+  hostname: kameleon-$${distrib}
+  # Default root password
+  root_password: kameleon
+  # Target system architecture
+  arch: x86_64
+  deb_arch: amd64
+  deb_kernel_arch: $${deb_arch}
+  # Target system distrib
+  distrib: debian
+  # Target system release
+  release: bookworm
+  # Deb mirror
+  deb_mirror_hostname: deb.debian.org
+  deb_mirror_uri: http://$${deb_mirror_hostname}/debian/
+
+  # APT config
+  apt_enable_contrib: true
+  apt_enable_nonfree: true
+
+  # Debootstrap config
+  build_packages: debootstrap
+  bootstrap_variant: minbase
+  # force use of busybox rather than klibc-utils (which breaks the mount)
+  bootstrap_packages: initramfs-tools busybox gnupg
+
+  # Lighten debian package installation (no man/doc/...)
+  enable_lighten: true
+
+  arch_specific_packages: kexec-tools grub-pc grub-efi-amd64-bin
+  use_backports: true
+  hwraid_release: $${release}
+  #deb_kernel: default
+  # -> other option: bpo - e.g. set on command line using "-g deb_kernel:bpo"
+  deb_kernel: bpo
+  kernel_filename: vmlinuz
+  tmpfs_size: 4G
+  firmware_packages: firmware-linux-free
+  # haveged is used to provide more entropy during boot
+  system_packages: ash systemd systemd-sysv haveged
+  net_packages: ifupdown ntpdate isc-dhcp-client openssh-client openssh-server
+  linux_fs_packages: e2fsprogs xfsprogs btrfs-progs
+  other_fs_packages: dosfstools #ntfs-3g
+  archive_file_packages: tar bzip2 xz-utils zstd
+  disk_packages: hdparm parted fdisk gdisk
+  to_remove_packages:
+  target_directory: /srv/kameleon/live/
+
+  # GPG keyserver
+  gpg_keyserver: keyserver.ubuntu.com
+
+  target_package_name: kameleon-live-$${distrib}-$${release}-$${deb_arch}
+  deb_packager_email: "kameleon builder <builder@kameleon.imag.fr>"
+
+bootstrap:
+  - prepare_docker
+  - start_docker
+  - install_build_packages
+
+setup:
+  - debootstrap
+  - prepare_system_fs_for_chroot
+  - debootstrap_post_config
+  - configure_debian
+  - install_packages
+  - customize_system
+  - create_ramdisk_fs
+  - create_initramfs
+export:
+  - move_files_to_out:
+    - copy_files:
+      - exec_out: |
+          set -e
+          mkdir -p $${target_package_name}
+          cp $${rootfs}/boot/$${kernel_filename}* $${target_package_name}/$${target_package_name}.$${kernel_filename}
+          cp $${rootfs}/boot/initrd.img* $${target_package_name}/$${target_package_name}.initrd.img
+  - create_deb_package:
+    - install_debian_tools:
+      - apt-get_out: install devscripts
+    - create_debian_files:
+      - exec_out: |
+          set -e
+          mkdir -p $${target_package_name}/debian
+          (cd $${target_package_name} && \
+           DEBEMAIL="$${deb_packager_email}" dch --create \
+               --package $${target_package_name} \
+               --newversion 1.$(date +%Y%m%d) \
+               "Generated with kameleon using recipe $${kameleon_recipe_name}")
+          cat > $${target_package_name}/debian/control <<EOF
+          Source: $${target_package_name}
+          Section: admin
+          Priority: optional
+          Maintainer: Pierre Neyron <pierre.neyron@free.fr>
+          Build-Depends: debhelper (>= 9)
+          Standards-Version: 3.9.8
+          
+          Package: $${target_package_name}
+          Architecture: all
+          Depends: ${shlibs:Depends}, ${misc:Depends}
+          Description: kameleon live OS - $${kameleon_recipe_name}
+            Kameleon live OS, to be used as an out context for building kameleon recipes.
+          EOF
+          echo 10 > $${target_package_name}/debian/compat
+          cat > $${target_package_name}/debian/copyright <<EOF
+          Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+          Upstream-Name: $${target_package_name}
+          Source: https://github.com/oar-team/kameleon-recipes/tree/master/kameleon-live
+          EOF
+          cat > $${target_package_name}/debian/rules <<'EOF'
+          #!/usr/bin/make -f
+          
+          %:
+          	dh $@
+          EOF
+          chmod +x $${target_package_name}/debian/rules
+          mkdir -p $${target_package_name}/debian/source
+          echo "3.0 (native)" > $${target_package_name}/debian/source/format
+          cat > $${target_package_name}/debian/install <<EOF
+          $${target_package_name}.$${kernel_filename} $${target_directory}
+          $${target_package_name}.initrd.img $${target_directory}
+          EOF
+    - generate_deb_package:
+      - exec_out: (cd $${target_package_name} && dpkg-buildpackage -uc -us)
+    - export_deb:
+      - on_checkpoint: disabled
+      - exec_out: rm -rf $${target_package_name}
+      - pipe:
+        - exec_out: tar c $${target_package_name}*
+        - exec_local: tar xv
