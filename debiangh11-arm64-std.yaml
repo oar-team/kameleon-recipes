@@ -1,0 +1,59 @@
+#==============================================================================
+# vim: softtabstop=2 shiftwidth=2 expandtab fenc=utf-8 cc=81 tw=80
+#==============================================================================
+#
+# DESCRIPTION: Debian bullseye (11) arm64 std Grid'5000 environment
+#              for NVIDIA Grace Hopper Machines
+#
+#==============================================================================
+---
+extend: ./debian11-arm64-common.yaml
+
+global:
+  # Grid'5000 environment variant
+  g5k_variant: std
+
+  # Generate only the appliance for bare-metal deployment, not for VMs.
+  appliance_formats: tar.zst
+
+  # Grid'5000 Kadeploy environment parameters
+  g5k_postinst_script: g5k-postinstall --net debian-bridged --net hpc --fstab nfs --restrict-user std --disk-aliases
+  # Disable cgroup v2 and force cgroup v1 - Bug #12723
+  g5k_kernel_params: "systemd.unified_cgroup_hierarchy=false systemd.legacy_systemd_cgroup_controller=true"
+  # QEMU options
+  qemu_image_size: 16G
+  # Visibility override
+  g5k_visibility: shared
+
+bootstrap:
+  - "@base"
+
+setup:
+  - "@base"
+  - install_kernel6.6:
+    - add_bookworm_sources_list:
+      - write_in:
+        - /etc/apt/sources.list.d/bookworm-backports.list
+        - |
+          # Bookworm backports, used to install 6.6 linux kernel.
+          deb http://deb.debian.org/debian bookworm-backports main contrib non-free
+          deb-src http://deb.debian.org/debian bookworm-backports main contrib non-free
+    - update_apt:
+      - apt-get_in: update
+    - install_linux_image:
+      - apt-get_in: install -t bookworm-backports linux-image-arm64
+  - upgrade_util-linux:
+    - place_sources_list:
+      - write_in:
+        - /etc/apt/sources.list.d/util-linux.list
+        - |
+          # Manually built util-linux packages in order to have a newer lscpu version
+          deb http://packages.grid5000.fr/deb/util-linux/bullseye /
+    - update_apt:
+      - apt-get_in: update
+    - upgrade_util-linux:
+      - apt-get_in: install util-linux
+  - set_and_clear_var_log
+
+export:
+  - "@base"
