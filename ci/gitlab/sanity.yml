@@ -1,0 +1,29 @@
+lint:
+  stage: .pre
+  tags:
+    - grid5000-docker
+  rules:
+    # Do not run this on manually created pipelines
+    - if: $CI_PIPELINE_SOURCE == "push"
+  image: debian:bullseye
+  script:
+    - apt-get update && apt-get -y --no-install-recommends install rubygems ruby-dev libffi-dev build-essential
+    - gem install bundler
+    - bundle install --gemfile=ci/Gemfile
+    # Puppet manifests syntax check (equivalent to puppet parser validate) - The most important check
+    - BUNDLE_GEMFILE=ci/Gemfile bundle exec rake --rakefile ci/rakefile_syntax syntax:manifests
+    - BUNDLE_GEMFILE=ci/Gemfile bundle exec rake --rakefile ci/rakefile_syntax syntax:templates
+    - BUNDLE_GEMFILE=ci/Gemfile bundle exec rake --rakefile ci/rakefile_syntax syntax:hiera
+    # Puppet style check
+    - BUNDLE_GEMFILE=ci/Gemfile bundle exec rake --rakefile ci/rakefile_lint lint
+
+dryrun_all:
+  stage: dryrun
+  tags:
+   - grid5000-docker
+  rules:
+    # Do not run this on manually created pipelines
+    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_TAG == null
+  image: ${CI_REGISTRY}/grid5000/docker/kameleon:2.10.11.1-bullseye
+  script:
+   - for G5K_ENV in *.yaml kadeploy3-deploy-kernel/*.yaml from_grid5000_environment/*.yaml; do echo "** kameleon dryrun $G5K_ENV **"; kameleon build -d "$G5K_ENV"; done
