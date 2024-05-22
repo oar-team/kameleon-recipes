@@ -13,6 +13,7 @@ global:
   distrib: debian
   release: buster
   release_number: 10
+  deb_mirror_hostname: archive.debian.org
 
 bootstrap:
   - "@base"
