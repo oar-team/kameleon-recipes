@@ -15,7 +15,7 @@ global:
   # packages to install
   packages: "$${packages} nfs-common autofs nslcd ruby g5k-meta-packages-$${distrib}$${g5k_release_number}-$${g5k_variant}"
   # Grid'5000 Kadeploy environment parameters
-  g5k_postinst_script: g5k-postinstall --net debian --fstab nfs --restrict-user current --disk-aliases
+  g5k_postinst_script: g5k-postinstall --net debian --net force-ref-api-names --fstab nfs --restrict-user current --disk-aliases
 
 bootstrap:
   - "@base"
