@@ -11,7 +11,7 @@ extend: ./debiantesting-x64-common.yaml
 global:
   # Grid'5000 environment variant
   g5k_variant: nfs
-  g5k_deb_repositories: "g5k-meta-packages"
+  g5k_deb_repositories: "g5k-meta-packages autofs-unstable"
   # packages to install
   packages: "$${packages} nfs-common autofs nslcd ruby g5k-meta-packages-$${distrib}$${g5k_release_number}-$${g5k_variant}"
   # Grid'5000 Kadeploy environment parameters
