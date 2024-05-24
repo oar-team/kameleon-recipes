@@ -16,7 +16,7 @@ global:
   appliance_formats: tar.zst
 
   # Grid'5000 Kadeploy environment parameters
-  g5k_postinst_script: g5k-postinstall --net debian-bridged --net hpc --fstab nfs --restrict-user std --disk-aliases
+  g5k_postinst_script: g5k-postinstall --net debian-bridged --net force-ref-api-names --net hpc --fstab nfs --restrict-user std --disk-aliases
   # QEMU options
   qemu_image_size: 16G
   # Visibility override

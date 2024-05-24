@@ -19,7 +19,7 @@ global:
     ./var/tmp/* ./tmp/* ./var/log/* ./dev/* ./proc/* ./run/*
     ./sys/* ./root/.rpmdb ./boot/extlinux ./boot/grub ./boot/grub2
   # Grid'5000 Kadeploy environment parameters
-  g5k_postinst_script: g5k-postinstall --net debian-bridged --disk-aliases
+  g5k_postinst_script: g5k-postinstall --net debian-bridged --net force-ref-api-names --disk-aliases
 
 bootstrap:
   - "@base"

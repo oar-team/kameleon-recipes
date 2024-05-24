@@ -24,7 +24,7 @@ global:
   g5k_tar_compression: "zstd"
   g5k_postinst_path: server:///grid5000/postinstalls/g5k-postinstall.tgz
   g5k_postinst_compression: "gzip"
-  g5k_postinst_script: g5k-postinstall --net debian --disk-aliases
+  g5k_postinst_script: g5k-postinstall --net debian --net force-ref-api-names --disk-aliases
   g5k_kernel_params: "modprobe.blacklist=nouveau"
   deb_backports: true
   # grub-efi-amd64-bin has to be installed if we want to support both mbr and
