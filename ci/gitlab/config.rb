@@ -75,6 +75,12 @@ ENV_CONFIG = {
       'variants' => VARIANTS_MIN_NFS,
     },
   },
+  'almalinux' => {
+    '9' => {
+      'archs' => ARCHS_X_ARM,
+      'variants' => VARIANTS_MIN_NFS,
+    },
+  },
 }.freeze
 
 def env_name(os, version, arch, variant)
