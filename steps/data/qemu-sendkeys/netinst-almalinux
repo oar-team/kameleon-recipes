@@ -1,0 +1,1 @@
+<tab><wait> inst.text inst.ks=http://%LOCAL_IP%:%HTTP_PORT%/ks.cfg<kp_enter>
