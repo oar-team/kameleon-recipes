@@ -178,6 +178,17 @@ if __name__ == '__main__':
                 url_regex = re.compile("^"+args.mirror+"(?:"+args.version+"/(?:isos/(?:"+args.arch+"/(?:Rocky-"+args.version+"\.\d+-"+args.arch+"-boot\.iso)?)?)?)?$")
                 target_regex = re.compile("^.*Rocky-\d+\.\d+-\w+-boot\.iso$")
             [visited,found] = url_find(set([args.mirror]), set(), set())
+        elif (args.distrib.lower() == "almalinux"):
+            if args.mirror == None:
+                args.mirror = "https://mirror.in2p3.fr/linux/almalinux/"
+            if not re.match("^\d+$",args.version):
+                raise Exception("please give the Alma Linux release number (e.g. 9 for Alma Linux 9)")
+            if args.version not in ['9']:
+                raise Exception("Unsupported version %s of Alma Linux." % args.version)
+            else:
+                url_regex = re.compile("^"+args.mirror+"(?:"+args.version+"/(?:isos/(?:"+args.arch+"/(?:AlmaLinux-"+args.version+"\.\d+-"+args.arch+"-boot\.iso)?)?)?)?$")
+                target_regex = re.compile("^.*AlmaLinux-\d+\.\d+-\w+-boot\.iso$")
+            [visited,found] = url_find(set([args.mirror]), set(), set())
         else:
             raise Exception("this distribution is not supported")
         logger.info("URL regex: "+url_regex.pattern)
