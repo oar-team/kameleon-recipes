@@ -18,6 +18,13 @@
   - exec_local: |
       if [[ "$${appliance_formats}" =~ "qcow2" && "$${distrib}" == "debian" ]]; then
         virt-customize -a $${output}.qcow2 --run-command 'sed -i s/ens3/enp0s2/ /etc/network/interfaces'
+      elif [[ "$${appliance_formats}" =~ "qcow2" && "$${distrib}" == "ubuntu" ]]; then
+        virt-customize -a $${output}.qcow2 --run-command '\
+          if [ -f /etc/netplan/00-installer-config.yaml ]; then \
+            sed -i s/ens3/enp0s2/ /etc/netplan/00-installer-config.yaml; \
+          else \
+            mkdir -p /etc/netplan && echo "network:\n  version: 2\n  ethernets:\n    enp0s2:\n      dhcp4: true" > /etc/netplan/01-netcfg.yaml; \
+          fi'
       else
         echo "Nothing to do."
       fi
