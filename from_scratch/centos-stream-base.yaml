@@ -11,7 +11,7 @@ extend: centos-base.yaml
 global:
   distrib: centos-stream
   release_number: 8
-  mirror_base_url: http://mirror.in2p3.fr/linux/CentOS/
+  mirror_base_url: https://vault.centos.org/
   mirror_url: $${mirror_base_url}$${release}-stream/BaseOS/$${arch}/os
 
   include_steps:
