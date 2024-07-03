@@ -4,9 +4,13 @@
 
 - update_system:
   - test:
-    # fix URL for centos 8 (not needed for centos-stream 8)
-    - exec_local: test "$${distrib}" == "centos" -a "$${release_number}" == "8"
+    # Centos [Stream] 8 use vault mirror
+    - exec_local: test "$${distrib}" == "centos" -a "$${release_number}" == "8" || test "$${distrib}" == "centos-stream" -a "$${release_number}" == "8"
     - exec_in: |
         sed -i -e 's%^\(mirrorlist=http://mirrorlist.centos.org\)%#\1%' /etc/yum.repos.d/*
-        sed -i -e 's%^#baseurl=http://mirror.centos.org/%baseurl=http://vault.centos.org/%' /etc/yum.repos.d/*
+        if [ "$${distrib}" == "centos" ]; then
+          sed -i -e 's%^#baseurl=http://mirror.centos.org/%baseurl=http://vault.centos.org/%' /etc/yum.repos.d/*
+        elif [ "$${distrib}" == "centos-stream" ]; then
+          sed -i -e 's%#baseurl=http://mirror.centos.org/$contentdir/$stream%baseurl=https://vault.centos.org/8-stream%' /etc/yum.repos.d/*
+        fi
   - exec_in: yum upgrade -y

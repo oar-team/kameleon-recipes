@@ -154,12 +154,12 @@ if __name__ == '__main__':
             [visited,found] = url_find(set([args.mirror]), set(), set())
         elif (args.distrib.lower() == "centos-stream"):
             if not re.match("^\d+$",args.version):
-                raise Exception("please give the CentOS-stream release number (e.g. 8)")
+                raise Exception("please give the CentOS Stream release number (e.g. 8)")
             if args.version == '8':
                 if args.mirror == None:
-                    args.mirror = "http://mirror.in2p3.fr/linux/CentOS/"
-                url_regex = re.compile("^"+args.mirror+"(?:"+args.version+"-stream/(?:isos/(?:"+args.arch+"/(?:CentOS-Stream-"+args.version+"-"+args.arch+"-latest-boot\.iso)?)?)?)?$")
-                target_regex = re.compile("^.*CentOS-Stream-\d+-\w+-latest-boot\.iso$")
+                    args.mirror = "https://vault.centos.org/"
+                url_regex = re.compile("^"+args.mirror+"(?:"+args.version+"-stream/(?:isos/(?:"+args.arch+"/(?:CentOS-Stream-"+args.version+"-\d+\.\d-"+args.arch+"-boot\.iso)?)?)?)?$")
+                target_regex = re.compile("^.*CentOS-Stream-\d+-\d+\.\d+-\w+-boot\.iso$")
             else:
                 if args.mirror == None:
                     args.mirror = "http://mirror.stream.centos.org/"
