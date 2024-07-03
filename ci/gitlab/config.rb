@@ -40,6 +40,10 @@ ENV_CONFIG = {
       'archs' => ARCHS_X_ARM,
       'variants' => VARIANTS_MIN_NFS,
     },
+    '2404' => {
+      'archs' => ARCHS_X_ARM,
+      'variants' => VARIANTS_MIN_NFS,
+    },
     'l4t200435' => {
       'archs' => ARCHS_ARM,
       'variants' => %w[big],
