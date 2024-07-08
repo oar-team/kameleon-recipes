@@ -13,7 +13,7 @@ global:
   release: 7.9.2009
   release_number: 7
 
-  mirror_base_url: http://ftp.rz.uni-frankfurt.de/pub/mirrors/centos-altarch/
+  mirror_base_url: https://vault.centos.org/altarch/
   installer_iso_finder_mirror_url: $${mirror_base_url}$${release}/os/$${arch}
   mirror_url: $${mirror_base_url}$${release}/os/$${arch}
 
