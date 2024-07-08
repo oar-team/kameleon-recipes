@@ -10,7 +10,7 @@ extend: centos-base.yaml
 
 global:
   release_number: 7
-  release: 7.8.2003 
+  release: 7.9.2009
 
 bootstrap:
   - "@base"
