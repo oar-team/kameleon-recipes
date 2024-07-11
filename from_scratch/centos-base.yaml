@@ -19,9 +19,7 @@ global:
   #release_date: 1708
   release: $${release_number}
 
-  #mirror_base_url: https://vault.centos.org/
-  # faster mirror
-  mirror_base_url: http://mirror.nsc.liu.se/centos-store/
+  mirror_base_url: https://vault.centos.org/
   mirror_url: $${mirror_base_url}$${release}/os/$${arch}/
 
   # location of the CentOS netinstall iso

@@ -10,7 +10,7 @@ extend: centos-base.yaml
 
 global:
   release_number: 7
-  mirror_base_url: http://ftp.rz.uni-frankfurt.de/pub/mirrors/centos-altarch/
+  mirror_base_url: http://vault.centos.org/altarch/
   mirror_url: $${mirror_base_url}$${release}/os/$${arch}/
 
 bootstrap:
