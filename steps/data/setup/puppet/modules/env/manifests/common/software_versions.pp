@@ -22,7 +22,7 @@ class env::common::software_versions {
           $dcgm_exporter          = '2.0.0-rc.11'
         }
         'bullseye': {
-          $lmod                   = '8.6.19-1+g5k1.0.3'
+          $lmod                   = '8.6.19-1+g5k1.0.5'
           $rocm_version           = '4.5'
           $nvidia_driver          = '535.183.06'
           $nvidia_cuda            = '11.2.2_460.32.03_linux'
@@ -32,7 +32,7 @@ class env::common::software_versions {
           $libfabric1             = '1.11.0-2+g5k1'
         }
         'bookworm': {
-          $lmod                   = '8.6.19-1+g5k1.0.3'
+          $lmod                   = '8.6.19-1+g5k1.0.5'
           $rocm_version           = '4.5'
           $nvidia_driver          = '550.54.14'
           $nvidia_cuda            = '12.2.2_535.104.05_linux'
@@ -59,7 +59,7 @@ class env::common::software_versions {
           $dcgm_exporter          = '2.0.0-rc.11'
         }
         'bullseye': {
-          $lmod                   = '8.6.19-1+g5k1.0.3'
+          $lmod                   = '8.6.19-1+g5k1.0.5'
           $nvidia_driver          = '418.197.02'
           $nvidia_user_driver     = '460.91.03'
           $nvidia_cuda            = '11.2.2_460.32.03_linux_ppc64le'
@@ -68,7 +68,7 @@ class env::common::software_versions {
           $libfabric1             = '1.11.0-2+g5k1'
         }
         'bookworm': {
-          $lmod                   = '8.6.19-1+g5k1.0.3'
+          $lmod                   = '8.6.19-1+g5k1.0.5'
           $nvidia_driver          = '418.197.02'
           $nvidia_cuda            = '12.2.2_535.104.05_linux_ppc64le'
           $datacenter_gpu_manager = '1:2.0.15'
