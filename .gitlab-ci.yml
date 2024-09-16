@@ -10,6 +10,13 @@ stages:
   - setup
   - environments
 
+.common_rules_tag: &common_rules_tag
+  - if: $CI_COMMIT_TAG
+  # NOTE: set the variable below at your own risk.
+  # Setting this forces a tag pipeline, it can be done when git-pushing:
+  # git push -o ci.variable="FORCE_CI_COMMIT_TAG=..." -o ci.variable="FORCE_CI_COMMIT_SHORT=..."
+  - if: $FORCE_CI_COMMIT_TAG
+
 # NOTE: the general workflow for changing this is to manually create a pipeline.
 # See https://www.grid5000.fr/w/TechTeam:Environment-recipes.
 # Alternatively you can *temporarily* hardcode some values here, while working
@@ -38,6 +45,7 @@ clone-refrepo:
   rules:
     # If variables are filled then just start, otherwise wait for user input.
     - if: '$ENVIRONMENTS != "" || $CLUSTERS != "" || $ENVIRONMENTS_LIST != ""'
+    - *common_rules_tag
     # There is no alternative, we don't show up the job if these variables are
     # not set. Read the documentation in TechTeam:Environment-recipes to learn
     # about manually creating a pipeline for this.
@@ -48,25 +56,48 @@ clone-refrepo:
     paths:
       - reference-repository
 
-# NOTE: this is a standalone job because gitlab requires <5MB artifacts for
-# dynamic child pipelines.
-gen-child-pipelines:
+.pipeline-generation:
   stage: setup
   image: ${CI_REGISTRY}/grid5000/docker/g5k-debian:bullseye
   tags:
     - grid5000-docker
   needs:
     - clone-refrepo
-  rules:
-    - if: '$ENVIRONMENTS != "" || $CLUSTERS != "" || $ENVIRONMENTS_LIST != ""'
   variables:
     RUBYLIB: reference-repository/lib
-  script:
+  before_script:
     - rm -rf generated && mkdir generated
-    - ruby ci/gitlab/gen_jobs.rb -o generated
   artifacts:
     paths:
       - generated
+
+# NOTE: this is a standalone job because gitlab requires <5MB artifacts for
+# dynamic child pipelines.
+gen-child-pipelines:
+  extends: .pipeline-generation
+  rules:
+    - if: '$ENVIRONMENTS != "" || $CLUSTERS != "" || $ENVIRONMENTS_LIST != ""'
+  script:
+    - ruby ci/gitlab/gen_jobs.rb -o generated
+
+gen-tag-pipeline:
+  extends: .pipeline-generation
+  rules:
+    - *common_rules_tag
+  script:
+    # NOTE: both these if are here to simulate a tag pipeline with an arbitrary
+    # commit and an arbitrary tag.
+    - |
+      if [ -n "${FORCE_CI_COMMIT_TAG}" ]; then
+        export CI_COMMIT_TAG="${FORCE_CI_COMMIT_TAG}"
+      fi
+    - |
+      if [ -n "${FORCE_CI_COMMIT_SHORT}" ]; then
+        export CI_COMMIT_SHORT_SHA="${FORCE_CI_COMMIT_SHORT}"
+      fi
+    - echo $CI_COMMIT_TAG
+    - echo $CI_COMMIT_SHORT_SHA
+    - ruby ci/gitlab/push/gen_jobs_tag.rb -o generated -t $CI_COMMIT_TAG -c $CI_COMMIT_SHORT_SHA
 
 environments-pipeline:
   stage: environments
@@ -81,6 +112,20 @@ environments-pipeline:
     include:
       - artifact: generated/main.yml
         job: gen-child-pipelines
+
+push-environments-pipeline:
+  stage: environments
+  needs:
+    - gen-tag-pipeline
+  rules:
+    - *common_rules_tag
+  variables:
+    PARENT_PIPELINE_ID: $CI_PIPELINE_ID
+  trigger:
+    strategy: depend
+    include:
+      - artifact: generated/main-tag.yml
+        job: gen-tag-pipeline
 
 include:
   - 'ci/gitlab/sanity.yml'
