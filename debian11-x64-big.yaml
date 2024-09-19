@@ -14,7 +14,7 @@ global:
   # Grid'5000 Kadeploy environment parameters
   g5k_postinst_script: g5k-postinstall --net debian --net hpc --fstab nfs --restrict-user current --disk-aliases
   # QEMU options
-  qemu_image_size: 22G
+  qemu_image_size: 23G
 
 bootstrap:
   - "@base"

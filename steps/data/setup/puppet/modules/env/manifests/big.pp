@@ -28,6 +28,10 @@ class env::big ( $variant = "big", $parent_parameters = {} ){
   if $env::deb_arch == 'amd64' {
     class { 'env::big::install_beegfs': }
   }
+  # singularity install
+  if $env::deb_arch == 'amd64' {
+    class { 'env::big::install_singularity': }
+  }
   #Allow sshfs
   class { 'env::big::configure_sshfs': }
   # Config OpenMPI
