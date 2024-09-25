@@ -10,6 +10,19 @@ class env::common::software_versions {
   $libguestfs_backport_ppc64el = '1:1.40.2-7~bpog5k10+1'
   $g5k_jupyterlab              = '0.11'
 
+  if "$env::deb_arch" == 'amd64' {
+    case $lsbdistcodename {
+      'bullseye' : {
+        $singularity_package  = 'singularity-ce'
+        $singularity_version  = '4.1.2-focal'
+      }
+      'bookworm' : {
+        $singularity_package  = 'singularity-container'
+        $singularity_version  = '4.1.5+ds3-1~fto12+1'
+      }
+    }
+  }
+
   case "${env::deb_arch}" {
     'amd64': {
       $nvidia_driver_arch         = 'x86_64'
