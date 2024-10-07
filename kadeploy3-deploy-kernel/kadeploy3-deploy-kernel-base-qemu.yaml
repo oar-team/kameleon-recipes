@@ -110,38 +110,28 @@ setup:
     - configure_source_list:
       - on_checkpoint: disabled
       - exec_in: |
-          set -e
-          sed -i -e 's/^/#/' /etc/apt/sources.list
-          if [ "$${release}" == "trixie" ]; then
-            echo "deb $${deb_mirror_uri} $${release} main contrib non-free non-free-firmware" >> /etc/apt/sources.list.d/$${release}.list
-          else
-            echo "deb $${deb_mirror_uri} $${release} main contrib non-free" >> /etc/apt/sources.list.d/$${release}.list
-          fi
-          if [ "$${release}" == "trixie" ]; then
-            echo "deb $${deb_mirror_uri} $${release}-updates main contrib non-free non-free-firmware" >> /etc/apt/sources.list.d/$${release}.list
-          elif [ "$${release}" != "sid" ]; then
-            echo "deb $${deb_mirror_uri} $${release}-updates main contrib non-free" >> /etc/apt/sources.list.d/$${release}.list
-          fi
-          if [ "$${release}" == "trixie" ]; then
-            echo "deb http://security.debian.org/ $${release}-security main contrib non-free non-free-firmware" >> /etc/apt/sources.list.d/$${release}.list
-          elif [ "$${release}" == "bullseye" ]; then
-            echo "deb http://security.debian.org/ $${release}-security main contrib non-free" >> /etc/apt/sources.list.d/$${release}.list
-          elif [ "$${release}" == "buster" ]; then
-            echo "deb http://security.debian.org/ $${release}/updates main contrib non-free" >> /etc/apt/sources.list.d/$${release}.list
-          elif [ "$${release}" == "bookworm" ]; then
-            echo "deb $${deb_mirror_uri} $${release} main contrib non-free non-free-firmware" > /etc/apt/sources.list.d/$${release}.list
-          fi
-          if [ "$${use_backports}" == "true" ]; then
-            if [ "$${release}" == "bookworm" ]; then
-              echo "deb $${deb_mirror_uri} $${release}-backports main contrib non-free non-free-firmware" > /etc/apt/sources.list.d/$${release}-backports.list
-            elif ! [[ "$${release}" =~ sid|testing ]]; then
-              echo "deb $${deb_mirror_uri} $${release}-backports main contrib non-free" > /etc/apt/sources.list.d/$${release}-backports.list
+            set -e
+            if [ "$${release}" == "bullseye" ] || [ "$${release}" == "buster" ] || [ "$${release}" == "stretch" ]; then
+              NON_FREE_SECTION=non-free
+              SECURITY_MIRROR=no
+            else
+              NON_FREE_SECTION=non-free-firmware
+              SECURITY_MIRROR=yes
             fi
-          fi
-          if [ "$${deb_arch}" == "amd64" ] && [ "$${release}" != "trixie" ]; then
-            echo "deb http://hwraid.le-vert.net/debian $${hwraid_release} main" >/etc/apt/sources.list.d/hwraid.list
-            apt-key adv --keyserver $${gpg_keyserver} --recv-key 6005210E23B3D3B4
-          fi
+            echo "deb $${deb_mirror_uri} $${release} main contrib $NON_FREE_SECTION" > /etc/apt/sources.list
+            echo "deb $${deb_mirror_uri} $${release}-updates main contrib $NON_FREE_SECTION" >> /etc/apt/sources.list
+            if [ "$SECURITY_MIRROR" == "yes" ]; then
+              echo "deb http://security.debian.org/debian-security $${release}-security main contrib $NON_FREE_SECTION" >> /etc/apt/sources.list
+            fi
+
+            if [ "$${use_backports}" == "true" ]; then
+              echo "deb $${deb_mirror_uri} $${release}-backports main contrib $NON_FREE_SECTION" > /etc/apt/sources.list.d/backports.list
+            fi
+
+            if [ "$${deb_arch}" == "amd64" ] && [ "$${release}" != "trixie" ]; then
+              echo "deb http://hwraid.le-vert.net/debian $${hwraid_release} main" > /etc/apt/sources.list.d/hwraid.list
+              apt-key adv --keyserver $${gpg_keyserver} --recv-key 6005210E23B3D3B4
+            fi
     - debconf-noninteractive:
       - on_checkpoint: disabled
       - exec_in: |
