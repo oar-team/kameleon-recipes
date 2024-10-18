@@ -5,6 +5,7 @@ spec:
     autostart:
       type: boolean
     environment-name:
+    refapi:
 ---
 
 "$[[ inputs.cluster ]]":
@@ -14,6 +15,7 @@ spec:
     CLUSTER: $[[ inputs.cluster ]]
     ENV_NAME: $[[ inputs.environment-name ]]
     SITE: $[[ inputs.site ]]
+    REFAPI: $[[ inputs.refapi ]]
   rules:
     # We start the job automatically if we're told to do so, otherwise we put
     # the job in manual mode.
@@ -26,5 +28,5 @@ spec:
   tags:
     - grid5000-shell
   script:
-    - echo "Testing ${ENV_NAME} on ${CLUSTER}"
-    - RUBYLIB=/srv/jenkins-scripts/lib ci/gitlab/run_job.rb --job test --env ${ENV_NAME} --cluster ${SITE}-${CLUSTER}
+    - echo "Testing ${ENV_NAME} on ${CLUSTER}, with refapi branch ${REFAPI}"
+    - RUBYLIB=/srv/jenkins-scripts/lib ci/gitlab/run_job.rb --job test --env ${ENV_NAME} --cluster ${SITE}-${CLUSTER} --refapi $REFAPI

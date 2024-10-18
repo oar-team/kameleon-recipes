@@ -27,6 +27,8 @@ VALID_ARCH_OPTIONS = ARCH_TO_G5K_ARCH.values.freeze
 ENABLE_UNUSED_GEN_JOBS = !(ENV['ENABLE_UNUSED_GEN_JOBS'] || '').empty?
 ENABLE_UNUSED_TEST_JOBS = !(ENV['ENABLE_UNUSED_TEST_JOBS'] || '').empty?
 
+REFAPI_BRANCH = (ENV['REFREPO_BRANCH'] || 'master').freeze
+
 CLUSTERS = (ENV['CLUSTERS'] || '').split(',').freeze
 ENVIRONMENTS_REGEX = /#{ENV['ENVIRONMENTS'] || '.*'}/.freeze
 
@@ -111,6 +113,7 @@ def pipeline_for_config(clusters_config, os, version, arch, variant)
         'inputs' => {
           'site' => site,
           'cluster' => cluster,
+          'refapi' => REFAPI_BRANCH,
           'autostart' => autostart_cluster?(cluster),
           **common_inputs,
         },
