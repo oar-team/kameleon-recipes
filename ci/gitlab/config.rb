@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'refrepo/data_loader'
+
 ARCHS_ALL = %w[x64 arm64 ppc64].freeze
 ARCHS_X_ARM = %w[x64 arm64].freeze
 ARCHS_ARM = %w[arm64].freeze
@@ -105,6 +107,42 @@ end
 
 ALL_ENVS = map_all_envs(&method(:env_name)).flatten.freeze
 
+ARCH_TO_G5K_ARCH = {
+  'x86_64' => 'x64',
+  'ppc64le' => 'ppc64',
+  'aarch64' => 'arm64',
+}.freeze
+
+G5K_ARCH_TO_ARCH = {
+  'x64' => 'x86_64',
+  'ppc64' => 'ppc64le',
+  'arm64' => 'aarch64',
+}.freeze
+
 def valid_env?(name)
   ALL_ENVS.include?(name)
+end
+
+REF = load_data_hierarchy.freeze
+
+def all_sites
+  REF['sites'].keys
+end
+
+def clusters_for_site(site)
+  REF['sites'][site]['clusters'].keys
+end
+
+def clusters_per_arch_for_site(site)
+  clusters = clusters_for_site(site)
+
+  archs_per_cluster = clusters.to_h do |c|
+    # Since all nodes in a cluster have the same arch, we can look only at
+    # the first node's architecture.
+    arch = REF['sites'][site]['clusters'][c]['nodes'].values.first['architecture']['platform_type']
+    # Convert arch to g5k's funky arch names.
+    [c, ARCH_TO_G5K_ARCH[arch]]
+  end
+  # Group clusters per arch and return them
+  archs_per_cluster.keys.group_by { |k| archs_per_cluster[k] }
 end

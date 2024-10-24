@@ -22,4 +22,4 @@ spec:
     - grid5000-shell
   script:
     - echo "Generating ${ENV_NAME}"
-    - RUBYLIB=/srv/jenkins-scripts/lib ci/gitlab/run_job.rb --job build --env ${ENV_NAME}
+    - RUBYLIB=/srv/jenkins-scripts/lib:reference-repository/lib ci/gitlab/run_job.rb --job build --env ${ENV_NAME}
