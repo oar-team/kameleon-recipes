@@ -3,7 +3,7 @@ workflow:
   # creating the pipeline in the UI.
   # This allows to avoid duplicated pipelines in merge requests.
   rules:
-    - if: $CI_PIPELINE_SOURCE == "push" || $CI_PIPELINE_SOURCE == "web"
+    - if: $CI_PIPELINE_SOURCE == "push" || $CI_PIPELINE_SOURCE == "web" || $CI_PIPELINE_SOURCE == "api"
 
 stages:
   - dryrun
@@ -26,6 +26,8 @@ variables:
     description: Should non-matching generation job be created? Leave blank to avoid generation.
   ENABLE_UNUSED_TEST_JOBS:
     description: Should non-matching test job be created? Leave blank to avoid generation.
+  ENVIRONMENTS_LIST:
+    description: An explicit list of environments to build
 
 clone-refrepo:
   stage: setup
@@ -35,7 +37,7 @@ clone-refrepo:
   needs: []
   rules:
     # If variables are filled then just start, otherwise wait for user input.
-    - if: '$ENVIRONMENTS != "" || $CLUSTERS != ""'
+    - if: '$ENVIRONMENTS != "" || $CLUSTERS != "" || $ENVIRONMENTS_LIST != ""'
     # There is no alternative, we don't show up the job if these variables are
     # not set. Read the documentation in TechTeam:Environment-recipes to learn
     # about manually creating a pipeline for this.
@@ -56,7 +58,7 @@ gen-child-pipelines:
   needs:
     - clone-refrepo
   rules:
-    - if: '$ENVIRONMENTS != "" || $CLUSTERS != ""'
+    - if: '$ENVIRONMENTS != "" || $CLUSTERS != "" || $ENVIRONMENTS_LIST != ""'
   variables:
     RUBYLIB: reference-repository/lib
   script:
@@ -71,7 +73,7 @@ environments-pipeline:
   needs:
     - gen-child-pipelines
   rules:
-    - if: '$ENVIRONMENTS != "" || $CLUSTERS != ""'
+    - if: '$ENVIRONMENTS != "" || $CLUSTERS != "" || $ENVIRONMENTS_LIST != ""'
   variables:
     PARENT_PIPELINE_ID: $CI_PIPELINE_ID
   trigger:
