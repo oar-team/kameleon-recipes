@@ -6,11 +6,11 @@ class env::std::configure_oar_client {
     # Can specify oar client version below
     case "${::lsbdistcodename}" {
       'buster' : {
-        $oar_version       = "2.5.10~g5k29-1";
+        $oar_version       = "2.5.10~g5k32-1";
         $oar_repos         = "g5k"
       }
       'bullseye' : {
-        $oar_version       = "2.5.10~g5k29-1";
+        $oar_version       = "2.5.10~g5k32-1";
         $oar_repos         = "g5k"
       }
       default : {
