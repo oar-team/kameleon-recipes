@@ -77,17 +77,11 @@ DCGM_FI_DRIVER_VERSION,        label, Driver Version
 # DCGM_FI_DEV_VBIOS_VERSION,     label, VBIOS version of the device
 
 # Metric wanted for bug #14511
-DCGM_FI_DEV_SM_CLOCK, gauge, SM clock for the device.
-DCGM_FI_DEV_MEM_CLOCK, gauge, Memory clock for the device.
 DCGM_FI_DEV_VIDEO_CLOCK, gauge, Video encoder/decoder clock for the device.
 DCGM_FI_DEV_APP_SM_CLOCK, gauge, SM Application clocks.
 DCGM_FI_DEV_APP_MEM_CLOCK, gauge, Memory Application clocks.
-DCGM_FI_DEV_MEMORY_TEMP, gauge, Memory temperature for the device.
-DCGM_FI_DEV_GPU_TEMP, gauge, Current temperature readings for the device in degrees C.
 DCGM_FI_DEV_MEM_MAX_OP_TEMP, gauge, Maximum operating temperature for the memory of this GPU.
 DCGM_FI_DEV_GPU_MAX_OP_TEMP, gauge, Maximum operating temperature for this GPU.
-DCGM_FI_DEV_POWER_USAGE, gauge, Power usage for the device in Watts.
-DCGM_FI_DEV_TOTAL_ENERGY_CONSUMPTION, counter, Total energy consumption for the GPU in mJ since the driver was last reloaded.
 DCGM_FI_DEV_POWER_USAGE_INSTANT, gauge, Current instantaneous power usage of the device in Watts.
 DCGM_FI_DEV_SLOWDOWN_TEMP, gauge, Slowdown temperature for the device.
 DCGM_FI_DEV_SHUTDOWN_TEMP, gauge, Shutdown temperature for the device.
@@ -98,10 +92,6 @@ DCGM_FI_DEV_POWER_MGMT_LIMIT_DEF, gauge, Default power management limit for the 
 DCGM_FI_DEV_ENFORCED_POWER_LIMIT, gauge, Effective power limit that the driver enforces after taking into account all limiters.
 DCGM_FI_DEV_PSTATE, gauge, Performance state (P-State) 0-15.
 DCGM_FI_DEV_FAN_SPEED, gauge, Fan speed for the device in percent 0-100.
-DCGM_FI_DEV_PCIE_REPLAY_COUNTER, counter, PCIe replay counter.
-DCGM_FI_DEV_GPU_UTIL, gauge, GPU Utilization.
-DCGM_FI_DEV_MEM_COPY_UTIL, gauge, Memory Utilization.
-DCGM_FI_DEV_ENC_UTIL, gauge, Encoder Utilization.
 DCGM_FI_DEV_DEC_UTIL, gauge, Decoder Utilization.
 DCGM_FI_DEV_NVSWITCH_POWER_VDD, gauge, NvSwitch Power VDD in watts.
 DCGM_FI_DEV_NVSWITCH_POWER_DVDD, gauge, NvSwitch Power DVDD in watts.
