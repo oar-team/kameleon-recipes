@@ -30,6 +30,12 @@ global:
   linux_fs_packages: e2fsprogs xfsprogs btrfs-progs
   other_fs_packages: dosfstools #ntfs-3g
   archive_file_packages: tar bzip2 xz-utils zstd
+
+  compression_tools: xz-utils pixz
+  root_archive: root.cxz
+  compression_cmd: pixz -9 > $${rootfs}/boot/$${root_archive}
+  decompression_cmd: xzcat /$${root_archive}
+
   disk_packages: hdparm parted fdisk
   ruby_packages: ruby ruby-net-ssh ruby-net-ssh-multi ruby-daemons
   ruby_packages_bpo:
@@ -104,36 +110,28 @@ setup:
     - configure_source_list:
       - on_checkpoint: disabled
       - exec_in: |
-          set -e
-          sed -i -e 's/^/#/' /etc/apt/sources.list
-          if [ "$${release}" == "bookworm" ]; then
-            echo "deb $${deb_mirror_uri} $${release} main contrib non-free non-free-firmware" >> /etc/apt/sources.list.d/$${release}.list
-          else
-            echo "deb $${deb_mirror_uri} $${release} main contrib non-free" >> /etc/apt/sources.list.d/$${release}.list
-          fi
-          if [ "$${release}" == "bookworm" ]; then
-            echo "deb $${deb_mirror_uri} $${release}-updates main contrib non-free non-free-firmware" >> /etc/apt/sources.list.d/$${release}.list
-          elif [ "$${release}" != "sid" ]; then
-            echo "deb $${deb_mirror_uri} $${release}-updates main contrib non-free" >> /etc/apt/sources.list.d/$${release}.list
-          fi
-          if [ "$${release}" == bookworm ]; then
-            echo "deb http://security.debian.org/ $${release}-security main contrib non-free non-free-firmware" >> /etc/apt/sources.list.d/$${release}.list
-          elif [ "$${release}" == "bullseye" ]; then
-            echo "deb http://security.debian.org/ $${release}-security main contrib non-free" >> /etc/apt/sources.list.d/$${release}.list
-          elif [ "$${release}" == "buster" ]; then
-            echo "deb http://security.debian.org/ $${release}/updates main contrib non-free" >> /etc/apt/sources.list.d/$${release}.list
-          fi
-          if [ "$${use_backports}" == "true" ]; then
-            if [ "$${release}" == "bookworm" ]; then
-              echo "deb $${deb_mirror_uri} $${release}-backports main contrib non-free non-free-firmware" > /etc/apt/sources.list.d/$${release}-backports.list
-            elif ! [[ "$${release}" =~ sid|testing ]]; then
-              echo "deb $${deb_mirror_uri} $${release}-backports main contrib non-free" > /etc/apt/sources.list.d/$${release}-backports.list
+            set -e
+            if [ "$${release}" == "bullseye" ] || [ "$${release}" == "buster" ] || [ "$${release}" == "stretch" ]; then
+              NON_FREE_SECTION=non-free
+              SECURITY_MIRROR=no
+            else
+              NON_FREE_SECTION=non-free-firmware
+              SECURITY_MIRROR=yes
             fi
-          fi
-          if [ "$${deb_arch}" == "amd64" ]; then
-            echo "deb http://hwraid.le-vert.net/debian $${hwraid_release} main" >/etc/apt/sources.list.d/hwraid.list
-            apt-key adv --keyserver $${gpg_keyserver} --recv-key 6005210E23B3D3B4
-          fi
+            echo "deb $${deb_mirror_uri} $${release} main contrib $NON_FREE_SECTION" > /etc/apt/sources.list
+            echo "deb $${deb_mirror_uri} $${release}-updates main contrib $NON_FREE_SECTION" >> /etc/apt/sources.list
+            if [ "$SECURITY_MIRROR" == "yes" ]; then
+              echo "deb http://security.debian.org/debian-security $${release}-security main contrib $NON_FREE_SECTION" >> /etc/apt/sources.list
+            fi
+
+            if [ "$${use_backports}" == "true" ]; then
+              echo "deb $${deb_mirror_uri} $${release}-backports main contrib $NON_FREE_SECTION" > /etc/apt/sources.list.d/backports.list
+            fi
+
+            if [ "$${deb_arch}" == "amd64" ] && [ "$${release}" != "trixie" ]; then
+              echo "deb http://hwraid.le-vert.net/debian $${hwraid_release} main" > /etc/apt/sources.list.d/hwraid.list
+              apt-key adv --keyserver $${gpg_keyserver} --recv-key 6005210E23B3D3B4
+            fi
     - debconf-noninteractive:
       - on_checkpoint: disabled
       - exec_in: |
@@ -207,7 +205,7 @@ setup:
           Generated from $${kameleon_recipe_name} (Debian $${release}, $${deb_kernel} kernel, $${deb_arch}) on $(date +'%F %T')
     - fix_ntp:
       - on_checkpoint: disabled
-      - exec_in: sed -i -e 's/\(NTPSERVERS=\).*/\1="ntp1.grid5000.fr ntp2.grid5000.fr"/;s/\(NTPDATE_USE_NTP_CONF=\).*/\1=no/' /etc/default/ntpdate
+      - exec_in: sed -i -e 's/\(NTPSERVERS=\).*/\1="ntp1.grid5000.fr ntp2.grid5000.fr"/;s/\(NTPDATE_USE_NTP_CONF=\).*/\1=no/' /etc/default/*ntpdate
     - set_root_authorized_keys:
       - on_checkpoint: disabled
       - exec_in: mkdir -p /root/.ssh
@@ -349,7 +347,7 @@ export:
       - apt-get_in: purge
       - apt-get_in: clean
     - create_rootfs:
-      - apt-get_out: install cpio xz-utils pixz
+      - apt-get_out: install $${compression_tools}
       - exec_out: |
           set -e
           cd $${rootfs} # use out context: quicker if foreign arch
@@ -365,7 +363,7 @@ export:
               -o -path './root/kameleon_workdir' -prune \
               -o -path './$${kernel_filename}' -prune \
               -o -path './initrd.img' -prune \
-              -o -xdev -print | cpio -o -H newc  | pixz -9 > $${rootfs}/boot/root.cxz
+              -o -xdev -print | cpio -o -H newc | $${compression_cmd}
     - add_initramfs_hook:
       - on_checkpoint: disabled
       - exec_in: |
@@ -385,7 +383,18 @@ export:
           esac
           . /usr/share/initramfs-tools/hook-functions
           # Begin real processing below this line
-          cp -v /boot/root.cxz $DESTDIR
+          # This block below handle the case where the root archive is compressed by zstd
+          # and thus must be decompressed by zstd in the initramfs.
+          if [ "$${compression_tools}" = "zstd" ]; then
+            # We use sed to change PPC64 arch, because it doesn't match the
+            # architecture name used for the /lib/$ARCH-linux-gnu directory.
+            MACHINE_ARCH=$(uname -m | sed 's/ppc64le/powerpc64le/g')
+            for lib in libstdc++.so.6 libgcc_s.so.1 libc.so.6 libm.so.6; do
+              cp /lib/$MACHINE_ARCH-linux-gnu/$lib $DESTDIR/lib/
+            done
+            cp /usr/bin/pzstd $DESTDIR/bin/
+          fi
+          cp -v /boot/$${root_archive} $DESTDIR
           EOF
           chmod 755 /etc/initramfs-tools/hooks/copy-root-archive
     - add_initramfs_scripts:
@@ -419,7 +428,7 @@ export:
           log_end_msg
           log_begin_msg "Populate rootfs"
           cd ${rootmnt}.tmp
-          xzcat /root.cxz | cpio -i
+          $${decompression_cmd} | cpio -i
           if [ $? -ne 0 ]; then
              panic "Failed to populate"
           fi

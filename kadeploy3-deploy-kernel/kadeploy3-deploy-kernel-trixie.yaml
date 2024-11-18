@@ -1,0 +1,25 @@
+#==============================================================================
+# vim: softtabstop=2 shiftwidth=2 expandtab fenc=utf-8 cc=81 tw=80
+#==============================================================================
+#
+# DESCRIPTION: Kadeploy3 ramdisk OS (used in the deployment phase)
+#
+#==============================================================================
+---
+extend: kadeploy3-deploy-kernel-base.yaml
+# Global variables use by Kameleon engine and the steps
+global:
+  release: trixie
+  bootstrap_packages: initramfs-tools busybox gnupg dirmngr
+  to_remove_packages: wget libpsl5
+  use_backports: no
+  security_release: $${release}-security
+  net_packages: ifupdown ntpsec-ntpdate isc-dhcp-client openssh-client openssh-server taktuk netcat-traditional
+bootstrap:
+  - "@base"
+
+setup:
+  - "@base"
+
+export:
+  - "@base"
