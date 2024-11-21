@@ -94,6 +94,7 @@ def pipeline_for_config(clusters_config, os, version, arch, variant)
   {
     'stages' => ['generate', *all_sites],
     'include' => [
+      'ci/gitlab/post-job.yml',
       generate_image_job,
       *tests_clusters_jobs,
     ],

@@ -16,6 +16,7 @@ spec:
     ENV_NAME: $[[ inputs.environment-name ]]
     SITE: $[[ inputs.site ]]
     REFAPI: $[[ inputs.refapi ]]
+    OAR_ID_FILE: /tmp/oar-job-id-${CI_JOB_ID}.txt
   rules:
     # We start the job automatically if we're told to do so, otherwise we put
     # the job in manual mode.
@@ -30,3 +31,4 @@ spec:
   script:
     - echo "Testing ${ENV_NAME} on ${CLUSTER}, with refapi branch ${REFAPI}"
     - RUBYLIB=/srv/jenkins-scripts/lib:reference-repository/lib ci/gitlab/run_job.rb --job test --env ${ENV_NAME} --cluster ${SITE}-${CLUSTER} --refapi $REFAPI
+  after_script: !reference [.postjob-cleanup, after_script]
