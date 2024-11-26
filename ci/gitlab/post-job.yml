@@ -1,0 +1,12 @@
+# This anchor can be used to run an after script cleanup step, to free up a
+# job which is not used anymore.
+# It assumes that the including job defines an "OAR_ID_FILE" variable.
+.postjob-cleanup:
+  after_script:
+    - |
+      if [ -f ${OAR_ID_FILE} ]; then
+        ssh ajenkins@${SITE} "oardel $(cat ${OAR_ID_FILE})"
+        rm -rf ${OAR_ID_FILE}
+      else
+        echo "No job to cleanup"
+      fi

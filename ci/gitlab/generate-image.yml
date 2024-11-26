@@ -10,6 +10,9 @@ spec:
   variables:
     AUTOSTART: $[[ inputs.autostart ]]
     ENV_NAME: $[[ inputs.environment-name ]]
+    # The next two variables are here for the postjob-cleanup.
+    OAR_ID_FILE: /tmp/oar-job-id-${CI_JOB_ID}.txt
+    SITE: nancy
   rules:
     # We start the job automatically if we're told to do so, otherwise we put
     # the job in manual mode.
@@ -23,3 +26,4 @@ spec:
   script:
     - echo "Generating ${ENV_NAME}"
     - RUBYLIB=/srv/jenkins-scripts/lib:reference-repository/lib ci/gitlab/run_job.rb --job build --env ${ENV_NAME}
+  after_script: !reference [.postjob-cleanup, after_script]
