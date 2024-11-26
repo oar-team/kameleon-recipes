@@ -35,13 +35,28 @@ variables:
     description: Should non-matching test job be created? Leave blank to avoid generation.
   ENVIRONMENTS_LIST:
     description: An explicit list of environments to build
+  CUSTOM_POSTINSTALL_BRANCH:
+    description: An optional postinstall branch to use instead of the released one.
+
+
+upload-custom-postinstall:
+  stage: setup
+  needs: []
+  tags:
+    - grid5000-shell
+  rules:
+    - if: '$CUSTOM_POSTINSTALL_BRANCH != ""'
+  script:
+    - ci/gitlab/make_postinstall_available.sh -b ${CUSTOM_POSTINSTALL_BRANCH} -f "${CI_PIPELINE_ID}-${CI_COMMIT_SHORT_SHA}"
 
 clone-refrepo:
   stage: setup
   image: ${CI_REGISTRY}/grid5000/docker/g5k-debian:bullseye
   tags:
     - grid5000-docker
-  needs: []
+  needs:
+    - job: upload-custom-postinstall
+      optional: true
   rules:
     # If variables are filled then just start, otherwise wait for user input.
     - if: '$ENVIRONMENTS != "" || $CLUSTERS != "" || $ENVIRONMENTS_LIST != ""'
@@ -107,6 +122,7 @@ environments-pipeline:
     - if: '$ENVIRONMENTS != "" || $CLUSTERS != "" || $ENVIRONMENTS_LIST != ""'
   variables:
     PARENT_PIPELINE_ID: $CI_PIPELINE_ID
+    ROOT_POSTINSTALL_BRANCH: $CUSTOM_POSTINSTALL_BRANCH
   trigger:
     strategy: depend
     include:

@@ -12,6 +12,7 @@ spec:
     - gen-child-child-pipelines
   variables:
     ROOT_PIPELINE_ID: $PARENT_PIPELINE_ID
+    POSTINSTALL_BRANCH: $ROOT_POSTINSTALL_BRANCH
   trigger:
     strategy: depend
     include:
