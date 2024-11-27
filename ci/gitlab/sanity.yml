@@ -7,7 +7,7 @@ lint:
     - if: $CI_PIPELINE_SOURCE == "push"
   image: debian:bullseye
   script:
-    - apt-get update && apt-get -y --no-install-recommends install rubygems ruby-dev libffi-dev build-essential
+    - apt-get update && apt-get -y --no-install-recommends install rubygems ruby-dev libffi-dev build-essential shellcheck
     - gem install bundler
     - bundle install --gemfile=ci/Gemfile
     # Puppet manifests syntax check (equivalent to puppet parser validate) - The most important check
@@ -16,7 +16,8 @@ lint:
     - BUNDLE_GEMFILE=ci/Gemfile bundle exec rake --rakefile ci/rakefile_syntax syntax:hiera
     # Puppet style check
     - BUNDLE_GEMFILE=ci/Gemfile bundle exec rake --rakefile ci/rakefile_lint lint
-
+    # CI shell script style check
+    - shellcheck ci/**/*.sh
 dryrun_all:
   stage: dryrun
   tags:

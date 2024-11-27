@@ -64,6 +64,8 @@ cd "${TMP_DIR}"
 # Sort them with reverse order to make sure the oldest (which has the highest
 # pipeline id) comes up first.
 
+# NOTE: we do want commit to expand client-side
+# shellcheck disable=SC2029
 readarray -d '' matching_envs < <(ssh nancy "find ~ajenkins/public/environments/pipelines/*-${commit} -name \"${environment_name}.dsc\" -print0 | sort -z -r")
 
 if [ "${#matching_envs[@]}" -gt "1" ]; then
@@ -79,7 +81,7 @@ if [ "${#matching_envs[@]}" -eq "0" ]; then
 fi
 
 echo "Using env: ${matching_envs[0]}"
-env_dir=$(dirname ${matching_envs[0]})
+env_dir=$(dirname "${matching_envs[0]}")
 
 echo "Fetching files for ${environment_name}"
 
@@ -87,7 +89,7 @@ echo "Fetching files for ${environment_name}"
 # stuff let's also consider we might want to be ran as the local (aka: dev)
 # user.
 if [ "${local_user}" = true ]; then
-  HOST="`whoami`@nancy"
+  HOST="$(whoami)@nancy"
 else
   HOST="ajenkins@nancy"
 fi
@@ -96,15 +98,15 @@ fi
 versioned_env_name="${environment_name}-${tag}"
 
 # rsync the relevant files locally
-rsync -av ${HOST}:"${env_dir}/${environment_name}.dsc" "${versioned_env_name}.dsc"
-rsync -av ${HOST}:"${env_dir}/${environment_name}.tar.zst" "${versioned_env_name}.tar.zst"
+rsync -av "${HOST}":"${env_dir}/${environment_name}.dsc" "${versioned_env_name}.dsc"
+rsync -av "${HOST}":"${env_dir}/${environment_name}.tar.zst" "${versioned_env_name}.tar.zst"
 # rsync/mv the qcow2 if needed
 case ${environment_name} in
   *-std)
     echo "Detected std env, not copying qcow2"
     ;;
   *)
-    rsync -av ${HOST}:"${env_dir}/${environment_name}.qcow2" "${versioned_env_name}.qcow2"
+    rsync -av "${HOST}":"${env_dir}/${environment_name}.qcow2" "${versioned_env_name}.qcow2"
     mv "${versioned_env_name}.qcow2" /grid5000/virt-images
     ;;
 esac
