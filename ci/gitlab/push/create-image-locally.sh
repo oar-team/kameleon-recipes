@@ -98,7 +98,16 @@ versioned_env_name="${environment_name}-${tag}"
 # rsync the relevant files locally
 rsync -av ${HOST}:"${env_dir}/${environment_name}.dsc" "${versioned_env_name}.dsc"
 rsync -av ${HOST}:"${env_dir}/${environment_name}.tar.zst" "${versioned_env_name}.tar.zst"
-rsync -av ${HOST}:"${env_dir}/${environment_name}.qcow2" "${versioned_env_name}.qcow2"
+# rsync/mv the qcow2 if needed
+case ${environment_name} in
+  *-std)
+    echo "Detected std env, not copying qcow2"
+    ;;
+  *)
+    rsync -av ${HOST}:"${env_dir}/${environment_name}.qcow2" "${versioned_env_name}.qcow2"
+    mv "${versioned_env_name}.qcow2" /grid5000/virt-images
+    ;;
+esac
 # FIXME: intentionally no copying log: those are empty?!
 
 # Let's fix the image url in the description file.
@@ -115,7 +124,6 @@ sed -e "s/version: [[:digit:]]\+/version: ${tag}/" -i "${versioned_env_name}.dsc
 # Now move the files to their final destinations
 mv "${versioned_env_name}.dsc" /grid5000/descriptions
 mv "${versioned_env_name}.tar.zst" /grid5000/images
-mv "${versioned_env_name}.qcow2" /grid5000/virt-images
 
 # Remove (dev) environments if they exist
 # Existence is tested through grepping "name:" in the description given by
