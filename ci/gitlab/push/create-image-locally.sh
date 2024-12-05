@@ -98,15 +98,15 @@ fi
 versioned_env_name="${environment_name}-${tag}"
 
 # rsync the relevant files locally
-rsync -av "${HOST}":"${env_dir}/${environment_name}.dsc" "${versioned_env_name}.dsc"
-rsync -av "${HOST}":"${env_dir}/${environment_name}.tar.zst" "${versioned_env_name}.tar.zst"
+rsync -av "${HOST}:${env_dir}/${environment_name}.dsc" "${versioned_env_name}.dsc"
+rsync -av "${HOST}:${env_dir}/${environment_name}.tar.zst" "${versioned_env_name}.tar.zst"
 # rsync/mv the qcow2 if needed
 case ${environment_name} in
   *-std)
     echo "Detected std env, not copying qcow2"
     ;;
   *)
-    rsync -av "${HOST}":"${env_dir}/${environment_name}.qcow2" "${versioned_env_name}.qcow2"
+    rsync -av "${HOST}:${env_dir}/${environment_name}.qcow2" "${versioned_env_name}.qcow2"
     mv "${versioned_env_name}.qcow2" /grid5000/virt-images
     ;;
 esac

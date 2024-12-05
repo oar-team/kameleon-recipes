@@ -17,6 +17,7 @@ lint:
     # Puppet style check
     - BUNDLE_GEMFILE=ci/Gemfile bundle exec rake --rakefile ci/rakefile_lint lint
     # CI shell script style check
+    - shopt -s globstar
     - shellcheck ci/**/*.sh
 dryrun_all:
   stage: dryrun
