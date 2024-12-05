@@ -7,8 +7,9 @@ commit=""
 tag=""
 oar_arch=""
 local_user=false
+is_std_env="no"
 
-function usage {
+usage() {
   echo "Usage: $0 -e <environment_name> -c <commit> -t <tag> -a <oar_arch> [-l]"
   echo "Set '-l' to connect as the local user instead of ajenkins."
   exit 1
@@ -47,6 +48,16 @@ fi
 
 set -x
 
+case ${environment_name} in
+  *-std)
+    is_std_env="yes"
+    ;;
+esac
+
+# 80 retries of 15s makes it a 20 min timeout.
+RETRIES=80
+SLEEP_TIME=15
+
 # Create a temporary directory in which we'll work
 TMP_DIR="$(mktemp -d)"
 
@@ -57,7 +68,7 @@ function remove_tmp_folder {
 # Make sure we cleanup behind us.
 trap remove_tmp_folder EXIT
 
-cd "${TMP_DIR}"
+pushd "${TMP_DIR}"
 
 # Fetch all the generated descriptions by all the pipelines for tha commit
 # At the moment they are all stored in ~ajenkins in Nancy.
@@ -101,15 +112,10 @@ versioned_env_name="${environment_name}-${tag}"
 rsync -av "${HOST}:${env_dir}/${environment_name}.dsc" "${versioned_env_name}.dsc"
 rsync -av "${HOST}:${env_dir}/${environment_name}.tar.zst" "${versioned_env_name}.tar.zst"
 # rsync/mv the qcow2 if needed
-case ${environment_name} in
-  *-std)
-    echo "Detected std env, not copying qcow2"
-    ;;
-  *)
-    rsync -av "${HOST}:${env_dir}/${environment_name}.qcow2" "${versioned_env_name}.qcow2"
-    mv "${versioned_env_name}.qcow2" /grid5000/virt-images
-    ;;
-esac
+if [ "${is_std_env}" == "no" ]; then
+  rsync -av "${HOST}:${env_dir}/${environment_name}.qcow2" "${versioned_env_name}.qcow2"
+  mv "${versioned_env_name}.qcow2" /grid5000/virt-images
+fi
 # FIXME: intentionally no copying log: those are empty?!
 
 # Let's fix the image url in the description file.
@@ -120,7 +126,6 @@ sed -e "s|\\(file: \\)[^$]*|\\1server:///grid5000/images/${environment_name}-${t
 # the user has set the tag according to the time it was generated?
 # It seems tricky for cases where os-min and os-big are generated in two different
 # pipelines which might be triggered at different times.
-# TODO: check/discuss this choice
 sed -e "s/version: [[:digit:]]\+/version: ${tag}/" -i "${versioned_env_name}.dsc"
 
 # Now move the files to their final destinations
@@ -138,11 +143,42 @@ if /usr/sbin/kaenv3-dev -u deploy -p "${environment_name}" --env-version "${tag}
   sudo -u deploy /usr/sbin/kaenv3-dev --yes -d "${environment_name}" -u deploy --env-version "${tag}" --env-arch "${oar_arch}"
 fi
 
+get_job_state() {
+  local job_id=$1
+  oarstat -fj "${job_id}" -J | jq -r ".[\"${job_id}\"].state"
+}
+
+# We're done with file manipulation, get back to our home
+# It's also necessary for oarsub to succeed: it tries to 'cd' into the current
+# working directory when running the script.
+popd
+
+# If we are dealing with the std env, let's create a BEST destructive job on the
+# site.
+job_uid=0
+if [ "${is_std_env}" == "yes" ]; then
+  # Create a job and wait for it.
+  job_uid=$(oarsub -J -q admin -l /nodes=BEST,walltime=0:10 -p "cpuarch='${oar_arch}'" -n "Gitlab Standard Environment Push" -t exotic -t allowed=maintenance -t deploy -t destructive "sleep infinity" | jq -r '.job_id')
+  job_state=$(get_job_state "${job_uid}")
+  tries=0
+  while [ "${tries}" -lt "${RETRIES}" ] && [ "${job_state}" != "Running" ]; do
+    tries=$((tries + 1))
+    echo "Try ${tries}/${RETRIES}."
+    sleep ${SLEEP_TIME}
+    job_state=$(get_job_state "${job_uid}")
+  done
+
+  # We've either timed out or a job.
+  if [ "${job_state}" != "Running" ]; then
+    echo "Could not get a job, aborting"
+    exit 1
+  fi
+fi
+
 # Register the newly built environment
 sudo -u deploy /usr/bin/kaenv3 -a "/grid5000/descriptions/${versioned_env_name}.dsc"
 sudo -u deploy /usr/sbin/kaenv3-dev -a "/grid5000/descriptions/${versioned_env_name}.dsc"
 
-# if env std:
-# TODO: submit a deploy/destructive job to set the new std env
-# TODO: wait
-# TODO: release the job
+if [ "${is_std_env}" == "yes" ]; then
+  oardel "${job_uid}"
+fi
