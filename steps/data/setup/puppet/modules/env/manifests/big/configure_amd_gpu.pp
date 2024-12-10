@@ -52,21 +52,20 @@ class env::big::configure_amd_gpu () {
     'bullseye' : {
       include env::big::configure_amd_gpu_bullseye_bookworm_common
 
+      # NOTE: not using env::common::g5kpackages here, since we have a common step
+      # looking to install the packages.
       apt::source {
-        'repo.radeon.com-amdgpu':
-          comment      => 'Repo for AMDGPU packages',
-          location     => 'https://repo.radeon.com/amdgpu/21.40/ubuntu/',
-          release      => 'focal',
-          repos        => 'main',
-          key          => {
-            'id'     => '1A693C5C',
-            'source' => 'https://repo.radeon.com/rocm/rocm.gpg.key',
-          },
-          include      => {
-            'deb' => true,
-            'src' => false
+        'g5k-packages-amdgpu':
+          comment      => 'Our repository for AMDGPU packages',
+          location => "http://packages.grid5000.fr/deb/amdgpu/bullseye",
+          release  => '/',
+          repos    => '',
+          key      => {
+            'id'      => '3C38BDEAA05D4A7BED7815E5B1F34F56797BF2D1',
+            'content' => file('env/min/apt/grid5000-archive-key.asc')
           },
           notify       => Exec['apt_update'],
+          include  => { 'deb' => true, 'src' => false }
       }
 
       apt::source {
@@ -146,7 +145,7 @@ class env::big::configure_amd_gpu_bullseye_bookworm_common () {
 
   $amdgpu_repo_source = $::lsbdistcodename ? {
     'bookworm' => 'File[/etc/apt/sources.list.d/repo.radeon.com-amdgpu.list]',
-    default    => 'Apt::Source[repo.radeon.com-amdgpu]',
+    default    => 'Apt::Source[g5k-packages-amdgpu]',
   }
 
   package {
