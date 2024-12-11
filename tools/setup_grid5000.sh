@@ -15,6 +15,12 @@ KERNEL=linux-image-$(uname -r)
 VERSION=$(apt-cache policy $KERNEL | grep Installed: | awk '{print $2}')
 ARCH=$(dpkg --print-architecture)
 KERNEL_SHORT=$(uname -r | sed -re "s/^(.*)-[^-]*/\1/g")
+
+if [ "$ARCH" = "amd64" ]; then
+    # temporary hack to disable amdgpu repository
+    rm -rf /etc/apt/sources.list.d/repo.radeon.com-amdgpu.list
+fi
+
 apt-get update
 
 # When a kernel security update is released, the current kernel version is not available anymore on debian package repositories
