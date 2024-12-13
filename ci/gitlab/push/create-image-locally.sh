@@ -58,6 +58,12 @@ esac
 RETRIES=80
 SLEEP_TIME=15
 
+if [ "$(whoami)" == "ajenkins" ]; then
+  # If we are ajenkins, let's use our home to avoid running out of space in /tmp.
+  # mktemp understands TMPDIR
+  export TMPDIR=/home/ajenkins
+fi
+
 # Create a temporary directory in which we'll work
 TMP_DIR="$(mktemp -d)"
 
