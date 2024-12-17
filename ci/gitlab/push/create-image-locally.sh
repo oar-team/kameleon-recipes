@@ -121,6 +121,7 @@ rsync -av "${HOST}:${env_dir}/${environment_name}.tar.zst" "${versioned_env_name
 if [ "${is_std_env}" == "no" ]; then
   rsync -av "${HOST}:${env_dir}/${environment_name}.qcow2" "${versioned_env_name}.qcow2"
   mv "${versioned_env_name}.qcow2" /grid5000/virt-images
+  ln -sf "/grid5000/virt-images/${versioned_env_name}.qcow2" "/grid5000/virt-images/${environment_name}.qcow2"
 fi
 # FIXME: intentionally no copying log: those are empty?!
 
