@@ -1,0 +1,4 @@
+- install_isc_dhcp:
+  - apt-get_in: install isc-dhcp-client
+- remove_dhcpcd_base:
+  - apt-get_in: remove --purge dhcpcd-base
