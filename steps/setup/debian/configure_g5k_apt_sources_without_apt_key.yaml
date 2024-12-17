@@ -1,0 +1,18 @@
+- g5k_deb_repositories:
+
+- add_g5k_key:
+  - apt-get_in: install gnupg dirmngr curl
+  - download_file_in:
+    - "http://packages.grid5000.fr/grid5000-archive-key.gpg"
+    - /usr/share/keyrings/grid5000-archive-key.gpg
+- add_g5k_apt_sources:
+  - exec_in: |
+      for r in $${g5k_deb_repositories}; do
+        cat <<EOF > /etc/apt/sources.list.d/$r.list
+      #Grid5000 repository for $r
+      deb [signed-by=/usr/share/keyrings/grid5000-archive-key.gpg] http://packages.grid5000.fr/deb/$r/ /
+      EOF
+      done
+- update_repositories:
+  # Deactivate the check to make the cache system works after a while...
+  - apt-get_in: -o Acquire::Check-Valid-Until=false update

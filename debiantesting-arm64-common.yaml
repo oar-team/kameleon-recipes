@@ -53,7 +53,7 @@ setup:
   - "@base"
   - configure_system
   - configure_apt
-  - configure_g5k_apt_sources
+  - configure_g5k_apt_sources_without_apt_key
   - install_packages
   - set_g5k_release
   - set_g5k_dhclient_hook
