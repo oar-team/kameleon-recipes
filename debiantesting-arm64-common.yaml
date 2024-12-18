@@ -54,6 +54,7 @@ setup:
   - configure_system
   - configure_apt
   - configure_g5k_apt_sources_without_apt_key
+  - do_not_clean_tmp
   - use_isc_dhcp_not_dhcpcd_base
   - install_packages
   - set_g5k_release

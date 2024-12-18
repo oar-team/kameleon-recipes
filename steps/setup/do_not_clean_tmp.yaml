@@ -1,0 +1,4 @@
+# this is a kameleon copy of puppet's steps/data/setup/puppet/modules/env/manifests/base/do_not_clean_tmp.pp
+# it disables systemd-tmpfiles management of /tmp (so it is not cleaned on reboots)
+- do_not_clean_tmp:
+  - exec_in: ln -sf /dev/null /etc/tmpfiles.d/tmp.conf
