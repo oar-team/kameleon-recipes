@@ -30,5 +30,5 @@ spec:
     - grid5000-shell
   script:
     - echo "Testing ${ENV_NAME} on ${CLUSTER}, with refapi branch ${REFAPI}"
-    - RUBYLIB=/srv/jenkins-scripts/lib:reference-repository/lib ci/gitlab/run_job.rb --job test --env ${ENV_NAME} --cluster ${SITE}-${CLUSTER} --refapi $REFAPI
+    - RUBYLIB=/srv/jenkins-scripts/lib:reference-repository/lib ci/gitlab/run_job.rb --job test --env ${ENV_NAME} --cluster ${SITE}-${CLUSTER} --refapi $REFAPI ${POSTINSTALL_BRANCH:+"-u"}
   after_script: !reference [.postjob-cleanup, after_script]
