@@ -16,7 +16,7 @@
           SECTOR_COUNT=$(/sbin/fdisk -l "$${qemu_iso_path}" | grep iso2 | awk '{print $4}')
           dd if="$${qemu_iso_path}" bs=512 skip="${SECTOR_START}" count="${SECTOR_COUNT}" of="${ISO_WORKING_DIR}/boot/grub/efi.img"
           echo "Update boot with cloud-init autoinstall"
-          sed -i "s|quiet \-\-\-|autoinstall \'ds=nocloud-net;s=http://$${local_ip}:8000/autoinstall/\' ---|" "${ISO_WORKING_DIR}/boot/grub/grub.cfg"
+          sed -ri "s|(quiet\|) \-\-\-|autoinstall \'ds=nocloud-net;s=http://$${local_ip}:8000/autoinstall/\' ---|" "${ISO_WORKING_DIR}/boot/grub/grub.cfg"
           sed -i "s/^set timeout=.*/set timeout=3/" "${ISO_WORKING_DIR}/boot/grub/grub.cfg"
           echo "Rebuild iso"
           # "Disable" md5 checksum
