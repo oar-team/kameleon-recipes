@@ -31,10 +31,12 @@ global:
   other_fs_packages: dosfstools #ntfs-3g
   archive_file_packages: tar bzip2 xz-utils zstd
 
-  compression_tools: xz-utils pixz
+  compression_tools_packages: xz-utils pixz
+  compression_tool: pixz
+  decompression_tool: xzcat
   root_archive: root.cxz
-  compression_cmd: pixz -9 > $${rootfs}/boot/$${root_archive}
-  decompression_cmd: xzcat /$${root_archive}
+  compression_cmd: $${compression_tool} -9 > $${rootfs}/boot/$${root_archive}
+  decompression_cmd: $${decompression_tool} /$${root_archive}
 
   disk_packages: hdparm parted fdisk
   ruby_packages: ruby ruby-net-ssh ruby-net-ssh-multi ruby-daemons
@@ -347,7 +349,7 @@ export:
       - apt-get_in: purge
       - apt-get_in: clean
     - create_rootfs:
-      - apt-get_out: install $${compression_tools}
+      - apt-get_out: install $${compression_tools_packages}
       - exec_out: |
           set -e
           cd $${rootfs} # use out context: quicker if foreign arch
@@ -383,16 +385,13 @@ export:
           esac
           . /usr/share/initramfs-tools/hook-functions
           # Begin real processing below this line
-          # This block below handle the case where the root archive is compressed by zstd
-          # and thus must be decompressed by zstd in the initramfs.
-          if [ "$${compression_tools}" = "zstd" ]; then
+          if [ "$${decompression_tool}" = "zstd" -o "$${decompression_tool}" = "pzstd" ]; then
             # We use sed to change PPC64 arch, because it doesn't match the
             # architecture name used for the /lib/$ARCH-linux-gnu directory.
-            MACHINE_ARCH=$(uname -m | sed 's/ppc64le/powerpc64le/g')
-            for lib in libstdc++.so.6 libgcc_s.so.1 libc.so.6 libm.so.6; do
-              cp /lib/$MACHINE_ARCH-linux-gnu/$lib $DESTDIR/lib/
+            for lib in $(ldd $(which $${decompression_tool}) | grep -o " /lib/[^ ]\+"); do
+              cp $lib $DESTDIR/lib/
             done
-            cp /usr/bin/pzstd $DESTDIR/bin/
+            cp $(which $${decompression_tool}) $DESTDIR/bin/
           fi
           cp -v /boot/$${root_archive} $DESTDIR
           EOF

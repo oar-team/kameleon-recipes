@@ -28,6 +28,10 @@ ENV_CONFIG = {
       'archs' => ARCHS_ARM,
       'variants' => %w[std],
     },
+    'gh11' => {
+      'archs' => ARCHS_ARM,
+      'variants' => %w[std],
+    },
   },
   'ubuntu' => {
     '2004' => {
