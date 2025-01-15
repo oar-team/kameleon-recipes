@@ -12,6 +12,8 @@ extend: ./debian11-arm64-common.yaml
 global:
   # Grid'5000 environment variant
   g5k_variant: std
+  g5k_distrib: $${distrib}gh
+  g5k_description: $${distrib} $${release_number} ($${release}) with debian 12 backports of linux kernel and util-linux for $${arch} - $${g5k_variant}
 
   # Generate only the appliance for bare-metal deployment, not for VMs.
   appliance_formats: tar.zst
