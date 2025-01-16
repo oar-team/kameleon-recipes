@@ -1,0 +1,44 @@
+#==============================================================================
+# vim: softtabstop=2 shiftwidth=2 expandtab fenc=utf-8 cc=81 tw=80
+#==============================================================================
+#
+# DESCRIPTION: Ubuntu 24.04 arm64 big for Grace Hopper nodes Grid'5000 environment
+#
+#==============================================================================
+---
+extend: ./ubuntu2404-arm64-nfs.yaml
+
+global:
+  # Grid'5000 environment variant
+  g5k_variant: big
+  qemu_image_size: 45G
+  base_autoinstall_path: $${kameleon_data_dir}/autoinstall/ubuntugh-noble-installer.yaml
+
+bootstrap:
+  - "@base"
+
+setup:
+  - "@base"
+  - install_nvidia_toolchain:
+    - install_cuda_nvidia_drivers:
+      - exec_in: wget https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2404/sbsa/cuda-keyring_1.1-1_all.deb
+      - exec_in: dpkg -i cuda-keyring*.deb
+      - exec_in: apt-get update && apt-get install cuda-toolkit-12-8 -y
+      - exec_in: apt-get install nvidia-driver-570-open cuda-drivers-570 -y
+      - exec_in: mkdir /lib/systemd/system/nvidia-persistenced.service.d
+      - exec_in: printf "[Service]\nExecStart=\nExecStart=/usr/bin/nvidia-persistenced --persistence-mode --verbose\n[Install]\nWantedBy=multi-user.target" > /lib/systemd/system/nvidia-persistenced.service.d/override.conf
+    - install_mellanox_driver:
+      - exec_in: wget -qO - http://www.mellanox.com/downloads/ofed/RPM-GPG-KEY-Mellanox | gpg --dearmor -o /usr/share/keyrings/GPG-KEY-Mellanox.gpg
+      - exec_in: printf Types:\ deb\\nURIs:\ https://linux.mellanox.com/public/repo/mlnx_ofed/latest/ubuntu24.04/arm64\\nSuites:\ /\\nSigned-By:\ /usr/share/keyrings/GPG-KEY-Mellanox.gpg > /etc/apt/sources.list.d/mlnx.sources
+      - exec_in: apt-get update
+      # change pin priority in order to get the last version of mft package 
+      - exec_in: printf \\nPackage:\ mft\\nPin:\ release\ l=NVIDIA\ CUDA\\nPin-Priority:\ -2 >> /etc/apt/preferences.d/cuda-repository-pin-600
+      - exec_in: apt-get install mlnx-ofed-all -y
+      # remove the last change
+      - exec_in: head -n -3 /etc/apt/preferences.d/cuda-repository-pin-600 > temp.txt ; mv temp.txt /etc/apt/preferences.d/cuda-repository-pin-600
+      - exec_in: apt-get install mlnx-fw-updater -y
+      # delete .deb file downloaded at the first step
+      - exec_in: rm cuda-keyring*.deb
+
+export:
+  - "@base"
