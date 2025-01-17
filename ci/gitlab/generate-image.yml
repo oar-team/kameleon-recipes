@@ -25,6 +25,7 @@ spec:
   tags:
     - grid5000-shell
   script:
-    - echo "Generating ${ENV_NAME}"
-    - RUBYLIB=/srv/jenkins-scripts/lib:reference-repository/lib ci/gitlab/run_job.rb --job build --env ${ENV_NAME} ${POSTINSTALL_BRANCH:+"-p${POSTINSTALL_FILE}"}
+    - echo "Generating ${ENV_NAME}, version ${GENERATED_ENV_VERSION}"
+    # GENERATED_ENV_VERSION is populated by the "clone-refrepo" job
+    - RUBYLIB=/srv/jenkins-scripts/lib:reference-repository/lib ci/gitlab/run_job.rb --job build --env ${ENV_NAME} --version ${GENERATED_ENV_VERSION} ${POSTINSTALL_BRANCH:+"-p${POSTINSTALL_FILE}"}
   after_script: !reference [.postjob-cleanup, after_script]

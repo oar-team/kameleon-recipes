@@ -29,6 +29,8 @@ variables:
     description: A regexp of environments to build
   CLUSTERS:
     description: The coma separated list of clusters to test automatically
+  ENV_VERSION:
+    description: Set this variable to force the generated environments versions
   ENABLE_UNUSED_GEN_JOBS:
     description: Should non-matching generation job be created? Leave blank to avoid generation.
   ENABLE_UNUSED_TEST_JOBS:
@@ -67,7 +69,18 @@ clone-refrepo:
   script:
     - echo ${REFREPO_BRANCH}
     - git clone https://gitlab-ci-token:$CI_JOB_TOKEN@gitlab.inria.fr/grid5000/reference-repository.git --depth 1 -b ${REFREPO_BRANCH}
+    # Generate the common environment version right away, so that it doesn't
+    # depend on when each reservation starts. Respect the ENV_VERSION
+    # if provided.
+    - |
+      if [ "${ENV_VERSION}" != "" ]; then
+        echo "GENERATED_ENV_VERSION=${ENV_VERSION}" > version.env
+      else
+        echo "GENERATED_ENV_VERSION=$(printf '%(%Y%m%d%H)T\n' -1)" > version.env
+      fi
   artifacts:
+    reports:
+      dotenv: version.env
     paths:
       - reference-repository
 
