@@ -55,6 +55,15 @@ setup:
       - apt-get_in: update
     - upgrade_util-linux:
       - apt-get_in: install util-linux
+  - last_tweaks:
+    - fix_env_name:
+      - exec_in: |
+          sed -i -e '1s/^$${distrib}$${release_number}-/$${g5k_distrib}$${release_number}-/' /etc/grid5000/release
+    - change_motd:
+      - exec_in: |
+          sed -i \
+              -e 's/^Debian$${release_number}-/Debiangh$${release_number}-/' \
+              /etc/motd
   - set_and_clear_var_log
 
 export:
