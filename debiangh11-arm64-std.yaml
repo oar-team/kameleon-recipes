@@ -27,23 +27,30 @@ global:
   # Visibility override
   g5k_visibility: shared
 
+  kernel_version: 6.11.10+gh
+  kernel_package: linux-image-$${kernel_version}-arm64
+
 bootstrap:
   - "@base"
 
 setup:
   - "@base"
-  - install_kernel6.6:
+  - install_custom_kernel:
+    - remove_old_kernels:
+      - apt-get_in: remove --purge -y linux-image-*
     - add_bookworm_sources_list:
       - write_in:
-        - /etc/apt/sources.list.d/bookworm-backports.list
+        - /etc/apt/sources.list.d/linux-image.list
         - |
-          # Bookworm backports, used to install 6.6 linux kernel.
-          deb http://deb.debian.org/debian bookworm-backports main contrib non-free
-          deb-src http://deb.debian.org/debian bookworm-backports main contrib non-free
+          # linux-image from packages.grid5000.fr, built for memory cgroup v1 support.
+          deb http://packages.grid5000.fr/deb/linux-image/bullseye /
     - update_apt:
       - apt-get_in: update
     - install_linux_image:
-      - apt-get_in: install -t bookworm-backports linux-image-arm64
+      - apt-get_in: install $${kernel_package}
+    - create_kernel_symlinks:
+      - exec_in: ln -sfn /boot/vmlinuz-$${kernel_version}-arm64 /vmlinuz
+      - exec_in: ln -sfn /boot/initrd.img-$${kernel_version}-arm64 /initrd.img
   - upgrade_util-linux:
     - place_sources_list:
       - write_in:
