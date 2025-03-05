@@ -50,6 +50,10 @@ ENV_CONFIG = {
       'archs' => ARCHS_ARM,
       'variants' => %w[big],
     },
+    'gh2404' => {
+      'archs' => ARCHS_ARM,
+      'variants' => %w[big],
+    }
   },
   'centosstream' => {
     '8' => {
