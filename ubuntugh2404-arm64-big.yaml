@@ -11,6 +11,9 @@ extend: ./ubuntu2404-arm64-nfs.yaml
 global:
   # Grid'5000 environment variant
   g5k_variant: big
+  g5k_distrib: $${distrib}gh
+  g5k_description: $${distrib} $${release_number} ($${release}) for NVIDIA Grace Hopper
+
   qemu_image_size: 45G
   base_autoinstall_path: $${kameleon_data_dir}/autoinstall/ubuntugh-noble-installer.yaml
 
@@ -39,6 +42,15 @@ setup:
       - exec_in: apt-get install mlnx-fw-updater -y
       # delete .deb file downloaded at the first step
       - exec_in: rm cuda-keyring*.deb
+  - last_tweaks:
+    - fix_env_name:
+      - exec_in: |
+          sed -i -e '1s/^$${distrib}$${release_number}-/$${g5k_distrib}$${release_number}-/' /etc/grid5000/release
+    - change_motd:
+      - exec_in: |
+          sed -i \
+              -e 's/^Ubuntu$${release_number}-/Ubuntugh$${release_number}-/' \
+              /etc/motd
 
 export:
   - "@base"
