@@ -1,9 +1,9 @@
 workflow:
   # NOTE: only run the pipeline when pushing a commit/tag/branch, or when
-  # creating the pipeline in the UI.
+  # creating the pipeline in the UI, or for the weekly scheduled pipeline
   # This allows to avoid duplicated pipelines in merge requests.
   rules:
-    - if: $CI_PIPELINE_SOURCE == "push" || $CI_PIPELINE_SOURCE == "web" || $CI_PIPELINE_SOURCE == "api"
+    - if: $CI_PIPELINE_SOURCE == "push" || $CI_PIPELINE_SOURCE == "web" || $CI_PIPELINE_SOURCE == "api" || $CI_PIPELINE_SOURCE == "schedule"
 
 stages:
   - dryrun
