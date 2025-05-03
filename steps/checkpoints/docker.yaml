@@ -13,23 +13,8 @@ create:
       docker run -d -u$${docker_user} -i -h $${docker_hostname} --cidfile $KAMELEON_WORKDIR/MAIN_CONTAINER_ID --privileged --entrypoint cat $${docker_image}:@microstep_id > /dev/null
       while ! [ -s $KAMELEON_WORKDIR/MAIN_CONTAINER_ID ] || ! docker exec -u $${docker_user} -i $(< $KAMELEON_WORKDIR/MAIN_CONTAINER_ID) true; do sleep 1; done
   - reload_context: out
-  - exec_out: &1 |
-      set -e
-      if [ -e $KAMELEON_WORKDIR/.KAMELEON_SETUP_ROOTFS_SYSTEM ]; then
-        for d in dev dev/pts proc sys; do
-          mkdir -p $${rootfs_container_work_dir}/$d
-          mount --bind /$d $${rootfs_container_work_dir}/$d
-        done
-        if [ -e $${rootfs_container_work_dir}/etc/resolv.conf -o -h $${rootfs_container_work_dir}/etc/resolv.conf ]; then
-          if ! [ -e $${rootfs_container_work_dir}/etc/.resolv.conf.kameleon -o -h $${rootfs_container_work_dir}/etc/.resolv.conf.kameleon ]; then
-            mv -v $${rootfs_container_work_dir}/etc/resolv.conf $${rootfs_container_work_dir}/etc/.resolv.conf.kameleon
-          else
-            rm $${rootfs_container_work_dir}/etc/resolv.conf
-          fi
-        fi
-        cp -v /etc/resolv.conf $${rootfs_container_work_dir}/etc/resolv.conf
-      fi
   - reload_context: in
+  - setup-system-fs-chroot_in
 
 apply:
   - exec_local: |
@@ -47,7 +32,7 @@ apply:
       fi
       docker run -d -u$${docker_user} -i -h $${docker_hostname} --cidfile $KAMELEON_WORKDIR/MAIN_CONTAINER_ID $${docker_extra_volumes} --privileged --entrypoint cat $${docker_image}:@microstep_id > /dev/null
       while ! [ -s $KAMELEON_WORKDIR/MAIN_CONTAINER_ID ] || ! docker exec -u $${docker_user} -i $(< $KAMELEON_WORKDIR/MAIN_CONTAINER_ID) true; do sleep 1; done
-  - exec_out: *1
+  - setup-system-fs-chroot_in
 
 list:
   - exec_local: |

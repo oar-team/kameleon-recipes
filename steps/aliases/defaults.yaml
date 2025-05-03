@@ -161,3 +161,43 @@ apt-get_in:
 
 apt-get_out:
   - exec_out: DEBIAN_FRONTEND=noninteractive apt-get -y --force-yes @1 2>&1
+
+setup-system-fs-chroot_in:
+  - exec_out: &1 |
+      set -e
+      if [ -e $KAMELEON_WORKDIR/.KAMELEON_SYSTEM_FS_CHROOT_IN ]; then
+        for d in dev dev/pts proc sys; do
+          mkdir -p $${rootfs}/$d
+          mount --bind /$d $${rootfs}/$d
+          echo "mount $d in $${rootfs}/$d"
+        done
+        if [ -e $${rootfs}/etc/resolv.conf -o -h $${rootfs}/etc/resolv.conf ]; then
+          if ! [ -e $${rootfs}/etc/.resolv.conf.kameleon -o -h $${rootfs}/etc/.resolv.conf.kameleon ]; then
+            mv -v $${rootfs}/etc/resolv.conf $${rootfs}/etc/.resolv.conf.kameleon
+          else
+            rm $${rootfs}/etc/resolv.conf
+          fi
+        fi
+        cp -v /etc/resolv.conf $${rootfs}/etc/resolv.conf
+      fi
+
+unsetup-system-fs-chroot_in:
+  - exec_out: &2 |
+      set -e
+      if [ -e $KAMELEON_WORKDIR/.KAMELEON_SYSTEM_FS_CHROOT_IN ]; then
+        for d in dev dev/pts proc sys; do
+          mountpoint -q $${rootfs}/$d && umount -f -l $${rootfs}/$d || true
+        done
+        if [ -e $${rootfs}/etc/.resolv.conf.kameleon -o -h $${rootfs}/etc/.resolv.conf.kameleon ]; then
+          rm $${rootfs}/etc/resolv.conf
+          mv -v $${rootfs}/etc/.resolv.conf.kameleon $${rootfs}/etc/resolv.conf
+        fi
+        rm $KAMELEON_WORKDIR/.KAMELEON_SYSTEM_FS_CHROOT_IN
+      fi
+
+configure-system-fs-chroot_in:
+  - exec_out: touch $KAMELEON_WORKDIR/.KAMELEON_SYSTEM_FS_CHROOT_IN
+  - exec_out: *1
+  - on_setup_clean:
+      - exec_out: *2
+
